@@ -19,10 +19,10 @@
 
 | 이름 | 역할 및 담당 도메인 | Github |
 | :---: | :--- | :--- |
-| **엘릭 / 심민식** | • 프론트엔드 팀장<br>• 깃허브 레포 초기 셋팅, 구조 설계 등 | [@minsik1014](https://github.com/minsik1014) |
-| **심바 / 이채린** | • (추후 회의를 통해 담당 도메인 확정) | [@Chae102](https://github.com/Chae102) |
-| **요나 / 오윤아** | • (추후 회의를 통해 담당 도메인 확정) | [@yoona24](https://github.com/yoona24) |
-| **키위 / 윤규리** | • (추후 회의를 통해 담당 도메인 확정) | [@kiwi13ird](https://github.com/kiwi13ird) |
+| **엘릭 / 심민식** | • 프론트엔드 팀장<br>• 깃허브 레포 초기 셋팅, 구조 설계 등<br>• 메인페이지 | [@minsik1014](https://github.com/minsik1014) |
+| **심바 / 이채린** | • 랜딩페이지, 설정페이지 | [@Chae102](https://github.com/Chae102) |
+| **요나 / 오윤아** | • 로그인 페이지 | [@yoona24](https://github.com/yoona24) |
+| **키위 / 윤규리** | • 마이페이지 | [@kiwi13ird](https://github.com/kiwi13ird) |
 
 <br/>
 
