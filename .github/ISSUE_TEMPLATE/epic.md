@@ -2,7 +2,7 @@
 name: 🚀 메인 기능 (Epic)
 about: 새로운 큰 단위의 기능이나 페이지를 기획/개발할 때 사용합니다.
 title: 'feat: [메인 기능명]'
-labels: 'enhancement'
+labels: 'epic, feat'
 assignees: ''
 ---
 
