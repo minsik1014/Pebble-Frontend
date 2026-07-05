@@ -63,6 +63,7 @@ Pebble 프론트엔드는 데이터가 누적되어도 쾌적한 사용성을 �
 | **Style** | ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC) | 디자인 토큰 기반 유틸리티 CSS |
 | **Routing** | **React Router DOM** | SPA 라우팅 |
 | **Icons** | **lucide-react** | 경량 아이콘 라이브러리 |
+| **Util** | **date-fns** | 캘린더 구성 및 날짜 데이터 포맷팅 |
 | **Pkg Mgr** | **npm** | 패키지 매니저 |
 | **Quality** | ESLint, Prettier | 코드 품질 및 포맷팅 |
 

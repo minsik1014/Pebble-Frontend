@@ -3,5 +3,8 @@
   "scripts": {
     "dev": "cd Pebble && npm run dev",
     "install:all": "cd Pebble && npm install"
+  },
+  "dependencies": {
+    "date-fns": "^4.4.0"
   }
 }
