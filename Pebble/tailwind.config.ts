@@ -29,7 +29,7 @@ const config: Config = {
           primary: '#171717', secondary: '#a3a3a3', teritory: '#e5e5e5',
           surface: '#fafafa', inverse: '#ffffff', danger: '#fc4c46',
           'danger-bg': '#fee7da', success: '#0da471', 'success-bg': '#cefbd5',
-          warning: '#e8ae02', info: '#3059ff',
+          warning: '#e8ae02', info: '#3059ff', shadow: 'rgba(23, 23, 23, 0.5)',
         },
         text: {
           strong: '#171717', primary: '#404040', secondary: '#737373',

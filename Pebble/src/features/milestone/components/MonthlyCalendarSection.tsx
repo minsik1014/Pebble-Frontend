@@ -1,5 +1,9 @@
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
+import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react";
+import SidebarOpenIcon from "@/assets/icons/sidebar-open.svg?react";
+import SidebarCloseIcon from "@/assets/icons/sidebar-close.svg?react";
+import CalendarIcon from "@/assets/icons/calendar-outline.svg?react";
 
 type CalendarDay = {
   day: number;
@@ -189,7 +193,15 @@ const getDayTextClass = (
   return "text-text-strong";
 };
 
-export const MonthlyCalendarSection = (): JSX.Element => {
+type MonthlyCalendarProps = {
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
+};
+
+export const MonthlyCalendarSection = ({
+  isSidebarOpen = true,
+  onToggleSidebar,
+}: MonthlyCalendarProps = {}): JSX.Element => {
   const [currentYear, setCurrentYear] = useState(2026);
   const [currentMonth, setCurrentMonth] = useState(6);
 
@@ -224,13 +236,26 @@ export const MonthlyCalendarSection = (): JSX.Element => {
   return (
     <section
       aria-label="월간 캘린더"
-      className="flex mt-token-m h-[1000px] w-[898px] flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m shrink-0"
+      className={`flex mt-token-m h-[1000px] flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m shrink-0 transition-all duration-300 ${
+        isSidebarOpen ? "w-[898px]" : "w-[1290px]"
+      }`}
     >
-      <div className="relative ml-6 mt-8 flex h-[936px] w-[834px] flex-col items-start gap-token-l">
+      <div 
+        className="relative ml-6 mt-8 flex h-[936px] flex-col items-start gap-token-l transition-all duration-300"
+        style={{ width: isSidebarOpen ? 834 : 1226 }}
+      >
         <header className="inline-flex items-end gap-1">
-          <div className="flex h-11 w-11 items-center justify-center rounded-token-s bg-btn-quaternary text-text-strong">
-            <Calendar className="h-6 w-6" />
-          </div>
+          <button 
+            onClick={onToggleSidebar}
+            className="flex h-11 w-11 items-center justify-center rounded-token-s bg-btn-quaternary text-text-strong hover:bg-btn-pressed transition-colors"
+            aria-label={isSidebarOpen ? "사이드바 닫기" : "사이드바 열기"}
+          >
+            {isSidebarOpen ? (
+              <SidebarCloseIcon className="h-6 w-6 text-text-strong" />
+            ) : (
+              <SidebarOpenIcon className="h-6 w-6 text-text-strong" />
+            )}
+          </button>
           <div className="relative inline-flex items-center gap-token-l px-2">
             <div className="inline-flex items-center gap-2 text-title-01-sb text-text-strong">
               <span>{displayedYear}년</span>
@@ -246,7 +271,7 @@ export const MonthlyCalendarSection = (): JSX.Element => {
                 className="flex h-10 w-10 items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-strong transition-colors hover:bg-btn-pressed"
                 onClick={handlePreviousMonth}
               >
-                <ChevronLeft className="h-6 w-6" />
+                <ChevronLeftIcon className="h-6 w-6" />
               </button>
               <button
                 className="flex items-center justify-center rounded-token-infinite bg-btn-quaternary px-4 py-2 transition-colors hover:bg-btn-pressed"
@@ -259,7 +284,7 @@ export const MonthlyCalendarSection = (): JSX.Element => {
                 className="flex h-10 w-10 items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-strong transition-colors hover:bg-btn-pressed"
                 onClick={handleNextMonth}
               >
-                <ChevronRight className="h-6 w-6" />
+                <ChevronRightIcon className="h-6 w-6" />
               </button>
             </div>
           </div>

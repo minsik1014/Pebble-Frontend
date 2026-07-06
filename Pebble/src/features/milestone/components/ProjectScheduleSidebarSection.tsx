@@ -1,24 +1,28 @@
 import { useMemo, useState } from "react";
-import CardViewIcon from "@/assets/icons/Card-view.svg?react";
-import ListViewIcon from "@/assets/icons/List-view.svg?react";
-import PlusIcon from "@/assets/icons/Plus.svg?react";
-import {
-  Bell,
-  Calendar,
-  LayoutGrid,
-  ChevronUp,
-  Eye,
-  List,
-  LogOut,
-  User,
-  Settings,
-  Users,
-} from "lucide-react";
+import CardViewIcon from "@/assets/icons/card-view.svg?react";
+import ListViewIcon from "@/assets/icons/list-view.svg?react";
+import PlusIcon from "@/assets/icons/plus.svg?react";
+import BellOutlineIcon from "@/assets/icons/bell-outline.svg?react";
+import BellSolidIcon from "@/assets/icons/bell-solid.svg?react";
+import SocialOutlineIcon from "@/assets/icons/social-outline.svg?react";
+import SocialSolidIcon from "@/assets/icons/social-solid.svg?react";
+import CalendarOutlineIcon from "@/assets/icons/calendar-nav-default.svg?react";
+import CalendarSolidIcon from "@/assets/icons/calendar-nav-selected.svg?react";
+import MyOutlineIcon from "@/assets/icons/user-outline.svg?react";
+import MySolidIcon from "@/assets/icons/user-solid.svg?react";
+import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
+import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
+import { CreateCategoryModal } from "./CreateCategoryModal";
+import ChevronUpIcon from "@/assets/icons/chevron-up.svg?react";
+import LogOutIcon from "@/assets/icons/logout.svg?react";
+import SettingsOutlineIcon from "@/assets/icons/settings-outline.svg?react";
+import SettingsSolidIcon from "@/assets/icons/settings-solid.svg?react";
 
 type SidebarNavItem = {
   id: string;
   label: string;
-  icon: any; // LucideIcon type
+  icon: any; 
+  activeIcon?: any;
   active?: boolean;
 };
 
@@ -38,19 +42,16 @@ type Category = {
   items: ScheduleItem[];
 };
 
-const sidebarTopItems: SidebarNavItem[] = [
-  { id: "bell", label: "알림", icon: Bell },
+const mainNavItems: SidebarNavItem[] = [
+  { id: "bell", label: "알림", icon: BellOutlineIcon, activeIcon: BellSolidIcon },
+  { id: "social", label: "소셜", icon: SocialOutlineIcon, activeIcon: SocialSolidIcon },
+  { id: "calendar", label: "일정", icon: CalendarOutlineIcon, activeIcon: CalendarSolidIcon, active: true },
+  { id: "my", label: "마이", icon: MyOutlineIcon, activeIcon: MySolidIcon },
 ];
 
-const sidebarMiddleItems: SidebarNavItem[] = [
-  { id: "social", label: "소셜", icon: Users },
-  { id: "calendar", label: "일정", icon: Calendar, active: true },
-  { id: "my", label: "마이", icon: User },
-];
-
-const sidebarBottomItems: SidebarNavItem[] = [
-  { id: "settings", label: "설정", icon: Settings },
-  { id: "logout", label: "로그아웃", icon: LogOut },
+const bottomNavItems: SidebarNavItem[] = [
+  { id: "settings", label: "설정", icon: SettingsOutlineIcon, activeIcon: SettingsSolidIcon },
+  { id: "logout", label: "로그아웃", icon: LogOutIcon },
 ];
 
 const categories: Category[] = [
@@ -138,7 +139,7 @@ const categories: Category[] = [
 ];
 
 const SidebarIconButton = ({ item }: { item: SidebarNavItem }) => {
-  const Icon = item.icon;
+  const Icon = item.active && item.activeIcon ? item.activeIcon : item.icon;
 
   return (
     <button
@@ -213,6 +214,8 @@ const CategoryCard = ({
   checkedItems: Record<string, boolean>;
   onToggleChecked: (itemId: string) => void;
 }) => {
+  const [visible, setVisible] = useState(true);
+
   return (
     <section className="w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[20px] shadow-shadow-s overflow-hidden">
       <div className="flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-[20px] overflow-hidden">
@@ -233,8 +236,8 @@ const CategoryCard = ({
             onClick={onToggleExpanded}
             className="relative flex items-center justify-center w-11 h-11 rounded-token-s hover:bg-fill-surface transition-colors"
           >
-            <ChevronUp
-              className={`w-6 h-6 transition-transform text-text-strong ${
+            <ChevronUpIcon
+              className={`w-6 h-6 text-text-secondary transition-transform ${
                 expanded ? "" : "rotate-180"
               }`}
             />
@@ -242,9 +245,14 @@ const CategoryCard = ({
           <button
             type="button"
             aria-label={`${category.title} 보기`}
+            onClick={() => setVisible(!visible)}
             className="relative flex items-center justify-center w-11 h-11 rounded-token-s hover:bg-fill-surface transition-colors"
           >
-            <Eye className="w-6 h-6 text-text-strong" />
+            {visible ? (
+              <EyeOnIcon className="w-6 h-6 text-text-strong" />
+            ) : (
+              <EyeOffIcon className="w-6 h-6 text-text-strong" />
+            )}
           </button>
         </div>
       </div>
@@ -275,7 +283,11 @@ const CategoryCard = ({
   );
 };
 
-export const ProjectScheduleSidebarSection = (): JSX.Element => {
+export const ProjectScheduleSidebarSection = ({
+  isSidebarOpen = true
+}: {
+  isSidebarOpen?: boolean
+}): JSX.Element => {
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
@@ -285,6 +297,7 @@ export const ProjectScheduleSidebarSection = (): JSX.Element => {
     "startup-contest": true,
   });
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const monthLabel = useMemo(() => "6월", []);
 
@@ -303,25 +316,24 @@ export const ProjectScheduleSidebarSection = (): JSX.Element => {
   };
 
   return (
-    <aside className="flex mt-token-m w-[476px] shrink-0 h-[1000px] relative items-stretch rounded-[20px] overflow-hidden shadow-shadow-m">
+    <aside 
+      className={`flex mt-token-m shrink-0 h-[1000px] relative items-stretch rounded-[20px] overflow-hidden shadow-shadow-m transition-all duration-300 ${
+        isSidebarOpen ? "w-[476px]" : "w-[84px]"
+      }`}
+    >
       {/* 얇은 좌측 네비게이션 */}
       <nav
         aria-label="사이드바 탐색"
         className="w-[84px] shrink-0 h-[1000px] items-center px-5 py-8 bg-fill-inverse flex flex-col gap-10 relative"
       >
-        <div className="inline-flex flex-col items-center justify-between relative flex-1 grow">
-          <div className="inline-flex flex-col items-start gap-5 relative">
-            {sidebarTopItems.map((item) => (
+        <div className="flex flex-col items-center justify-between relative flex-1 grow w-full">
+          <div className="flex flex-col items-center gap-10 relative">
+            {mainNavItems.map((item) => (
               <SidebarIconButton key={item.id} item={item} />
             ))}
           </div>
-          <div className="items-start inline-flex flex-col gap-10 relative">
-            {sidebarMiddleItems.map((item) => (
-              <SidebarIconButton key={item.id} item={item} />
-            ))}
-          </div>
-          <div className="items-start inline-flex flex-col gap-10 relative">
-            {sidebarBottomItems.map((item) => (
+          <div className="flex flex-col items-center gap-10 relative">
+            {bottomNavItems.map((item) => (
               <SidebarIconButton key={item.id} item={item} />
             ))}
           </div>
@@ -329,8 +341,13 @@ export const ProjectScheduleSidebarSection = (): JSX.Element => {
       </nav>
 
       {/* 메인 마일스톤 관리 영역 */}
-      <section className="relative flex-1 h-[1000px] bg-fill-surface rounded-[0px_32px_32px_0px] border-l border-border-default flex flex-col">
-        <header className="flex w-full h-[100px] shrink-0 items-center justify-between pt-token-xl pb-token-l px-token-l bg-fill-surface z-10 rounded-tr-[32px]">
+      <section 
+        className={`relative h-[1000px] bg-fill-inverse rounded-[0px_32px_32px_0px] flex flex-col transition-all duration-300 overflow-hidden ${
+          isSidebarOpen ? "w-[392px] opacity-100" : "w-0 opacity-0"
+        }`}
+      >
+        <div className="w-[392px] min-w-[392px] h-[1000px] flex flex-col">
+          <header className="flex w-full h-[100px] shrink-0 items-center justify-between pt-token-xl pb-token-l px-token-l bg-fill-inverse z-10 rounded-tr-[32px]">
           <div className="text-heading-02 text-text-strong">
             {monthLabel}
           </div>
@@ -366,7 +383,7 @@ export const ProjectScheduleSidebarSection = (): JSX.Element => {
           </div>
         </header>
         {/* Flexbox에서 내용이 부모를 뚫고 나가는 것을 방지하기 위해 min-h-0 추가 */}
-        <div className="w-full h-[888px] min-h-0 flex flex-col items-center gap-5 pt-1 pb-3 px-5 overflow-y-auto custom-scrollbar">
+        <div className="w-full h-[888px] min-h-0 flex flex-col items-center gap-5 pt-1 pb-3 px-5 border-l border-border-default overflow-y-auto overflow-x-hidden custom-scrollbar">
           {categories.map((category) => (
             <CategoryCard
               key={category.id}
@@ -380,6 +397,7 @@ export const ProjectScheduleSidebarSection = (): JSX.Element => {
 
           <button
             type="button"
+            onClick={() => setIsCreateModalOpen(true)}
             className="w-[352px] h-12 flex items-center justify-center bg-fill-primary rounded-token-s hover:opacity-90 transition-opacity shrink-0"
             aria-label="카테고리 생성"
           >
@@ -389,7 +407,13 @@ export const ProjectScheduleSidebarSection = (): JSX.Element => {
             </span>
           </button>
         </div>
+        </div>
       </section>
+      
+      <CreateCategoryModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+      />
     </aside>
   );
 };
