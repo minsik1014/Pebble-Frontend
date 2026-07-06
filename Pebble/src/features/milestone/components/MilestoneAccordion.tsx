@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { type Category } from "@/features/milestone/constants";
+import { type Category } from "@/types";
 import ChevronUpIcon from "@/assets/icons/chevron-up.svg?react";
 import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";

@@ -1,7 +1,7 @@
 import { CalendarBoard } from "@/features/milestone/components/CalendarBoard";
 import { CalendarSidebar } from "@/features/milestone/components/CalendarSidebar";
-import { categories } from "@/features/milestone/constants";
-import { CategoryDetailSection } from "@/features/milestone/components/CategoryDetailSection";
+import { dummyCategories as categories } from "@/mocks/dummyData";
+import { CategoryDetailSection } from "@/features/category/components/CategoryDetailSection";
 import { useEffect, useState } from "react";
 
 export const CalendarMainPage = (): JSX.Element => {

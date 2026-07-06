@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import UploadIcon from "@/assets/icons/Upload.svg?react";
-import { type Category } from "../constants";
+import { type Category } from "@/types";
 
 type CategoryFormModalProps = {
   isOpen: boolean;

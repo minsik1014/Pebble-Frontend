@@ -1,24 +1,6 @@
-export type ScheduleItem = {
-  id: string;
-  title: string;
-  start: string;
-  end?: string;
-  accent: string;
-  rowWidthClass: string;
-  tasks?: ScheduleItem[];
-};
+import { type Category } from "@/types";
 
-export type Category = {
-  id: string;
-  title: string;
-  accent: string;
-  themeBase: string;
-  themeMid: string;
-  themeLight: string;
-  items: ScheduleItem[];
-};
-
-export const categories: Category[] = [
+export const dummyCategories: Category[] = [
   {
     id: "expo",
     title: "EXPO",

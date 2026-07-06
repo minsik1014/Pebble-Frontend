@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import { categories } from "@/features/milestone/constants";
+import { dummyCategories as categories } from "@/mocks/dummyData";
 import CardViewIcon from "@/assets/icons/card-view.svg?react";
 import ListViewIcon from "@/assets/icons/list-view.svg?react";
 
-import { CategoryFormModal } from "./CategoryFormModal";
+import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
 import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 import { MilestoneAccordion } from "./MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";

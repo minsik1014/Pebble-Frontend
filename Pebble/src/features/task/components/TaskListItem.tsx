@@ -1,5 +1,5 @@
 import React from "react";
-import { type ScheduleItem } from "@/features/milestone/constants";
+import { type ScheduleItem } from "@/types";
 
 type TaskListItemProps = {
   item: ScheduleItem;

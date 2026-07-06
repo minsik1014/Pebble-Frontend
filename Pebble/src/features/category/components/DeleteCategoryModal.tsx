@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CloseIcon from "@/assets/icons/Close.svg?react";
-import { type Category } from "../constants";
+import { type Category } from "@/types";
 
 type DeleteCategoryModalProps = {
   isOpen: boolean;
