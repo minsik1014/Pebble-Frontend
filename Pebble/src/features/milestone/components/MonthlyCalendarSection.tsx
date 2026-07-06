@@ -3,7 +3,6 @@ import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react";
 import SidebarOpenIcon from "@/assets/icons/sidebar-open.svg?react";
 import SidebarCloseIcon from "@/assets/icons/sidebar-close.svg?react";
-import CalendarIcon from "@/assets/icons/calendar-outline.svg?react";
 
 type CalendarDay = {
   day: number;

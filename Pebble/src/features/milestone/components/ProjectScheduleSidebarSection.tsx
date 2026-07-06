@@ -3,58 +3,13 @@ import { type Category, type ScheduleItem, categories } from "../constants";
 import CardViewIcon from "@/assets/icons/card-view.svg?react";
 import ListViewIcon from "@/assets/icons/list-view.svg?react";
 import PlusIcon from "@/assets/icons/plus.svg?react";
-import BellOutlineIcon from "@/assets/icons/bell-outline.svg?react";
-import BellSolidIcon from "@/assets/icons/bell-solid.svg?react";
-import SocialOutlineIcon from "@/assets/icons/social-outline.svg?react";
-import SocialSolidIcon from "@/assets/icons/social-solid.svg?react";
-import CalendarOutlineIcon from "@/assets/icons/calendar-nav-default.svg?react";
-import CalendarSolidIcon from "@/assets/icons/calendar-nav-selected.svg?react";
-import MyOutlineIcon from "@/assets/icons/user-outline.svg?react";
-import MySolidIcon from "@/assets/icons/user-solid.svg?react";
 import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
 import { CategoryFormModal } from "./CategoryFormModal";
 import ChevronUpIcon from "@/assets/icons/chevron-up.svg?react";
-import LogOutIcon from "@/assets/icons/logout.svg?react";
-import SettingsOutlineIcon from "@/assets/icons/settings-outline.svg?react";
-import SettingsSolidIcon from "@/assets/icons/settings-solid.svg?react";
+import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 
-type SidebarNavItem = {
-  id: string;
-  label: string;
-  icon: any; 
-  activeIcon?: any;
-  active?: boolean;
-};
 
-const mainNavItems: SidebarNavItem[] = [
-  { id: "bell", label: "알림", icon: BellOutlineIcon, activeIcon: BellSolidIcon },
-  { id: "social", label: "소셜", icon: SocialOutlineIcon, activeIcon: SocialSolidIcon },
-  { id: "calendar", label: "일정", icon: CalendarOutlineIcon, activeIcon: CalendarSolidIcon, active: true },
-  { id: "my", label: "마이", icon: MyOutlineIcon, activeIcon: MySolidIcon },
-];
-
-const bottomNavItems: SidebarNavItem[] = [
-  { id: "settings", label: "설정", icon: SettingsOutlineIcon, activeIcon: SettingsSolidIcon },
-  { id: "logout", label: "로그아웃", icon: LogOutIcon },
-];
-
-const SidebarIconButton = ({ item }: { item: SidebarNavItem }) => {
-  const Icon = item.active && item.activeIcon ? item.activeIcon : item.icon;
-
-  return (
-    <button
-      type="button"
-      aria-label={item.label}
-      aria-current={item.active ? "page" : undefined}
-      className={`relative h-11 w-11 flex items-center justify-center rounded-token-s transition-colors ${
-        item.active ? "bg-fill-primary text-text-onFill" : "text-text-secondary hover:text-text-strong"
-      }`}
-    >
-      <Icon className="w-6 h-6" />
-    </button>
-  );
-};
 
 const ScheduleRow = ({
   item,
@@ -236,23 +191,7 @@ export const ProjectScheduleSidebarSection = ({
       }`}
     >
       {/* 얇은 좌측 네비게이션 */}
-      <nav
-        aria-label="사이드바 탐색"
-        className="w-[84px] shrink-0 h-[1000px] items-center px-5 py-8 bg-fill-inverse flex flex-col gap-10 relative"
-      >
-        <div className="flex flex-col items-center justify-between relative flex-1 grow w-full">
-          <div className="flex flex-col items-center gap-10 relative">
-            {mainNavItems.map((item) => (
-              <SidebarIconButton key={item.id} item={item} />
-            ))}
-          </div>
-          <div className="flex flex-col items-center gap-10 relative">
-            {bottomNavItems.map((item) => (
-              <SidebarIconButton key={item.id} item={item} />
-            ))}
-          </div>
-        </div>
-      </nav>
+      <GlobalNavigationBar />
 
       {/* 메인 마일스톤 관리 영역 */}
       <section 
