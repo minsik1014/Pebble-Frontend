@@ -1,5 +1,5 @@
-import { MonthlyCalendarSection } from "@/features/milestone/components/MonthlyCalendarSection";
-import { ProjectScheduleSidebarSection } from "@/features/milestone/components/ProjectScheduleSidebarSection";
+import { CalendarBoard } from "@/features/milestone/components/CalendarBoard";
+import { CalendarSidebar } from "@/features/milestone/components/CalendarSidebar";
 import { categories } from "@/features/milestone/constants";
 import { CategoryDetailSection } from "@/features/milestone/components/CategoryDetailSection";
 import { useEffect, useState } from "react";
@@ -52,7 +52,7 @@ export const CalendarMainPage = (): JSX.Element => {
           className="flex gap-[42px] absolute left-0 top-0 origin-top-left transition-all duration-300"
           style={{ transform: `scale(${scale})` }}
         >
-          <ProjectScheduleSidebarSection 
+          <CalendarSidebar 
             isSidebarOpen={isSidebarOpen} 
             onSelectCategory={setSelectedCategoryId}
           />
@@ -63,7 +63,7 @@ export const CalendarMainPage = (): JSX.Element => {
               onBack={() => setSelectedCategoryId(null)}
             />
           ) : (
-            <MonthlyCalendarSection 
+            <CalendarBoard 
               isSidebarOpen={isSidebarOpen} 
               onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
             />

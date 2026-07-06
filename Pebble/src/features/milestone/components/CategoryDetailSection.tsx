@@ -3,6 +3,8 @@ import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
 import ChevronDownIcon from "@/assets/icons/chevron-down.svg?react";
 import { CategoryFormModal } from "./CategoryFormModal";
 import { DeleteCategoryModal } from "./DeleteCategoryModal";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+import { AddButton } from "@/components/ui/AddButton";
 
 type ScheduleItem = {
   id: string;
@@ -110,17 +112,10 @@ export const CategoryDetailSection = ({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 w-full">
-            <div className="flex items-end gap-2">
-              <span className="text-body-02-sb text-text-strong">현재 진행률</span>
-              <span className={`text-[14px] font-medium leading-5 ${category.themeBase?.replace('bg-', 'text-') || ''}`}>
-                0%
-              </span>
-            </div>
-            <div className="w-full h-2 bg-fill-teritory rounded-token-infinite overflow-hidden">
-              <div className={`h-full ${category.themeBase} w-0`} />
-            </div>
-          </div>
+          <ProgressBar 
+            progress={0} 
+            themeBaseClass={category.themeBase}
+          />
         </div>
       </div>
 
@@ -199,11 +194,12 @@ export const CategoryDetailSection = ({
                       ))}
                     </div>
                   )}
-                  {/* Add Task Button */}
                   <div className="w-full px-5 py-3 flex flex-col justify-start items-start gap-2.5">
-                    <div className="w-[740px] py-3 bg-btn-quaternary hover:bg-fill-surface transition-colors rounded-xl flex justify-center items-center cursor-pointer">
-                      <span className="text-body-02-m text-text-secondary">태스크 추가하기</span>
-                    </div>
+                    <AddButton 
+                      label="태스크 추가하기" 
+                      variant="secondary" 
+                      className="w-[740px]" 
+                    />
                   </div>
                 </div>
               )}
