@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import UploadIcon from "@/assets/icons/Upload.svg?react";
+import { type Category } from "../constants";
 
-type CreateCategoryModalProps = {
+type CategoryFormModalProps = {
   isOpen: boolean;
+  mode?: "create" | "edit";
+  category?: Category;
   onClose: () => void;
+  onRequestDelete?: () => void;
 };
 
 const COLORS = [
@@ -15,11 +19,28 @@ const COLORS = [
   "bg-theme-6-base",
 ];
 
-export const CreateCategoryModal = ({ isOpen, onClose }: CreateCategoryModalProps) => {
+export const CategoryFormModal = ({ 
+  isOpen, 
+  mode = "create", 
+  category,
+  onClose,
+  onRequestDelete 
+}: CategoryFormModalProps) => {
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
-  const [isPublic, setIsPublic] = useState(false); // Default is Private (Off)
-  const [isCompleted, setIsCompleted] = useState(false); // Default is Incomplete (Off)
-  const [categoryName, setCategoryName] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [categoryName, setCategoryName] = useState(category?.title || "");
+
+  // Update input when category prop changes
+  React.useEffect(() => {
+    if (mode === "edit" && category) {
+      setCategoryName(category.title);
+      // We could also set selectedColor etc. here based on category if needed
+    } else {
+      setCategoryName("");
+      setSelectedColor(null);
+    }
+  }, [mode, category, isOpen]);
 
   if (!isOpen) return null;
 
@@ -27,7 +48,9 @@ export const CreateCategoryModal = ({ isOpen, onClose }: CreateCategoryModalProp
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
       <div className="w-[675px] p-8 bg-fill-inverse rounded-[32px] flex flex-col gap-10 shadow-shadow-m relative">
         <header className="flex items-center justify-between">
-          <h2 className="text-heading-02 text-text-strong">카테고리 생성</h2>
+          <h2 className="text-heading-02 text-text-strong">
+            {mode === "create" ? "카테고리 생성" : "카테고리 편집"}
+          </h2>
         </header>
 
         <div className="flex items-start gap-10">
@@ -151,22 +174,36 @@ export const CreateCategoryModal = ({ isOpen, onClose }: CreateCategoryModalProp
         </div>
 
         {/* 하단 버튼 */}
-        <div className="flex items-center gap-3 mt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 h-11 bg-btn-quaternary text-text-strong rounded-token-s font-medium hover:bg-btn-pressed transition-colors"
-          >
-            취소
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 h-11 bg-btn-primary text-text-onFill rounded-token-s font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={!categoryName || selectedColor === null}
-          >
-            생성
-          </button>
+        <div className="flex flex-col gap-5 mt-2">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 h-11 bg-btn-quaternary text-text-strong rounded-token-s font-medium hover:bg-btn-pressed transition-colors"
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 h-11 bg-btn-primary text-text-onFill rounded-token-s font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!categoryName || selectedColor === null}
+            >
+              {mode === "create" ? "생성" : "수정"}
+            </button>
+          </div>
+          
+          {mode === "edit" && (
+            <div className="flex justify-center items-center mt-2">
+              <button 
+                type="button"
+                onClick={onRequestDelete}
+                className="text-fill-danger text-sm font-medium leading-5 hover:opacity-80 transition-opacity"
+              >
+                카테고리 삭제
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

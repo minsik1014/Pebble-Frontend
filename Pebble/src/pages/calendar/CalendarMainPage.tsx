@@ -1,10 +1,13 @@
 import { MonthlyCalendarSection } from "@/features/milestone/components/MonthlyCalendarSection";
 import { ProjectScheduleSidebarSection } from "@/features/milestone/components/ProjectScheduleSidebarSection";
+import { categories } from "@/features/milestone/constants";
+import { CategoryDetailSection } from "@/features/milestone/components/CategoryDetailSection";
 import { useEffect, useState } from "react";
 
 export const CalendarMainPage = (): JSX.Element => {
   const [scale, setScale] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   // 전체 레이아웃의 원본 총 크기는 항상 1416px로 고정됩니다.
   // 사이드바가 닫히면 줄어든 392px만큼 캘린더가 1290px로 넓어져서 총합 1416px을 유지합니다.
@@ -31,6 +34,8 @@ export const CalendarMainPage = (): JSX.Element => {
     return () => window.removeEventListener("resize", handleResize);
   }, [ORIGINAL_WIDTH]);
 
+  const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
+
   return (
     <main
       className="bg-back w-full min-h-screen flex items-center justify-center overflow-hidden transition-all duration-300"
@@ -47,13 +52,25 @@ export const CalendarMainPage = (): JSX.Element => {
           className="flex gap-[42px] absolute left-0 top-0 origin-top-left transition-all duration-300"
           style={{ transform: `scale(${scale})` }}
         >
-          <ProjectScheduleSidebarSection isSidebarOpen={isSidebarOpen} />
-          <MonthlyCalendarSection 
+          <ProjectScheduleSidebarSection 
             isSidebarOpen={isSidebarOpen} 
-            onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+            onSelectCategory={setSelectedCategoryId}
           />
+          {selectedCategory ? (
+            <CategoryDetailSection
+              isSidebarOpen={isSidebarOpen}
+              category={selectedCategory}
+              onBack={() => setSelectedCategoryId(null)}
+            />
+          ) : (
+            <MonthlyCalendarSection 
+              isSidebarOpen={isSidebarOpen} 
+              onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+            />
+          )}
         </div>
       </div>
     </main>
   );
 };
+
