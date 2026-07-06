@@ -35,29 +35,47 @@ const dayLabels = [
   { label: "토", textClass: "text-fill-info" },
 ];
 
-const weeks: CalendarWeek[] = [
-  {
-    days: [
-      { day: 31, monthOffset: -1 },
-      { day: 1, monthOffset: 0 },
-      { day: 2, monthOffset: 0 },
-      { day: 3, monthOffset: 0 },
-      { day: 4, monthOffset: 0 },
-      { day: 5, monthOffset: 0 },
-      { day: 6, monthOffset: 0 },
-    ],
-  },
-  {
-    days: [
-      { day: 7, monthOffset: 0 },
-      { day: 8, monthOffset: 0 },
-      { day: 9, monthOffset: 0 },
-      { day: 10, monthOffset: 0 },
-      { day: 11, monthOffset: 0 },
-      { day: 12, monthOffset: 0 },
-      { day: 13, monthOffset: 0 },
-    ],
-    events: [
+const generateWeeks = (year: number, month: number): CalendarWeek[] => {
+  const firstDayOfMonth = new Date(year, month - 1, 1);
+  const startDayOfWeek = firstDayOfMonth.getDay();
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const daysInPrevMonth = new Date(year, month - 1, 0).getDate();
+
+  const weeks: CalendarWeek[] = [];
+  let currentDay = 1;
+  let nextMonthDay = 1;
+
+  for (let weekIdx = 0; weekIdx < 6; weekIdx++) {
+    const days: CalendarDay[] = [];
+    for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
+      if (weekIdx === 0 && dayOfWeek < startDayOfWeek) {
+        days.push({
+          day: daysInPrevMonth - startDayOfWeek + dayOfWeek + 1,
+          monthOffset: -1,
+        });
+      } else if (currentDay <= daysInMonth) {
+        days.push({
+          day: currentDay,
+          monthOffset: 0,
+        });
+        currentDay++;
+      } else {
+        days.push({
+          day: nextMonthDay,
+          monthOffset: 1,
+        });
+        nextMonthDay++;
+      }
+    }
+    weeks.push({ days });
+    if (currentDay > daysInMonth) {
+      break;
+    }
+  }
+
+  // Preserve dummy events for June 2026 for demonstration
+  if (year === 2026 && month === 6 && weeks.length > 2) {
+    weeks[1].events = [
       {
         id: "expo-plan",
         title: "EXPO 계획서 작성하기",
@@ -103,19 +121,8 @@ const weeks: CalendarWeek[] = [
         bgClass: "bg-theme-1-mid",
         accentClass: "bg-theme-1-base",
       },
-    ],
-  },
-  {
-    days: [
-      { day: 14, monthOffset: 0 },
-      { day: 15, monthOffset: 0 },
-      { day: 16, monthOffset: 0 },
-      { day: 17, monthOffset: 0 },
-      { day: 18, monthOffset: 0 },
-      { day: 19, monthOffset: 0 },
-      { day: 20, monthOffset: 0 },
-    ],
-    events: [
+    ];
+    weeks[2].events = [
       {
         id: "operating-study",
         title: "운영시스템 공부",
@@ -143,31 +150,11 @@ const weeks: CalendarWeek[] = [
         bgClass: "bg-theme-5-light",
         accentClass: "bg-theme-5-base",
       },
-    ],
-  },
-  {
-    days: [
-      { day: 21, monthOffset: 0 },
-      { day: 22, monthOffset: 0 },
-      { day: 23, monthOffset: 0 },
-      { day: 24, monthOffset: 0 },
-      { day: 25, monthOffset: 0 },
-      { day: 26, monthOffset: 0 },
-      { day: 27, monthOffset: 0 },
-    ],
-  },
-  {
-    days: [
-      { day: 28, monthOffset: 0 },
-      { day: 29, monthOffset: 0 },
-      { day: 30, monthOffset: 0 },
-      { day: 1, monthOffset: 1 },
-      { day: 2, monthOffset: 1 },
-      { day: 3, monthOffset: 1 },
-      { day: 4, monthOffset: 1 },
-    ],
-  },
-];
+    ];
+  }
+
+  return weeks;
+};
 
 const getDayTextClass = (
   columnIndex: number,
@@ -178,13 +165,9 @@ const getDayTextClass = (
     return "text-text-onFill";
   }
 
-  if (monthOffset === -1) {
-    return "text-text-sunday";
-  }
-
-  if (monthOffset === 1) {
-    if (columnIndex === 0) return "text-fill-danger";
-    if (columnIndex === 6) return "text-text-saturday";
+  if (monthOffset === -1 || monthOffset === 1) {
+    if (columnIndex === 0) return "text-fill-danger opacity-50";
+    if (columnIndex === 6) return "text-text-saturday opacity-50";
     return "text-text-quaternary";
   }
 
@@ -202,11 +185,13 @@ export const MonthlyCalendarSection = ({
   isSidebarOpen = true,
   onToggleSidebar,
 }: MonthlyCalendarProps = {}): JSX.Element => {
-  const [currentYear, setCurrentYear] = useState(2026);
-  const [currentMonth, setCurrentMonth] = useState(6);
+  const todayDate = new Date();
+  const [currentYear, setCurrentYear] = useState(todayDate.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(todayDate.getMonth() + 1);
 
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
+  const weeks = useMemo(() => generateWeeks(currentYear, currentMonth), [currentYear, currentMonth]);
 
   const handlePreviousMonth = () => {
     setCurrentMonth((prevMonth) => {
@@ -229,8 +214,9 @@ export const MonthlyCalendarSection = ({
   };
 
   const handleToday = () => {
-    setCurrentYear(2026);
-    setCurrentMonth(6);
+    const now = new Date();
+    setCurrentYear(now.getFullYear());
+    setCurrentMonth(now.getMonth() + 1);
   };
 
   return (
@@ -316,7 +302,10 @@ export const MonthlyCalendarSection = ({
                 {/* 각 일(Day) 셀 */}
                 {week.days.map((day, dayIndex) => {
                   const isSelected =
-                    weekIndex === 0 && day.day === 4 && day.monthOffset === 0;
+                    currentYear === todayDate.getFullYear() &&
+                    currentMonth === todayDate.getMonth() + 1 &&
+                    day.day === todayDate.getDate() &&
+                    day.monthOffset === 0;
 
                   return (
                     <div
