@@ -18,11 +18,7 @@ export const CalendarSidebar = ({
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
-  >({
-    expo: true,
-    "final-exam": true,
-    "startup-contest": true,
-  });
+  >({});
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -50,6 +46,12 @@ export const CalendarSidebar = ({
     >
       {/* 얇은 좌측 네비게이션 */}
       <GlobalNavigationBar />
+      {isSidebarOpen && (
+        <div
+          aria-hidden="true"
+          className="absolute left-[84px] top-[100px] z-20 h-[888px] w-px bg-btn-quaternary"
+        />
+      )}
 
       {/* 메인 마일스톤 관리 영역 */}
       <section 
@@ -94,7 +96,7 @@ export const CalendarSidebar = ({
           </div>
         </header>
         {/* Flexbox에서 내용이 부모를 뚫고 나가는 것을 방지하기 위해 min-h-0 추가 */}
-        <div className="relative -left-px w-full h-[888px] min-h-0 flex flex-col items-start gap-5 pt-1 pb-3 px-5 border-l border-btn-quaternary overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <div className="relative -left-px w-full h-[888px] min-h-0 flex flex-col items-start gap-5 pt-1 pb-3 px-5 overflow-y-auto overflow-x-hidden custom-scrollbar">
           {categories.map((category) => (
             <MilestoneAccordion
               key={category.id}
