@@ -15,7 +15,7 @@ export const TaskListItem = ({
 
   return (
     <label
-      className={`w-full gap-2 pl-2 pr-2 py-2 flex items-center relative rounded-token-s overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors shrink-0`}
+      className={`${item.rowWidthClass} gap-2 pr-2 py-2 flex items-center relative rounded-token-s overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors shrink-0`}
     >
       <div className="flex flex-1 grow items-center gap-2 relative min-w-0">
         <div
