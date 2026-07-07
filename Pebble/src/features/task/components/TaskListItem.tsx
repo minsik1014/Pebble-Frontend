@@ -1,4 +1,3 @@
-import React from "react";
 import { type ScheduleItem } from "@/types";
 
 type TaskListItemProps = {

@@ -1,4 +1,3 @@
-import React from "react";
 import { type Category } from "@/types";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import CloseIcon from "@/assets/icons/Close.svg?react";
 import { type Category } from "@/types";
 

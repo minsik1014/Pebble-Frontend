@@ -1,4 +1,3 @@
-import React from "react";
 import SidebarOpenIcon from "@/assets/icons/sidebar-open.svg?react";
 import SidebarCloseIcon from "@/assets/icons/sidebar-close.svg?react";
 
