@@ -4,6 +4,10 @@ import { MonthSelector } from "./MonthSelector";
 import { SidebarToggleButton } from "./SidebarToggleButton";
 import { CalendarGrid } from "./CalendarGrid";
 
+const INITIAL_YEAR = 2026;
+const INITIAL_MONTH = 6;
+const INITIAL_SELECTED_DATE = new Date(2026, 5, 4);
+
 const generateWeeks = (year: number, month: number): CalendarWeek[] => {
   const firstDayOfMonth = new Date(year, month - 1, 1);
   const startDayOfWeek = firstDayOfMonth.getDay();
@@ -48,7 +52,7 @@ const generateWeeks = (year: number, month: number): CalendarWeek[] => {
       {
         id: "expo-plan",
         title: "EXPO 계획서 작성하기",
-        widthClass: "w-[349px]",
+        widthClass: "w-[371px]",
         topClass: "top-[43px]",
         leftClass: "left-1",
         bgClass: "bg-theme-1-light",
@@ -57,7 +61,7 @@ const generateWeeks = (year: number, month: number): CalendarWeek[] => {
       {
         id: "backend-project",
         title: "백엔드 프로젝트",
-        widthClass: "w-[467px]",
+        widthClass: "w-[482px]",
         topClass: "top-[76px]",
         leftClass: "left-[124px]",
         bgClass: "bg-theme-3-mid",
@@ -68,7 +72,7 @@ const generateWeeks = (year: number, month: number): CalendarWeek[] => {
         title: "창업실무 보고서",
         widthClass: "w-[110px]",
         topClass: "top-[76px]",
-        leftClass: "left-[600px]",
+        leftClass: "left-[616px]",
         bgClass: "bg-theme-3-mid",
         accentClass: "bg-theme-3-base",
       },
@@ -86,7 +90,7 @@ const generateWeeks = (year: number, month: number): CalendarWeek[] => {
         title: "계획서 제출",
         widthClass: "w-[110px]",
         topClass: "top-[43px]",
-        leftClass: "left-[362px]",
+        leftClass: "left-[379px]",
         bgClass: "bg-theme-1-mid",
         accentClass: "bg-theme-1-base",
       },
@@ -95,7 +99,7 @@ const generateWeeks = (year: number, month: number): CalendarWeek[] => {
       {
         id: "operating-study",
         title: "운영시스템 공부",
-        widthClass: "w-[349px]",
+        widthClass: "w-[361px]",
         topClass: "top-[43px]",
         leftClass: "left-1",
         bgClass: "bg-theme-5-light",
@@ -104,18 +108,18 @@ const generateWeeks = (year: number, month: number): CalendarWeek[] => {
       {
         id: "backend-submit",
         title: "백엔드 보고서 제출",
-        widthClass: "w-[110px]",
+        widthClass: "w-[112px]",
         topClass: "top-[43px]",
-        leftClass: "left-[364px]",
+        leftClass: "left-[379px]",
         bgClass: "bg-theme-3-light",
         accentClass: "bg-theme-3-base",
       },
       {
         id: "operating-test",
         title: "운영시스템 시험",
-        widthClass: "w-[110px]",
+        widthClass: "w-[112px]",
         topClass: "top-[76px]",
-        leftClass: "left-[364px]",
+        leftClass: "left-[379px]",
         bgClass: "bg-theme-5-light",
         accentClass: "bg-theme-5-base",
       },
@@ -134,9 +138,9 @@ export const CalendarBoard = ({
   isSidebarOpen = true,
   onToggleSidebar,
 }: CalendarBoardProps = {}): JSX.Element => {
-  const todayDate = new Date();
-  const [currentYear, setCurrentYear] = useState(todayDate.getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(todayDate.getMonth() + 1);
+  const todayDate = INITIAL_SELECTED_DATE;
+  const [currentYear, setCurrentYear] = useState(INITIAL_YEAR);
+  const [currentMonth, setCurrentMonth] = useState(INITIAL_MONTH);
 
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
@@ -163,21 +167,20 @@ export const CalendarBoard = ({
   };
 
   const handleToday = () => {
-    const now = new Date();
-    setCurrentYear(now.getFullYear());
-    setCurrentMonth(now.getMonth() + 1);
+    setCurrentYear(INITIAL_YEAR);
+    setCurrentMonth(INITIAL_MONTH);
   };
 
   return (
     <section
       aria-label="월간 캘린더"
-      className={`flex mt-token-m h-[1000px] flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m shrink-0 transition-all duration-300 ${
-        isSidebarOpen ? "w-[898px]" : "w-[1290px]"
+      className={`flex h-[1000px] flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m shrink-0 transition-all duration-300 ${
+        isSidebarOpen ? "w-[924px]" : "w-[1316px]"
       }`}
     >
       <div 
         className="relative ml-6 mt-8 flex h-[936px] flex-col items-start gap-token-l transition-all duration-300"
-        style={{ width: isSidebarOpen ? 834 : 1226 }}
+        style={{ width: isSidebarOpen ? 876 : 1268 }}
       >
         <header className="inline-flex items-end gap-1">
           <SidebarToggleButton 

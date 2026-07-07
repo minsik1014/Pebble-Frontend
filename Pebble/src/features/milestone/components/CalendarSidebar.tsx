@@ -18,11 +18,7 @@ export const CalendarSidebar = ({
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
-  >({
-    expo: true,
-    "final-exam": true,
-    "startup-contest": true,
-  });
+  >({});
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -44,7 +40,7 @@ export const CalendarSidebar = ({
 
   return (
     <aside 
-      className={`flex mt-token-m shrink-0 h-[1000px] relative items-stretch rounded-[20px] overflow-hidden shadow-shadow-m transition-all duration-300 ${
+      className={`flex shrink-0 h-[1000px] relative items-stretch rounded-[20px] overflow-hidden shadow-shadow-m transition-all duration-300 ${
         isSidebarOpen ? "w-[476px]" : "w-[84px]"
       }`}
     >
@@ -94,7 +90,7 @@ export const CalendarSidebar = ({
           </div>
         </header>
         {/* Flexbox에서 내용이 부모를 뚫고 나가는 것을 방지하기 위해 min-h-0 추가 */}
-        <div className="w-full h-[888px] min-h-0 flex flex-col items-center gap-5 pt-1 pb-3 px-5 border-l border-border-default overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <div className="w-full h-[888px] min-h-0 flex flex-col items-center gap-5 pt-1 pb-3 px-5 border-l border-btn-quaternary overflow-y-auto overflow-x-hidden custom-scrollbar">
           {categories.map((category) => (
             <MilestoneAccordion
               key={category.id}
@@ -108,9 +104,10 @@ export const CalendarSidebar = ({
           ))}
 
           <AddButton 
-            label="카테고리 생성" 
+            label="추가하기" 
             variant="primary" 
             className="w-[352px]" 
+            showIcon={false}
             onClick={() => setIsCreateModalOpen(true)}
           />
         </div>
