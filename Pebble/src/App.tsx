@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
+import LoginPage from '@/features/auth/pages/LoginPage';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <div className="min-h-screen font-sans">
         <Routes>
           <Route path="/" element={<CalendarMainPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </div>
     </BrowserRouter>
