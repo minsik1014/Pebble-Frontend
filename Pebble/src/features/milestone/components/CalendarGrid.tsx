@@ -1,4 +1,3 @@
-import React from "react";
 import { type CalendarWeek } from "./types";
 import { DateCell } from "./DateCell";
 import { ScheduleBar } from "./ScheduleBar";

@@ -1,4 +1,3 @@
-import React from "react";
 import { type ScheduleItem } from "@/types";
 
 // The task definition inside a category detail item seems to be just a standard ScheduleItem

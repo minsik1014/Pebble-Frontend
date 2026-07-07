@@ -1,4 +1,3 @@
-import React from "react";
 import ChevronDownIcon from "@/assets/icons/chevron-down.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { TaskDetailRow } from "@/features/task/components/TaskDetailRow";
