@@ -17,7 +17,7 @@ export const MonthSelector = ({
   onToday,
 }: MonthSelectorProps) => {
   return (
-    <div className="relative inline-flex items-center gap-token-l px-2">
+    <div className="relative inline-flex items-center gap-token-l">
       <div className="inline-flex items-center gap-2 text-title-01-sb text-text-strong shrink-0">
         <span>{displayedYear}년</span>
         <span>{displayedMonth}월</span>

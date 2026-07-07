@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export const CalendarMainPage = (): JSX.Element => {
   const [scale, setScale] = useState(1);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   // 전체 레이아웃의 원본 총 크기는 Figma 프레임 기준 1416px로 고정됩니다.
@@ -38,7 +38,7 @@ export const CalendarMainPage = (): JSX.Element => {
 
   return (
     <main
-      className="bg-fill-surface w-full min-h-screen flex items-center justify-center overflow-hidden transition-all duration-300"
+      className="bg-fill-inverse w-full min-h-screen flex items-center justify-center overflow-hidden transition-all duration-300"
       data-id="main-screen"
     >
       <div 
