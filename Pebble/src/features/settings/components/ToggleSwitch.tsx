@@ -25,7 +25,7 @@ export function ToggleSwitch({
         onCheckedChange(!checked);
       }}
       className={[
-        'relative h-[30px] w-[52px] shrink-0 rounded-token-infinite',
+        'relative h-[30px] w-[52px] shrink-0 overflow-hidden rounded-token-infinite',
         'transition-colors',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary',
         disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
@@ -37,9 +37,9 @@ export function ToggleSwitch({
       <span
         aria-hidden="true"
         className={[
-          'absolute top-0.5 size-[26px] rounded-full bg-fill-inverse',
+          'absolute left-0.5 top-0.5 size-[26px] rounded-full bg-fill-inverse',
           'transition-transform',
-          checked ? 'translate-x-[24px]' : 'translate-x-0.5',
+          checked ? 'translate-x-[22px]' : 'translate-x-0',
         ].join(' ')}
       />
     </button>
