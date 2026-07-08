@@ -1,3 +1,12 @@
+import { SettingsContent } from "./SettingsContent";
+
 export function SettingsView() {
-    return <main className="min-w-0 flex-1 bg-fill-surface">설정 페이지</main>;
+    return (
+        <SettingsContent>
+            <div>화면 섹션</div>
+            <div>알림 섹션</div>
+            <div>계정 관리 섹션</div>
+            <div>회원 탈퇴 섹션</div>
+        </SettingsContent>
+    );
 }
