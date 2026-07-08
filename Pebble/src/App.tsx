@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
-import LoginPage from '@/features/auth/pages/LoginPage';
+import { LoginPage } from '@/features/auth/pages/LoginPage';
 
 function App() {
   return (
