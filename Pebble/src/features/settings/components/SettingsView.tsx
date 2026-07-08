@@ -118,8 +118,16 @@ export function SettingsView() {
         </div>
       </SettingsSection>
 
-      <SettingsSection>
+      <SettingsSection className="xl:min-h-[179px]">
         <SettingsSectionHeader icon={CautionIcon} title="회원 탈퇴" />
+
+        <div className="mt-token-l flex flex-col gap-token-l">
+            <SettingsRow
+                title="회원 탈퇴"
+                description="모든 데이터가 삭제되며, 복구할 수 없어요"
+                actions={<Button variant="danger">탈퇴하기</Button>}
+            />
+        </div>
       </SettingsSection>
     </SettingsContent>
   );
