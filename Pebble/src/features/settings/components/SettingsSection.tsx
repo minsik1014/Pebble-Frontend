@@ -13,9 +13,8 @@ export function SettingsSection({
     <section
       className={[
         'w-full rounded-token-m bg-fill-inverse',
-        'px-token-xxl py-token-xxl',
+        'px-[240px] py-token-xxl',
         'shadow-shadow-m',
-        'xl:px-[clamp(40px,16.6667vw,240px)]',
         className,
       ].join(' ')}
       {...props}
