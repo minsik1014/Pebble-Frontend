@@ -31,6 +31,17 @@ function ThemeSegmentPreview() {
   );
 }
 
+function TogglePreview() {
+  return (
+    <span
+      aria-label="당일 일정 알림 꺼짐"
+      className="relative h-[30px] w-[52px] rounded-token-infinite bg-text-quaternary"
+    >
+      <span className="absolute left-0.5 top-0.5 size-[26px] rounded-full bg-fill-inverse" />
+    </span>
+  );
+}
+
 export function SettingsView() {
   return (
     <SettingsContent>
@@ -62,8 +73,16 @@ export function SettingsView() {
         </div>
       </SettingsSection>
 
-      <SettingsSection>
+      <SettingsSection className="xl:min-h-[176px]">
         <SettingsSectionHeader icon={BellIcon} title="알림" />
+
+        <div className="mt-token-l flex flex-col gap-token-l">
+            <SettingsRow
+                title="당일 일정 알림"
+                description="오늘 예정된 일정을 아침에 알려드려요"
+                actions={<TogglePreview />}
+            />
+        </div>
       </SettingsSection>
 
       <SettingsSection>
