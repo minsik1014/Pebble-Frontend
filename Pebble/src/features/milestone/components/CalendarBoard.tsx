@@ -1,129 +1,12 @@
 import { useMemo, useState } from "react";
-import { type CalendarDay, type CalendarWeek } from "./types";
 import { MonthSelector } from "./MonthSelector";
 import { SidebarToggleButton } from "./SidebarToggleButton";
 import { CalendarGrid } from "./CalendarGrid";
+import { generateWeeks } from "./calendarWeeks";
 
-const generateWeeks = (year: number, month: number): CalendarWeek[] => {
-  const firstDayOfMonth = new Date(year, month - 1, 1);
-  const startDayOfWeek = firstDayOfMonth.getDay();
-  const daysInMonth = new Date(year, month, 0).getDate();
-  const daysInPrevMonth = new Date(year, month - 1, 0).getDate();
-
-  const weeks: CalendarWeek[] = [];
-  let currentDay = 1;
-  let nextMonthDay = 1;
-
-  for (let weekIdx = 0; weekIdx < 6; weekIdx++) {
-    const days: CalendarDay[] = [];
-    for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
-      if (weekIdx === 0 && dayOfWeek < startDayOfWeek) {
-        days.push({
-          day: daysInPrevMonth - startDayOfWeek + dayOfWeek + 1,
-          monthOffset: -1,
-        });
-      } else if (currentDay <= daysInMonth) {
-        days.push({
-          day: currentDay,
-          monthOffset: 0,
-        });
-        currentDay++;
-      } else {
-        days.push({
-          day: nextMonthDay,
-          monthOffset: 1,
-        });
-        nextMonthDay++;
-      }
-    }
-    weeks.push({ days });
-    if (currentDay > daysInMonth) {
-      break;
-    }
-  }
-
-  // Preserve dummy events for June 2026 for demonstration
-  if (year === 2026 && month === 6 && weeks.length > 2) {
-    weeks[1].events = [
-      {
-        id: "expo-plan",
-        title: "EXPO 계획서 작성하기",
-        widthClass: "w-[349px]",
-        topClass: "top-[43px]",
-        leftClass: "left-1",
-        bgClass: "bg-theme-1-light",
-        accentClass: "bg-theme-1-base",
-      },
-      {
-        id: "backend-project",
-        title: "백엔드 프로젝트",
-        widthClass: "w-[467px]",
-        topClass: "top-[76px]",
-        leftClass: "left-[124px]",
-        bgClass: "bg-theme-3-mid",
-        accentClass: "bg-theme-3-base",
-      },
-      {
-        id: "startup-report",
-        title: "창업실무 보고서",
-        widthClass: "w-[110px]",
-        topClass: "top-[76px]",
-        leftClass: "left-[600px]",
-        bgClass: "bg-theme-3-mid",
-        accentClass: "bg-theme-3-base",
-      },
-      {
-        id: "mvp-page",
-        title: "MVP 페이지 구현",
-        widthClass: "w-[229px]",
-        topClass: "top-[109px]",
-        leftClass: "left-[124px]",
-        bgClass: "bg-theme-3-light",
-        accentClass: "bg-theme-3-base",
-      },
-      {
-        id: "plan-submit",
-        title: "계획서 제출",
-        widthClass: "w-[110px]",
-        topClass: "top-[43px]",
-        leftClass: "left-[362px]",
-        bgClass: "bg-theme-1-mid",
-        accentClass: "bg-theme-1-base",
-      },
-    ];
-    weeks[2].events = [
-      {
-        id: "operating-study",
-        title: "운영시스템 공부",
-        widthClass: "w-[349px]",
-        topClass: "top-[43px]",
-        leftClass: "left-1",
-        bgClass: "bg-theme-5-light",
-        accentClass: "bg-theme-5-base",
-      },
-      {
-        id: "backend-submit",
-        title: "백엔드 보고서 제출",
-        widthClass: "w-[110px]",
-        topClass: "top-[43px]",
-        leftClass: "left-[364px]",
-        bgClass: "bg-theme-3-light",
-        accentClass: "bg-theme-3-base",
-      },
-      {
-        id: "operating-test",
-        title: "운영시스템 시험",
-        widthClass: "w-[110px]",
-        topClass: "top-[76px]",
-        leftClass: "left-[364px]",
-        bgClass: "bg-theme-5-light",
-        accentClass: "bg-theme-5-base",
-      },
-    ];
-  }
-
-  return weeks;
-};
+const INITIAL_YEAR = 2026;
+const INITIAL_MONTH = 6;
+const INITIAL_SELECTED_DATE = new Date(2026, 5, 4);
 
 type CalendarBoardProps = {
   isSidebarOpen?: boolean;
@@ -134,13 +17,16 @@ export const CalendarBoard = ({
   isSidebarOpen = true,
   onToggleSidebar,
 }: CalendarBoardProps = {}): JSX.Element => {
-  const todayDate = new Date();
-  const [currentYear, setCurrentYear] = useState(todayDate.getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(todayDate.getMonth() + 1);
+  const todayDate = INITIAL_SELECTED_DATE;
+  const [currentYear, setCurrentYear] = useState(INITIAL_YEAR);
+  const [currentMonth, setCurrentMonth] = useState(INITIAL_MONTH);
 
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
-  const weeks = useMemo(() => generateWeeks(currentYear, currentMonth), [currentYear, currentMonth]);
+  const weeks = useMemo(
+    () => generateWeeks(currentYear, currentMonth, isSidebarOpen),
+    [currentYear, currentMonth, isSidebarOpen],
+  );
 
   const handlePreviousMonth = () => {
     setCurrentMonth((prevMonth) => {
@@ -163,21 +49,22 @@ export const CalendarBoard = ({
   };
 
   const handleToday = () => {
-    const now = new Date();
-    setCurrentYear(now.getFullYear());
-    setCurrentMonth(now.getMonth() + 1);
+    setCurrentYear(INITIAL_YEAR);
+    setCurrentMonth(INITIAL_MONTH);
   };
 
   return (
     <section
       aria-label="월간 캘린더"
-      className={`flex mt-token-m h-[1000px] flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m shrink-0 transition-all duration-300 ${
-        isSidebarOpen ? "w-[898px]" : "w-[1290px]"
+      className={`flex h-[1000px] flex-col overflow-hidden bg-fill-inverse shadow-shadow-m shrink-0 transition-all duration-300 ${
+        isSidebarOpen ? "w-[924px] rounded-[20px]" : "w-[1316px] rounded-token-l"
       }`}
     >
       <div 
-        className="relative ml-6 mt-8 flex h-[936px] flex-col items-start gap-token-l transition-all duration-300"
-        style={{ width: isSidebarOpen ? 834 : 1226 }}
+        className={`relative flex flex-col items-start gap-token-l transition-all duration-300 ${
+          isSidebarOpen ? "ml-6 mt-8 h-[936px]" : "ml-[93px] mt-10 h-[920px]"
+        }`}
+        style={{ width: isSidebarOpen ? 876 : 1130 }}
       >
         <header className="inline-flex items-end gap-1">
           <SidebarToggleButton 
