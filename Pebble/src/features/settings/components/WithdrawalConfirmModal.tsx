@@ -22,6 +22,7 @@ export function WithdrawalConfirmModal({
   const [isAgreed, setIsAgreed] = useState(false);
   const titleId = useId();
   const descriptionId = useId();
+  const agreementId = useId();
 
   useEffect(() => {
     if (!open) return;
@@ -106,16 +107,22 @@ export function WithdrawalConfirmModal({
           </p>
         </div>
 
-        <label className="flex items-center gap-token-s text-body-03-m text-text-strong">
+        <div className="flex items-center gap-token-s">
           <input
+            id={agreementId}
             type="checkbox"
             checked={isAgreed}
             disabled={isSubmitting}
-            className="size-6 rounded-token-xs border border-border-teritory accent-fill-primary"
+            className="size-6 rounded-token-xs border border-border-teritory accent-fill-primary disabled:cursor-not-allowed disabled:opacity-50"
             onChange={(event) => setIsAgreed(event.target.checked)}
           />
-          위 내용을 확인하였으며, 탈퇴에 동의합니다.
-        </label>
+          <label
+            htmlFor={agreementId}
+            className="text-body-03-m text-text-strong"
+          >
+            위 내용을 확인하였으며, 탈퇴에 동의합니다.
+          </label>
+        </div>
 
         <div className="mt-auto grid grid-cols-2 gap-token-m">
           <Button
@@ -131,7 +138,7 @@ export function WithdrawalConfirmModal({
             disabled={!canSubmit}
             onClick={onConfirm}
           >
-            탈퇴하기
+            {isSubmitting ? '탈퇴 중...' : '탈퇴하기'}
           </Button>
         </div>
       </section>
