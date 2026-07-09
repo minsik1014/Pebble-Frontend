@@ -31,9 +31,10 @@
 | 화면명 (Screen) | 경로 (Path) | 주요 기능 및 설명 |
 | :--- | :--- | :--- |
 | **스플래시 / 로그인** | `/login` | • 소셜 로그인 연동(카카오, 구글) 및 신규 유저 온보딩 플로우 진입점 |
-| **홈 (대시보드)** | `/` | • 현재 진행 중인 Milestone 및 Task 목록 조회<br>• 진행률 기반 프로그레스 바 및 캘린더 렌더링 |
+| **메인 캘린더** | `/` | • 현재 진행 중인 Category, Milestone 및 Task 목록 조회<br>• 사이드바와 월간 캘린더 기반 일정 렌더링 |
 | **소셜 (탐색)** | `/social` | • 닉네임#고유태그 기반 유저 검색, 상호 팔로우 및 활동 잔디밭 열람 |
 | **마이페이지** | `/mypage` | • 사용자 프로필 관리 및 월말 결산 리포트(GIF) 확인 |
+| **설정** | `/settings` | • 알림 설정, 화면 설정, 계정 관리 등 사용자 환경 설정 |
 | **프리미엄** | `/premium` | • 구독 결제 플로우(월 990원) 및 멤버십 권한 관리 |
 
 <br/>
@@ -65,7 +66,7 @@ Pebble 프론트엔드는 데이터가 누적되어도 쾌적한 사용성을 �
 | **Icons** | **lucide-react** | 경량 아이콘 라이브러리 |
 | **Util** | **date-fns** | 캘린더 구성 및 날짜 데이터 포맷팅 |
 | **Pkg Mgr** | **npm** | 패키지 매니저 |
-| **Quality** | ESLint, Prettier | 코드 품질 및 포맷팅 |
+| **Quality** | oxlint, TypeScript | 코드 품질 및 타입 검증 |
 
 <br/>
 
@@ -119,7 +120,9 @@ Pebble/src/
 │   ├── layout/          # GNB, Sidebar, AppLayout
 │   └── ui/              # Button, Input, Modal (디자인 토큰 기반)
 │
-├── types/               # 전역 공통 타입 정의 (pebble.d.ts 등)
+├── types/               # 전역 공통 타입 정의 (index.ts 등)
+│
+├── mocks/               # 프론트엔드 테스트용 더미 데이터 (dummyData.ts 등)
 │
 ├── features/            # 핵심 비즈니스 도메인
 │   ├── auth/            # 소셜 로그인 (카카오, 구글), 온보딩
@@ -127,12 +130,15 @@ Pebble/src/
 │   ├── milestone/       # 마일스톤 관리 및 캘린더 UI
 │   ├── task/            # 투두 생성, 체크, 가상 스크롤 렌더링
 │   ├── grass/           # 잔디밭 컴포넌트 및 로직
-│   └── report/          # 월말 리포트 (GIF 생성 및 열람)
+│   ├── report/          # 월말 리포트 (GIF 생성 및 열람)
+│   └── settings/        # 설정 화면 섹션 및 토글/세그먼트 컴포넌트
 │
 ├── pages/               # 라우팅 진입점 (features 조합)
+│   ├── calendar/        # 메인 캘린더 페이지
 │   ├── home/
 │   ├── social/          # 팔로우 및 타 유저 잔디밭 열람
 │   ├── mypage/
+│   ├── settings/        # 설정 페이지
 │   └── premium/         # 구독 결제 및 관리
 │
 ├── store/               # 전역 클라이언트 상태 (usePebbleStore.ts)
