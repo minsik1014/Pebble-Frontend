@@ -5,6 +5,7 @@ type AddButtonProps = {
   label: string;
   variant?: "primary" | "secondary";
   className?: string;
+  showIcon?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
@@ -12,6 +13,7 @@ export const AddButton = ({
   label,
   variant = "primary",
   className = "",
+  showIcon = true,
   onClick,
 }: AddButtonProps) => {
   const baseClass = "h-12 flex items-center justify-center rounded-token-s shrink-0 transition-all";
@@ -28,7 +30,7 @@ export const AddButton = ({
       className={`${baseClass} ${variantClass} ${className}`}
       aria-label={label}
     >
-      {variant === "primary" && (
+      {variant === "primary" && showIcon && (
         <PlusIcon className="w-4 h-4 text-text-onFill mr-2" />
       )}
       <span className={variant === "primary" ? "text-body-02-m" : "text-body-02-m"}>

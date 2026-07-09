@@ -76,7 +76,7 @@ export const MilestoneAccordion = ({
       </div>
       {expanded && (
         <div className="flex flex-col items-center gap-3 pt-0 pb-3 w-full relative">
-          <div className="flex flex-col items-center justify-start gap-2 px-3 py-1 w-full max-h-[220px] overflow-y-auto custom-scrollbar">
+          <div className="flex flex-col items-end justify-start gap-2 pl-5 pr-3 w-full max-h-[216px] overflow-y-auto custom-scrollbar">
             {category.items.map((item) => (
               <TaskListItem
                 key={item.id}
