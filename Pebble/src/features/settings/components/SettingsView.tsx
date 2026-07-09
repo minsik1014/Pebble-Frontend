@@ -1,4 +1,3 @@
-import BellIcon from '@/assets/icons/bell-outline.svg?react';
 import CautionIcon from '@/assets/icons/Caution.svg?react';
 import UserIcon from '@/assets/icons/user-outline.svg?react';
 
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Divider } from '@/components/ui/Divider';
 
 import { DisplaySettingsSection } from './DisplaySettingsSection';
+import { NotificationSettingsSection } from './NotificationSettingsSection';
 import { SettingsContent } from './SettingsContent';
 import { SettingsSection } from './SettingsSection';
 import { SettingsSectionHeader } from './SettingsSectionHeader';
@@ -13,33 +13,12 @@ import { SettingsRow } from './SettingsRow';
 
 const MOCK_EMAIL = 'example1234@naver.com';
 
-function TogglePreview() {
-  return (
-    <span
-      aria-label="당일 일정 알림 꺼짐"
-      className="relative h-[30px] w-[52px] rounded-token-infinite bg-text-quaternary"
-    >
-      <span className="absolute left-0.5 top-0.5 size-[26px] rounded-full bg-fill-inverse" />
-    </span>
-  );
-}
-
 export function SettingsView() {
   return (
     <SettingsContent>
       <DisplaySettingsSection />
 
-      <SettingsSection className="min-h-[176px]">
-        <SettingsSectionHeader icon={BellIcon} title="알림" />
-
-        <div className="mt-token-l flex flex-col gap-token-l">
-          <SettingsRow
-            title="당일 일정 알림"
-            description="오늘 예정된 일정을 아침에 알려드려요"
-            actions={<TogglePreview />}
-          />
-        </div>
-      </SettingsSection>
+      <NotificationSettingsSection />
 
       <SettingsSection className="min-h-[268px]">
         <SettingsSectionHeader icon={UserIcon} title="계정 관리" />
