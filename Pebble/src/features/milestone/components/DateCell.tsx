@@ -16,9 +16,9 @@ const getDayTextClass = (
   }
 
   if (monthOffset === -1 || monthOffset === 1) {
-    if (columnIndex === 0) return "text-fill-danger opacity-50";
-    if (columnIndex === 6) return "text-text-saturday opacity-50";
-    return "text-text-quaternary";
+    if (columnIndex === 0) return "text-text-sunday";
+    if (columnIndex === 6) return "text-text-saturday";
+    return "text-text-teritary";
   }
 
   if (columnIndex === 0) return "text-fill-danger";
