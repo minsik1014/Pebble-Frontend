@@ -59,4 +59,16 @@ export const mockAlarms: Alarm[] = [
       profileImageUrl: null,
     },
   },
+    {
+    id: 7,
+    type: "FOLLOW_ACCEPT",
+    content: "리락이님의 팔로우 요청을 수락했어요",
+    isRead: true,
+    createdAt: "7일 전",
+    user: {
+      id: 103,
+      nickname: "리락",
+      profileImageUrl: null,
+    },
+  },
 ];

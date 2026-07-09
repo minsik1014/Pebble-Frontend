@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import BellOutlineIcon from "@/assets/icons/bell-outline.svg?react";
 import BellOutlineNoDotIcon from "@/assets/icons/bell-outline no-dot.svg?react";
@@ -42,10 +42,10 @@ export const GlobalNavigationBar = () => {
     setIsAlarmOpen(true);
   };
 
-  const closeAlarmPopover = async () => {
-    await handleReadVisibleUnreadAlarms();
-    setIsAlarmOpen(false);
-  };
+const closeAlarmPopover = useCallback(async () => {
+  await handleReadVisibleUnreadAlarms();
+  setIsAlarmOpen(false);
+}, [handleReadVisibleUnreadAlarms]);
 
   const toggleAlarmPopover = async () => {
     if (isAlarmOpen) {
@@ -76,7 +76,7 @@ export const GlobalNavigationBar = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isAlarmOpen, alarms]);
+  }, [isAlarmOpen, closeAlarmPopover]);
 
   return (
     <nav className="relative z-50 h-[1000px] w-[84px] shrink-0 px-5 py-8 bg-fill-inverse inline-flex flex-col justify-start items-center gap-10 overflow-visible">
