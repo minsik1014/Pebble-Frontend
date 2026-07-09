@@ -5,7 +5,9 @@ import UserIcon from '@/assets/icons/user-outline.svg?react';
 import { Divider } from '@/components/ui/Divider';
 
 import { EmailChangeItem } from './EmailChangeItem';
+import { EmailChangeModal } from './EmailChangeModal';
 import { PasswordChangeItem } from './PasswordChangeItem';
+import { PasswordChangeModal } from './PasswordChangeModal';
 import { SettingsSection } from './SettingsSection';
 import { SettingsSectionHeader } from './SettingsSectionHeader';
 
@@ -21,26 +23,40 @@ export function AccountSettingsSection({
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
+  const handleOpenPasswordModal = () => {
+    if (isSocialAccount) return;
+    setIsPasswordModalOpen(true);
+  };
+
   return (
-    <SettingsSection className="min-h-[268px]">
-      <SettingsSectionHeader icon={UserIcon} title="계정 관리" />
+    <>
+      <SettingsSection className="min-h-[268px]">
+        <SettingsSectionHeader icon={UserIcon} title="계정 관리" />
 
-      <div className="mt-token-l flex flex-col gap-token-l">
-        <EmailChangeItem
-          currentEmail={currentEmail}
-          onOpen={() => setIsEmailModalOpen(true)}
-        />
+        <div className="mt-token-l flex flex-col gap-token-l">
+          <EmailChangeItem
+            currentEmail={currentEmail}
+            onOpen={() => setIsEmailModalOpen(true)}
+          />
 
-        <Divider />
+          <Divider />
 
-        <PasswordChangeItem
-          isSocialAccount={isSocialAccount}
-          onOpen={() => setIsPasswordModalOpen(true)}
-        />
-      </div>
+          <PasswordChangeItem
+            isSocialAccount={isSocialAccount}
+            onOpen={handleOpenPasswordModal}
+          />
+        </div>
+      </SettingsSection>
 
-      {/* TODO: EmailChangeModal 연결 */}
-      {/* TODO: PasswordChangeModal 연결 */}
-    </SettingsSection>
+      <EmailChangeModal
+        open={isEmailModalOpen}
+        onOpenChange={setIsEmailModalOpen}
+      />
+
+      <PasswordChangeModal
+        open={isPasswordModalOpen}
+        onOpenChange={setIsPasswordModalOpen}
+      />
+    </>
   );
 }
