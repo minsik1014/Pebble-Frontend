@@ -4,6 +4,9 @@ export type AlarmType =
   | "REPORT"
   | "FOLLOW_REQUEST"
   | "FOLLOW_ACCEPT";
+export type FollowRequestStatus = "PENDING" | "ACCEPTED" | "REJECTED";
+
+export type FollowRequestAction = "ACCEPT" | "REJECT";
 
 export interface AlarmUser {
   id: number;
@@ -18,4 +21,5 @@ export interface Alarm {
   isRead: boolean;
   createdAt: string;
   user?: AlarmUser;
+  followStatus?: FollowRequestStatus;
 }

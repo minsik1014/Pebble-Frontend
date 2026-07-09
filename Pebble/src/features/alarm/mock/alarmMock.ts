@@ -7,6 +7,7 @@ export const mockAlarms: Alarm[] = [
     content: "짱구님이 팔로우를 요청했어요",
     isRead: false,
     createdAt: "방금",
+    followStatus: "PENDING",
     user: {
       id: 101,
       nickname: "짱구",

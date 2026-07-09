@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import BellOutlineIcon from "@/assets/icons/bell-outline.svg?react";
+import BellOutlineNoDotIcon from "@/assets/icons/bell-outline no-dot.svg?react";
 import SocialOutlineIcon from "@/assets/icons/social-outline.svg?react";
 import CalendarSolidIcon from "@/assets/icons/calendar-nav-selected.svg?react";
 import MyOutlineIcon from "@/assets/icons/user-outline.svg?react";
@@ -8,6 +9,7 @@ import SettingsOutlineIcon from "@/assets/icons/settings-outline.svg?react";
 import LogOutIcon from "@/assets/icons/logout.svg?react";
 
 import { AlarmPopover } from "@/features/alarm/components/AlarmPopover";
+import { useAlarms } from "@/features/alarm/hooks/useAlarm";
 
 export const GlobalNavigationBar = () => {
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
@@ -18,7 +20,16 @@ export const GlobalNavigationBar = () => {
 
   const alarmButtonRef = useRef<HTMLButtonElement>(null);
 
-  const toggleAlarmPopover = () => {
+  const {
+    alarms,
+    unreadCount,
+    handleReadVisibleUnreadAlarms,
+    handleDeleteAlarm,
+    handleDeleteAllAlarms,
+    handleRespondFollowRequest
+  } = useAlarms();
+
+  const openAlarmPopover = () => {
     const rect = alarmButtonRef.current?.getBoundingClientRect();
 
     if (rect) {
@@ -28,11 +39,25 @@ export const GlobalNavigationBar = () => {
       });
     }
 
-    setIsAlarmOpen((prev) => !prev);
+    setIsAlarmOpen(true);
+  };
+
+  const closeAlarmPopover = async () => {
+    await handleReadVisibleUnreadAlarms();
+    setIsAlarmOpen(false);
+  };
+
+  const toggleAlarmPopover = async () => {
+    if (isAlarmOpen) {
+      await closeAlarmPopover();
+      return;
+    }
+
+    openAlarmPopover();
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = async (event: MouseEvent) => {
       const target = event.target as Node;
 
       const isInsideButton = alarmButtonRef.current?.contains(target);
@@ -40,7 +65,7 @@ export const GlobalNavigationBar = () => {
         target instanceof Element && target.closest("[data-alarm-popover]");
 
       if (!isInsideButton && !isInsidePopover) {
-        setIsAlarmOpen(false);
+        await closeAlarmPopover();
       }
     };
 
@@ -51,7 +76,7 @@ export const GlobalNavigationBar = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isAlarmOpen]);
+  }, [isAlarmOpen, alarms]);
 
   return (
     <nav className="relative z-50 h-[1000px] w-[84px] shrink-0 px-5 py-8 bg-fill-inverse inline-flex flex-col justify-start items-center gap-10 overflow-visible">
@@ -71,16 +96,23 @@ export const GlobalNavigationBar = () => {
               aria-label="알림 목록 열기"
               aria-expanded={isAlarmOpen}
             >
-              <BellOutlineIcon className="size-6" />
 
               {/* 알림 닷 */}
-              <div className="size-1 absolute right-[10px] top-[10px] bg-fill-danger rounded-full" />
+              {unreadCount > 0 ? (
+                <BellOutlineIcon className="size-6" />
+              ) : (
+                <BellOutlineNoDotIcon className="size-6" />
+              )}
             </button>
 
             {isAlarmOpen && (
               <AlarmPopover
                 top={popoverPosition.top}
                 left={popoverPosition.left}
+                alarms={alarms}
+                onDelete={handleDeleteAlarm}
+                onDeleteAll={handleDeleteAllAlarms}
+                onRespondFollowRequest={handleRespondFollowRequest}
               />
             )}
           </div>

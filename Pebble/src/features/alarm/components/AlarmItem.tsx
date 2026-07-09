@@ -1,13 +1,21 @@
-import type { Alarm } from "../types/alarm";
-import ReportIcon from "@/assets/icons/memo-outline.svg?react"
-import CalendarIcon from "@/assets/icons/calendar-nav-default.svg?react"
+import ReportIcon from "@/assets/icons/memo-outline.svg?react";
+import CalendarIcon from "@/assets/icons/calendar-nav-default.svg?react";
+
+import type { Alarm, FollowRequestAction } from "../types/alarm";
+
 interface AlarmItemProps {
   alarm: Alarm;
+  onDelete: (alarmId: number) => void;
+  onFollowRequestResponse?: (
+    alarm: Alarm,
+    action: FollowRequestAction,
+  ) => void;
 }
 
 const getAlarmIcon = (type: Alarm["type"]) => {
   switch (type) {
     case "TASK":
+    case "MILESTONE":
       return <CalendarIcon className="size-5" />;
     case "REPORT":
       return <ReportIcon className="size-5" />;
@@ -16,15 +24,59 @@ const getAlarmIcon = (type: Alarm["type"]) => {
   }
 };
 
-export const AlarmItem = ({ alarm }: AlarmItemProps) => {
-  const isFollowRequest = alarm.type === "FOLLOW_REQUEST";
+const getFollowMessageSuffix = (alarm: Alarm) => {
+  if (alarm.type === "FOLLOW_REQUEST") {
+    if (alarm.followStatus === "ACCEPTED") {
+      return "님의 팔로우 요청을 수락했어요";
+    }
+
+    if (alarm.followStatus === "REJECTED") {
+      return "님의 팔로우 요청을 거절했어요";
+    }
+
+    return "님이 팔로우를 요청했어요";
+  }
+
+  if (alarm.type === "FOLLOW_ACCEPT") {
+    return "님이 팔로우를 수락했어요";
+  }
+
+  return "";
+};
+
+export const AlarmItem = ({
+  alarm,
+  onDelete,
+  onFollowRequestResponse,
+}: AlarmItemProps) => {
+  const isPendingFollowRequest =
+    alarm.type === "FOLLOW_REQUEST" &&
+    (alarm.followStatus ?? "PENDING") === "PENDING";
+
   const hasUserImage =
     alarm.type === "FOLLOW_REQUEST" || alarm.type === "FOLLOW_ACCEPT";
 
-   return (
+  const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    onDelete(alarm.id);
+  };
+
+  const handleAccept = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    onFollowRequestResponse?.(alarm, "ACCEPT");
+  };
+
+  const handleReject = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    onFollowRequestResponse?.(alarm, "REJECT");
+  };
+
+  return (
     <div
-      className={`mt-1 rounded-token-m px-4 py-3 ${
-        alarm.isRead ? "hover:bg-fill-surface" : "bg-[#3059FF0D]"
+      className={`mt-3 rounded-token-m px-4 py-3.5 transition-colors duration-150 ${
+        alarm.isRead
+          ? "hover:bg-[rgba(23,23,23,0.05)]"
+          : "bg-[rgba(48,89,255,0.05)] hover:bg-[rgba(23,23,23,0.05)]"
       }`}
     >
       <div className="flex items-start gap-3">
@@ -36,7 +88,7 @@ export const AlarmItem = ({ alarm }: AlarmItemProps) => {
               className="size-full object-cover"
             />
           ) : (
-            <div className="flex size-full items-center justify-center text-text-tertiary">
+            <div className="flex size-full items-center justify-center text-[14px] font-medium text-text-strong">
               {hasUserImage
                 ? alarm.user?.nickname.slice(0, 1)
                 : getAlarmIcon(alarm.type)}
@@ -45,31 +97,49 @@ export const AlarmItem = ({ alarm }: AlarmItemProps) => {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-body-s font-semibold text-text-strong">
-            {alarm.content}
-          </p>
+          {hasUserImage && alarm.user ? (
+            <p className="text-[15px] leading-[21px] text-text-strong">
+              <span className="font-semibold">{alarm.user.nickname}</span>
+              <span className="font-normal">{getFollowMessageSuffix(alarm)}</span>
+            </p>
+          ) : (
+            <p className="text-[16px] font-normal leading-[21px] text-text-strong">
+              {alarm.content}
+            </p>
+          )}
 
-          <p className="mt-1 text-caption-m text-text-tertiary">
+          <p className="mt-0.5 text-[13px] font-normal leading-[17px] text-gray-400">
             {alarm.createdAt}
           </p>
 
-          {isFollowRequest && (
+          {isPendingFollowRequest && (
             <div className="mt-2 flex gap-2">
-              <button
-                type="button"
-                className="rounded-token-s bg-fill-primary px-3 py-1 text-caption-m text-text-onFill"
-              >
-                수락
-              </button>
-              <button
-                type="button"
-                className="rounded-token-s border border-line-normal px-3 py-1 text-caption-m text-text-secondary"
-              >
-                거절
-              </button>
+                <button
+                    type="button"
+                    onClick={handleAccept}
+                    className="h-[29px] min-w-[49px] rounded-token-xs bg-[rgba(23,23,23,1)] px-3 text-[14px] font-medium leading-[20px] text-white"
+                    >
+                    수락
+                    </button>
+                    <button
+                    type="button"
+                    onClick={handleReject}
+                    className="h-[29px] min-w-[49px] rounded-token-xs bg-[rgba(23,23,23,0.05)] px-3 text-[14px] font-medium leading-[20px] text-text-strong"
+                    >
+                    거절
+                </button>
             </div>
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="shrink-0 text-[22px] leading-none text-gray-400 hover:text-text-strong"
+          aria-label="알림 삭제"
+        >
+          ×
+        </button>
       </div>
     </div>
   );
