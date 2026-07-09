@@ -43,7 +43,6 @@ const config: Config = {
           primary: '#171717', secondary: '#404040', teritary: '#737373',
           quaternary: '#f5f5f5', pressed: 'rgba(23, 23, 23, 0.1)',
         },
-        // 테마 색상 연동 구조
         theme: {
           '1': { base: 'var(--color-1-base)', mid: 'var(--color-1-mid)', light: 'var(--color-1-light)' },
           '2': { base: 'var(--color-2-base)', mid: 'var(--color-2-mid)', light: 'var(--color-2-light)' },
@@ -70,7 +69,7 @@ const config: Config = {
         'token-l': '32px',
         'token-infinite': '999px',
       },
-      // 5. 토큰: 그림자 (Anima 명세 기반)
+      // 5. 토큰: 그림자
       boxShadow: {
         'shadow-m': '0px 0px 28px 0px rgba(23, 23, 23, 0.05)',
         'shadow-s': '0px 0px 4px 0px rgba(23, 23, 23, 0.1)',
@@ -84,6 +83,7 @@ const config: Config = {
         'marquee-vertical': 'marquee-vertical var(--duration) linear infinite',
         'shimmer': 'shimmer 8s infinite',
         'image-glow': 'image-glow 1s ease forwards',
+        'shake': 'shake 0.2s ease-in-out 2', // 💡 빠르게 2번 흔들리는 애니메이션 토큰 매핑
       },
       keyframes: {
         'fade-in': {
@@ -110,6 +110,11 @@ const config: Config = {
           '0%': { opacity: '0', animationTimingFunction: 'cubic-bezier(0.74, 0.25, 0.76, 1)' },
           '10%': { opacity: '0.7', animationTimingFunction: 'cubic-bezier(0.12, 0.01, 0.08, 0.99)' },
           '100%': { opacity: '0.4' },
+        },
+        'shake': { // 인풋 오차 발생 시 작동할 X축 트랜스레이트 감도 설정
+          '0%, 100%': { transform: 'translateX(0)' },
+          '25%': { transform: 'translateX(-4px)' },
+          '75%': { transform: 'translateX(4px)' },
         },
       },
     },

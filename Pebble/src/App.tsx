@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
+import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import SettingsPage from './pages/settings/SettingsPage';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<CalendarMainPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} /> 
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </div>

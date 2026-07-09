@@ -2,8 +2,8 @@
 import React from "react";
 import google from "@/assets/icons/logo-google.svg"; 
 import naver from "@/assets/icons/logo-naver.svg"; 
+import { Link } from "react-router-dom";
 
-// 1. 내부용 로컬 눈 아이콘 SVG 컴포넌트 정의 (임포트 에러 원천 차단)
 const EyeIcon = ({ open }: { open: boolean }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -28,9 +28,15 @@ interface LoginFormProps {
   email: string;
   password: string;
   showPassword: boolean;
-  errorMessage: string | null; // 💡 에러 메시지 타입 추가
+  errorMessage: string | null; 
+  errors: {                    
+    email?: string;
+    password?: string;
+  };
+  shakeTarget: { email?: boolean; password?: boolean };
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
+  onFieldBlur: (field: "email" | "password") => void; 
   onTogglePassword: () => void;
   onSubmit: (e: React.FormEvent) => void;
   onSocialLogin: (provider: "google" | "naver") => void;
@@ -40,9 +46,12 @@ export const LoginForm = ({
   email,
   password,
   showPassword,
-  errorMessage, // 💡 Props 구조 분해 할당 추가
+  errorMessage, 
+  errors, 
+  shakeTarget,
   onEmailChange,
   onPasswordChange,
+  onFieldBlur, 
   onTogglePassword,
   onSubmit,
   onSocialLogin,
@@ -53,9 +62,10 @@ export const LoginForm = ({
         로그인
       </h2>
 
-      <form onSubmit={onSubmit} className="flex flex-col w-full">
+      <form onSubmit={onSubmit} className="flex flex-col w-full" noValidate>
         {/* 이메일 섹션 */}
-        <div className="flex flex-col mb-[16px] sm:mb-[20px]">
+        {/* shakeTarget 유무에 따라 animate-shake 클래스 부여 */}
+        <div className={`flex flex-col mb-[16px] sm:mb-[20px] ${shakeTarget.email && errors.email ? "animate-shake" : ""}`}>
           <label className="text-[14px] font-medium text-[#444444] mb-[8px]">
             이메일<span className="text-[#FF4D4D] ml-[2px]">*</span>
           </label>
@@ -63,14 +73,19 @@ export const LoginForm = ({
             type="email"
             value={email}
             onChange={(e) => onEmailChange(e.target.value)}
+            onBlur={() => onFieldBlur("email")} 
             placeholder="이메일을 입력해 주세요"
-            className="w-full h-[48px] sm:h-[52px] px-[16px] border border-[#E5E7EB] rounded-[8px] text-[15px] outline-none focus:border-[#111111] placeholder-[#C5C5C5] transition-all"
-            required
+            className={`w-full h-[48px] sm:h-[52px] px-[16px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5]
+              ${errors?.email ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
           />
+          {errors?.email && (
+            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.email}</div>
+          )}
         </div>
 
-        {/* 비밀번호 섹션 (에러 유무에 따라 감싸는 마진 유연화) */}
-        <div className={`flex flex-col relative ${errorMessage ? 'mb-0' : 'mb-[16px]'}`}>
+        {/* 비밀번호 섹션 */}
+        {/* shakeTarget 유무에 따라 animate-shake 클래스 부여 */}
+        <div className={`flex flex-col relative ${errors?.password || errorMessage ? 'mb-0' : 'mb-[16px]'} ${shakeTarget.password && errors.password ? "animate-shake" : ""}`}>
           <label className="text-[14px] font-medium text-[#444444] mb-[8px]">
             비밀번호<span className="text-[#FF4D4D] ml-[2px]">*</span>
           </label>
@@ -79,9 +94,10 @@ export const LoginForm = ({
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
+              onBlur={() => onFieldBlur("password")} 
               placeholder="비밀번호를 입력해 주세요"
-              className="w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border border-[#E5E7EB] rounded-[8px] text-[15px] outline-none focus:border-[#111111] placeholder-[#C5C5C5] transition-all"
-              required
+              className={`w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none placeholder-[#C5C5C5] transition-all
+                ${errors?.password ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
             />
             <button
               type="button"
@@ -91,17 +107,20 @@ export const LoginForm = ({
               <EyeIcon open={showPassword} />
             </button>
           </div>
+          {errors?.password && (
+            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.password}</div>
+          )}
         </div>
 
-        {/* 💡 핵심 요구사항: 로그인 에러 메시지 컴포넌트 마크업 */}
+        {/* 로그인 실패 / 서버 에러 메시지 */}
         {errorMessage && (
           <div className="mt-[12px] text-[13px] text-[#FF4D4D] leading-[1.6] text-left break-keep whitespace-pre-line font-medium">
             {errorMessage}
           </div>
         )}
 
-        {/* 비밀번호 찾기 (에러 박스가 추가되었으므로 상단 마진 분기 처리) */}
-        <div className={`flex justify-end ${errorMessage ? 'mt-[16px]' : 'mt-0'} mb-[24px]`}>
+        {/* 비밀번호 찾기 */}
+        <div className={`flex justify-end ${(errors?.password || errorMessage) ? 'mt-[16px]' : 'mt-0'} mb-[24px]`}>
           <a href="#forgot" className="text-[13px] text-[#888888] hover:underline">
             비밀번호를 잊으셨나요?
           </a>
@@ -125,31 +144,21 @@ export const LoginForm = ({
 
       {/* 소셜 로그인 버튼 세트 */}
       <div className="flex flex-col gap-[12px] mt-[16px] w-full">
-        {/* 구글 로그인 */}
         <button
           type="button"
           onClick={() => onSocialLogin("google")}
           className="w-full h-[48px] sm:h-[52px] border border-[#E5E7EB] rounded-[8px] flex items-center justify-center relative hover:bg-[#F9FAFB] transition-colors"
         >
-          <img 
-            src={google}
-            alt="Google" 
-            className="absolute left-[20px] w-[20px] h-[20px] flex-shrink-0 object-contain aspect-square" 
-          />
+          <img src={google} alt="Google" className="absolute left-[20px] w-[20px] h-[20px] flex-shrink-0 object-contain aspect-square" />
           <span className="text-[14px] font-medium text-[#222222]">Google로 계속하기</span>
         </button>
 
-        {/* 네이버 로그인 */}
         <button
           type="button"
           onClick={() => onSocialLogin("naver")}
           className="w-full h-[48px] sm:h-[52px] bg-[#03C75A] rounded-[8px] flex items-center justify-center relative hover:bg-[#02b34f] transition-colors"
         >
-          <img 
-            src={naver}
-            alt="Naver" 
-            className="absolute left-[20px] w-[18px] h-[18px] flex-shrink-0 object-contain aspect-square" 
-          />
+          <img src={naver} alt="Naver" className="absolute left-[20px] w-[18px] h-[18px] flex-shrink-0 object-contain aspect-square" />
           <span className="text-[14px] font-medium text-white">네이버로 계속하기</span>
         </button>
       </div>
@@ -157,9 +166,9 @@ export const LoginForm = ({
       {/* 하단 회원가입 유도 */}
       <div className="flex justify-center gap-[6px] mt-[32px] sm:mt-[40px] text-[14px]">
         <span className="text-[#888888]">Pebble이 처음이신가요?</span>
-        <a href="#signup" className="text-[#111111] font-semibold hover:underline">
+        <Link to="/signup" className="text-[#111111] font-semibold hover:underline">
           회원가입
-        </a>
+        </Link>
       </div>
     </div>
   );

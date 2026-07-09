@@ -1,5 +1,5 @@
 // @/features/auth/pages/LoginPage.tsx
-import { LoginHeader } from "../components/LoginHeader";
+import { Header } from "../components/Header";
 import { LoginContainer } from "../containers/LoginContainer";
 import { PebbleLogoSection } from "../components/PebbleLogoSection";
 
@@ -10,7 +10,7 @@ export const LoginPage = (): JSX.Element => {
       data-id="login-screen"
     >
       {/* 글로벌 상단 GNB (반응형 대응) */}
-      <LoginHeader />
+      <Header />
 
       {/* 반응형 핵심 레이아웃:
         - 기본(모바일): flex-col (위아래 배치), 패딩 축소, 중앙 정렬
