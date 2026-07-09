@@ -59,7 +59,7 @@ export function WithdrawalConfirmModal({
         className="flex h-[359px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-token-l">
+        <div className="flex h-[67px] w-full items-start justify-between">
           <div>
             <h2
               id={titleId}
@@ -69,7 +69,7 @@ export function WithdrawalConfirmModal({
             </h2>
             <p
               id={descriptionId}
-              className="mt-token-xs text-body-03-r text-text-secondary"
+              className="mt-token-xs text-body-02-m tracking-[-0.01em] text-text-secondary"
             >
               탈퇴 전 아래 내용을 반드시 확인해 주세요.
             </p>
@@ -86,55 +86,89 @@ export function WithdrawalConfirmModal({
           </button>
         </div>
 
-        <div className="flex flex-col gap-token-m rounded-token-s bg-[#FFE5D8] px-token-l py-token-m text-body-03-m text-text-primary">
-          <p className="flex items-center gap-token-s">
+        <div className="flex h-[100px] w-full flex-col justify-center gap-token-m rounded-token-s bg-[#FEE7DA] p-token-l">
+          <p className="flex h-6 w-full items-center gap-token-m">
             <DeleteIcon
-              className="size-5 shrink-0 text-fill-danger"
+              className="size-6 shrink-0 text-fill-danger"
               aria-hidden="true"
             />
-            <span>
-              투두·일정·조약돌 기록, 프로필 이미지 등 모든 데이터가 영구
-              삭제돼요.
+            <span className="whitespace-nowrap text-body-02-m tracking-[-0.01em] text-text-primary">
+              투두·일정·조약돌 기록, 프로필 이미지 등 모든 데이터가 영구 삭제돼요.
             </span>
           </p>
 
-          <p className="flex items-center gap-token-s">
+          <p className="flex h-6 w-full items-center gap-token-m">
             <XIcon
-              className="size-5 shrink-0 text-fill-danger"
+              className="size-6 shrink-0 text-fill-danger"
               aria-hidden="true"
             />
-            <span>삭제된 데이터는 어떤 경우에도 다시 복구할 수 없어요.</span>
+            <span className="whitespace-nowrap text-body-02-m tracking-[-0.01em] text-text-primary">
+              삭제된 데이터는 어떤 경우에도 다시 복구할 수 없어요.
+            </span>
           </p>
         </div>
 
-        <div className="flex items-center gap-token-s">
-          <input
-            id={agreementId}
-            type="checkbox"
-            checked={isAgreed}
-            disabled={isSubmitting}
-            className="size-6 rounded-token-xs border border-border-teritory accent-fill-primary disabled:cursor-not-allowed disabled:opacity-50"
-            onChange={(event) => setIsAgreed(event.target.checked)}
-          />
-          <label
-            htmlFor={agreementId}
-            className="text-body-03-m text-text-strong"
-          >
-            위 내용을 확인하였으며, 탈퇴에 동의합니다.
-          </label>
-        </div>
+        <input
+          id={agreementId}
+          type="checkbox"
+          checked={isAgreed}
+          disabled={isSubmitting}
+          className="peer sr-only"
+          onChange={(event) => setIsAgreed(event.target.checked)}
+        />
 
-        <div className="mt-auto grid grid-cols-2 gap-token-m">
+        <label
+          htmlFor={agreementId}
+          className="flex h-6 w-full cursor-pointer items-center gap-token-s text-body-02-m tracking-[-0.01em] text-text-strong peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+        >
+          <span
+            aria-hidden="true"
+            className={[
+              'flex size-6 shrink-0 items-center justify-center rounded-token-xs border transition-colors',
+              isAgreed
+                ? 'border-btn-primary bg-btn-primary text-text-onFill'
+                : 'border-border-teritory bg-fill-inverse text-transparent',
+            ].join(' ')}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M3.5 8.2L6.5 11L12.5 5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+
+          <span>위 내용을 확인하였으며, 탈퇴에 동의합니다.</span>
+        </label>
+
+        <div className="mt-auto grid h-11 w-full grid-cols-2 gap-token-m">
           <Button
             type="button"
+            className="h-11 bg-btn-quaternary text-text-strong disabled:opacity-100"
             disabled={isSubmitting}
             onClick={() => onOpenChange(false)}
           >
             취소
           </Button>
+
           <Button
             type="button"
             variant="danger"
+            className={[
+              'h-11 disabled:opacity-100',
+              canSubmit
+                ? 'bg-fill-danger text-text-onFill'
+                : 'bg-fill-danger/60 text-text-onFill',
+            ].join(' ')}
             disabled={!canSubmit}
             onClick={onConfirm}
           >
