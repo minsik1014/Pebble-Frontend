@@ -28,6 +28,7 @@ interface LoginFormProps {
   email: string;
   password: string;
   showPassword: boolean;
+  errorMessage: string | null; // 💡 에러 메시지 타입 추가
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
   onTogglePassword: () => void;
@@ -39,6 +40,7 @@ export const LoginForm = ({
   email,
   password,
   showPassword,
+  errorMessage, // 💡 Props 구조 분해 할당 추가
   onEmailChange,
   onPasswordChange,
   onTogglePassword,
@@ -67,8 +69,8 @@ export const LoginForm = ({
           />
         </div>
 
-        {/* 비밀번호 섹션 */}
-        <div className="flex flex-col mb-[16px] relative">
+        {/* 비밀번호 섹션 (에러 유무에 따라 감싸는 마진 유연화) */}
+        <div className={`flex flex-col relative ${errorMessage ? 'mb-0' : 'mb-[16px]'}`}>
           <label className="text-[14px] font-medium text-[#444444] mb-[8px]">
             비밀번호<span className="text-[#FF4D4D] ml-[2px]">*</span>
           </label>
@@ -91,8 +93,15 @@ export const LoginForm = ({
           </div>
         </div>
 
-        {/* 비밀번호 찾기 */}
-        <div className="flex justify-end mb-[24px]">
+        {/* 💡 핵심 요구사항: 로그인 에러 메시지 컴포넌트 마크업 */}
+        {errorMessage && (
+          <div className="mt-[12px] text-[13px] text-[#FF4D4D] leading-[1.6] text-left break-keep whitespace-pre-line font-medium">
+            {errorMessage}
+          </div>
+        )}
+
+        {/* 비밀번호 찾기 (에러 박스가 추가되었으므로 상단 마진 분기 처리) */}
+        <div className={`flex justify-end ${errorMessage ? 'mt-[16px]' : 'mt-0'} mb-[24px]`}>
           <a href="#forgot" className="text-[13px] text-[#888888] hover:underline">
             비밀번호를 잊으셨나요?
           </a>
