@@ -11,8 +11,14 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const handleResize = () => {
-      const widthScale = window.innerWidth / ORIGINAL_WIDTH;
-      const heightScale = window.innerHeight / ORIGINAL_HEIGHT;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      
+      const availableWidth = width - 24;
+      const availableHeight = height - 24;
+
+      const widthScale = availableWidth / ORIGINAL_WIDTH;
+      const heightScale = availableHeight / ORIGINAL_HEIGHT;
 
       const nextScale = Math.min(widthScale, heightScale, 1);
       setScale(Math.max(0.5, nextScale));
