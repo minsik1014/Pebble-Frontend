@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import BellOutlineIcon from "@/assets/icons/bell-outline.svg?react";
-import BellOutlineNoDotIcon from "@/assets/icons/bell-outline no-dot.svg?react";
+import BellOutlineIcon from "@/assets/icons/bell-outline no-dot.svg?react";
 import SocialOutlineIcon from "@/assets/icons/social-outline.svg?react";
 import CalendarSolidIcon from "@/assets/icons/calendar-nav-selected.svg?react";
 import MyOutlineIcon from "@/assets/icons/user-outline.svg?react";
@@ -26,7 +25,7 @@ export const GlobalNavigationBar = () => {
     handleReadVisibleUnreadAlarms,
     handleDeleteAlarm,
     handleDeleteAllAlarms,
-    handleRespondFollowRequest
+    handleRespondFollowRequest,
   } = useAlarms();
 
   const openAlarmPopover = () => {
@@ -42,10 +41,10 @@ export const GlobalNavigationBar = () => {
     setIsAlarmOpen(true);
   };
 
-const closeAlarmPopover = useCallback(async () => {
-  await handleReadVisibleUnreadAlarms();
-  setIsAlarmOpen(false);
-}, [handleReadVisibleUnreadAlarms]);
+  const closeAlarmPopover = useCallback(async () => {
+    await handleReadVisibleUnreadAlarms();
+    setIsAlarmOpen(false);
+  }, [handleReadVisibleUnreadAlarms]);
 
   const toggleAlarmPopover = async () => {
     if (isAlarmOpen) {
@@ -96,12 +95,11 @@ const closeAlarmPopover = useCallback(async () => {
               aria-label="알림 목록 열기"
               aria-expanded={isAlarmOpen}
             >
+              <BellOutlineIcon className="size-6" />
 
-              {/* 알림 닷 */}
-              {unreadCount > 0 ? (
-                <BellOutlineIcon className="size-6" />
-              ) : (
-                <BellOutlineNoDotIcon className="size-6" />
+              {/* 빨간 점: 알림창을 아직 확인하지 않은 알림이 있을 때만 표시 */}
+              {unreadCount > 0 && (
+                <div className="size-1 absolute right-[10px] top-[10px] bg-fill-danger rounded-full" />
               )}
             </button>
 

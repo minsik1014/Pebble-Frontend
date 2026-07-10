@@ -52,14 +52,14 @@ export const AlarmPopover = ({
     showToast(
       action === "ACCEPT"
         ? `${nickname}님과 친구가 되었어요`
-        : `${nickname}님의 팔로우 요청을 거절했어요`,
+        : `${nickname}님의 요청을 거절했어요`,
     );
   };
 
   return createPortal(
     <div
       data-alarm-popover
-      className="relative z-[9999] flex h-[600px] w-[400px] flex-col rounded-[24px] bg-white px-3 py-4 shadow-[0_12px_32px_rgba(0,0,0,0.12)] animate-[popover-in_450ms_ease-in-out]"
+      className="relative z-[9999] flex h-[600px] w-[400px] flex-col rounded-[24px] bg-white px-3 py-4 shadow-[4px_5px_20px_rgba(23,23,23,0.1)] animate-[popover-in_450ms_ease-in-out]"
       style={{
         position: "fixed",
         top,
@@ -67,20 +67,22 @@ export const AlarmPopover = ({
       }}
     >
       <div className="flex shrink-0 items-center justify-between px-4 py-3">
-        <h2 className="text-body-m font-semibold text-text-strong">알림</h2>
+        <h2 className="text-[18px] font-semibold leading-[25px] text-text-strong">
+          알림
+        </h2>
 
         {alarms.length > 0 && (
           <button
             type="button"
             onClick={onDeleteAll}
-            className="text-caption-m text-text-secondary hover:text-text-strong"
+            className="text-[14px] font-normal text-gray-500 hover:text-text-strong"
           >
             전체 삭제
           </button>
         )}
       </div>
 
-      <div className="custom-scrollbar flex-1 overflow-y-auto overscroll-contain pr-1">
+      <div className="custom-scrollbar flex-1 overflow-y-auto overscroll-contain pr-1 pt-3">
         {alarms.length > 0 ? (
           alarms.map((alarm) => (
             <AlarmItem
@@ -98,7 +100,7 @@ export const AlarmPopover = ({
       </div>
 
       <div
-        className={`pointer-events-none absolute bottom-4 left-5 right-5 rounded-[16px] bg-black px-5 py-3 text-body-s font-medium text-white shadow-lg transition-all duration-[450ms] ease-in-out ${
+        className={`pointer-events-none absolute bottom-4 left-5 right-5 rounded-[16px] bg-black px-5 py-3 text-[14px] font-medium leading-[20px] text-white shadow-lg transition-all duration-[450ms] ease-in-out ${
           isToastVisible
             ? "translate-y-0 opacity-100"
             : "translate-y-3 opacity-0"

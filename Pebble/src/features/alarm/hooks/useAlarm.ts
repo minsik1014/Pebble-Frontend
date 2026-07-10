@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   deleteAlarm,
@@ -25,17 +25,35 @@ export const useAlarms = () => {
     return alarms.filter((alarm) => !alarm.isRead).length;
   }, [alarms]);
 
-  const handleReadVisibleUnreadAlarms = async () => {
-    const unreadAlarms = alarms.filter((alarm) => !alarm.isRead);
 
-    await Promise.all(unreadAlarms.map((alarm) => readAlarm(alarm.id)));
+  const handleReadVisibleUnreadAlarms = useCallback(async () => {
+    const alarmsToRead = alarms.filter((alarm) => {
+      const isPendingFollowRequest =
+        alarm.type === "FOLLOW_REQUEST" &&
+        (alarm.followStatus ?? "PENDING") === "PENDING";
+
+      return !alarm.isRead && !isPendingFollowRequest;
+    });
+
+    await Promise.all(alarmsToRead.map((alarm) => readAlarm(alarm.id)));
 
     setAlarms((prev) =>
-      prev.map((alarm) =>
-        alarm.isRead ? alarm : { ...alarm, isRead: true },
-      ),
+      prev.map((alarm) => {
+        const isPendingFollowRequest =
+          alarm.type === "FOLLOW_REQUEST" &&
+          (alarm.followStatus ?? "PENDING") === "PENDING";
+
+        if (alarm.isRead || isPendingFollowRequest) {
+          return alarm;
+        }
+
+        return {
+          ...alarm,
+          isRead: true,
+        };
+      }),
     );
-  };
+  }, [alarms]);
 
   const handleDeleteAlarm = async (alarmId: number) => {
     await deleteAlarm(alarmId);
