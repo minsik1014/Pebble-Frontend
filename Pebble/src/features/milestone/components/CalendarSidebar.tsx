@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { dummyCategories as categories } from "@/mocks/dummyData";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
+import { AddMenuModal } from "./AddMenuModal";
 import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 import { MilestoneAccordion } from "./MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
@@ -20,6 +21,7 @@ export const CalendarSidebar = ({
     Record<string, boolean>
   >({});
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const monthLabel = useMemo(() => "6월", []);
@@ -79,12 +81,20 @@ export const CalendarSidebar = ({
               variant="primary" 
               className="w-[352px]" 
               showIcon={false}
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={() => setIsAddMenuOpen(true)}
             />
           </div>
         </div>
       </section>
       
+      <AddMenuModal
+        isOpen={isAddMenuOpen}
+        onClose={() => setIsAddMenuOpen(false)}
+        onSelectCategory={() => setIsCreateModalOpen(true)}
+        onSelectMilestone={() => alert("마일스톤 추가는 추후 구현 예정입니다.")}
+        onSelectTask={() => alert("태스크 추가는 추후 구현 예정입니다.")}
+      />
+
       <CategoryFormModal 
         isOpen={isCreateModalOpen} 
         mode="create"
