@@ -4,6 +4,8 @@ import { CategoryFormModal } from "./CategoryFormModal";
 import { DeleteCategoryModal } from "./DeleteCategoryModal";
 import { CategoryDetailHeader } from "./CategoryDetailHeader";
 import { MilestoneDetailItem } from "@/features/milestone/components/MilestoneDetailItem";
+import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
+import { dummyCategories as categories } from "@/mocks/dummyData";
 import { type Category } from "@/types";
 
 export const CategoryDetailSection = ({
@@ -20,6 +22,7 @@ export const CategoryDetailSection = ({
   });
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+  const [editingMilestoneId, setEditingMilestoneId] = React.useState<string | null>(null);
 
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
@@ -70,6 +73,7 @@ export const CategoryDetailSection = ({
             themeLight={category.themeLight}
             isExpanded={Boolean(expandedMilestones[item.id])}
             onToggle={() => toggleMilestone(item.id)}
+            onEdit={() => setEditingMilestoneId(item.id)}
           />
         ))}
       </div>
@@ -93,6 +97,17 @@ export const CategoryDetailSection = ({
           console.log(`Deleted category: ${category.title}`);
           setIsDeleteModalOpen(false);
           onBack(); // Go back to calendar after deleting
+        }}
+      />
+
+      <MilestoneFormModal 
+        isOpen={!!editingMilestoneId}
+        onClose={() => setEditingMilestoneId(null)}
+        categories={categories}
+        mode="edit"
+        onRequestDelete={() => {
+          console.log(`Requested to delete milestone: ${editingMilestoneId}`);
+          setEditingMilestoneId(null);
         }}
       />
     </section>

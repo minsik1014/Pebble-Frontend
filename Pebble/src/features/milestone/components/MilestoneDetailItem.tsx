@@ -1,4 +1,5 @@
 import ChevronDownIcon from "@/assets/icons/chevron-down.svg?react";
+import EditIcon from "@/assets/icons/newedit.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { TaskDetailRow } from "@/features/task/components/TaskDetailRow";
 import { type ScheduleItem } from "@/types";
@@ -9,6 +10,7 @@ type MilestoneDetailItemProps = {
   themeLight: string;
   isExpanded: boolean;
   onToggle: () => void;
+  onEdit?: () => void;
 };
 
 export const MilestoneDetailItem = ({
@@ -17,6 +19,7 @@ export const MilestoneDetailItem = ({
   themeLight,
   isExpanded,
   onToggle,
+  onEdit,
 }: MilestoneDetailItemProps) => {
   return (
     <div className="w-full bg-fill-inverse rounded-[20px] shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] flex flex-col overflow-hidden">
@@ -40,7 +43,16 @@ export const MilestoneDetailItem = ({
               </>
             )}
           </div>
-          <div className="w-6 h-6 rounded-token-xs border border-border-default" />
+          <div className="w-6 h-6 rounded-token-xs border border-border-default flex-shrink-0" />
+          <button 
+            className="w-11 h-11 flex items-center justify-center rounded-token-s hover:bg-fill-surface transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit?.();
+            }}
+          >
+            <EditIcon className="w-6 h-6 text-border-default" />
+          </button>
           <button 
             className="w-11 h-11 flex items-center justify-center rounded-token-s hover:bg-fill-surface transition-colors"
             onClick={(e) => {

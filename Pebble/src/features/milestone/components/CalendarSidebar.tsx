@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { dummyCategories as categories } from "@/mocks/dummyData";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
+import { MilestoneFormModal } from "./MilestoneFormModal";
 import { AddMenuModal } from "./AddMenuModal";
 import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 import { MilestoneAccordion } from "./MilestoneAccordion";
@@ -11,10 +12,12 @@ import { SidebarDivider } from "./SidebarDivider";
 
 export const CalendarSidebar = ({
   isSidebarOpen = true,
-  onSelectCategory
+  onSelectCategory,
+  selectedCategoryId
 }: {
   isSidebarOpen?: boolean;
   onSelectCategory?: (categoryId: string) => void;
+  selectedCategoryId?: string | null;
 }): JSX.Element => {
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const [expandedCategories, setExpandedCategories] = useState<
@@ -23,6 +26,7 @@ export const CalendarSidebar = ({
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
 
   const monthLabel = useMemo(() => "6월", []);
 
@@ -73,6 +77,7 @@ export const CalendarSidebar = ({
                 checkedItems={checkedItems}
                 onToggleChecked={toggleCheckedItem}
                 onSelectCategory={onSelectCategory}
+                isSelected={selectedCategoryId === category.id}
               />
             ))}
 
@@ -91,7 +96,7 @@ export const CalendarSidebar = ({
         isOpen={isAddMenuOpen}
         onClose={() => setIsAddMenuOpen(false)}
         onSelectCategory={() => setIsCreateModalOpen(true)}
-        onSelectMilestone={() => alert("마일스톤 추가는 추후 구현 예정입니다.")}
+        onSelectMilestone={() => setIsMilestoneModalOpen(true)}
         onSelectTask={() => alert("태스크 추가는 추후 구현 예정입니다.")}
       />
 
@@ -99,6 +104,12 @@ export const CalendarSidebar = ({
         isOpen={isCreateModalOpen} 
         mode="create"
         onClose={() => setIsCreateModalOpen(false)} 
+      />
+
+      <MilestoneFormModal
+        isOpen={isMilestoneModalOpen}
+        onClose={() => setIsMilestoneModalOpen(false)}
+        categories={categories}
       />
     </aside>
   );

@@ -55,6 +55,7 @@ export const CalendarMainPage = (): JSX.Element => {
           <CalendarSidebar 
             isSidebarOpen={isSidebarOpen} 
             onSelectCategory={setSelectedCategoryId}
+            selectedCategoryId={selectedCategoryId}
           />
           {selectedCategory ? (
             <CategoryDetailSection

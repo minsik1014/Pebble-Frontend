@@ -1,4 +1,5 @@
 import { type ScheduleItem } from "@/types";
+import EditIcon from "@/assets/icons/newedit.svg?react";
 
 // The task definition inside a category detail item seems to be just a standard ScheduleItem
 type TaskDetailRowProps = {
@@ -25,7 +26,12 @@ export const TaskDetailRow = ({ task, themeLight }: TaskDetailRowProps) => {
             </>
           )}
         </div>
-        <div className="w-6 h-6 rounded-token-xs border border-border-default" />
+        <div className="w-6 h-6 rounded-token-xs border border-border-default flex-shrink-0" />
+        <button 
+          className="w-11 h-11 flex items-center justify-center rounded-token-s hover:bg-fill-surface transition-colors"
+        >
+          <EditIcon className="w-6 h-6 text-border-default" />
+        </button>
       </div>
     </div>
   );
