@@ -171,7 +171,7 @@ export const ScheduleDatePicker = ({
           </button>
         </div>
 
-        <div className={`grid grid-cols-7 gap-y-4 gap-x-2 w-full text-center ${isTaskVariant ? "px-4" : ""}`}>
+        <div className={`grid grid-cols-7 gap-y-4 w-full text-center ${isTaskVariant ? "px-4" : ""}`}>
           {WEEK_DAYS.map((day) => (
             <span key={day} className="text-[14px] text-text-teritary font-medium">
               {day}
