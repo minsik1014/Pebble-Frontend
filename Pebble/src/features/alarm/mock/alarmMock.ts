@@ -7,6 +7,7 @@ export const mockAlarms: Alarm[] = [
     content: "짱구님이 팔로우를 요청했어요",
     isRead: false,
     createdAt: "방금",
+    followStatus: "PENDING",
     user: {
       id: 101,
       nickname: "짱구",
@@ -55,6 +56,18 @@ export const mockAlarms: Alarm[] = [
     user: {
       id: 103,
       nickname: "산테",
+      profileImageUrl: null,
+    },
+  },
+    {
+    id: 7,
+    type: "FOLLOW_ACCEPT",
+    content: "리락이님의 팔로우 요청을 수락했어요",
+    isRead: true,
+    createdAt: "7일 전",
+    user: {
+      id: 103,
+      nickname: "리락",
       profileImageUrl: null,
     },
   },
