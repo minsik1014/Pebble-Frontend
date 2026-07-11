@@ -13,7 +13,7 @@ export default function SettingsPage() {
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      
+
       const availableWidth = width - 24;
       const availableHeight = height - 24;
 
@@ -31,7 +31,7 @@ export default function SettingsPage() {
   }, []);
 
   return (
-    <main className="flex min-h-screen items-center justify-center overflow-hidden bg-fill-surface">
+    <main className="flex min-h-screen items-center justify-center overflow-hidden bg-fill-inverse">
       <div
         style={{
           width: ORIGINAL_WIDTH * scale,
@@ -40,7 +40,7 @@ export default function SettingsPage() {
         className="relative"
       >
         <div
-          className="absolute left-0 top-0 h-[1000px] w-[1416px] origin-top-left bg-fill-surface"
+          className="absolute left-0 top-0 h-[1000px] w-[1416px] origin-top-left bg-fill-inverse"
           style={{ transform: `scale(${scale})` }}
         >
           <div className="absolute left-0 top-0">
