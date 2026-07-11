@@ -1,5 +1,5 @@
 import React from "react";
-import PlusIcon from "@/assets/icons/plus.svg?react";
+import PlusIcon from "@/assets/icons/Plus.svg?react";
 
 type AddButtonProps = {
   label: string;

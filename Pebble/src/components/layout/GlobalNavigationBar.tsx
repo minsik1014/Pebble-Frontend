@@ -8,7 +8,7 @@ import CalendarSolidIcon from "@/assets/icons/calendar-nav-selected.svg?react";
 import MyOutlineIcon from "@/assets/icons/user-outline.svg?react";
 import SettingsOutlineIcon from "@/assets/icons/settings-outline.svg?react";
 import SettingsSolidIcon from "@/assets/icons/settings-solid.svg?react";
-import LogOutIcon from "@/assets/icons/logout.svg?react";
+import LogOutIcon from "@/assets/icons/Logout.svg?react";
 
 import { AlarmPopover } from "@/features/alarm/components/AlarmPopover";
 import { useAlarms } from "@/features/alarm/hooks/useAlarm";
