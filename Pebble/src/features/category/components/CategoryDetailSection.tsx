@@ -4,22 +4,37 @@ import { CategoryFormModal } from "./CategoryFormModal";
 import { DeleteCategoryModal } from "./DeleteCategoryModal";
 import { CategoryDetailHeader } from "./CategoryDetailHeader";
 import { MilestoneDetailItem } from "@/features/milestone/components/MilestoneDetailItem";
+import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
+import { TaskFormModal } from "@/features/task/components/TaskFormModal";
 import { type Category } from "@/types";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
   category,
   onBack,
+  categories,
+  onDeleteCategory,
+  onDeleteMilestone,
+  onDeleteTask,
 }: {
   isSidebarOpen: boolean;
   category: Category;
   onBack: () => void;
+  categories: Category[];
+  onDeleteCategory: (categoryId: string) => void;
+  onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
+  onDeleteTask: (categoryId: string, milestoneId: string, taskId: string) => void;
 }) => {
   const [expandedMilestones, setExpandedMilestones] = React.useState<Record<string, boolean>>({
     "startup-1": true, // 창업 공모전 - 백엔드 프로젝트 기본 열림
   });
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+  const [editingMilestoneId, setEditingMilestoneId] = React.useState<string | null>(null);
+  const [isTaskModalOpen, setIsTaskModalOpen] = React.useState(false);
+  const [taskMode, setTaskMode] = React.useState<"create" | "edit">("create");
+  const [editingTaskId, setEditingTaskId] = React.useState<string | null>(null);
+  const [selectedMilestoneForTask, setSelectedMilestoneForTask] = React.useState<string | null>(null);
 
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
@@ -70,6 +85,18 @@ export const CategoryDetailSection = ({
             themeLight={category.themeLight}
             isExpanded={Boolean(expandedMilestones[item.id])}
             onToggle={() => toggleMilestone(item.id)}
+            onEdit={() => setEditingMilestoneId(item.id)}
+            onAddTask={() => {
+              setTaskMode("create");
+              setSelectedMilestoneForTask(item.id);
+              setIsTaskModalOpen(true);
+            }}
+            onEditTask={(taskId) => {
+              setTaskMode("edit");
+              setEditingTaskId(taskId);
+              setSelectedMilestoneForTask(item.id);
+              setIsTaskModalOpen(true);
+            }}
           />
         ))}
       </div>
@@ -90,9 +117,40 @@ export const CategoryDetailSection = ({
         category={category}
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={() => {
-          console.log(`Deleted category: ${category.title}`);
+          onDeleteCategory(category.id);
           setIsDeleteModalOpen(false);
-          onBack(); // Go back to calendar after deleting
+        }}
+      />
+
+      <MilestoneFormModal 
+        isOpen={!!editingMilestoneId}
+        onClose={() => setEditingMilestoneId(null)}
+        categories={categories}
+        mode="edit"
+        onRequestDelete={() => {
+          if (editingMilestoneId) {
+            onDeleteMilestone(category.id, editingMilestoneId);
+          }
+          setEditingMilestoneId(null);
+        }}
+      />
+
+      <TaskFormModal 
+        isOpen={isTaskModalOpen}
+        onClose={() => {
+          setIsTaskModalOpen(false);
+          setEditingTaskId(null);
+        }}
+        categories={categories}
+        defaultCategoryId={category.id}
+        defaultMilestoneId={selectedMilestoneForTask}
+        mode={taskMode}
+        onRequestDelete={() => {
+          if (selectedMilestoneForTask && editingTaskId) {
+            onDeleteTask(category.id, selectedMilestoneForTask, editingTaskId);
+          }
+          setIsTaskModalOpen(false);
+          setEditingTaskId(null);
         }}
       />
     </section>

@@ -7,7 +7,6 @@ type CategoryDetailHeaderProps = {
 };
 
 export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderProps) => {
-  // @ts-ignore - tasks property might not be strictly typed in Category
   const totalTasksCount = category.items.reduce((acc, item) => acc + (item.tasks?.length || 0), 0);
 
   return (
