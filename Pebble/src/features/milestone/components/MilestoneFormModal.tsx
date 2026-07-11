@@ -23,7 +23,7 @@ export const MilestoneFormModal = ({ isOpen, onClose, categories, mode = "create
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
-      <div className="w-[520px] p-8 bg-fill-inverse rounded-[32px] flex flex-col gap-8 shadow-shadow-m relative">
+      <div className="w-[640px] p-8 bg-fill-inverse rounded-[32px] flex flex-col gap-10 shadow-shadow-m relative">
         <h2 className="text-[24px] font-semibold text-text-strong leading-[1.4] tracking-[-0.24px]">
           {mode === "edit" ? "마일스톤 수정하기" : "마일스톤 추가하기"}
         </h2>

@@ -48,7 +48,7 @@ export const ScheduleDatePicker = ({
 
   const getTypeButtonClass = (type: DateType) => {
     const baseClass = isTaskVariant
-      ? "flex-[1] px-5 py-3 rounded-[12px] flex flex-col items-center justify-center gap-1 transition-colors"
+      ? "flex-[1] px-5 py-3 rounded-[12px] flex flex-col items-start justify-center gap-1 transition-colors"
       : "flex-1 p-4 rounded-[12px] flex flex-col items-start gap-1 transition-colors";
 
     const activeClass = isTaskVariant
