@@ -50,6 +50,7 @@ export function AccountSettingsSection({
 
       <EmailChangeModal
         open={isEmailModalOpen}
+        currentEmail={currentEmail}
         onOpenChange={setIsEmailModalOpen}
       />
 
