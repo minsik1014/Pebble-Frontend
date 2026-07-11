@@ -197,6 +197,7 @@ export const GlobalNavigationBar = ({
 
           <button
             type="button"
+            onClick={() => navigate("/login")}
             className={getNavigationButtonClassName(false)}
             aria-label="로그아웃"
           >
