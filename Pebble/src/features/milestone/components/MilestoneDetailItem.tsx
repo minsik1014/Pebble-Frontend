@@ -11,6 +11,8 @@ type MilestoneDetailItemProps = {
   isExpanded: boolean;
   onToggle: () => void;
   onEdit?: () => void;
+  onAddTask?: () => void;
+  onEditTask?: (taskId: string) => void;
 };
 
 export const MilestoneDetailItem = ({
@@ -20,6 +22,8 @@ export const MilestoneDetailItem = ({
   isExpanded,
   onToggle,
   onEdit,
+  onAddTask,
+  onEditTask,
 }: MilestoneDetailItemProps) => {
   return (
     <div className="w-full bg-fill-inverse rounded-[20px] shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] flex flex-col overflow-hidden">
@@ -70,7 +74,12 @@ export const MilestoneDetailItem = ({
           {item.tasks && item.tasks.length > 0 && (
             <div className="w-full pl-8 pr-3 flex flex-col justify-center items-end gap-2">
               {item.tasks.map((task) => (
-                <TaskDetailRow key={task.id} task={task} themeLight={themeLight} />
+                <TaskDetailRow 
+                  key={task.id} 
+                  task={task} 
+                  themeLight={themeLight} 
+                  onEdit={() => onEditTask?.(task.id)}
+                />
               ))}
             </div>
           )}
@@ -79,6 +88,7 @@ export const MilestoneDetailItem = ({
               label="태스크 추가하기" 
               variant="secondary" 
               className="w-[740px]" 
+              onClick={onAddTask}
             />
           </div>
         </div>

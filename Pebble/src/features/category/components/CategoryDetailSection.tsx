@@ -5,6 +5,7 @@ import { DeleteCategoryModal } from "./DeleteCategoryModal";
 import { CategoryDetailHeader } from "./CategoryDetailHeader";
 import { MilestoneDetailItem } from "@/features/milestone/components/MilestoneDetailItem";
 import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
+import { TaskFormModal } from "@/features/task/components/TaskFormModal";
 import { dummyCategories as categories } from "@/mocks/dummyData";
 import { type Category } from "@/types";
 
@@ -23,6 +24,10 @@ export const CategoryDetailSection = ({
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
   const [editingMilestoneId, setEditingMilestoneId] = React.useState<string | null>(null);
+  const [isTaskModalOpen, setIsTaskModalOpen] = React.useState(false);
+  const [taskMode, setTaskMode] = React.useState<"create" | "edit">("create");
+  const [editingTaskId, setEditingTaskId] = React.useState<string | null>(null);
+  const [selectedMilestoneForTask, setSelectedMilestoneForTask] = React.useState<string | null>(null);
 
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
@@ -74,6 +79,17 @@ export const CategoryDetailSection = ({
             isExpanded={Boolean(expandedMilestones[item.id])}
             onToggle={() => toggleMilestone(item.id)}
             onEdit={() => setEditingMilestoneId(item.id)}
+            onAddTask={() => {
+              setTaskMode("create");
+              setSelectedMilestoneForTask(item.id);
+              setIsTaskModalOpen(true);
+            }}
+            onEditTask={(taskId) => {
+              setTaskMode("edit");
+              setEditingTaskId(taskId);
+              setSelectedMilestoneForTask(item.id);
+              setIsTaskModalOpen(true);
+            }}
           />
         ))}
       </div>
@@ -108,6 +124,23 @@ export const CategoryDetailSection = ({
         onRequestDelete={() => {
           console.log(`Requested to delete milestone: ${editingMilestoneId}`);
           setEditingMilestoneId(null);
+        }}
+      />
+
+      <TaskFormModal 
+        isOpen={isTaskModalOpen}
+        onClose={() => {
+          setIsTaskModalOpen(false);
+          setEditingTaskId(null);
+        }}
+        categories={categories}
+        defaultCategoryId={category.id}
+        defaultMilestoneId={selectedMilestoneForTask}
+        mode={taskMode}
+        onRequestDelete={() => {
+          console.log(`Requested to delete task: ${editingTaskId}`);
+          setIsTaskModalOpen(false);
+          setEditingTaskId(null);
         }}
       />
     </section>

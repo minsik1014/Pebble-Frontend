@@ -38,7 +38,7 @@ export const CalendarMainPage = (): JSX.Element => {
 
   return (
     <main
-      className="bg-fill-surface w-full min-h-screen flex items-center justify-center overflow-hidden transition-all duration-300"
+      className="bg-fill-surface w-full min-h-screen flex items-center justify-center overflow-hidden"
       data-id="main-screen"
     >
       <div 
@@ -46,10 +46,10 @@ export const CalendarMainPage = (): JSX.Element => {
           width: ORIGINAL_WIDTH * scale, 
           height: ORIGINAL_HEIGHT * scale 
         }} 
-        className="relative transition-all duration-300"
+        className="relative"
       >
         <div 
-          className="flex gap-4 absolute left-0 top-0 origin-top-left transition-all duration-300"
+          className="flex gap-4 absolute left-0 top-0 origin-top-left"
           style={{ transform: `scale(${scale})` }}
         >
           <CalendarSidebar 

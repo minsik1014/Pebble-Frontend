@@ -3,6 +3,7 @@ import { dummyCategories as categories } from "@/mocks/dummyData";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
 import { MilestoneFormModal } from "./MilestoneFormModal";
+import { TaskFormModal } from "@/features/task/components/TaskFormModal";
 import { AddMenuModal } from "./AddMenuModal";
 import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 import { MilestoneAccordion } from "./MilestoneAccordion";
@@ -27,6 +28,7 @@ export const CalendarSidebar = ({
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   const monthLabel = useMemo(() => "6월", []);
 
@@ -97,7 +99,7 @@ export const CalendarSidebar = ({
         onClose={() => setIsAddMenuOpen(false)}
         onSelectCategory={() => setIsCreateModalOpen(true)}
         onSelectMilestone={() => setIsMilestoneModalOpen(true)}
-        onSelectTask={() => alert("태스크 추가는 추후 구현 예정입니다.")}
+        onSelectTask={() => setIsTaskModalOpen(true)}
       />
 
       <CategoryFormModal 
@@ -109,6 +111,12 @@ export const CalendarSidebar = ({
       <MilestoneFormModal
         isOpen={isMilestoneModalOpen}
         onClose={() => setIsMilestoneModalOpen(false)}
+        categories={categories}
+      />
+
+      <TaskFormModal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
         categories={categories}
       />
     </aside>
