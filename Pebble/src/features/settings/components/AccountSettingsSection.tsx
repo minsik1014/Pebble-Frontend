@@ -42,8 +42,8 @@ export function AccountSettingsSection({
           <Divider />
 
           <PasswordChangeItem
-            isSocialAccount={isSocialAccount}
-            onOpen={handleOpenPasswordModal}
+            disabled={isSocialAccount}
+            onClick={() => setIsPasswordModalOpen(true)}
           />
         </div>
       </SettingsSection>
