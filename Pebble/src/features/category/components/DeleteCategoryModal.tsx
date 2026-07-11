@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CloseIcon from "@/assets/icons/Close.svg?react";
 import { type Category } from "@/types";
 
@@ -16,6 +16,12 @@ export const DeleteCategoryModal = ({
   onDelete,
 }: DeleteCategoryModalProps) => {
   const [confirmText, setConfirmText] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setConfirmText("");
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

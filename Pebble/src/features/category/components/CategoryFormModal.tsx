@@ -1,6 +1,10 @@
-import React, { useState } from "react";
-import UploadIcon from "@/assets/icons/Upload.svg?react";
+import { useEffect, useState } from "react";
 import { type Category } from "@/types";
+import { CategoryColorPicker } from "./CategoryColorPicker";
+import { CategoryImageUploader } from "./CategoryImageUploader";
+import { CategoryMemberSelector } from "./CategoryMemberSelector";
+import { CategoryToggleField } from "./CategoryToggleField";
+import { DUMMY_FRIENDS, type Friend } from "./categoryFormOptions";
 
 type CategoryFormModalProps = {
   isOpen: boolean;
@@ -9,24 +13,6 @@ type CategoryFormModalProps = {
   onClose: () => void;
   onRequestDelete?: () => void;
 };
-
-const COLORS = [
-  "bg-theme-1-base",
-  "bg-theme-2-base",
-  "bg-theme-3-base",
-  "bg-theme-4-base",
-  "bg-theme-5-base",
-  "bg-theme-6-base",
-];
-
-type Friend = { id: number; name: string };
-const DUMMY_FRIENDS: Friend[] = [
-  { id: 1, name: "담검이" },
-  { id: 2, name: "조료" },
-  { id: 3, name: "민식이" },
-  { id: 4, name: "페블이" },
-  { id: 5, name: "짱구" },
-];
 
 export const CategoryFormModal = ({ 
   isOpen, 
@@ -60,12 +46,9 @@ export const CategoryFormModal = ({
     });
   };
 
-  // Update input when category prop changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (mode === "edit" && category) {
       setCategoryName(category.title);
-      // We could also set selectedColor etc. here based on category if needed
-      // Mocking edit mode data for now since we don't have real data in category
       setIsShared(true);
       setSelectedMembers([DUMMY_FRIENDS[0], DUMMY_FRIENDS[1]]);
     } else {
@@ -92,22 +75,7 @@ export const CategoryFormModal = ({
         </header>
 
         <div className="flex items-start gap-10">
-          {/* 좌측: 썸네일 업로드 */}
-          <div className="w-60 h-96 flex flex-col items-start gap-2">
-            <label className="text-body-01-sb text-text-primary">
-              대표 이미지 (선택)
-            </label>
-            <button 
-              type="button"
-              className="w-full flex-1 flex flex-col items-center justify-center gap-2 bg-fill-surface rounded-token-s border border-border-default hover:bg-fill-surface-hover transition-colors overflow-hidden"
-            >
-              <UploadIcon className="w-10 h-10 text-text-secondary" />
-              <span className="text-body-02-m text-text-secondary">이미지 추가</span>
-            </button>
-            <span className="w-full text-left text-xs text-text-teritary">
-              JPEG · PNG · WEBP 최대 5MB
-            </span>
-          </div>
+          <CategoryImageUploader />
 
           {/* 우측: 폼 입력 */}
           <div className="flex-1 flex flex-col gap-5">
@@ -125,89 +93,27 @@ export const CategoryFormModal = ({
               />
             </div>
 
-            {/* 색상 선택 */}
-            <div className="flex flex-col gap-2">
-              <label className="text-body-01-sb text-text-primary flex items-center gap-1">
-                색상 선택 <span className="text-fill-danger text-body-01-sb">*</span>
-              </label>
-              <div className="flex items-center gap-2">
-                {COLORS.map((color, index) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => setSelectedColor(index)}
-                    className={`w-10 h-10 rounded-token-s relative transition-transform ${color} ${
-                      selectedColor !== index ? "hover:scale-105" : ""
-                    }`}
-                    aria-label={`색상 ${index + 1}`}
-                  >
-                    {selectedColor === index && (
-                      <div className={`w-12 h-12 left-[-4px] top-[-4px] absolute rounded-2xl border-[1.5px] ${
-                        color === "bg-theme-1-base" ? "border-theme-1-base" :
-                        color === "bg-theme-2-base" ? "border-theme-2-base" :
-                        color === "bg-theme-3-base" ? "border-theme-3-base" :
-                        color === "bg-theme-4-base" ? "border-theme-4-base" :
-                        color === "bg-theme-5-base" ? "border-theme-5-base" :
-                        "border-theme-6-base"
-                      }`} />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <CategoryColorPicker
+              selectedColor={selectedColor}
+              onSelectColor={setSelectedColor}
+            />
 
-            {/* 공개 설정 */}
-            <div className="flex flex-col gap-2">
-              <label className="text-body-01-sb text-text-primary">
-                공개 설정
-              </label>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsPublic(!isPublic)}
-                  className={`w-12 h-7 rounded-full relative transition-colors ${
-                    isPublic ? "bg-fill-primary" : "bg-[#d4d4d4]"
-                  }`}
-                >
-                  <div 
-                    className={`w-6 h-6 bg-fill-inverse rounded-full absolute top-[2px] transition-all ${
-                      isPublic ? "left-[22px]" : "left-[2px]"
-                    }`} 
-                  />
-                </button>
-                <span className="text-body-02-m text-text-secondary">
-                  {isPublic ? "공개" : "비공개"}
-                </span>
-              </div>
-              <span className="text-xs text-text-teritary whitespace-nowrap">
-                비공개 시 팔로잉 유저에게 카테고리, 마일스톤, 태스크 전부 미노출
-              </span>
-            </div>
+            <CategoryToggleField
+              label="공개 설정"
+              checked={isPublic}
+              checkedLabel="공개"
+              uncheckedLabel="비공개"
+              description="비공개 시 팔로잉 유저에게 카테고리, 마일스톤, 태스크 전부 미노출"
+              onToggle={() => setIsPublic(!isPublic)}
+            />
 
-            {/* 완료 여부 */}
-            <div className="flex flex-col gap-2">
-              <label className="text-body-01-sb text-text-primary">
-                완료 여부
-              </label>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsCompleted(!isCompleted)}
-                  className={`w-12 h-7 rounded-full relative transition-colors ${
-                    isCompleted ? "bg-fill-primary" : "bg-[#d4d4d4]"
-                  }`}
-                >
-                  <div 
-                    className={`w-6 h-6 bg-fill-inverse rounded-full absolute top-[2px] transition-all ${
-                      isCompleted ? "left-[22px]" : "left-[2px]"
-                    }`} 
-                  />
-                </button>
-                <span className="text-body-02-m text-text-secondary">
-                  {isCompleted ? "완료" : "미완료"}
-                </span>
-              </div>
-            </div>
+            <CategoryToggleField
+              label="완료 여부"
+              checked={isCompleted}
+              checkedLabel="완료"
+              uncheckedLabel="미완료"
+              onToggle={() => setIsCompleted(!isCompleted)}
+            />
           </div>
         </div>
 
@@ -236,63 +142,16 @@ export const CategoryFormModal = ({
           </button>
         </div>
 
-        {/* 구성원 */}
         {isShared && (
-          <div className="flex flex-col gap-2 w-full relative">
-            <h3 className="font-semibold text-[18px] text-text-primary leading-[1.5] tracking-[-0.18px]">
-              구성원
-            </h3>
-            <div className="bg-fill-surface border border-border-default flex gap-3 items-center px-5 py-3 rounded-token-s w-full flex-wrap">
-              
-              {/* 추가된 멤버 렌더링 */}
-              {selectedMembers.map((member) => (
-                <div key={member.id} className="bg-[#e5e5e5] drop-shadow-sm flex gap-3 items-center p-2 rounded-full">
-                  <div className="flex gap-2 items-center">
-                    <div className="w-9 h-9 rounded-full bg-gray-300 border border-border-default flex-shrink-0" />
-                    <span className="font-medium text-[18px] text-text-strong tracking-[-0.18px]">{member.name}</span>
-                  </div>
-                  <button 
-                    type="button" 
-                    onClick={() => toggleMember(member)}
-                    className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-black/5 transition-colors"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="#737373"/>
-                    </svg>
-                  </button>
-                </div>
-              ))}
-
-              {/* 검색 및 추가 인풋 */}
-              <div className="relative flex-1 min-w-[150px]">
-                <input
-                  type="text"
-                  placeholder="친구 추가..."
-                  className="w-full bg-transparent outline-none text-[16px] text-text-primary placeholder:text-text-teritary"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setIsDropdownOpen(true)}
-                  onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
-                />
-              </div>
-            </div>
-
-            {/* 드롭다운 리스트 */}
-            {isDropdownOpen && filteredFriends.length > 0 && (
-              <div className="absolute top-full mt-2 w-full bg-fill-inverse border border-border-default rounded-token-s shadow-shadow-m max-h-48 overflow-y-auto z-10">
-                {filteredFriends.map((friend) => (
-                  <div 
-                    key={friend.id}
-                    onClick={() => toggleMember(friend)}
-                    className="flex gap-3 items-center px-4 py-3 hover:bg-fill-surface cursor-pointer transition-colors"
-                  >
-                    <div className="w-9 h-9 rounded-full bg-gray-300 border border-border-default flex-shrink-0" />
-                    <span className="font-medium text-[16px] text-text-primary">{friend.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <CategoryMemberSelector
+            selectedMembers={selectedMembers}
+            filteredFriends={filteredFriends}
+            searchQuery={searchQuery}
+            isDropdownOpen={isDropdownOpen}
+            onSearchChange={setSearchQuery}
+            onDropdownOpenChange={setIsDropdownOpen}
+            onToggleMember={toggleMember}
+          />
         )}
 
         {/* 하단 버튼 */}

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { dummyCategories as categories } from "@/mocks/dummyData";
+import { type Category } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
 import { MilestoneFormModal } from "./MilestoneFormModal";
@@ -13,10 +13,12 @@ import { SidebarDivider } from "./SidebarDivider";
 
 export const CalendarSidebar = ({
   isSidebarOpen = true,
+  categories,
   onSelectCategory,
   selectedCategoryId
 }: {
   isSidebarOpen?: boolean;
+  categories: Category[];
   onSelectCategory?: (categoryId: string) => void;
   selectedCategoryId?: string | null;
 }): JSX.Element => {

@@ -6,17 +6,24 @@ import { CategoryDetailHeader } from "./CategoryDetailHeader";
 import { MilestoneDetailItem } from "@/features/milestone/components/MilestoneDetailItem";
 import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
 import { TaskFormModal } from "@/features/task/components/TaskFormModal";
-import { dummyCategories as categories } from "@/mocks/dummyData";
 import { type Category } from "@/types";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
   category,
   onBack,
+  categories,
+  onDeleteCategory,
+  onDeleteMilestone,
+  onDeleteTask,
 }: {
   isSidebarOpen: boolean;
   category: Category;
   onBack: () => void;
+  categories: Category[];
+  onDeleteCategory: (categoryId: string) => void;
+  onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
+  onDeleteTask: (categoryId: string, milestoneId: string, taskId: string) => void;
 }) => {
   const [expandedMilestones, setExpandedMilestones] = React.useState<Record<string, boolean>>({
     "startup-1": true, // 창업 공모전 - 백엔드 프로젝트 기본 열림
@@ -110,9 +117,8 @@ export const CategoryDetailSection = ({
         category={category}
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={() => {
-          console.log(`Deleted category: ${category.title}`);
+          onDeleteCategory(category.id);
           setIsDeleteModalOpen(false);
-          onBack(); // Go back to calendar after deleting
         }}
       />
 
@@ -122,7 +128,9 @@ export const CategoryDetailSection = ({
         categories={categories}
         mode="edit"
         onRequestDelete={() => {
-          console.log(`Requested to delete milestone: ${editingMilestoneId}`);
+          if (editingMilestoneId) {
+            onDeleteMilestone(category.id, editingMilestoneId);
+          }
           setEditingMilestoneId(null);
         }}
       />
@@ -138,7 +146,9 @@ export const CategoryDetailSection = ({
         defaultMilestoneId={selectedMilestoneForTask}
         mode={taskMode}
         onRequestDelete={() => {
-          console.log(`Requested to delete task: ${editingTaskId}`);
+          if (selectedMilestoneForTask && editingTaskId) {
+            onDeleteTask(category.id, selectedMilestoneForTask, editingTaskId);
+          }
           setIsTaskModalOpen(false);
           setEditingTaskId(null);
         }}
