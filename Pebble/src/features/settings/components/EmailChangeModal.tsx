@@ -38,6 +38,8 @@ export function EmailChangeModal({
 
   if (!open) return null;
 
+  const hasEmailValue = email.trim().length > 0;
+
   const handleSubmit = async () => {
     const validationError = validateEmail(email, currentEmail);
 
@@ -88,11 +90,12 @@ export function EmailChangeModal({
 
         <label className="mt-token-l block">
           <span className="text-body-02-sb text-text-strong">새 이메일</span>
+
           <input
             value={email}
             disabled={isSubmitting}
             placeholder="새 이메일을 입력해 주세요"
-            className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m outline-none focus:border-border-primary"
+            className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
             onChange={(event) => setEmail(event.target.value)}
           />
         </label>
@@ -113,7 +116,7 @@ export function EmailChangeModal({
           <button
             type="button"
             disabled={isSubmitting}
-            className="h-11 rounded-token-s bg-btn-quaternary text-body-02-m text-text-strong"
+            className="h-11 rounded-token-s bg-btn-quaternary text-body-02-m text-text-strong disabled:cursor-not-allowed disabled:opacity-100"
             onClick={() => onOpenChange(false)}
           >
             취소
@@ -122,7 +125,13 @@ export function EmailChangeModal({
           <button
             type="button"
             disabled={isSubmitting}
-            className="h-11 rounded-token-s bg-btn-primary text-body-02-m text-text-onFill disabled:opacity-50"
+            aria-disabled={!hasEmailValue || isSubmitting}
+            className={[
+              'h-11 rounded-token-s text-body-02-m disabled:cursor-not-allowed disabled:opacity-100',
+              hasEmailValue && !isSubmitting
+                ? 'bg-btn-primary text-text-onFill'
+                : 'bg-[#737373] text-[#A3A3A3]',
+            ].join(' ')}
             onClick={handleSubmit}
           >
             {isSubmitting ? '요청 중...' : '인증 메일 보내기'}

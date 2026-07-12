@@ -48,6 +48,11 @@ export function PasswordChangeModal({
 
   if (!open) return null;
 
+  const hasPasswordValues =
+    currentPassword.trim().length > 0 &&
+    newPassword.trim().length > 0 &&
+    newPasswordConfirm.trim().length > 0;
+
   const handleSubmit = async () => {
     const validationError = validatePasswordForm({
       currentPassword,
@@ -106,11 +111,13 @@ export function PasswordChangeModal({
             <span className="text-body-02-sb text-text-strong">
               현재 비밀번호
             </span>
+
             <input
               type="password"
               value={currentPassword}
               disabled={isSubmitting}
-              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m outline-none focus:border-border-primary"
+              placeholder="현재 비밀번호를 입력해 주세요"
+              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
               onChange={(event) => setCurrentPassword(event.target.value)}
             />
           </label>
@@ -119,11 +126,13 @@ export function PasswordChangeModal({
             <span className="text-body-02-sb text-text-strong">
               새 비밀번호
             </span>
+
             <input
               type="password"
               value={newPassword}
               disabled={isSubmitting}
-              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m outline-none focus:border-border-primary"
+              placeholder="새 비밀번호를 입력해 주세요"
+              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
               onChange={(event) => setNewPassword(event.target.value)}
             />
           </label>
@@ -132,11 +141,13 @@ export function PasswordChangeModal({
             <span className="text-body-02-sb text-text-strong">
               새 비밀번호 확인
             </span>
+
             <input
               type="password"
               value={newPasswordConfirm}
               disabled={isSubmitting}
-              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m outline-none focus:border-border-primary"
+              placeholder="새 비밀번호를 다시 입력해 주세요"
+              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
               onChange={(event) => setNewPasswordConfirm(event.target.value)}
             />
           </label>
@@ -152,7 +163,7 @@ export function PasswordChangeModal({
           <button
             type="button"
             disabled={isSubmitting}
-            className="h-11 rounded-token-s bg-btn-quaternary text-body-02-m text-text-strong"
+            className="h-11 rounded-token-s bg-btn-quaternary text-body-02-m text-text-strong disabled:cursor-not-allowed disabled:opacity-100"
             onClick={() => onOpenChange(false)}
           >
             취소
@@ -161,7 +172,13 @@ export function PasswordChangeModal({
           <button
             type="button"
             disabled={isSubmitting}
-            className="h-11 rounded-token-s bg-btn-primary text-body-02-m text-text-onFill disabled:opacity-50"
+            aria-disabled={!hasPasswordValues || isSubmitting}
+            className={[
+              'h-11 rounded-token-s text-body-02-m disabled:cursor-not-allowed disabled:opacity-100',
+              hasPasswordValues && !isSubmitting
+                ? 'bg-btn-primary text-text-onFill'
+                : 'bg-[#737373] text-[#A3A3A3]',
+            ].join(' ')}
             onClick={handleSubmit}
           >
             {isSubmitting ? '변경 중...' : '변경하기'}
