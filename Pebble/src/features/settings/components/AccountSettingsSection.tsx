@@ -25,6 +25,7 @@ export function AccountSettingsSection({
 
   const handleOpenPasswordModal = () => {
     if (isSocialAccount) return;
+
     setIsPasswordModalOpen(true);
   };
 
@@ -43,7 +44,7 @@ export function AccountSettingsSection({
 
           <PasswordChangeItem
             disabled={isSocialAccount}
-            onClick={() => setIsPasswordModalOpen(true)}
+            onClick={handleOpenPasswordModal}
           />
         </div>
       </SettingsSection>
