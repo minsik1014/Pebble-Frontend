@@ -1,12 +1,39 @@
+// src/features/settings/components/PasswordChangeModal.tsx
+
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/Button';
-
-import { SettingsModal } from './SettingsModal';
+import { changePassword } from '@/features/settings/api/mockSettingsApi';
 
 interface PasswordChangeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+function validatePasswordForm({
+  currentPassword,
+  newPassword,
+  newPasswordConfirm,
+}: {
+  currentPassword: string;
+  newPassword: string;
+  newPasswordConfirm: string;
+}) {
+  if (!currentPassword) return '현재 비밀번호를 입력해 주세요.';
+  if (!newPassword) return '새 비밀번호를 입력해 주세요.';
+
+  if (newPassword.length < 8) {
+    return '새 비밀번호는 8자 이상이어야 해요.';
+  }
+
+  if (newPassword !== newPasswordConfirm) {
+    return '새 비밀번호가 일치하지 않아요.';
+  }
+
+  if (currentPassword === newPassword) {
+    return '현재 비밀번호와 다른 비밀번호를 입력해 주세요.';
+  }
+
+  return '';
 }
 
 export function PasswordChangeModal({
@@ -19,112 +46,145 @@ export function PasswordChangeModal({
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  if (!open) return null;
+
+  const hasPasswordValues =
+    currentPassword.trim().length > 0 &&
+    newPassword.trim().length > 0 &&
+    newPasswordConfirm.trim().length > 0;
+
   const handleSubmit = async () => {
-    if (!currentPassword || !newPassword || !newPasswordConfirm) {
-      setErrorMessage('모든 비밀번호 항목을 입력해 주세요.');
+    const validationError = validatePasswordForm({
+      currentPassword,
+      newPassword,
+      newPasswordConfirm,
+    });
+
+    if (validationError) {
+      setErrorMessage(validationError);
       return;
     }
-
-    if (newPassword.length < 8) {
-      setErrorMessage('새 비밀번호는 8자 이상이어야 해요.');
-      return;
-    }
-
-    if (newPassword !== newPasswordConfirm) {
-      setErrorMessage('새 비밀번호가 서로 일치하지 않아요.');
-      return;
-    }
-
-    setErrorMessage('');
-    setIsSubmitting(true);
 
     try {
-      // TODO: 비밀번호 변경 요청 API 연동
-      await Promise.reject(new Error('Mock failure'));
-    } catch {
-      // 실패 시 모달과 입력값 유지
-      setErrorMessage('비밀번호 변경에 실패했어요. 다시 시도해 주세요.');
+      setIsSubmitting(true);
+      setErrorMessage('');
+
+      await changePassword({
+        currentPassword,
+        newPassword,
+      });
+
+      onOpenChange(false);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : '비밀번호 변경에 실패했어요.',
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <SettingsModal
-      open={open}
-      title="비밀번호 변경"
-      description="현재 비밀번호 확인 후 새 비밀번호를 설정해 주세요."
-      onOpenChange={onOpenChange}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(23,23,23,0.45)]"
+      onClick={() => {
+        if (!isSubmitting) onOpenChange(false);
+      }}
     >
-      <div className="flex flex-col gap-token-m">
-        <label className="flex flex-col gap-token-xs">
-          <span className="text-body-02-sb text-text-strong">
-            현재 비밀번호
-          </span>
-          <input
-            value={currentPassword}
-            type="password"
-            placeholder="현재 비밀번호"
-            className="h-12 rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none focus:border-border-primary"
-            onChange={(event) => setCurrentPassword(event.target.value)}
-          />
-        </label>
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-label="비밀번호 변경"
+        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2 className="text-title-02-sb text-text-strong">비밀번호 변경</h2>
 
-        <label className="flex flex-col gap-token-xs">
-          <span className="text-body-02-sb text-text-strong">새 비밀번호</span>
-          <input
-            value={newPassword}
-            type="password"
-            placeholder="새 비밀번호"
-            className="h-12 rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none focus:border-border-primary"
-            onChange={(event) => setNewPassword(event.target.value)}
-          />
-        </label>
+        <p className="mt-token-xs text-body-02-m text-text-secondary">
+          현재 비밀번호를 확인한 뒤 새 비밀번호를 설정해요.
+        </p>
 
-        <label className="flex flex-col gap-token-xs">
-          <span className="text-body-02-sb text-text-strong">
-            새 비밀번호 확인
-          </span>
-          <input
-            value={newPasswordConfirm}
-            type="password"
-            placeholder="새 비밀번호 확인"
-            aria-invalid={errorMessage ? true : undefined}
-            aria-describedby={
-              errorMessage ? 'password-change-error' : undefined
-            }
-            className="h-12 rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none focus:border-border-primary"
-            onChange={(event) => setNewPasswordConfirm(event.target.value)}
-          />
-        </label>
+        <div className="mt-token-l flex flex-col gap-token-m">
+          <label>
+            <span className="text-body-02-sb text-text-strong">
+              현재 비밀번호
+            </span>
 
-        {errorMessage ? (
-          <p
-            id="password-change-error"
-            className="text-caption-01 text-fill-danger"
-          >
+            <input
+              type="password"
+              value={currentPassword}
+              disabled={isSubmitting}
+              placeholder="현재 비밀번호를 입력해 주세요"
+              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+              onChange={(event) => setCurrentPassword(event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span className="text-body-02-sb text-text-strong">
+              새 비밀번호
+            </span>
+
+            <input
+              type="password"
+              value={newPassword}
+              disabled={isSubmitting}
+              placeholder="새 비밀번호를 입력해 주세요"
+              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+              onChange={(event) => setNewPassword(event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span className="text-body-02-sb text-text-strong">
+              새 비밀번호 확인
+            </span>
+
+            <input
+              type="password"
+              value={newPasswordConfirm}
+              disabled={isSubmitting}
+              placeholder="새 비밀번호를 다시 입력해 주세요"
+              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+              onChange={(event) => setNewPasswordConfirm(event.target.value)}
+            />
+          </label>
+        </div>
+
+        {errorMessage && (
+          <p className="mt-token-s text-caption-01-r text-fill-danger">
             {errorMessage}
           </p>
-        ) : null}
+        )}
 
-        <div className="flex justify-end gap-token-m">
-          <Button
+        <div className="mt-token-xl grid grid-cols-2 gap-token-m">
+          <button
             type="button"
             disabled={isSubmitting}
+            className="h-11 rounded-token-s bg-btn-quaternary text-body-02-m text-text-strong disabled:cursor-not-allowed disabled:opacity-100"
             onClick={() => onOpenChange(false)}
           >
             취소
-          </Button>
-          <Button
+          </button>
+
+          <button
             type="button"
-            variant="danger"
             disabled={isSubmitting}
+            aria-disabled={!hasPasswordValues || isSubmitting}
+            className={[
+              'h-11 rounded-token-s text-body-02-m disabled:cursor-not-allowed disabled:opacity-100',
+              hasPasswordValues && !isSubmitting
+                ? 'bg-btn-primary text-text-onFill'
+                : 'bg-[#737373] text-[#A3A3A3]',
+            ].join(' ')}
             onClick={handleSubmit}
           >
-            변경하기
-          </Button>
+            {isSubmitting ? '변경 중...' : '변경하기'}
+          </button>
         </div>
-      </div>
-    </SettingsModal>
+      </section>
+    </div>
   );
 }
