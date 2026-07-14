@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import BellOutlineIcon from "@/assets/icons/bell-outline no-dot.svg?react";
 import SocialOutlineIcon from "@/assets/icons/social-outline.svg?react";
+import CalendarOutlineIcon from "@/assets/icons/calendar-nav-default.svg?react";
 import CalendarSolidIcon from "@/assets/icons/calendar-nav-selected.svg?react";
 import MyOutlineIcon from "@/assets/icons/user-outline.svg?react";
+import MySolidIcon from "@/assets/icons/user-solid.svg?react";
 import SettingsOutlineIcon from "@/assets/icons/settings-outline.svg?react";
 import LogOutIcon from "@/assets/icons/logout.svg?react";
 
@@ -11,6 +14,8 @@ import { AlarmPopover } from "@/features/alarm/components/AlarmPopover";
 import { useAlarms } from "@/features/alarm/hooks/useAlarm";
 
 export const GlobalNavigationBar = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
   const [popoverPosition, setPopoverPosition] = useState({
     top: 0,
@@ -18,6 +23,7 @@ export const GlobalNavigationBar = () => {
   });
 
   const alarmButtonRef = useRef<HTMLButtonElement>(null);
+  const isMyPage = location.pathname === "/my";
 
   const {
     alarms,
@@ -121,14 +127,39 @@ export const GlobalNavigationBar = () => {
           <div className="size-11 relative flex items-center justify-center rounded-token-s cursor-pointer hover:bg-fill-surface transition-colors text-text-secondary hover:text-text-strong">
             <SocialOutlineIcon className="size-6" />
           </div>
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className={`size-11 relative flex items-center justify-center rounded-token-s cursor-pointer transition-colors ${
+              isMyPage
+                ? "text-text-secondary hover:bg-fill-surface hover:text-text-strong"
+                : "bg-fill-primary text-text-onFill shadow-sm"
+            }`}
+            aria-label="캘린더로 이동"
+          >
+            {isMyPage ? (
+              <CalendarOutlineIcon className="size-6" />
+            ) : (
+              <CalendarSolidIcon className="size-6" />
+            )}
+          </button>
 
-          <div className="size-11 relative flex items-center justify-center rounded-token-s bg-fill-primary text-text-onFill cursor-pointer shadow-sm">
-            <CalendarSolidIcon className="size-6" />
-          </div>
-
-          <div className="size-11 relative flex items-center justify-center rounded-token-s cursor-pointer hover:bg-fill-surface transition-colors text-text-secondary hover:text-text-strong">
-            <MyOutlineIcon className="size-6" />
-          </div>
+          <button
+            type="button"
+            onClick={() => navigate("/my")}
+            className={`size-11 relative flex items-center justify-center rounded-token-s cursor-pointer transition-colors ${
+              isMyPage
+                ? "bg-fill-primary text-text-onFill shadow-sm"
+                : "text-text-secondary hover:bg-fill-surface hover:text-text-strong"
+            }`}
+            aria-label="마이페이지로 이동"
+          >
+            {isMyPage ? (
+              <MySolidIcon className="size-6" />
+            ) : (
+              <MyOutlineIcon className="size-6" />
+            )}
+          </button>
         </div>
 
         {/* 하단: 설정 그룹 */}
