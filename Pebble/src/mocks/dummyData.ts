@@ -5,9 +5,9 @@ export const dummyCategories: Category[] = [
     id: "expo",
     title: "EXPO",
     accent: "#00cef5",
-    themeBase: "bg-theme-6-base",
-    themeMid: "bg-theme-6-mid",
-    themeLight: "bg-theme-6-light",
+    themeBase: "bg-theme-1-base",
+    themeMid: "bg-theme-1-mid",
+    themeLight: "bg-theme-1-light",
     items: [
       {
         id: "expo-1",
@@ -30,9 +30,9 @@ export const dummyCategories: Category[] = [
     id: "final-exam",
     title: "기말고사",
     accent: "#ffdd47",
-    themeBase: "bg-theme-4-base",
-    themeMid: "bg-theme-4-mid",
-    themeLight: "bg-theme-4-light",
+    themeBase: "bg-theme-5-base",
+    themeMid: "bg-theme-5-mid",
+    themeLight: "bg-theme-5-light",
     items: [
       {
         id: "final-1",

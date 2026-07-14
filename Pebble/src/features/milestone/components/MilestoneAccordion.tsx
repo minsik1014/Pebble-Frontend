@@ -13,6 +13,7 @@ type MilestoneAccordionProps = {
   checkedItems: Record<string, boolean>;
   onToggleChecked: (itemId: string) => void;
   onSelectCategory?: (categoryId: string) => void;
+  isSelected?: boolean;
 };
 
 export const MilestoneAccordion = ({
@@ -22,13 +23,16 @@ export const MilestoneAccordion = ({
   checkedItems,
   onToggleChecked,
   onSelectCategory,
+  isSelected = false,
 }: MilestoneAccordionProps) => {
   const [visible, setVisible] = useState(true);
 
   return (
     <section className="w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[20px] shadow-shadow-s overflow-hidden">
       <div 
-        className="flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-[20px] overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors"
+        className={`flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-[20px] overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors ${
+          isSelected ? "border-[1.5px] border-border-default" : "border-[1.5px] border-transparent"
+        }`}
         onClick={() => onSelectCategory?.(category.id)}
       >
         <div className="flex items-center gap-3 relative">

@@ -1,24 +1,34 @@
 import { useMemo, useState } from "react";
-import { dummyCategories as categories } from "@/mocks/dummyData";
+import { type Category } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
+import { MilestoneFormModal } from "./MilestoneFormModal";
+import { TaskFormModal } from "@/features/task/components/TaskFormModal";
+import { AddMenuModal } from "./AddMenuModal";
 import { MilestoneAccordion } from "./MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
 
 export const CalendarSidebar = ({
   isSidebarOpen = true,
-  onSelectCategory
+  categories,
+  onSelectCategory,
+  selectedCategoryId
 }: {
   isSidebarOpen?: boolean;
+  categories: Category[];
   onSelectCategory?: (categoryId: string) => void;
+  selectedCategoryId?: string | null;
 }): JSX.Element => {
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
   >({});
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   const monthLabel = useMemo(() => "6월", []);
 
@@ -65,6 +75,7 @@ export const CalendarSidebar = ({
                 checkedItems={checkedItems}
                 onToggleChecked={toggleCheckedItem}
                 onSelectCategory={onSelectCategory}
+                isSelected={selectedCategoryId === category.id}
               />
             ))}
 
@@ -73,16 +84,36 @@ export const CalendarSidebar = ({
               variant="primary" 
               className="w-[352px]" 
               showIcon={false}
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={() => setIsAddMenuOpen(true)}
             />
           </div>
         </div>
       </section>
       
+      <AddMenuModal
+        isOpen={isAddMenuOpen}
+        onClose={() => setIsAddMenuOpen(false)}
+        onSelectCategory={() => setIsCreateModalOpen(true)}
+        onSelectMilestone={() => setIsMilestoneModalOpen(true)}
+        onSelectTask={() => setIsTaskModalOpen(true)}
+      />
+
       <CategoryFormModal 
         isOpen={isCreateModalOpen} 
         mode="create"
         onClose={() => setIsCreateModalOpen(false)} 
+      />
+
+      <MilestoneFormModal
+        isOpen={isMilestoneModalOpen}
+        onClose={() => setIsMilestoneModalOpen(false)}
+        categories={categories}
+      />
+
+      <TaskFormModal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        categories={categories}
       />
     </aside>
   );

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 
 import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 import { CalendarSidebar } from "@/features/milestone/components/CalendarSidebar";
 import { SidebarDivider } from "@/features/milestone/components/SidebarDivider";
+import { dummyCategories } from "@/mocks/dummyData";
+import type { Category } from "@/types";
 
 const ORIGINAL_WIDTH = 1416;
 const ORIGINAL_HEIGHT = 1000;
@@ -11,13 +13,24 @@ const ORIGINAL_HEIGHT = 1000;
 export interface MainLayoutContext {
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
+  categories: Category[];
+  onDeleteCategory: (categoryId: string) => void;
+  onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
+  onDeleteTask: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void;
 }
 
 export const MainLayout = (): JSX.Element => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [scale, setScale] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [categories, setCategories] = useState<Category[]>(dummyCategories);
+  const selectedCategoryId = searchParams.get("category");
 
   useEffect(() => {
     const handleResize = () => {
@@ -47,6 +60,53 @@ export const MainLayout = (): JSX.Element => {
     navigate(`/?category=${categoryId}`);
   };
 
+  const handleDeleteCategory = (categoryId: string) => {
+    setCategories((prev) =>
+      prev.filter((category) => category.id !== categoryId),
+    );
+    navigate("/");
+  };
+
+  const handleDeleteMilestone = (
+    categoryId: string,
+    milestoneId: string,
+  ) => {
+    setCategories((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? {
+              ...category,
+              items: category.items.filter((item) => item.id !== milestoneId),
+            }
+          : category,
+      ),
+    );
+  };
+
+  const handleDeleteTask = (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => {
+    setCategories((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? {
+              ...category,
+              items: category.items.map((item) =>
+                item.id === milestoneId
+                  ? {
+                      ...item,
+                      tasks: item.tasks?.filter((task) => task.id !== taskId),
+                    }
+                  : item,
+              ),
+            }
+          : category,
+      ),
+    );
+  };
+
   return (
     <main className="flex min-h-screen w-full items-center justify-center overflow-hidden bg-fill-surface">
       <div
@@ -67,7 +127,9 @@ export const MainLayout = (): JSX.Element => {
             <SidebarDivider visible={isSidebarOpen} />
             <CalendarSidebar
               isSidebarOpen={isSidebarOpen}
+              categories={categories}
               onSelectCategory={handleSelectCategory}
+              selectedCategoryId={selectedCategoryId}
             />
           </div>
 
@@ -75,6 +137,10 @@ export const MainLayout = (): JSX.Element => {
             context={{
               isSidebarOpen,
               onToggleSidebar: handleToggleSidebar,
+              categories,
+              onDeleteCategory: handleDeleteCategory,
+              onDeleteMilestone: handleDeleteMilestone,
+              onDeleteTask: handleDeleteTask,
             }}
           />
         </div>

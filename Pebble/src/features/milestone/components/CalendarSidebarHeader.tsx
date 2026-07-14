@@ -1,5 +1,5 @@
-import CardViewIcon from "@/assets/icons/card-view.svg?react";
-import ListViewIcon from "@/assets/icons/list-view.svg?react";
+import CardViewIcon from "@/assets/icons/Card-view.svg?react";
+import ListViewIcon from "@/assets/icons/List-view.svg?react";
 
 type CalendarSidebarHeaderProps = {
   monthLabel: string;
