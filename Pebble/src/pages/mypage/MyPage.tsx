@@ -4,9 +4,10 @@ import { SidebarToggleButton } from "@/features/milestone/components/SidebarTogg
 import { CompletedCategoryGrid } from "@/features/mypage/components/CompletedCategoryGrid";
 import { MyPageStats } from "@/features/mypage/components/MyPageStats";
 import { MyProfileSection } from "@/features/mypage/components/MyProfileSection";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 export default function MyPage() {
+  const navigate = useNavigate();
   const { isSidebarOpen, onToggleSidebar } =
     useOutletContext<MainLayoutContext>();
   const [isCompact, setIsCompact] = useState(false);
@@ -45,7 +46,10 @@ export default function MyPage() {
         onScroll={handleScroll}
       >
         <div className="relative mx-auto flex w-full max-w-[780px] flex-col">
-          <MyProfileSection isCompact={isCompact} />
+          <MyProfileSection
+            isCompact={isCompact}
+            onEditProfile={() => navigate("/my/profile")}
+          />
           <MyPageStats isCompact={isCompact} />
           <CompletedCategoryGrid isCompact={isCompact} />
         </div>

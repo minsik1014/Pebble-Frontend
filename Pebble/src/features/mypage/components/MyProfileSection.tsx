@@ -2,10 +2,12 @@ import MySolidIcon from "@/assets/icons/user-solid.svg?react";
 
 type MyProfileSectionProps = {
   isCompact: boolean;
+  onEditProfile: () => void;
 };
 
 export const MyProfileSection = ({
   isCompact,
+  onEditProfile,
 }: MyProfileSectionProps): JSX.Element => {
   return (
     <header
@@ -40,6 +42,7 @@ export const MyProfileSection = ({
 
       <button
         type="button"
+        onClick={onEditProfile}
         className={`absolute right-0 h-12 rounded-token-s border border-border-default px-5 text-body-02-m text-text-secondary transition-[top,background-color] duration-500 ease-in-out hover:bg-fill-surface ${
           isCompact ? "top-[134px]" : "top-[110px]"
         }`}

@@ -6,6 +6,7 @@ import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
 import SettingsPage from './pages/settings/SettingsPage';
 import MyPage from "@/pages/mypage/MyPage";
+import ProfileEditPage from "@/pages/mypage/ProfileEditPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route index element={<CalendarMainPage />} />
             <Route path="my" element={<MyPage />} />
+            <Route path="my/profile" element={<ProfileEditPage />} />
           </Route>
 
           <Route path="/login" element={<LoginPage />} />
