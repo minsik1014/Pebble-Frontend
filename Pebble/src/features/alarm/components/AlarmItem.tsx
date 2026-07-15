@@ -138,14 +138,16 @@ export const AlarmItem = ({
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={handleDelete}
-          className="shrink-0 text-[22px] leading-none text-gray-400 hover:text-text-strong"
-          aria-label="알림 삭제"
-        >
-          ×
-        </button>
+        {!isPendingFollowRequest && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="shrink-0 text-[22px] leading-none text-gray-400 hover:text-text-strong"
+            aria-label="알림 삭제"
+          >
+            ×
+          </button>
+        )}
       </div>
     </div>
   );

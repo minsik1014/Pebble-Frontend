@@ -5,11 +5,9 @@ import { CategoryFormModal } from "@/features/category/components/CategoryFormMo
 import { MilestoneFormModal } from "./MilestoneFormModal";
 import { TaskFormModal } from "@/features/task/components/TaskFormModal";
 import { AddMenuModal } from "./AddMenuModal";
-import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 import { MilestoneAccordion } from "./MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
-import { SidebarDivider } from "./SidebarDivider";
 
 export const CalendarSidebar = ({
   isSidebarOpen = true,
@@ -50,14 +48,10 @@ export const CalendarSidebar = ({
 
   return (
     <aside 
-      className={`flex shrink-0 h-[1000px] relative items-stretch rounded-[20px] overflow-hidden shadow-shadow-m transition-all duration-300 ${
-        isSidebarOpen ? "w-[476px]" : "w-[84px]"
+      className={`flex shrink-0 h-[1000px] relative items-stretch overflow-hidden transition-all duration-300 ${
+        isSidebarOpen ? "w-[392px]" : "w-0"
       }`}
     >
-      {/* 얇은 좌측 네비게이션 */}
-      <GlobalNavigationBar />
-      <SidebarDivider visible={isSidebarOpen} />
-
       {/* 메인 마일스톤 관리 영역 */}
       <section 
         className={`relative h-[1000px] bg-fill-inverse rounded-[0px_32px_32px_0px] flex flex-col transition-all duration-300 overflow-hidden ${
