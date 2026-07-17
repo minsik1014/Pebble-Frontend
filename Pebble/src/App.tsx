@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { MainLayout } from '@/components/layout/MainLayout';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
 import SettingsPage from './pages/settings/SettingsPage';
+import MyPage from "@/pages/mypage/MyPage";
 
 function App() {
   return (
@@ -11,10 +13,14 @@ function App() {
       {/* 테마 스위칭을 테스트하려면 아래 div에 className="theme-popart" 등을 추가하세요 */}
       <div className="min-h-screen font-sans">
         <Routes>
-          <Route path="/" element={<CalendarMainPage />} />
+          <Route element={<MainLayout />}>
+            <Route index element={<CalendarMainPage />} />
+            <Route path="my" element={<MyPage />} />
+          </Route>
+
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} /> 
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} /> 
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </div>

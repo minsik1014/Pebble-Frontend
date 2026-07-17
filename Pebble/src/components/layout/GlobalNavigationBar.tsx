@@ -6,6 +6,7 @@ import SocialOutlineIcon from "@/assets/icons/social-outline.svg?react";
 import CalendarOutlineIcon from "@/assets/icons/calendar-nav-default.svg?react";
 import CalendarSolidIcon from "@/assets/icons/calendar-nav-selected.svg?react";
 import MyOutlineIcon from "@/assets/icons/user-outline.svg?react";
+import MySolidIcon from "@/assets/icons/user-solid.svg?react";
 import SettingsOutlineIcon from "@/assets/icons/settings-outline.svg?react";
 import SettingsSolidIcon from "@/assets/icons/settings-solid.svg?react";
 import LogOutIcon from "@/assets/icons/Logout.svg?react";
@@ -29,7 +30,6 @@ export const GlobalNavigationBar = ({
   });
 
   const alarmButtonRef = useRef<HTMLButtonElement>(null);
-
   const {
     alarms,
     unreadCount,
@@ -98,6 +98,7 @@ export const GlobalNavigationBar = ({
     ].join(" ");
 
   const isCalendarActive = pathname === "/";
+  const isMyPageActive = pathname === "/my";
   const isSettingsActive = pathname.startsWith("/settings");
 
   return (
@@ -172,10 +173,16 @@ export const GlobalNavigationBar = ({
 
           <button
             type="button"
-            className={getNavigationButtonClassName(false)}
+            onClick={() => navigate("/my")}
+            className={getNavigationButtonClassName(isMyPageActive)}
             aria-label="마이페이지로 이동"
+            aria-current={isMyPageActive ? "page" : undefined}
           >
-            <MyOutlineIcon className="size-6" />
+            {isMyPageActive ? (
+              <MySolidIcon className="size-6" />
+            ) : (
+              <MyOutlineIcon className="size-6" />
+            )}
           </button>
         </div>
 

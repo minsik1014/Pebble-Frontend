@@ -56,6 +56,15 @@ export const useAlarms = () => {
   }, [alarms]);
 
   const handleDeleteAlarm = async (alarmId: number) => {
+    const alarmToDelete = alarms.find((alarm) => alarm.id === alarmId);
+    const isPendingFollowRequest =
+      alarmToDelete?.type === "FOLLOW_REQUEST" &&
+      (alarmToDelete.followStatus ?? "PENDING") === "PENDING";
+
+    if (isPendingFollowRequest) {
+      return;
+    }
+
     await deleteAlarm(alarmId);
 
     setAlarms((prev) => prev.filter((alarm) => alarm.id !== alarmId));
