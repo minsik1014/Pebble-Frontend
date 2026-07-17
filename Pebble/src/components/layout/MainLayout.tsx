@@ -5,6 +5,7 @@ import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 import type {
   CalendarStateModel,
   CreateCategoryInput,
+  CreateScheduleItemInput,
   UpdateCategoryInput,
 } from "@/features/calendar/hooks/useCalendarState";
 import { useCalendarState } from "@/features/calendar/hooks/useCalendarState";
@@ -21,6 +22,15 @@ export interface MainLayoutContext {
   categories: Category[];
   replaceCategories: CalendarStateModel["replaceCategories"];
   createCategory: (input: CreateCategoryInput) => void;
+  createMilestone: (
+    categoryId: string,
+    input: CreateScheduleItemInput,
+  ) => void;
+  createTask: (
+    categoryId: string,
+    milestoneId: string,
+    input: CreateScheduleItemInput,
+  ) => void;
   updateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
   onDeleteCategory: (categoryId: string) => void;
   onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
@@ -42,6 +52,8 @@ export const MainLayout = (): JSX.Element => {
     replaceCategories,
     selectCategory,
     createCategory,
+    createMilestone,
+    createTask,
     updateCategory,
     deleteCategory,
     deleteMilestone,
@@ -127,6 +139,8 @@ export const MainLayout = (): JSX.Element => {
               onSelectCategory={handleSelectCategory}
               selectedCategoryId={selectedCategoryId}
               onCreateCategory={handleCreateCategory}
+              onCreateMilestone={createMilestone}
+              onCreateTask={createTask}
             />
           </div>
 
@@ -137,6 +151,8 @@ export const MainLayout = (): JSX.Element => {
               categories,
               replaceCategories,
               createCategory: handleCreateCategory,
+              createMilestone,
+              createTask,
               updateCategory,
               onDeleteCategory: handleDeleteCategory,
               onDeleteMilestone: handleDeleteMilestone,

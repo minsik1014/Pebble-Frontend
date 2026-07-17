@@ -7,7 +7,10 @@ import { MilestoneDetailItem } from "@/features/milestone/components/MilestoneDe
 import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
 import { TaskFormModal } from "@/features/task/components/TaskFormModal";
 import { type Category } from "@/types";
-import type { UpdateCategoryInput } from "@/features/calendar/hooks/useCalendarState";
+import type {
+  CreateScheduleItemInput,
+  UpdateCategoryInput,
+} from "@/features/calendar/hooks/useCalendarState";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
@@ -15,6 +18,7 @@ export const CategoryDetailSection = ({
   onBack,
   categories,
   onUpdateCategory,
+  onCreateTask,
   onDeleteCategory,
   onDeleteMilestone,
   onDeleteTask,
@@ -24,13 +28,16 @@ export const CategoryDetailSection = ({
   onBack: () => void;
   categories: Category[];
   onUpdateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
+  onCreateTask: (
+    categoryId: string,
+    milestoneId: string,
+    input: CreateScheduleItemInput,
+  ) => void;
   onDeleteCategory: (categoryId: string) => void;
   onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
   onDeleteTask: (categoryId: string, milestoneId: string, taskId: string) => void;
 }) => {
-  const [expandedMilestones, setExpandedMilestones] = React.useState<Record<string, boolean>>({
-    "startup-1": true, // 창업 공모전 - 백엔드 프로젝트 기본 열림
-  });
+  const [expandedMilestones, setExpandedMilestones] = React.useState<Record<string, boolean>>({});
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
   const [editingMilestoneId, setEditingMilestoneId] = React.useState<string | null>(null);
@@ -151,6 +158,7 @@ export const CategoryDetailSection = ({
         defaultCategoryId={category.id}
         defaultMilestoneId={selectedMilestoneForTask}
         mode={taskMode}
+        onSubmit={onCreateTask}
         onRequestDelete={() => {
           if (selectedMilestoneForTask && editingTaskId) {
             onDeleteTask(category.id, selectedMilestoneForTask, editingTaskId);

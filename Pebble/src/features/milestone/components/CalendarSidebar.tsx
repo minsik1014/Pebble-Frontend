@@ -8,7 +8,10 @@ import { AddMenuModal } from "./AddMenuModal";
 import { MilestoneAccordion } from "./MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
-import type { CreateCategoryInput } from "@/features/calendar/hooks/useCalendarState";
+import type {
+  CreateCategoryInput,
+  CreateScheduleItemInput,
+} from "@/features/calendar/hooks/useCalendarState";
 
 export const CalendarSidebar = ({
   isSidebarOpen = true,
@@ -16,12 +19,23 @@ export const CalendarSidebar = ({
   onSelectCategory,
   selectedCategoryId,
   onCreateCategory,
+  onCreateMilestone,
+  onCreateTask,
 }: {
   isSidebarOpen?: boolean;
   categories: Category[];
   onSelectCategory?: (categoryId: string) => void;
   selectedCategoryId?: string | null;
   onCreateCategory?: (input: CreateCategoryInput) => void;
+  onCreateMilestone?: (
+    categoryId: string,
+    input: CreateScheduleItemInput,
+  ) => void;
+  onCreateTask?: (
+    categoryId: string,
+    milestoneId: string,
+    input: CreateScheduleItemInput,
+  ) => void;
 }): JSX.Element => {
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const [expandedCategories, setExpandedCategories] = useState<
@@ -35,7 +49,7 @@ export const CalendarSidebar = ({
   const [hasHiddenContentUnderButton, setHasHiddenContentUnderButton] = useState(false);
   const categoryListRef = useRef<HTMLDivElement>(null);
 
-  const monthLabel = useMemo(() => "6월", []);
+  const monthLabel = useMemo(() => `${new Date().getMonth() + 1}월`, []);
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) => ({
@@ -155,12 +169,14 @@ export const CalendarSidebar = ({
         isOpen={isMilestoneModalOpen}
         onClose={() => setIsMilestoneModalOpen(false)}
         categories={categories}
+        onSubmit={onCreateMilestone}
       />
 
       <TaskFormModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         categories={categories}
+        onSubmit={onCreateTask}
       />
     </aside>
   );

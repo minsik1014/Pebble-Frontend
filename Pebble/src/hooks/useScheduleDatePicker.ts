@@ -130,5 +130,8 @@ export const useScheduleDatePicker = () => {
     getDayStatus,
     reset,
     isDateSelectionComplete,
+    selectedDate,
+    dateRange,
+    multiDates,
   };
 };

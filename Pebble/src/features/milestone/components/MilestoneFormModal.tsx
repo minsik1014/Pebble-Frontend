@@ -3,21 +3,85 @@ import { type Category } from "@/types";
 import DeleteIcon from "@/assets/icons/Delete.svg?react";
 import { ScheduleDatePicker } from "@/components/ui/ScheduleDatePicker";
 import { useScheduleDatePicker } from "@/hooks/useScheduleDatePicker";
+import type { CreateScheduleItemInput } from "@/features/calendar/hooks/useCalendarState";
 
 type MilestoneFormModalProps = {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
   mode?: "create" | "edit";
+  onSubmit?: (categoryId: string, input: CreateScheduleItemInput) => void;
   onRequestDelete?: () => void;
 };
 
-export const MilestoneFormModal = ({ isOpen, onClose, categories, mode = "create", onRequestDelete }: MilestoneFormModalProps) => {
+const formatScheduleDate = (date: Date) =>
+  [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+
+export const MilestoneFormModal = ({ isOpen, onClose, categories, mode = "create", onSubmit, onRequestDelete }: MilestoneFormModalProps) => {
   const [milestoneName, setMilestoneName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const datePicker = useScheduleDatePicker();
   const activeCategory = categories.find((category) => category.id === selectedCategory);
+
+  const getScheduleRange = () => {
+    if (datePicker.dateType === "하루" && datePicker.selectedDate) {
+      return {
+        start: formatScheduleDate(datePicker.selectedDate),
+        end: undefined,
+      };
+    }
+
+    if (
+      datePicker.dateType === "기간" &&
+      datePicker.dateRange.start &&
+      datePicker.dateRange.end
+    ) {
+      return {
+        start: formatScheduleDate(datePicker.dateRange.start),
+        end: formatScheduleDate(datePicker.dateRange.end),
+      };
+    }
+
+    if (datePicker.dateType === "다중" && datePicker.multiDates.length > 0) {
+      const selectedDates = [...datePicker.multiDates].sort(
+        (a, b) => a.getTime() - b.getTime(),
+      );
+
+      return {
+        start: formatScheduleDate(selectedDates[0]),
+        end:
+          selectedDates.length > 1
+            ? formatScheduleDate(selectedDates[selectedDates.length - 1])
+            : undefined,
+      };
+    }
+
+    return null;
+  };
+
+  const handleSubmit = () => {
+    const scheduleRange = getScheduleRange();
+    const trimmedName = milestoneName.trim();
+
+    if (!selectedCategory || !trimmedName || !scheduleRange) {
+      return;
+    }
+
+    onSubmit?.(selectedCategory, {
+      title: trimmedName,
+      start: scheduleRange.start,
+      end: scheduleRange.end,
+      accent: activeCategory?.accent ?? "#171717",
+      rowWidthClass: "w-80",
+    });
+    setMilestoneName("");
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -115,6 +179,7 @@ export const MilestoneFormModal = ({ isOpen, onClose, categories, mode = "create
             취소
           </button>
           <button
+            onClick={handleSubmit}
             className="flex-1 h-11 bg-btn-primary text-text-onFill rounded-token-s font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={
               !selectedCategory || 

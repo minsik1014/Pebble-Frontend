@@ -3,29 +3,28 @@ import { MonthSelector } from "./MonthSelector";
 import { SidebarToggleButton } from "./SidebarToggleButton";
 import { CalendarGrid } from "./CalendarGrid";
 import { generateWeeks } from "./calendarWeeks";
-
-const INITIAL_YEAR = 2026;
-const INITIAL_MONTH = 6;
-const INITIAL_SELECTED_DATE = new Date(2026, 5, 4);
+import { type Category } from "@/types";
 
 type CalendarBoardProps = {
   isSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
+  categories?: Category[];
 };
 
 export const CalendarBoard = ({
   isSidebarOpen = true,
   onToggleSidebar,
+  categories = [],
 }: CalendarBoardProps = {}): JSX.Element => {
-  const todayDate = INITIAL_SELECTED_DATE;
-  const [currentYear, setCurrentYear] = useState(INITIAL_YEAR);
-  const [currentMonth, setCurrentMonth] = useState(INITIAL_MONTH);
+  const todayDate = useMemo(() => new Date(), []);
+  const [currentYear, setCurrentYear] = useState(todayDate.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(todayDate.getMonth() + 1);
 
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
   const weeks = useMemo(
-    () => generateWeeks(currentYear, currentMonth, isSidebarOpen),
-    [currentYear, currentMonth, isSidebarOpen],
+    () => generateWeeks(currentYear, currentMonth, categories),
+    [currentYear, currentMonth, categories],
   );
 
   const handlePreviousMonth = () => {
@@ -49,8 +48,9 @@ export const CalendarBoard = ({
   };
 
   const handleToday = () => {
-    setCurrentYear(INITIAL_YEAR);
-    setCurrentMonth(INITIAL_MONTH);
+    const today = new Date();
+    setCurrentYear(today.getFullYear());
+    setCurrentMonth(today.getMonth() + 1);
   };
 
   return (

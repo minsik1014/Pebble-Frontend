@@ -8,6 +8,17 @@ type TaskDetailRowProps = {
   onEdit?: () => void;
 };
 
+const formatDisplayDate = (value: string) => {
+  const isoMatch = value.match(/^\d{4}-(\d{1,2})-(\d{1,2})$/);
+
+  if (!isoMatch) {
+    return value;
+  }
+
+  const [, month, day] = isoMatch;
+  return `${Number(month)}/${Number(day)}`;
+};
+
 export const TaskDetailRow = ({ task, themeLight, onEdit }: TaskDetailRowProps) => {
   return (
     <div className="w-[736px] pr-2 py-2 bg-fill-inverse rounded-xl inline-flex justify-start items-center gap-2 overflow-hidden">
@@ -19,11 +30,11 @@ export const TaskDetailRow = ({ task, themeLight, onEdit }: TaskDetailRowProps) 
       </div>
       <div className="flex justify-end items-center gap-3">
         <div className="flex justify-end items-center">
-          <span className="text-body-02-m text-text-teritary">{task.start}</span>
+          <span className="text-body-02-m text-text-teritary">{formatDisplayDate(task.start)}</span>
           {task.end && (
             <>
               <span className="text-body-02-m text-text-teritary mx-1">~</span>
-              <span className="text-body-02-m text-text-teritary">{task.end}</span>
+              <span className="text-body-02-m text-text-teritary">{formatDisplayDate(task.end)}</span>
             </>
           )}
         </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { type Category } from "@/types";
 import { ScheduleDatePicker } from "@/components/ui/ScheduleDatePicker";
 import { useScheduleDatePicker } from "@/hooks/useScheduleDatePicker";
+import type { CreateScheduleItemInput } from "@/features/calendar/hooks/useCalendarState";
 
 type TaskFormModalProps = {
   isOpen: boolean;
@@ -10,8 +11,20 @@ type TaskFormModalProps = {
   defaultCategoryId?: string | null;
   defaultMilestoneId?: string | null;
   mode?: "create" | "edit";
+  onSubmit?: (
+    categoryId: string,
+    milestoneId: string,
+    input: CreateScheduleItemInput,
+  ) => void;
   onRequestDelete?: () => void;
 };
+
+const formatScheduleDate = (date: Date) =>
+  [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
 
 export const TaskFormModal = ({ 
   isOpen, 
@@ -20,6 +33,7 @@ export const TaskFormModal = ({
   defaultCategoryId = null,
   defaultMilestoneId = null,
   mode = "create",
+  onSubmit,
   onRequestDelete,
 }: TaskFormModalProps) => {
   const [taskName, setTaskName] = useState("");
@@ -44,6 +58,61 @@ export const TaskFormModal = ({
 
   const activeCategory = categories.find(c => c.id === selectedCategory);
   const availableMilestones = activeCategory?.items || [];
+
+  const getScheduleRange = () => {
+    if (datePicker.dateType === "하루" && datePicker.selectedDate) {
+      return {
+        start: formatScheduleDate(datePicker.selectedDate),
+        end: undefined,
+      };
+    }
+
+    if (
+      datePicker.dateType === "기간" &&
+      datePicker.dateRange.start &&
+      datePicker.dateRange.end
+    ) {
+      return {
+        start: formatScheduleDate(datePicker.dateRange.start),
+        end: formatScheduleDate(datePicker.dateRange.end),
+      };
+    }
+
+    if (datePicker.dateType === "다중" && datePicker.multiDates.length > 0) {
+      const selectedDates = [...datePicker.multiDates].sort(
+        (a, b) => a.getTime() - b.getTime(),
+      );
+
+      return {
+        start: formatScheduleDate(selectedDates[0]),
+        end:
+          selectedDates.length > 1
+            ? formatScheduleDate(selectedDates[selectedDates.length - 1])
+            : undefined,
+      };
+    }
+
+    return null;
+  };
+
+  const handleSubmit = () => {
+    const scheduleRange = getScheduleRange();
+    const trimmedName = taskName.trim();
+
+    if (!selectedCategory || !selectedMilestone || !trimmedName || !scheduleRange) {
+      return;
+    }
+
+    onSubmit?.(selectedCategory, selectedMilestone, {
+      title: trimmedName,
+      start: scheduleRange.start,
+      end: scheduleRange.end,
+      accent: activeCategory?.accent ?? "#171717",
+      rowWidthClass: "w-[308px]",
+    });
+    setTaskName("");
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
@@ -205,6 +274,7 @@ export const TaskFormModal = ({
             취소
           </button>
           <button
+            onClick={handleSubmit}
             className="flex-[1] h-11 bg-btn-primary text-text-onFill rounded-[12px] font-medium hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
             disabled={
               !selectedCategory || 

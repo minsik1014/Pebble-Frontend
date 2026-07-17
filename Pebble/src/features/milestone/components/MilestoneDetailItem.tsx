@@ -15,6 +15,17 @@ type MilestoneDetailItemProps = {
   onEditTask?: (taskId: string) => void;
 };
 
+const formatDisplayDate = (value: string) => {
+  const isoMatch = value.match(/^\d{4}-(\d{1,2})-(\d{1,2})$/);
+
+  if (!isoMatch) {
+    return value;
+  }
+
+  const [, month, day] = isoMatch;
+  return `${Number(month)}/${Number(day)}`;
+};
+
 export const MilestoneDetailItem = ({
   item,
   themeMid,
@@ -39,11 +50,11 @@ export const MilestoneDetailItem = ({
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center">
-            <span className="text-body-02-m text-text-teritary">{item.start}</span>
+            <span className="text-body-02-m text-text-teritary">{formatDisplayDate(item.start)}</span>
             {item.end && (
               <>
                 <span className="text-body-02-m text-text-teritary mx-1">~</span>
-                <span className="text-body-02-m text-text-teritary">{item.end}</span>
+                <span className="text-body-02-m text-text-teritary">{formatDisplayDate(item.end)}</span>
               </>
             )}
           </div>

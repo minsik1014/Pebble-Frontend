@@ -23,6 +23,17 @@ type SidebarScheduleRowProps = {
   widthClassName: string;
 };
 
+const formatDisplayDate = (value: string) => {
+  const isoMatch = value.match(/^\d{4}-(\d{1,2})-(\d{1,2})$/);
+
+  if (!isoMatch) {
+    return value;
+  }
+
+  const [, month, day] = isoMatch;
+  return `${Number(month)}/${Number(day)}`;
+};
+
 const SidebarScheduleRow = ({
   item,
   checked,
@@ -30,7 +41,9 @@ const SidebarScheduleRow = ({
   barClassName,
   widthClassName,
 }: SidebarScheduleRowProps) => {
-  const dateLabel = item.end ? `${item.start} ~ ${item.end}` : item.start;
+  const dateLabel = item.end
+    ? `${formatDisplayDate(item.start)} ~ ${formatDisplayDate(item.end)}`
+    : formatDisplayDate(item.start);
 
   return (
     <label

@@ -8,6 +8,7 @@ export const CalendarMainPage = (): JSX.Element => {
     isSidebarOpen,
     onToggleSidebar,
     categories,
+    createTask,
     updateCategory,
     onDeleteCategory,
     onDeleteMilestone,
@@ -25,6 +26,7 @@ export const CalendarMainPage = (): JSX.Element => {
       onBack={() => setSearchParams({})}
       categories={categories}
       onUpdateCategory={updateCategory}
+      onCreateTask={createTask}
       onDeleteCategory={onDeleteCategory}
       onDeleteMilestone={onDeleteMilestone}
       onDeleteTask={onDeleteTask}
@@ -33,6 +35,7 @@ export const CalendarMainPage = (): JSX.Element => {
     <CalendarBoard
       isSidebarOpen={isSidebarOpen}
       onToggleSidebar={onToggleSidebar}
+      categories={categories}
     />
   );
 };

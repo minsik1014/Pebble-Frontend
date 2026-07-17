@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { dummyCategories } from "@/mocks/dummyData";
 import type { Category, ScheduleItem } from "@/types";
 
 export type CreateCategoryInput = Omit<Category, "id" | "items"> & {
@@ -12,6 +11,11 @@ export type UpdateCategoryInput = Partial<
   Omit<Category, "id" | "items">
 > & {
   items?: ScheduleItem[];
+};
+
+export type CreateScheduleItemInput = Omit<ScheduleItem, "id" | "tasks"> & {
+  id?: string;
+  tasks?: ScheduleItem[];
 };
 
 export type CalendarState = {
@@ -26,6 +30,15 @@ export type CalendarActions = {
   clearSelectedCategory: () => void;
   createCategory: (input: CreateCategoryInput) => Category;
   updateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
+  createMilestone: (
+    categoryId: string,
+    input: CreateScheduleItemInput,
+  ) => ScheduleItem;
+  createTask: (
+    categoryId: string,
+    milestoneId: string,
+    input: CreateScheduleItemInput,
+  ) => ScheduleItem;
   deleteCategory: (categoryId: string) => void;
   deleteMilestone: (categoryId: string, milestoneId: string) => void;
   deleteTask: (
@@ -49,16 +62,12 @@ const cloneScheduleItems = (items: ScheduleItem[]): ScheduleItem[] =>
     };
   });
 
-const createInitialCategories = (): Category[] =>
-  dummyCategories.map((category) => ({
-    ...category,
-    items: cloneScheduleItems(category.items),
-  }));
-
 const createClientCategoryId = () => `category-${crypto.randomUUID()}`;
+const createClientMilestoneId = () => `milestone-${crypto.randomUUID()}`;
+const createClientTaskId = () => `task-${crypto.randomUUID()}`;
 
 export const useCalendarState = (): CalendarStateModel => {
-  const [categories, setCategories] = useState<Category[]>(createInitialCategories);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
   );
@@ -115,6 +124,64 @@ export const useCalendarState = (): CalendarStateModel => {
             : category,
         ),
       );
+    },
+    [],
+  );
+
+  const createMilestone = useCallback(
+    (categoryId: string, input: CreateScheduleItemInput) => {
+      const milestone: ScheduleItem = {
+        ...input,
+        id: input.id ?? createClientMilestoneId(),
+        tasks: input.tasks ? cloneScheduleItems(input.tasks) : [],
+      };
+
+      setCategories((previousCategories) =>
+        previousCategories.map((category) =>
+          category.id === categoryId
+            ? {
+                ...category,
+                items: [...category.items, milestone],
+              }
+            : category,
+        ),
+      );
+
+      return milestone;
+    },
+    [],
+  );
+
+  const createTask = useCallback(
+    (
+      categoryId: string,
+      milestoneId: string,
+      input: CreateScheduleItemInput,
+    ) => {
+      const task: ScheduleItem = {
+        ...input,
+        id: input.id ?? createClientTaskId(),
+      };
+
+      setCategories((previousCategories) =>
+        previousCategories.map((category) =>
+          category.id === categoryId
+            ? {
+                ...category,
+                items: category.items.map((item) =>
+                  item.id === milestoneId
+                    ? {
+                        ...item,
+                        tasks: [...(item.tasks ?? []), task],
+                      }
+                    : item,
+                ),
+              }
+            : category,
+        ),
+      );
+
+      return task;
     },
     [],
   );
@@ -176,6 +243,8 @@ export const useCalendarState = (): CalendarStateModel => {
     clearSelectedCategory,
     createCategory,
     updateCategory,
+    createMilestone,
+    createTask,
     deleteCategory,
     deleteMilestone,
     deleteTask,
