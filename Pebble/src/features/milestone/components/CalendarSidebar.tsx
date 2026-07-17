@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { type Category } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
@@ -8,17 +8,20 @@ import { AddMenuModal } from "./AddMenuModal";
 import { MilestoneAccordion } from "./MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
+import type { CreateCategoryInput } from "@/features/calendar/hooks/useCalendarState";
 
 export const CalendarSidebar = ({
   isSidebarOpen = true,
   categories,
   onSelectCategory,
-  selectedCategoryId
+  selectedCategoryId,
+  onCreateCategory,
 }: {
   isSidebarOpen?: boolean;
   categories: Category[];
   onSelectCategory?: (categoryId: string) => void;
   selectedCategoryId?: string | null;
+  onCreateCategory?: (input: CreateCategoryInput) => void;
 }): JSX.Element => {
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const [expandedCategories, setExpandedCategories] = useState<
@@ -29,6 +32,8 @@ export const CalendarSidebar = ({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [hasHiddenContentUnderButton, setHasHiddenContentUnderButton] = useState(false);
+  const categoryListRef = useRef<HTMLDivElement>(null);
 
   const monthLabel = useMemo(() => "6월", []);
 
@@ -45,6 +50,34 @@ export const CalendarSidebar = ({
       [itemId]: !prev[itemId],
     }));
   };
+
+  useEffect(() => {
+    const categoryList = categoryListRef.current;
+
+    if (!categoryList) {
+      return;
+    }
+
+    const updateButtonShadow = () => {
+      const hasOverflow = categoryList.scrollHeight > categoryList.clientHeight;
+      const isScrolledToBottom =
+        categoryList.scrollTop + categoryList.clientHeight >=
+        categoryList.scrollHeight - 1;
+
+      setHasHiddenContentUnderButton(hasOverflow && !isScrolledToBottom);
+    };
+
+    updateButtonShadow();
+    categoryList.addEventListener("scroll", updateButtonShadow);
+
+    const resizeObserver = new ResizeObserver(updateButtonShadow);
+    resizeObserver.observe(categoryList);
+
+    return () => {
+      categoryList.removeEventListener("scroll", updateButtonShadow);
+      resizeObserver.disconnect();
+    };
+  }, [categories, expandedCategories]);
 
   return (
     <aside 
@@ -65,27 +98,40 @@ export const CalendarSidebar = ({
             onChangeViewMode={setViewMode}
           />
           {/* Flexbox에서 내용이 부모를 뚫고 나가는 것을 방지하기 위해 min-h-0 추가 */}
-          <div className="relative -left-px w-full h-[888px] min-h-0 flex flex-col items-start gap-5 pt-1 pb-3 px-5 overflow-y-auto overflow-x-hidden custom-scrollbar">
-            {categories.map((category) => (
-              <MilestoneAccordion
-                key={category.id}
-                category={category}
-                expanded={Boolean(expandedCategories[category.id])}
-                onToggleExpanded={() => toggleCategory(category.id)}
-                checkedItems={checkedItems}
-                onToggleChecked={toggleCheckedItem}
-                onSelectCategory={onSelectCategory}
-                isSelected={selectedCategoryId === category.id}
-              />
-            ))}
+          <div className="relative -left-px flex min-h-0 h-[888px] w-full flex-col px-5 pb-3 pt-1">
+            <div
+              ref={categoryListRef}
+              className="flex max-h-[calc(100%-56px)] flex-col items-start gap-5 overflow-y-auto overflow-x-hidden custom-scrollbar"
+            >
+              {categories.map((category) => (
+                <MilestoneAccordion
+                  key={category.id}
+                  category={category}
+                  expanded={Boolean(expandedCategories[category.id])}
+                  onToggleExpanded={() => toggleCategory(category.id)}
+                  checkedItems={checkedItems}
+                  onToggleChecked={toggleCheckedItem}
+                  onSelectCategory={onSelectCategory}
+                  isSelected={selectedCategoryId === category.id}
+                />
+              ))}
+            </div>
 
-            <AddButton 
-              label="추가하기" 
-              variant="primary" 
-              className="w-[352px]" 
-              showIcon={false}
-              onClick={() => setIsAddMenuOpen(true)}
-            />
+            <div
+              className={`relative z-10 mt-2 shrink-0 transition-shadow ${
+                hasHiddenContentUnderButton
+                  ? "shadow-[0_-12px_24px_rgba(33,37,41,0.08)]"
+                  : "shadow-none"
+              }`}
+            >
+              <AddButton
+                label="추가하기"
+                variant="primary"
+                className="w-[352px]"
+                showIcon={false}
+                onClick={() => setIsAddMenuOpen(true)}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -101,6 +147,7 @@ export const CalendarSidebar = ({
       <CategoryFormModal 
         isOpen={isCreateModalOpen} 
         mode="create"
+        onSubmit={onCreateCategory}
         onClose={() => setIsCreateModalOpen(false)} 
       />
 

@@ -4,7 +4,14 @@ import { CategoryColorPicker } from "./CategoryColorPicker";
 import { CategoryImageUploader } from "./CategoryImageUploader";
 import { CategoryMemberSelector } from "./CategoryMemberSelector";
 import { CategoryToggleField } from "./CategoryToggleField";
-import { DUMMY_FRIENDS, type Friend } from "./categoryFormOptions";
+import {
+  CATEGORY_COLOR_THEMES,
+  DUMMY_FRIENDS,
+  type Friend,
+} from "./categoryFormOptions";
+import type {
+  CreateCategoryInput,
+} from "@/features/calendar/hooks/useCalendarState";
 
 type CategoryFormModalProps = {
   isOpen: boolean;
@@ -12,6 +19,7 @@ type CategoryFormModalProps = {
   category?: Category;
   onClose: () => void;
   onRequestDelete?: () => void;
+  onSubmit?: (input: CreateCategoryInput) => void;
 };
 
 export const CategoryFormModal = ({ 
@@ -19,7 +27,8 @@ export const CategoryFormModal = ({
   mode = "create", 
   category,
   onClose,
-  onRequestDelete 
+  onRequestDelete,
+  onSubmit,
 }: CategoryFormModalProps) => {
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [isPublic, setIsPublic] = useState(false);
@@ -30,6 +39,9 @@ export const CategoryFormModal = ({
   const [selectedMembers, setSelectedMembers] = useState<Friend[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const selectedTheme =
+    selectedColor === null ? null : CATEGORY_COLOR_THEMES[selectedColor];
 
   const filteredFriends = DUMMY_FRIENDS.filter((friend) => 
     friend.name.includes(searchQuery) && !selectedMembers.some(m => m.id === friend.id)
@@ -49,6 +61,11 @@ export const CategoryFormModal = ({
   useEffect(() => {
     if (mode === "edit" && category) {
       setCategoryName(category.title);
+      setSelectedColor(
+        CATEGORY_COLOR_THEMES.findIndex(
+          (colorTheme) => colorTheme.themeBase === category.themeBase,
+        ),
+      );
       setIsShared(true);
       setSelectedMembers([DUMMY_FRIENDS[0], DUMMY_FRIENDS[1]]);
     } else {
@@ -64,6 +81,21 @@ export const CategoryFormModal = ({
   }, [mode, category, isOpen]);
 
   if (!isOpen) return null;
+
+  const handleSubmit = () => {
+    if (!categoryName.trim() || !selectedTheme) {
+      return;
+    }
+
+    onSubmit?.({
+      title: categoryName.trim(),
+      accent: selectedTheme.accent,
+      themeBase: selectedTheme.themeBase,
+      themeMid: selectedTheme.themeMid,
+      themeLight: selectedTheme.themeLight,
+    });
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
@@ -177,9 +209,9 @@ export const CategoryFormModal = ({
             </button>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleSubmit}
               className="flex-1 h-11 bg-btn-primary text-text-onFill rounded-token-s font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!categoryName || selectedColor === null}
+              disabled={!categoryName.trim() || selectedColor === null}
             >
               {mode === "create" ? "추가" : "수정"}
             </button>

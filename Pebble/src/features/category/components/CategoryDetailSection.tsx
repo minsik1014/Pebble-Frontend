@@ -7,12 +7,14 @@ import { MilestoneDetailItem } from "@/features/milestone/components/MilestoneDe
 import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
 import { TaskFormModal } from "@/features/task/components/TaskFormModal";
 import { type Category } from "@/types";
+import type { UpdateCategoryInput } from "@/features/calendar/hooks/useCalendarState";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
   category,
   onBack,
   categories,
+  onUpdateCategory,
   onDeleteCategory,
   onDeleteMilestone,
   onDeleteTask,
@@ -21,6 +23,7 @@ export const CategoryDetailSection = ({
   category: Category;
   onBack: () => void;
   categories: Category[];
+  onUpdateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
   onDeleteCategory: (categoryId: string) => void;
   onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
   onDeleteTask: (categoryId: string, milestoneId: string, taskId: string) => void;
@@ -105,6 +108,9 @@ export const CategoryDetailSection = ({
         isOpen={isEditModalOpen} 
         mode="edit"
         category={category}
+        onSubmit={(input) => {
+          onUpdateCategory(category.id, input);
+        }}
         onClose={() => setIsEditModalOpen(false)} 
         onRequestDelete={() => {
           setIsEditModalOpen(false);

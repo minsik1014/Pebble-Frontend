@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { type Category } from "@/types";
+import { type Category, type ScheduleItem } from "@/types";
 import ChevronUpIcon from "@/assets/icons/chevron-up.svg?react";
 import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
-import { TaskListItem } from "@/features/task/components/TaskListItem";
 import { AddButton } from "@/components/ui/AddButton";
 
 type MilestoneAccordionProps = {
@@ -14,6 +13,55 @@ type MilestoneAccordionProps = {
   onToggleChecked: (itemId: string) => void;
   onSelectCategory?: (categoryId: string) => void;
   isSelected?: boolean;
+};
+
+type SidebarScheduleRowProps = {
+  item: ScheduleItem;
+  checked: boolean;
+  onToggle: () => void;
+  barClassName: string;
+  widthClassName: string;
+};
+
+const SidebarScheduleRow = ({
+  item,
+  checked,
+  onToggle,
+  barClassName,
+  widthClassName,
+}: SidebarScheduleRowProps) => {
+  const dateLabel = item.end ? `${item.start} ~ ${item.end}` : item.start;
+
+  return (
+    <label
+      className={`${widthClassName} flex shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface`}
+    >
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div
+          className={`h-8 w-2 shrink-0 rounded ${barClassName}`}
+        />
+        <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
+          {item.title}
+        </span>
+      </div>
+
+      <div className="flex shrink-0 items-center justify-end gap-3">
+        <span className="whitespace-nowrap text-body-02-m text-text-teritary">
+          {dateLabel}
+        </span>
+        <span className="relative inline-flex h-6 w-6 items-center justify-center">
+          <input
+            type="checkbox"
+            aria-label={`${item.title} 일정 완료`}
+            checked={checked}
+            onChange={onToggle}
+            className="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
+          />
+          <span className="relative h-6 w-6 rounded border border-border-default bg-fill-inverse peer-checked:border-fill-primary peer-checked:bg-fill-primary" />
+        </span>
+      </div>
+    </label>
+  );
 };
 
 export const MilestoneAccordion = ({
@@ -82,12 +130,25 @@ export const MilestoneAccordion = ({
         <div className="flex flex-col items-center gap-3 pt-0 pb-3 w-full relative">
           <div className="flex flex-col items-end justify-start gap-2 pl-5 pr-3 w-full max-h-[216px] overflow-y-auto custom-scrollbar">
             {category.items.map((item) => (
-              <TaskListItem
-                key={item.id}
-                item={item}
-                checked={Boolean(checkedItems[item.id])}
-                onToggle={() => onToggleChecked(item.id)}
-              />
+              <div key={item.id} className="flex w-full flex-col items-end gap-2">
+                <SidebarScheduleRow
+                  item={item}
+                  checked={Boolean(checkedItems[item.id])}
+                  onToggle={() => onToggleChecked(item.id)}
+                  barClassName={category.themeMid}
+                  widthClassName="w-80"
+                />
+                {item.tasks?.map((task) => (
+                  <SidebarScheduleRow
+                    key={task.id}
+                    item={task}
+                    checked={Boolean(checkedItems[task.id])}
+                    onToggle={() => onToggleChecked(task.id)}
+                    barClassName={category.themeLight}
+                    widthClassName="w-[308px]"
+                  />
+                ))}
+              </div>
             ))}
           </div>
           <AddButton 

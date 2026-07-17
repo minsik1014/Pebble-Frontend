@@ -20,7 +20,7 @@ export interface MainLayoutContext {
   onToggleSidebar: () => void;
   categories: Category[];
   replaceCategories: CalendarStateModel["replaceCategories"];
-  createCategory: (input: CreateCategoryInput) => Category;
+  createCategory: (input: CreateCategoryInput) => void;
   updateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
   onDeleteCategory: (categoryId: string) => void;
   onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
@@ -78,6 +78,11 @@ export const MainLayout = (): JSX.Element => {
     navigate(`/?category=${categoryId}`);
   };
 
+  const handleCreateCategory = (input: CreateCategoryInput) => {
+    const category = createCategory(input);
+    navigate(`/?category=${category.id}`);
+  };
+
   const handleDeleteCategory = (categoryId: string) => {
     deleteCategory(categoryId);
     navigate("/");
@@ -121,6 +126,7 @@ export const MainLayout = (): JSX.Element => {
               categories={categories}
               onSelectCategory={handleSelectCategory}
               selectedCategoryId={selectedCategoryId}
+              onCreateCategory={handleCreateCategory}
             />
           </div>
 
@@ -130,7 +136,7 @@ export const MainLayout = (): JSX.Element => {
               onToggleSidebar: handleToggleSidebar,
               categories,
               replaceCategories,
-              createCategory,
+              createCategory: handleCreateCategory,
               updateCategory,
               onDeleteCategory: handleDeleteCategory,
               onDeleteMilestone: handleDeleteMilestone,
