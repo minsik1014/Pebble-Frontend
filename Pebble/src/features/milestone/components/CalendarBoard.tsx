@@ -3,12 +3,13 @@ import { MonthSelector } from "./MonthSelector";
 import { SidebarToggleButton } from "./SidebarToggleButton";
 import { CalendarGrid } from "./CalendarGrid";
 import { generateWeeks } from "./calendarWeeks";
-import { type Category } from "@/types";
+import { type Category, type ScheduleItem } from "@/types";
 
 type CalendarBoardProps = {
   isSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
   categories?: Category[];
+  standaloneTasks?: ScheduleItem[];
   currentYear: number;
   currentMonth: number;
   onChangeCalendarMonth: (year: number, month: number) => void;
@@ -18,6 +19,7 @@ export const CalendarBoard = ({
   isSidebarOpen = true,
   onToggleSidebar,
   categories = [],
+  standaloneTasks = [],
   currentYear,
   currentMonth,
   onChangeCalendarMonth,
@@ -26,8 +28,8 @@ export const CalendarBoard = ({
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
   const weeks = useMemo(
-    () => generateWeeks(currentYear, currentMonth, categories),
-    [currentYear, currentMonth, categories],
+    () => generateWeeks(currentYear, currentMonth, categories, standaloneTasks),
+    [currentYear, currentMonth, categories, standaloneTasks],
   );
 
   const handlePreviousMonth = () => {

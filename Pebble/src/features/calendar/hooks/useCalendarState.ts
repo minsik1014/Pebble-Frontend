@@ -5,6 +5,7 @@ import type { Category, ScheduleItem } from "@/types";
 export type CreateCategoryInput = Omit<Category, "id" | "items"> & {
   id?: string;
   items?: ScheduleItem[];
+  tasks?: ScheduleItem[];
 };
 
 export type UpdateCategoryInput = Partial<
@@ -20,6 +21,7 @@ export type CreateScheduleItemInput = Omit<ScheduleItem, "id" | "tasks"> & {
 
 export type CalendarState = {
   categories: Category[];
+  standaloneTasks: ScheduleItem[];
   selectedCategory: Category | null;
   selectedCategoryId: string | null;
 };
@@ -39,6 +41,22 @@ export type CalendarActions = {
     milestoneId: string,
     input: CreateScheduleItemInput,
   ) => ScheduleItem;
+  createCategoryTask: (
+    categoryId: string,
+    input: CreateScheduleItemInput,
+  ) => ScheduleItem;
+  updateCategoryTask: (
+    categoryId: string,
+    taskId: string,
+    input: CreateScheduleItemInput,
+  ) => void;
+  deleteCategoryTask: (categoryId: string, taskId: string) => void;
+  createStandaloneTask: (input: CreateScheduleItemInput) => ScheduleItem;
+  updateStandaloneTask: (
+    taskId: string,
+    input: CreateScheduleItemInput,
+  ) => void;
+  deleteStandaloneTask: (taskId: string) => void;
   deleteCategory: (categoryId: string) => void;
   deleteMilestone: (categoryId: string, milestoneId: string) => void;
   deleteTask: (
@@ -68,6 +86,7 @@ const createClientTaskId = () => `task-${crypto.randomUUID()}`;
 
 export const useCalendarState = (): CalendarStateModel => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [standaloneTasks, setStandaloneTasks] = useState<ScheduleItem[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
   );
@@ -83,6 +102,7 @@ export const useCalendarState = (): CalendarStateModel => {
       nextCategories.map((category) => ({
         ...category,
         items: cloneScheduleItems(category.items),
+        tasks: category.tasks ? cloneScheduleItems(category.tasks) : undefined,
       })),
     );
     setSelectedCategoryId(null);
@@ -101,6 +121,7 @@ export const useCalendarState = (): CalendarStateModel => {
       ...input,
       id: input.id ?? createClientCategoryId(),
       items: input.items ? cloneScheduleItems(input.items) : [],
+      tasks: input.tasks ? cloneScheduleItems(input.tasks) : undefined,
     };
 
     setCategories((previousCategories) => [...previousCategories, category]);
@@ -120,6 +141,9 @@ export const useCalendarState = (): CalendarStateModel => {
                 items: input.items
                   ? cloneScheduleItems(input.items)
                   : category.items,
+                tasks: input.tasks
+                  ? cloneScheduleItems(input.tasks)
+                  : category.tasks,
               }
             : category,
         ),
@@ -186,6 +210,101 @@ export const useCalendarState = (): CalendarStateModel => {
     [],
   );
 
+  const createCategoryTask = useCallback(
+    (categoryId: string, input: CreateScheduleItemInput) => {
+      const task: ScheduleItem = {
+        ...input,
+        id: input.id ?? createClientTaskId(),
+      };
+
+      setCategories((previousCategories) =>
+        previousCategories.map((category) =>
+          category.id === categoryId
+            ? {
+                ...category,
+                tasks: [...(category.tasks ?? []), task],
+              }
+            : category,
+        ),
+      );
+
+      return task;
+    },
+    [],
+  );
+
+  const updateCategoryTask = useCallback(
+    (categoryId: string, taskId: string, input: CreateScheduleItemInput) => {
+      setCategories((previousCategories) =>
+        previousCategories.map((category) =>
+          category.id === categoryId
+            ? {
+                ...category,
+                tasks: category.tasks?.map((task) =>
+                  task.id === taskId
+                    ? {
+                        ...task,
+                        ...input,
+                      }
+                    : task,
+                ),
+              }
+            : category,
+        ),
+      );
+    },
+    [],
+  );
+
+  const deleteCategoryTask = useCallback(
+    (categoryId: string, taskId: string) => {
+      setCategories((previousCategories) =>
+        previousCategories.map((category) =>
+          category.id === categoryId
+            ? {
+                ...category,
+                tasks: category.tasks?.filter((task) => task.id !== taskId),
+              }
+            : category,
+        ),
+      );
+    },
+    [],
+  );
+
+  const createStandaloneTask = useCallback((input: CreateScheduleItemInput) => {
+    const task: ScheduleItem = {
+      ...input,
+      id: input.id ?? createClientTaskId(),
+    };
+
+    setStandaloneTasks((previousTasks) => [...previousTasks, task]);
+
+    return task;
+  }, []);
+
+  const updateStandaloneTask = useCallback(
+    (taskId: string, input: CreateScheduleItemInput) => {
+      setStandaloneTasks((previousTasks) =>
+        previousTasks.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                ...input,
+              }
+            : task,
+        ),
+      );
+    },
+    [],
+  );
+
+  const deleteStandaloneTask = useCallback((taskId: string) => {
+    setStandaloneTasks((previousTasks) =>
+      previousTasks.filter((task) => task.id !== taskId),
+    );
+  }, []);
+
   const deleteCategory = useCallback((categoryId: string) => {
     setCategories((previousCategories) =>
       previousCategories.filter((category) => category.id !== categoryId),
@@ -236,6 +355,7 @@ export const useCalendarState = (): CalendarStateModel => {
 
   return {
     categories,
+    standaloneTasks,
     selectedCategory,
     selectedCategoryId,
     replaceCategories,
@@ -245,6 +365,12 @@ export const useCalendarState = (): CalendarStateModel => {
     updateCategory,
     createMilestone,
     createTask,
+    createCategoryTask,
+    updateCategoryTask,
+    deleteCategoryTask,
+    createStandaloneTask,
+    updateStandaloneTask,
+    deleteStandaloneTask,
     deleteCategory,
     deleteMilestone,
     deleteTask,

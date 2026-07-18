@@ -11,6 +11,7 @@ import type {
 import { useCalendarState } from "@/features/calendar/hooks/useCalendarState";
 import { CalendarSidebar } from "@/features/milestone/components/CalendarSidebar";
 import { SidebarDivider } from "@/features/milestone/components/SidebarDivider";
+import type { TaskFormSubmitInput } from "@/features/task/components/TaskFormModal";
 import type { Category } from "@/types";
 
 const ORIGINAL_WIDTH = 1416;
@@ -23,17 +24,16 @@ export interface MainLayoutContext {
   currentMonth: number;
   onChangeCalendarMonth: (year: number, month: number) => void;
   categories: Category[];
+  standaloneTasks: CalendarStateModel["standaloneTasks"];
   replaceCategories: CalendarStateModel["replaceCategories"];
   createCategory: (input: CreateCategoryInput) => void;
   createMilestone: (
     categoryId: string,
     input: CreateScheduleItemInput,
   ) => void;
-  createTask: (
-    categoryId: string,
-    milestoneId: string,
-    input: CreateScheduleItemInput,
-  ) => void;
+  createTask: (input: TaskFormSubmitInput) => void;
+  updateCategoryTask: CalendarStateModel["updateCategoryTask"];
+  deleteCategoryTask: CalendarStateModel["deleteCategoryTask"];
   updateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
   onDeleteCategory: (categoryId: string) => void;
   onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
@@ -54,11 +54,18 @@ export const MainLayout = (): JSX.Element => {
   const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth() + 1);
   const {
     categories,
+    standaloneTasks,
     replaceCategories,
     selectCategory,
     createCategory,
     createMilestone,
     createTask,
+    createCategoryTask,
+    updateCategoryTask,
+    deleteCategoryTask,
+    createStandaloneTask,
+    updateStandaloneTask,
+    deleteStandaloneTask,
     updateCategory,
     deleteCategory,
     deleteMilestone,
@@ -125,6 +132,24 @@ export const MainLayout = (): JSX.Element => {
     deleteTask(categoryId, milestoneId, taskId);
   };
 
+  const handleCreateTask = ({
+    categoryId,
+    milestoneId,
+    task,
+  }: TaskFormSubmitInput) => {
+    if (categoryId && milestoneId) {
+      createTask(categoryId, milestoneId, task);
+      return;
+    }
+
+    if (categoryId) {
+      createCategoryTask(categoryId, task);
+      return;
+    }
+
+    createStandaloneTask(task);
+  };
+
   return (
     <main className="flex min-h-screen w-full items-center justify-center overflow-hidden bg-fill-surface">
       <div
@@ -146,13 +171,16 @@ export const MainLayout = (): JSX.Element => {
             <CalendarSidebar
               isSidebarOpen={isSidebarOpen}
               categories={categories}
+              standaloneTasks={standaloneTasks}
               currentYear={currentYear}
               currentMonth={currentMonth}
               onSelectCategory={handleSelectCategory}
               selectedCategoryId={selectedCategoryId}
               onCreateCategory={handleCreateCategory}
               onCreateMilestone={createMilestone}
-              onCreateTask={createTask}
+              onCreateTask={handleCreateTask}
+              onUpdateStandaloneTask={updateStandaloneTask}
+              onDeleteStandaloneTask={deleteStandaloneTask}
             />
           </div>
 
@@ -164,10 +192,13 @@ export const MainLayout = (): JSX.Element => {
               currentMonth,
               onChangeCalendarMonth: handleChangeCalendarMonth,
               categories,
+              standaloneTasks,
               replaceCategories,
               createCategory: handleCreateCategory,
               createMilestone,
-              createTask,
+              createTask: handleCreateTask,
+              updateCategoryTask,
+              deleteCategoryTask,
               updateCategory,
               onDeleteCategory: handleDeleteCategory,
               onDeleteMilestone: handleDeleteMilestone,

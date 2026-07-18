@@ -143,6 +143,17 @@ export const MilestoneAccordion = ({
       {expanded && (
         <div className="flex flex-col items-center gap-3 pt-0 pb-3 w-full relative">
           <div className="flex flex-col items-end justify-start gap-2 pl-5 pr-3 w-full max-h-[216px] overflow-y-auto custom-scrollbar">
+            {category.tasks?.map((task) => (
+              <SidebarScheduleRow
+                key={task.id}
+                item={task}
+                checked={Boolean(checkedItems[task.id])}
+                onToggle={() => onToggleChecked(task.id)}
+                barColor={category.themeLight}
+                widthClassName="w-80"
+              />
+            ))}
+
             {category.items.map((item) => (
               <div key={item.id} className="flex w-full flex-col items-end gap-2">
                 <SidebarScheduleRow

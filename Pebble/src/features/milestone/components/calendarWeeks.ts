@@ -8,15 +8,15 @@ const EVENT_ROW_HEIGHT = 33;
 
 type DatedScheduleItem = {
   item: ScheduleItem;
-  category: Category;
-  variant: "milestone" | "task";
+  category?: Category;
+  variant: "milestone" | "task" | "standaloneTask";
   startDate: Date;
   endDate: Date;
 };
 
 const normalizeScheduleItem = (
   item: ScheduleItem,
-  category: Category,
+  category: Category | undefined,
   variant: DatedScheduleItem["variant"],
   fallbackYear: number,
 ): DatedScheduleItem | null => {
@@ -38,23 +38,37 @@ const normalizeScheduleItem = (
 
 const collectScheduleItems = (
   categories: Category[],
+  standaloneTasks: ScheduleItem[],
   fallbackYear: number,
-): DatedScheduleItem[] =>
-  categories.flatMap((category) =>
-    category.items.flatMap((item) => {
-      const milestone = normalizeScheduleItem(
-        item,
-        category,
-        "milestone",
-        fallbackYear,
-      );
-      const tasks = (item.tasks ?? [])
-        .map((task) => normalizeScheduleItem(task, category, "task", fallbackYear))
-        .filter((task): task is DatedScheduleItem => Boolean(task));
+): DatedScheduleItem[] => {
+  const categoryItems = categories.flatMap((category) =>
+    [
+      ...(category.tasks ?? []).map((task) =>
+        normalizeScheduleItem(task, category, "task", fallbackYear),
+      ),
+      ...category.items.flatMap((item) => {
+        const milestone = normalizeScheduleItem(
+          item,
+          category,
+          "milestone",
+          fallbackYear,
+        );
+        const tasks = (item.tasks ?? [])
+          .map((task) => normalizeScheduleItem(task, category, "task", fallbackYear))
+          .filter((task): task is DatedScheduleItem => Boolean(task));
 
-      return milestone ? [milestone, ...tasks] : tasks;
-    }),
+        return milestone ? [milestone, ...tasks] : tasks;
+      }),
+    ].filter((item): item is DatedScheduleItem => Boolean(item)),
   );
+  const rootTasks = standaloneTasks
+    .map((task) =>
+      normalizeScheduleItem(task, undefined, "standaloneTask", fallbackYear),
+    )
+    .filter((task): task is DatedScheduleItem => Boolean(task));
+
+  return [...categoryItems, ...rootTasks];
+};
 
 const createCalendarEvent = (
   datedItem: DatedScheduleItem,
@@ -87,9 +101,9 @@ const createCalendarEvent = (
     topOffset: EVENT_START_TOP_OFFSET + laneIndex * EVENT_ROW_HEIGHT,
     backgroundColor:
       datedItem.variant === "milestone"
-        ? datedItem.category.themeMid
-        : datedItem.category.themeLight,
-    accentColor: datedItem.category.themeBase,
+        ? datedItem.category?.themeMid ?? "#E9EAEB"
+        : datedItem.category?.themeLight ?? "#F4F4F5",
+    accentColor: datedItem.category?.themeBase ?? datedItem.item.accent,
   };
 };
 
@@ -97,12 +111,13 @@ export const generateWeeks = (
   year: number,
   month: number,
   categories: Category[],
+  standaloneTasks: ScheduleItem[] = [],
 ): CalendarWeek[] => {
   const firstDayOfMonth = new Date(year, month - 1, 1);
   const startDayOfWeek = firstDayOfMonth.getDay();
   const daysInMonth = new Date(year, month, 0).getDate();
   const daysInPrevMonth = new Date(year, month - 1, 0).getDate();
-  const scheduleItems = collectScheduleItems(categories, year);
+  const scheduleItems = collectScheduleItems(categories, standaloneTasks, year);
 
   const weeks: CalendarWeek[] = [];
   let currentDay = 1;

@@ -11,7 +11,10 @@ export const CalendarMainPage = (): JSX.Element => {
     currentMonth,
     onChangeCalendarMonth,
     categories,
+    standaloneTasks,
     createTask,
+    updateCategoryTask,
+    deleteCategoryTask,
     updateCategory,
     onDeleteCategory,
     onDeleteMilestone,
@@ -30,6 +33,8 @@ export const CalendarMainPage = (): JSX.Element => {
       categories={categories}
       onUpdateCategory={updateCategory}
       onCreateTask={createTask}
+      onUpdateCategoryTask={updateCategoryTask}
+      onDeleteCategoryTask={deleteCategoryTask}
       onDeleteCategory={onDeleteCategory}
       onDeleteMilestone={onDeleteMilestone}
       onDeleteTask={onDeleteTask}
@@ -39,6 +44,7 @@ export const CalendarMainPage = (): JSX.Element => {
       isSidebarOpen={isSidebarOpen}
       onToggleSidebar={onToggleSidebar}
       categories={categories}
+      standaloneTasks={standaloneTasks}
       currentYear={currentYear}
       currentMonth={currentMonth}
       onChangeCalendarMonth={onChangeCalendarMonth}

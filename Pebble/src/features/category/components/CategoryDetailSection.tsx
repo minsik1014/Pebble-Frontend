@@ -5,7 +5,11 @@ import { DeleteCategoryModal } from "./DeleteCategoryModal";
 import { CategoryDetailHeader } from "./CategoryDetailHeader";
 import { MilestoneDetailItem } from "@/features/milestone/components/MilestoneDetailItem";
 import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
-import { TaskFormModal } from "@/features/task/components/TaskFormModal";
+import { TaskDetailRow } from "@/features/task/components/TaskDetailRow";
+import {
+  TaskFormModal,
+  type TaskFormSubmitInput,
+} from "@/features/task/components/TaskFormModal";
 import { type Category } from "@/types";
 import type {
   CreateScheduleItemInput,
@@ -19,6 +23,8 @@ export const CategoryDetailSection = ({
   categories,
   onUpdateCategory,
   onCreateTask,
+  onUpdateCategoryTask,
+  onDeleteCategoryTask,
   onDeleteCategory,
   onDeleteMilestone,
   onDeleteTask,
@@ -28,11 +34,13 @@ export const CategoryDetailSection = ({
   onBack: () => void;
   categories: Category[];
   onUpdateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
-  onCreateTask: (
+  onCreateTask: (input: TaskFormSubmitInput) => void;
+  onUpdateCategoryTask: (
     categoryId: string,
-    milestoneId: string,
+    taskId: string,
     input: CreateScheduleItemInput,
   ) => void;
+  onDeleteCategoryTask: (categoryId: string, taskId: string) => void;
   onDeleteCategory: (categoryId: string) => void;
   onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
   onDeleteTask: (categoryId: string, milestoneId: string, taskId: string) => void;
@@ -44,7 +52,10 @@ export const CategoryDetailSection = ({
   const [isTaskModalOpen, setIsTaskModalOpen] = React.useState(false);
   const [taskMode, setTaskMode] = React.useState<"create" | "edit">("create");
   const [editingTaskId, setEditingTaskId] = React.useState<string | null>(null);
+  const [editingCategoryTaskId, setEditingCategoryTaskId] = React.useState<string | null>(null);
   const [selectedMilestoneForTask, setSelectedMilestoneForTask] = React.useState<string | null>(null);
+  const editingCategoryTask =
+    category.tasks?.find((task) => task.id === editingCategoryTaskId) ?? null;
 
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
@@ -87,6 +98,27 @@ export const CategoryDetailSection = ({
       </div>
 
       <div className="absolute left-[72px] top-[443px] flex flex-col gap-5 w-[780px]">
+        {category.tasks && category.tasks.length > 0 && (
+          <div className="w-full bg-fill-inverse rounded-[20px] shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] flex flex-col gap-2 p-5">
+            <div className="flex items-end gap-2">
+              <h3 className="text-title-03-sb text-text-strong">태스크</h3>
+              <span className="text-body-02-m text-text-teritary">
+                {category.tasks.length}
+              </span>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              {category.tasks.map((task) => (
+                <TaskDetailRow
+                  key={task.id}
+                  task={task}
+                  themeLightColor={category.themeLight}
+                  onEdit={() => setEditingCategoryTaskId(task.id)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {category.items.map((item) => (
           <MilestoneDetailItem
             key={item.id}
@@ -165,6 +197,31 @@ export const CategoryDetailSection = ({
           }
           setIsTaskModalOpen(false);
           setEditingTaskId(null);
+        }}
+      />
+
+      <TaskFormModal
+        isOpen={Boolean(editingCategoryTask)}
+        onClose={() => setEditingCategoryTaskId(null)}
+        categories={categories}
+        defaultCategoryId={category.id}
+        task={editingCategoryTask}
+        mode="edit"
+        onSubmit={({ task }) => {
+          if (!editingCategoryTaskId) {
+            return;
+          }
+
+          onUpdateCategoryTask(category.id, editingCategoryTaskId, task);
+          setEditingCategoryTaskId(null);
+        }}
+        onRequestDelete={() => {
+          if (!editingCategoryTaskId) {
+            return;
+          }
+
+          onDeleteCategoryTask(category.id, editingCategoryTaskId);
+          setEditingCategoryTaskId(null);
         }}
       />
     </section>

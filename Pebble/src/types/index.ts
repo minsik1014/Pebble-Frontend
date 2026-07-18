@@ -17,4 +17,5 @@ export type Category = {
   themeLight: string;
   imageUrl?: string;
   items: ScheduleItem[];
+  tasks?: ScheduleItem[];
 };
