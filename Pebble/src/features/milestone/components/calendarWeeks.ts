@@ -1,5 +1,6 @@
 import { type Category, type ScheduleItem } from "@/types";
 import { type CalendarDay, type CalendarEvent, type CalendarWeek } from "./types";
+import { parseScheduleDate } from "./scheduleDateUtils";
 
 const DAY_COUNT_IN_WEEK = 7;
 const EVENT_START_TOP_OFFSET = 43;
@@ -11,28 +12,6 @@ type DatedScheduleItem = {
   variant: "milestone" | "task";
   startDate: Date;
   endDate: Date;
-};
-
-const parseScheduleDate = (
-  value: string,
-  fallbackYear: number,
-): Date | null => {
-  const normalizedValue = value.trim();
-  const isoMatch = normalizedValue.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-
-  if (isoMatch) {
-    const [, year, month, day] = isoMatch;
-    return new Date(Number(year), Number(month) - 1, Number(day));
-  }
-
-  const shortDateMatch = normalizedValue.match(/^(\d{1,2})\/(\d{1,2})$/);
-
-  if (shortDateMatch) {
-    const [, month, day] = shortDateMatch;
-    return new Date(fallbackYear, Number(month) - 1, Number(day));
-  }
-
-  return null;
 };
 
 const normalizeScheduleItem = (
@@ -106,11 +85,11 @@ const createCalendarEvent = (
     leftPercent: (startColumn / DAY_COUNT_IN_WEEK) * 100,
     widthPercent: (columnSpan / DAY_COUNT_IN_WEEK) * 100,
     topOffset: EVENT_START_TOP_OFFSET + laneIndex * EVENT_ROW_HEIGHT,
-    bgClass:
+    backgroundColor:
       datedItem.variant === "milestone"
         ? datedItem.category.themeMid
         : datedItem.category.themeLight,
-    accentClass: datedItem.category.themeBase,
+    accentColor: datedItem.category.themeBase,
   };
 };
 

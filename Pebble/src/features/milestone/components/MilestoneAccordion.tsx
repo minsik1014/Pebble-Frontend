@@ -19,7 +19,7 @@ type SidebarScheduleRowProps = {
   item: ScheduleItem;
   checked: boolean;
   onToggle: () => void;
-  barClassName: string;
+  barColor: string;
   widthClassName: string;
 };
 
@@ -38,7 +38,7 @@ const SidebarScheduleRow = ({
   item,
   checked,
   onToggle,
-  barClassName,
+  barColor,
   widthClassName,
 }: SidebarScheduleRowProps) => {
   const dateLabel = item.end
@@ -51,7 +51,8 @@ const SidebarScheduleRow = ({
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <div
-          className={`h-8 w-2 shrink-0 rounded ${barClassName}`}
+          className="h-8 w-2 shrink-0 rounded"
+          style={{ backgroundColor: barColor }}
         />
         <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
           {item.title}
@@ -148,7 +149,7 @@ export const MilestoneAccordion = ({
                   item={item}
                   checked={Boolean(checkedItems[item.id])}
                   onToggle={() => onToggleChecked(item.id)}
-                  barClassName={category.themeMid}
+                  barColor={category.themeMid}
                   widthClassName="w-80"
                 />
                 {item.tasks?.map((task) => (
@@ -157,7 +158,7 @@ export const MilestoneAccordion = ({
                     item={task}
                     checked={Boolean(checkedItems[task.id])}
                     onToggle={() => onToggleChecked(task.id)}
-                    barClassName={category.themeLight}
+                    barColor={category.themeLight}
                     widthClassName="w-[308px]"
                   />
                 ))}

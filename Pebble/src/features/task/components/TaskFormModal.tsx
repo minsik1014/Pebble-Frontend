@@ -137,7 +137,10 @@ export const TaskFormModal = ({
               >
                 {selectedCategory ? (
                   <div className="flex items-center gap-2 w-full relative">
-                    <div className={`w-[6px] h-[24px] rounded-[4px] ${activeCategory?.themeBase || 'bg-black'}`} />
+                    <div
+                      className="w-[6px] h-[24px] rounded-[4px]"
+                      style={{ backgroundColor: activeCategory?.themeBase || "#171717" }}
+                    />
                     <span className="text-[16px] text-text-strong font-medium">
                       {activeCategory?.title}
                     </span>
@@ -165,7 +168,10 @@ export const TaskFormModal = ({
                         setIsCategoryDropdownOpen(false);
                       }}
                     >
-                      <div className={`w-[6px] h-[24px] rounded-[4px] ${cat.themeBase || 'bg-black'}`} />
+                      <div
+                        className="w-[6px] h-[24px] rounded-[4px]"
+                        style={{ backgroundColor: cat.themeBase || "#171717" }}
+                      />
                       <span className="text-[16px] font-medium text-text-strong">{cat.title}</span>
                     </button>
                   ))}
@@ -184,7 +190,10 @@ export const TaskFormModal = ({
               >
                 {selectedMilestone ? (
                   <div className="flex items-center gap-2 w-full relative">
-                    <div className={`w-[6px] h-[24px] rounded-[4px] ${activeCategory?.themeMid || 'bg-black/50'}`} />
+                    <div
+                      className="w-[6px] h-[24px] rounded-[4px]"
+                      style={{ backgroundColor: activeCategory?.themeMid || "rgba(23,23,23,0.5)" }}
+                    />
                     <span className="text-[16px] text-text-strong font-medium">
                       {availableMilestones.find(m => m.id === selectedMilestone)?.title}
                     </span>
@@ -212,7 +221,10 @@ export const TaskFormModal = ({
                           setIsMilestoneDropdownOpen(false);
                         }}
                       >
-                        <div className={`w-[6px] h-[24px] rounded-[4px] ${activeCategory?.themeMid || 'bg-black/50'}`} />
+                        <div
+                          className="w-[6px] h-[24px] rounded-[4px]"
+                          style={{ backgroundColor: activeCategory?.themeMid || "rgba(23,23,23,0.5)" }}
+                        />
                         <span className="text-[16px] font-medium text-text-strong">{ms.title}</span>
                       </button>
                     ))
@@ -250,8 +262,8 @@ export const TaskFormModal = ({
           onNextMonth={datePicker.handleNextMonth}
           onDateClick={datePicker.handleDateClick}
           getDayStatus={datePicker.getDayStatus}
-          themeBaseClass={activeCategory?.themeBase}
-          themeLightClass={activeCategory?.themeLight}
+          themeBaseColor={activeCategory?.themeBase}
+          themeLightColor={activeCategory?.themeLight}
         />
 
         {/* Bottom Actions */}

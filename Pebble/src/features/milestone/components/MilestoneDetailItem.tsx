@@ -6,8 +6,8 @@ import { type ScheduleItem } from "@/types";
 
 type MilestoneDetailItemProps = {
   item: ScheduleItem & { tasks?: ScheduleItem[] };
-  themeMid: string;
-  themeLight: string;
+  themeMidColor: string;
+  themeLightColor: string;
   isExpanded: boolean;
   onToggle: () => void;
   onEdit?: () => void;
@@ -28,8 +28,8 @@ const formatDisplayDate = (value: string) => {
 
 export const MilestoneDetailItem = ({
   item,
-  themeMid,
-  themeLight,
+  themeMidColor,
+  themeLightColor,
   isExpanded,
   onToggle,
   onEdit,
@@ -43,7 +43,10 @@ export const MilestoneDetailItem = ({
         onClick={onToggle}
       >
         <div className="flex items-center gap-3 w-56">
-          <div className={`w-2 h-10 rounded-sm ${themeMid}`} />
+          <div
+            className="w-2 h-10 rounded-sm"
+            style={{ backgroundColor: themeMidColor }}
+          />
           <span className="text-title-03-sb text-text-strong truncate">
             {item.title}
           </span>
@@ -88,7 +91,7 @@ export const MilestoneDetailItem = ({
                 <TaskDetailRow 
                   key={task.id} 
                   task={task} 
-                  themeLight={themeLight} 
+                  themeLightColor={themeLightColor} 
                   onEdit={() => onEditTask?.(task.id)}
                 />
               ))}

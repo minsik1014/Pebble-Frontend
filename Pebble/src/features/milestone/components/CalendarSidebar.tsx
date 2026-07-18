@@ -8,6 +8,7 @@ import { AddMenuModal } from "./AddMenuModal";
 import { MilestoneAccordion } from "./MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
+import { filterCategoriesByMonth } from "./scheduleDateUtils";
 import type {
   CreateCategoryInput,
   CreateScheduleItemInput,
@@ -16,6 +17,8 @@ import type {
 export const CalendarSidebar = ({
   isSidebarOpen = true,
   categories,
+  currentYear,
+  currentMonth,
   onSelectCategory,
   selectedCategoryId,
   onCreateCategory,
@@ -24,6 +27,8 @@ export const CalendarSidebar = ({
 }: {
   isSidebarOpen?: boolean;
   categories: Category[];
+  currentYear: number;
+  currentMonth: number;
   onSelectCategory?: (categoryId: string) => void;
   selectedCategoryId?: string | null;
   onCreateCategory?: (input: CreateCategoryInput) => void;
@@ -49,7 +54,11 @@ export const CalendarSidebar = ({
   const [hasHiddenContentUnderButton, setHasHiddenContentUnderButton] = useState(false);
   const categoryListRef = useRef<HTMLDivElement>(null);
 
-  const monthLabel = useMemo(() => `${new Date().getMonth() + 1}월`, []);
+  const monthLabel = useMemo(() => `${currentMonth}월`, [currentMonth]);
+  const displayedCategories = useMemo(
+    () => filterCategoriesByMonth(categories, currentYear, currentMonth),
+    [categories, currentYear, currentMonth],
+  );
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) => ({
@@ -91,7 +100,7 @@ export const CalendarSidebar = ({
       categoryList.removeEventListener("scroll", updateButtonShadow);
       resizeObserver.disconnect();
     };
-  }, [categories, expandedCategories]);
+  }, [displayedCategories, expandedCategories]);
 
   return (
     <aside 
@@ -117,7 +126,7 @@ export const CalendarSidebar = ({
               ref={categoryListRef}
               className="flex max-h-[calc(100%-56px)] flex-col items-start gap-5 overflow-y-auto overflow-x-hidden custom-scrollbar"
             >
-              {categories.map((category) => (
+              {displayedCategories.map((category) => (
                 <MilestoneAccordion
                   key={category.id}
                   category={category}

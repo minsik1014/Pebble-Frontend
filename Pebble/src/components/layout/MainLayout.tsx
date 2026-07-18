@@ -19,6 +19,9 @@ const ORIGINAL_HEIGHT = 1000;
 export interface MainLayoutContext {
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
+  currentYear: number;
+  currentMonth: number;
+  onChangeCalendarMonth: (year: number, month: number) => void;
   categories: Category[];
   replaceCategories: CalendarStateModel["replaceCategories"];
   createCategory: (input: CreateCategoryInput) => void;
@@ -47,6 +50,8 @@ export const MainLayout = (): JSX.Element => {
 
   const [scale, setScale] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth() + 1);
   const {
     categories,
     replaceCategories,
@@ -83,6 +88,11 @@ export const MainLayout = (): JSX.Element => {
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen((previous) => !previous);
+  };
+
+  const handleChangeCalendarMonth = (year: number, month: number) => {
+    setCurrentYear(year);
+    setCurrentMonth(month);
   };
 
   const handleSelectCategory = (categoryId: string) => {
@@ -136,6 +146,8 @@ export const MainLayout = (): JSX.Element => {
             <CalendarSidebar
               isSidebarOpen={isSidebarOpen}
               categories={categories}
+              currentYear={currentYear}
+              currentMonth={currentMonth}
               onSelectCategory={handleSelectCategory}
               selectedCategoryId={selectedCategoryId}
               onCreateCategory={handleCreateCategory}
@@ -148,6 +160,9 @@ export const MainLayout = (): JSX.Element => {
             context={{
               isSidebarOpen,
               onToggleSidebar: handleToggleSidebar,
+              currentYear,
+              currentMonth,
+              onChangeCalendarMonth: handleChangeCalendarMonth,
               categories,
               replaceCategories,
               createCategory: handleCreateCategory,

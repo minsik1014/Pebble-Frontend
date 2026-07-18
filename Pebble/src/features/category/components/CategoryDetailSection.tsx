@@ -91,8 +91,8 @@ export const CategoryDetailSection = ({
           <MilestoneDetailItem
             key={item.id}
             item={item}
-            themeMid={category.themeMid}
-            themeLight={category.themeLight}
+            themeMidColor={category.themeMid}
+            themeLightColor={category.themeLight}
             isExpanded={Boolean(expandedMilestones[item.id])}
             onToggle={() => toggleMilestone(item.id)}
             onEdit={() => setEditingMilestoneId(item.id)}

@@ -102,7 +102,13 @@ export const MilestoneFormModal = ({ isOpen, onClose, categories, mode = "create
             >
               {selectedCategory ? (
                 <div className="flex items-center gap-2">
-                  <div className={`w-[6px] h-[24px] rounded-[4px] ${categories.find(c => c.id === selectedCategory)?.themeBase || 'bg-black'}`} />
+                  <div
+                    className="w-[6px] h-[24px] rounded-[4px]"
+                    style={{
+                      backgroundColor:
+                        categories.find(c => c.id === selectedCategory)?.themeBase || "#171717",
+                    }}
+                  />
                   <span className="text-[16px] text-text-primary">
                     {categories.find(c => c.id === selectedCategory)?.title}
                   </span>
@@ -125,7 +131,10 @@ export const MilestoneFormModal = ({ isOpen, onClose, categories, mode = "create
                       setIsCategoryDropdownOpen(false);
                     }}
                   >
-                    <div className={`w-[6px] h-[24px] rounded-[4px] ${cat.themeBase || 'bg-black'}`} />
+                    <div
+                      className="w-[6px] h-[24px] rounded-[4px]"
+                      style={{ backgroundColor: cat.themeBase || "#171717" }}
+                    />
                     <span className="text-[16px] text-text-strong">{cat.title}</span>
                   </button>
                 ))}
@@ -157,8 +166,8 @@ export const MilestoneFormModal = ({ isOpen, onClose, categories, mode = "create
           onNextMonth={datePicker.handleNextMonth}
           onDateClick={datePicker.handleDateClick}
           getDayStatus={datePicker.getDayStatus}
-          themeBaseClass={activeCategory?.themeBase}
-          themeLightClass={activeCategory?.themeLight}
+          themeBaseColor={activeCategory?.themeBase}
+          themeLightColor={activeCategory?.themeLight}
         />
 
         {/* Bottom Actions */}

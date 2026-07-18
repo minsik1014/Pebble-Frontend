@@ -4,7 +4,7 @@ import EditIcon from "@/assets/icons/newedit.svg?react";
 // The task definition inside a category detail item seems to be just a standard ScheduleItem
 type TaskDetailRowProps = {
   task: ScheduleItem;
-  themeLight: string;
+  themeLightColor: string;
   onEdit?: () => void;
 };
 
@@ -19,11 +19,14 @@ const formatDisplayDate = (value: string) => {
   return `${Number(month)}/${Number(day)}`;
 };
 
-export const TaskDetailRow = ({ task, themeLight, onEdit }: TaskDetailRowProps) => {
+export const TaskDetailRow = ({ task, themeLightColor, onEdit }: TaskDetailRowProps) => {
   return (
     <div className="w-[736px] pr-2 py-2 bg-fill-inverse rounded-xl inline-flex justify-start items-center gap-2 overflow-hidden">
       <div className="flex-1 flex justify-start items-center gap-2">
-        <div className={`w-2 h-8 rounded-sm ${themeLight}`} />
+        <div
+          className="w-2 h-8 rounded-sm"
+          style={{ backgroundColor: themeLightColor }}
+        />
         <span className="max-w-64 text-body-02-m text-text-strong truncate">
           {task.title}
         </span>

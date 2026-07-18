@@ -9,8 +9,8 @@ export type CalendarEvent = {
   leftPercent: number;
   widthPercent: number;
   topOffset: number;
-  bgClass: string;
-  accentClass: string;
+  backgroundColor: string;
+  accentColor: string;
 };
 
 export type CalendarWeek = {

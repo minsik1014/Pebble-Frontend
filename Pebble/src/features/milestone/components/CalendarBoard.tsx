@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { MonthSelector } from "./MonthSelector";
 import { SidebarToggleButton } from "./SidebarToggleButton";
 import { CalendarGrid } from "./CalendarGrid";
@@ -9,17 +9,20 @@ type CalendarBoardProps = {
   isSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
   categories?: Category[];
+  currentYear: number;
+  currentMonth: number;
+  onChangeCalendarMonth: (year: number, month: number) => void;
 };
 
 export const CalendarBoard = ({
   isSidebarOpen = true,
   onToggleSidebar,
   categories = [],
-}: CalendarBoardProps = {}): JSX.Element => {
+  currentYear,
+  currentMonth,
+  onChangeCalendarMonth,
+}: CalendarBoardProps): JSX.Element => {
   const todayDate = useMemo(() => new Date(), []);
-  const [currentYear, setCurrentYear] = useState(todayDate.getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(todayDate.getMonth() + 1);
-
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
   const weeks = useMemo(
@@ -28,29 +31,26 @@ export const CalendarBoard = ({
   );
 
   const handlePreviousMonth = () => {
-    setCurrentMonth((prevMonth) => {
-      if (prevMonth === 1) {
-        setCurrentYear((prevYear) => prevYear - 1);
-        return 12;
-      }
-      return prevMonth - 1;
-    });
+    if (currentMonth === 1) {
+      onChangeCalendarMonth(currentYear - 1, 12);
+      return;
+    }
+
+    onChangeCalendarMonth(currentYear, currentMonth - 1);
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth((prevMonth) => {
-      if (prevMonth === 12) {
-        setCurrentYear((prevYear) => prevYear + 1);
-        return 1;
-      }
-      return prevMonth + 1;
-    });
+    if (currentMonth === 12) {
+      onChangeCalendarMonth(currentYear + 1, 1);
+      return;
+    }
+
+    onChangeCalendarMonth(currentYear, currentMonth + 1);
   };
 
   const handleToday = () => {
     const today = new Date();
-    setCurrentYear(today.getFullYear());
-    setCurrentMonth(today.getMonth() + 1);
+    onChangeCalendarMonth(today.getFullYear(), today.getMonth() + 1);
   };
 
   return (

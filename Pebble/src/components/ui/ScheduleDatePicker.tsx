@@ -14,8 +14,8 @@ type ScheduleDatePickerProps = {
   onNextMonth: () => void;
   onDateClick: (day: number) => void;
   getDayStatus: (day: number) => DayStatus;
-  themeBaseClass?: string;
-  themeLightClass?: string;
+  themeBaseColor?: string;
+  themeLightColor?: string;
 };
 
 const DATE_TYPES: DateType[] = ["하루", "기간", "다중"];
@@ -39,8 +39,8 @@ export const ScheduleDatePicker = ({
   onNextMonth,
   onDateClick,
   getDayStatus,
-  themeBaseClass = "bg-btn-primary",
-  themeLightClass = "bg-black/5",
+  themeBaseColor = "#171717",
+  themeLightColor = "rgba(23, 23, 23, 0.05)",
 }: ScheduleDatePickerProps) => {
   const isTaskVariant = variant === "task";
   const daySizeClass = isTaskVariant ? "w-10 h-10" : "w-12 h-12";
@@ -66,7 +66,7 @@ export const ScheduleDatePicker = ({
     const baseClass = `${daySizeClass} rounded-[12px] flex items-center justify-center text-[16px] font-medium transition-colors z-10 relative`;
 
     if (status === "selected" || status === "range-start" || status === "range-end") {
-      return `${baseClass} ${themeBaseClass} text-fill-inverse`;
+      return `${baseClass} text-fill-inverse`;
     }
 
     if (status === "today") {
@@ -78,15 +78,15 @@ export const ScheduleDatePicker = ({
 
   const renderRangeBackground = (status: DayStatus) => {
     if (status === "range-start") {
-      return <div className={`absolute right-0 top-0 h-full w-1/2 ${themeLightClass}`} />;
+      return <div className="absolute right-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
     }
 
     if (status === "range-end") {
-      return <div className={`absolute left-0 top-0 h-full w-1/2 ${themeLightClass}`} />;
+      return <div className="absolute left-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
     }
 
     if (status === "in-range") {
-      return <div className={`absolute inset-0 ${themeLightClass}`} />;
+      return <div className="absolute inset-0" style={{ backgroundColor: themeLightColor }} />;
     }
 
     return null;
@@ -189,7 +189,17 @@ export const ScheduleDatePicker = ({
             return (
               <div key={day} className={`w-full ${wrapperHeightClass} flex items-center justify-center relative overflow-hidden`}>
                 {renderRangeBackground(status)}
-                <button onClick={() => onDateClick(day)} className={getDayButtonClass(status)}>
+                <button
+                  onClick={() => onDateClick(day)}
+                  className={getDayButtonClass(status)}
+                  style={
+                    status === "selected" ||
+                    status === "range-start" ||
+                    status === "range-end"
+                      ? { backgroundColor: themeBaseColor }
+                      : undefined
+                  }
+                >
                   {day}
                 </button>
               </div>

@@ -7,6 +7,9 @@ export const CalendarMainPage = (): JSX.Element => {
   const {
     isSidebarOpen,
     onToggleSidebar,
+    currentYear,
+    currentMonth,
+    onChangeCalendarMonth,
     categories,
     createTask,
     updateCategory,
@@ -36,6 +39,9 @@ export const CalendarMainPage = (): JSX.Element => {
       isSidebarOpen={isSidebarOpen}
       onToggleSidebar={onToggleSidebar}
       categories={categories}
+      currentYear={currentYear}
+      currentMonth={currentMonth}
+      onChangeCalendarMonth={onChangeCalendarMonth}
     />
   );
 };
