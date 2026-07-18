@@ -69,7 +69,7 @@ export const filterCategoriesByMonth = (
       isScheduleItemInMonth(task, year, month),
     ),
     items: category.items
-      .map((item) => {
+      .map((item): ScheduleItem | null => {
         const filteredTasks = item.tasks?.filter((task) =>
           isScheduleItemInMonth(task, year, month),
         );
