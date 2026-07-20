@@ -1,11 +1,11 @@
 // @/features/auth/components/ForgotPasswordForm.tsx
 import React from "react";
-import { Link } from "react-router-dom";
 
-// 이미지 에셋 임포트 (기존 경로 유지)
+// 비밀번호 찾기 화면의 배경 조약돌 이미지
 import pebble01 from "@/assets/icons/pebble01.png";
 import pebble02 from "@/assets/icons/pebble02.png";
 import pebble03 from "@/assets/icons/pebble03.png";
+import { Header } from "./Header";
 
 const EyeIcon = ({ open }: { open: boolean }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-[22px] h-[22px] flex-shrink-0">
@@ -18,15 +18,6 @@ const EyeIcon = ({ open }: { open: boolean }) => (
       <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M21.034 12a10.448 10.448 0 0 0-2.012-3.777M11.542 4.427A10.417 10.417 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 17.772 17.772m-3.6-3.6a3.5 3.5 0 1 1-4.95-4.95 3.5 3.5 0 0 1 4.95 4.95Z" />
     )}
   </svg>
-);
-
-const PebbleLogo = () => (
-  <div className="flex items-center gap-[8px] cursor-pointer">
-    <div className="w-[24px] h-[24px] bg-[#111111] rounded-[6px] flex items-center justify-center">
-      <span className="text-white text-[12px] font-bold">P</span>
-    </div>
-    <span className="text-[18px] font-bold text-[#111111] tracking-tight">Pebble</span>
-  </div>
 );
 
 interface ForgotPasswordFormProps {
@@ -67,45 +58,34 @@ export const ForgotPasswordForm = ({
   return (
     <div className="w-full min-h-screen bg-white flex flex-col relative overflow-hidden">
       
-      {/* 💡 제공해주신 레퍼런스 구도 완벽 반영: 전체 화면 우측 하단 중심 배경 조약돌 레이아웃 */}
-      <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden">
-        {/* pebble01: 가장 좌측 하단에 은은하게 배치 */}
-        <img 
-          src={pebble01} 
-          alt="Background Pebble 01" 
-          className="absolute bottom-[-5%] right-[40%] w-[320px] md:w-[420px] object-contain opacity-0 animate-fade-up" 
-          style={{ "--animation-delay": "0ms" } as React.CSSProperties}
+      {/* 폼의 가운데를 기준으로 배치하고, 1 → 2 → 3 순서로 같은 속도로 나타냅니다. */}
+      <div aria-hidden="true" className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden">
+        <img
+          src={pebble01}
+          alt=""
+          className="forgot-password-pebble hidden sm:block w-[380px] bottom-[-70px] left-[calc(50%-415px)]"
+          style={{ "--pebble-opacity": 0.07, "--pebble-delay": "0ms" } as React.CSSProperties}
         />
-        {/* pebble02: 중앙 하단에 크게 안착 */}
-        <img 
-          src={pebble02} 
-          alt="Background Pebble 02" 
-          className="absolute bottom-[-8%] right-[10%] w-[440px] md:w-[580px] object-contain opacity-0 animate-fade-up" 
-          style={{ "--animation-delay": "200ms" } as React.CSSProperties}
+        <img
+          src={pebble02}
+          alt=""
+          className="forgot-password-pebble hidden sm:block w-[500px] bottom-[-80px] left-[calc(50%+55px)]"
+          style={{ "--pebble-opacity": 0.09, "--pebble-delay": "700ms" } as React.CSSProperties}
         />
-        {/* pebble03: 우측 화면 밖으로 크게 잘려나가는 조약돌 */}
-        <img 
-          src={pebble03} 
-          alt="Background Pebble 03" 
-          className="absolute bottom-[10%] right-[-15%] w-[400px] md:w-[520px] object-contain opacity-0 animate-fade-up" 
-          style={{ "--animation-delay": "400ms" } as React.CSSProperties}
+        <img
+          src={pebble03}
+          alt=""
+          className="forgot-password-pebble hidden sm:block w-[480px] bottom-[165px] left-[calc(50%+400px)]"
+          style={{ "--pebble-opacity": 0.11, "--pebble-delay": "1400ms" } as React.CSSProperties}
         />
       </div>
 
       {/* 상단 GNB 헤더 영역 */}
-      <header className="w-full h-[64px] px-[20px] md:px-[40px] flex items-center justify-between border-b border-[#F3F4F6] relative z-10 bg-white">
-        <Link to="/">
-          <PebbleLogo />
-        </Link>
-        <div className="flex items-center gap-[16px]">
-          <Link to="/signup" className="text-[14px] font-medium text-[#444444] hover:text-[#111111]">회원가입</Link>
-          <Link to="/login" className="px-[16px] h-[36px] bg-[#111111] text-white text-[14px] font-medium rounded-[6px] flex items-center justify-center hover:bg-[#222222] transition-colors">로그인</Link>
-        </div>
-      </header>
+      <Header />
 
-      {/* 메인 폼 영역 (배경 조약돌을 가리지 않도록 투명 처리) */}
+      {/* 메인 폼 영역 */}
       <main className="flex-1 flex flex-col justify-center items-center py-[40px] md:py-[60px] px-[16px] relative z-10 bg-transparent">
-        <div className="w-full max-w-[440px] flex flex-col">
+        <div className="w-full max-w-[440px] flex flex-col bg-transparent p-6 sm:p-0 rounded-2xl">
           
           {/* 뒤로가기 및 타이틀 */}
           <div className="flex items-center mb-[8px] relative">

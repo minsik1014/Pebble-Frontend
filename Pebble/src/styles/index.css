@@ -1,9 +1,46 @@
 /* src/index.css */
 
+/* 런드리고딕 공식 웹폰트 서버 연결 및 정의 */
+@import url('https://www.lifegoeson.kr/font/LaundryGothic.css');
+
+@font-face {
+  font-family: 'LaundryGothic';
+  src: url('https://www.lifegoeson.kr/font/LaundryGothic.woff2') format('woff2'),
+       url('https://www.lifegoeson.kr/font/LaundryGothic.woff') format('woff'),
+       url('https://www.lifegoeson.kr/font/LaundryGothic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 1. Tailwind 기본 필수 지시어 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 비밀번호 찾기 배경: 각 조약돌은 동일한 0.7초 동안 목표 불투명도까지 선형으로 나타납니다. */
+.forgot-password-pebble {
+  position: absolute;
+  opacity: 0;
+  animation: forgot-password-pebble-fade 700ms linear var(--pebble-delay) forwards;
+}
+
+@keyframes forgot-password-pebble-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: var(--pebble-opacity);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forgot-password-pebble {
+    animation: none;
+    opacity: var(--pebble-opacity);
+  }
+}
 
 @layer base {
   button,
