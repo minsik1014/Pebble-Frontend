@@ -118,17 +118,26 @@ Pebble/src/
 ├── assets/              # 아이콘, 이미지 등 정적 리소스
 ├── components/          # 도메인 종속성이 없는 공용 UI / 레이아웃
 │   ├── layout/          # GNB, Sidebar, AppLayout
-│   └── ui/              # Button, Input, Modal (디자인 토큰 기반)
+│   └── ui/              # Button, ModalActionBar, ScheduleDatePicker 등 공용 UI
 │
-├── types/               # 전역 공통 타입 정의 (index.ts 등)
+├── types/               # 전역 공통 타입 정의 (Category, Milestone, Task 등)
 │
-├── mocks/               # 프론트엔드 테스트용 더미 데이터 (dummyData.ts 등)
+├── hooks/               # 도메인에 종속되지 않는 재사용 커스텀 훅
+├── utils/               # 날짜, 색상 토큰 등 순수 유틸리티 함수
 │
 ├── features/            # 핵심 비즈니스 도메인
 │   ├── auth/            # 소셜 로그인 (카카오, 구글), 온보딩
-│   ├── category/        # 카테고리 CRUD
-│   ├── milestone/       # 마일스톤 관리 및 캘린더 UI
-│   ├── task/            # 투두 생성, 체크, 가상 스크롤 렌더링
+│   ├── calendar/        # 캘린더 상태 모델, 페이지 조립용 컴포넌트/유틸
+│   │   ├── components/  # 캘린더 도메인에서 공유되는 선택 UI
+│   │   ├── hooks/       # 캘린더 상태 훅
+│   │   └── utils/       # 캘린더 상태 변경 순수 함수
+│   ├── category/        # 카테고리 CRUD, 색상 선택, 이미지/멤버 UI
+│   │   ├── components/  # 카테고리 화면 및 모달 컴포넌트
+│   │   └── mock/        # 백엔드 연동 전 임시 데이터
+│   ├── milestone/       # 마일스톤 관리 및 캘린더/사이드바 UI
+│   │   ├── components/  # CalendarBoard, Sidebar, Milestone UI
+│   │   └── hooks/       # 사이드바 표시/스크롤 상태 훅
+│   ├── task/            # 태스크 생성, 편집, 체크 UI
 │   ├── grass/           # 잔디밭 컴포넌트 및 로직
 │   ├── report/          # 월말 리포트 (GIF 생성 및 열람)
 │   └── settings/        # 설정 화면 섹션 및 토글/세그먼트 컴포넌트
@@ -142,15 +151,16 @@ Pebble/src/
 │   └── premium/         # 구독 결제 및 관리
 │
 ├── store/               # 전역 클라이언트 상태 (usePebbleStore.ts)
-├── hooks/               # 재사용 커스텀 훅 (useTheme, useVirtualScroll)
-├── utils/               # 유틸리티 함수 (날짜 계산, 진행률 계산 로직)
 ├── styles/              # 전역 스타일 (index.css, CSS Variables)
 └── App.tsx
 ```
 
 ### 개발 원칙
 1. **Colocation:** 특정 도메인(예: task)에서만 쓰이는 컴포넌트와 훅은 `features/task/` 내부에 응집시킵니다.
-2. **Absolute Import:** 상대 경로(`../../`) 대신 `@/features/...` 형태의 절대 경로를 사용합니다.
+2. **Shared UI First:** 버튼, 모달 액션, 날짜 선택기처럼 도메인 지식이 없는 UI는 `components/ui/`에 둡니다.
+3. **Feature Shared Layer:** 여러 캘린더 하위 도메인(category/milestone/task)이 함께 쓰는 타입, 선택 UI, 상태 유틸은 `features/calendar/`에 둡니다.
+4. **Pure Utils:** 날짜 포맷, 색상 파생 계산처럼 화면 상태와 무관한 함수는 `utils/`에 둡니다.
+5. **Absolute Import:** 상대 경로(`../../`) 대신 `@/features/...` 형태의 절대 경로를 사용합니다.
 
 <br/>
 

@@ -14,7 +14,7 @@ import { type Category } from "@/types";
 import type {
   CreateScheduleItemInput,
   UpdateCategoryInput,
-} from "@/features/calendar/hooks/useCalendarState";
+} from "@/features/calendar/types";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,

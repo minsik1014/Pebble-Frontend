@@ -1,88 +1,35 @@
 import { useCallback, useMemo, useState } from "react";
 
 import type { Category, ScheduleItem } from "@/types";
+import type {
+  CalendarStateModel,
+  CreateCategoryInput,
+  CreateScheduleItemInput,
+  UpdateCategoryInput,
+} from "@/features/calendar/types";
+import {
+  appendMilestoneToCategory,
+  appendTaskToCategory,
+  appendTaskToMilestone,
+  createCategoryEntity,
+  createMilestoneEntity,
+  createTaskEntity,
+  removeCategoryTaskFromList,
+  removeMilestoneFromCategory,
+  removeTaskFromMilestone,
+  replaceCategoryList,
+  updateCategoryInList,
+  updateCategoryTaskInList,
+} from "@/features/calendar/utils/calendarStateUtils";
 
-export type CreateCategoryInput = Omit<Category, "id" | "items"> & {
-  id?: string;
-  items?: ScheduleItem[];
-  tasks?: ScheduleItem[];
-};
-
-export type UpdateCategoryInput = Partial<
-  Omit<Category, "id" | "items">
-> & {
-  items?: ScheduleItem[];
-};
-
-export type CreateScheduleItemInput = Omit<ScheduleItem, "id" | "tasks"> & {
-  id?: string;
-  tasks?: ScheduleItem[];
-};
-
-export type CalendarState = {
-  categories: Category[];
-  standaloneTasks: ScheduleItem[];
-  selectedCategory: Category | null;
-  selectedCategoryId: string | null;
-};
-
-export type CalendarActions = {
-  replaceCategories: (categories: Category[]) => void;
-  selectCategory: (categoryId: string) => void;
-  clearSelectedCategory: () => void;
-  createCategory: (input: CreateCategoryInput) => Category;
-  updateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
-  createMilestone: (
-    categoryId: string,
-    input: CreateScheduleItemInput,
-  ) => ScheduleItem;
-  createTask: (
-    categoryId: string,
-    milestoneId: string,
-    input: CreateScheduleItemInput,
-  ) => ScheduleItem;
-  createCategoryTask: (
-    categoryId: string,
-    input: CreateScheduleItemInput,
-  ) => ScheduleItem;
-  updateCategoryTask: (
-    categoryId: string,
-    taskId: string,
-    input: CreateScheduleItemInput,
-  ) => void;
-  deleteCategoryTask: (categoryId: string, taskId: string) => void;
-  createStandaloneTask: (input: CreateScheduleItemInput) => ScheduleItem;
-  updateStandaloneTask: (
-    taskId: string,
-    input: CreateScheduleItemInput,
-  ) => void;
-  deleteStandaloneTask: (taskId: string) => void;
-  deleteCategory: (categoryId: string) => void;
-  deleteMilestone: (categoryId: string, milestoneId: string) => void;
-  deleteTask: (
-    categoryId: string,
-    milestoneId: string,
-    taskId: string,
-  ) => void;
-};
-
-export type CalendarStateModel = CalendarState & CalendarActions;
-
-const cloneScheduleItems = (items: ScheduleItem[]): ScheduleItem[] =>
-  items.map((item) => {
-    if (!item.tasks) {
-      return { ...item };
-    }
-
-    return {
-      ...item,
-      tasks: cloneScheduleItems(item.tasks),
-    };
-  });
-
-const createClientCategoryId = () => `category-${crypto.randomUUID()}`;
-const createClientMilestoneId = () => `milestone-${crypto.randomUUID()}`;
-const createClientTaskId = () => `task-${crypto.randomUUID()}`;
+export type {
+  CalendarState,
+  CalendarActions,
+  CalendarStateModel,
+  CreateCategoryInput,
+  CreateScheduleItemInput,
+  UpdateCategoryInput,
+} from "@/features/calendar/types";
 
 export const useCalendarState = (): CalendarStateModel => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -98,13 +45,7 @@ export const useCalendarState = (): CalendarStateModel => {
   );
 
   const replaceCategories = useCallback((nextCategories: Category[]) => {
-    setCategories(
-      nextCategories.map((category) => ({
-        ...category,
-        items: cloneScheduleItems(category.items),
-        tasks: category.tasks ? cloneScheduleItems(category.tasks) : undefined,
-      })),
-    );
+    setCategories(replaceCategoryList(nextCategories));
     setSelectedCategoryId(null);
   }, []);
 
@@ -117,12 +58,7 @@ export const useCalendarState = (): CalendarStateModel => {
   }, []);
 
   const createCategory = useCallback((input: CreateCategoryInput) => {
-    const category: Category = {
-      ...input,
-      id: input.id ?? createClientCategoryId(),
-      items: input.items ? cloneScheduleItems(input.items) : [],
-      tasks: input.tasks ? cloneScheduleItems(input.tasks) : undefined,
-    };
+    const category = createCategoryEntity(input);
 
     setCategories((previousCategories) => [...previousCategories, category]);
     setSelectedCategoryId(category.id);
@@ -133,20 +69,7 @@ export const useCalendarState = (): CalendarStateModel => {
   const updateCategory = useCallback(
     (categoryId: string, input: UpdateCategoryInput) => {
       setCategories((previousCategories) =>
-        previousCategories.map((category) =>
-          category.id === categoryId
-            ? {
-                ...category,
-                ...input,
-                items: input.items
-                  ? cloneScheduleItems(input.items)
-                  : category.items,
-                tasks: input.tasks
-                  ? cloneScheduleItems(input.tasks)
-                  : category.tasks,
-              }
-            : category,
-        ),
+        updateCategoryInList(previousCategories, categoryId, input),
       );
     },
     [],
@@ -154,21 +77,10 @@ export const useCalendarState = (): CalendarStateModel => {
 
   const createMilestone = useCallback(
     (categoryId: string, input: CreateScheduleItemInput) => {
-      const milestone: ScheduleItem = {
-        ...input,
-        id: input.id ?? createClientMilestoneId(),
-        tasks: input.tasks ? cloneScheduleItems(input.tasks) : [],
-      };
+      const milestone = createMilestoneEntity(input);
 
       setCategories((previousCategories) =>
-        previousCategories.map((category) =>
-          category.id === categoryId
-            ? {
-                ...category,
-                items: [...category.items, milestone],
-              }
-            : category,
-        ),
+        appendMilestoneToCategory(previousCategories, categoryId, milestone),
       );
 
       return milestone;
@@ -182,26 +94,14 @@ export const useCalendarState = (): CalendarStateModel => {
       milestoneId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const task: ScheduleItem = {
-        ...input,
-        id: input.id ?? createClientTaskId(),
-      };
+      const task = createTaskEntity(input);
 
       setCategories((previousCategories) =>
-        previousCategories.map((category) =>
-          category.id === categoryId
-            ? {
-                ...category,
-                items: category.items.map((item) =>
-                  item.id === milestoneId
-                    ? {
-                        ...item,
-                        tasks: [...(item.tasks ?? []), task],
-                      }
-                    : item,
-                ),
-              }
-            : category,
+        appendTaskToMilestone(
+          previousCategories,
+          categoryId,
+          milestoneId,
+          task,
         ),
       );
 
@@ -212,20 +112,10 @@ export const useCalendarState = (): CalendarStateModel => {
 
   const createCategoryTask = useCallback(
     (categoryId: string, input: CreateScheduleItemInput) => {
-      const task: ScheduleItem = {
-        ...input,
-        id: input.id ?? createClientTaskId(),
-      };
+      const task = createTaskEntity(input);
 
       setCategories((previousCategories) =>
-        previousCategories.map((category) =>
-          category.id === categoryId
-            ? {
-                ...category,
-                tasks: [...(category.tasks ?? []), task],
-              }
-            : category,
-        ),
+        appendTaskToCategory(previousCategories, categoryId, task),
       );
 
       return task;
@@ -236,21 +126,7 @@ export const useCalendarState = (): CalendarStateModel => {
   const updateCategoryTask = useCallback(
     (categoryId: string, taskId: string, input: CreateScheduleItemInput) => {
       setCategories((previousCategories) =>
-        previousCategories.map((category) =>
-          category.id === categoryId
-            ? {
-                ...category,
-                tasks: category.tasks?.map((task) =>
-                  task.id === taskId
-                    ? {
-                        ...task,
-                        ...input,
-                      }
-                    : task,
-                ),
-              }
-            : category,
-        ),
+        updateCategoryTaskInList(previousCategories, categoryId, taskId, input),
       );
     },
     [],
@@ -259,24 +135,14 @@ export const useCalendarState = (): CalendarStateModel => {
   const deleteCategoryTask = useCallback(
     (categoryId: string, taskId: string) => {
       setCategories((previousCategories) =>
-        previousCategories.map((category) =>
-          category.id === categoryId
-            ? {
-                ...category,
-                tasks: category.tasks?.filter((task) => task.id !== taskId),
-              }
-            : category,
-        ),
+        removeCategoryTaskFromList(previousCategories, categoryId, taskId),
       );
     },
     [],
   );
 
   const createStandaloneTask = useCallback((input: CreateScheduleItemInput) => {
-    const task: ScheduleItem = {
-      ...input,
-      id: input.id ?? createClientTaskId(),
-    };
+    const task = createTaskEntity(input);
 
     setStandaloneTasks((previousTasks) => [...previousTasks, task]);
 
@@ -317,14 +183,7 @@ export const useCalendarState = (): CalendarStateModel => {
   const deleteMilestone = useCallback(
     (categoryId: string, milestoneId: string) => {
       setCategories((previousCategories) =>
-        previousCategories.map((category) =>
-          category.id === categoryId
-            ? {
-                ...category,
-                items: category.items.filter((item) => item.id !== milestoneId),
-              }
-            : category,
-        ),
+        removeMilestoneFromCategory(previousCategories, categoryId, milestoneId),
       );
     },
     [],
@@ -333,20 +192,11 @@ export const useCalendarState = (): CalendarStateModel => {
   const deleteTask = useCallback(
     (categoryId: string, milestoneId: string, taskId: string) => {
       setCategories((previousCategories) =>
-        previousCategories.map((category) =>
-          category.id === categoryId
-            ? {
-                ...category,
-                items: category.items.map((item) =>
-                  item.id === milestoneId
-                    ? {
-                        ...item,
-                        tasks: item.tasks?.filter((task) => task.id !== taskId),
-                      }
-                    : item,
-                ),
-              }
-            : category,
+        removeTaskFromMilestone(
+          previousCategories,
+          categoryId,
+          milestoneId,
+          taskId,
         ),
       );
     },

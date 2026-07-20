@@ -3,13 +3,10 @@ import { type Category } from "@/types";
 import { CategoryColorPicker } from "./CategoryColorPicker";
 import { CategoryImageUploader } from "./CategoryImageUploader";
 import { CategoryMemberSelector } from "./CategoryMemberSelector";
-import {
-  DEFAULT_CATEGORY_COLOR,
-  createCategoryColorTheme,
-  DUMMY_FRIENDS,
-  type Friend,
-} from "./categoryFormOptions";
-import type { CreateCategoryInput } from "@/features/calendar/hooks/useCalendarState";
+import { DEFAULT_CATEGORY_COLOR } from "./categoryFormOptions";
+import { DUMMY_FRIENDS, type Friend } from "@/features/category/mock/friends";
+import { createCategoryColorTheme } from "@/utils/categoryColorTheme";
+import type { CreateCategoryInput } from "@/features/calendar/types";
 
 type CategoryFormModalProps = {
   isOpen: boolean;
@@ -83,8 +80,10 @@ export const CategoryFormModal = ({
 
   const selectedTheme = createCategoryColorTheme(selectedColor);
 
-  const filteredFriends = DUMMY_FRIENDS.filter((friend) => 
-    friend.name.includes(searchQuery) && !selectedMembers.some(m => m.id === friend.id)
+  const filteredFriends = DUMMY_FRIENDS.filter(
+    (friend) =>
+      friend.name.includes(searchQuery) &&
+      !selectedMembers.some((member) => member.id === friend.id),
   );
 
   const toggleMember = (member: Friend) => {

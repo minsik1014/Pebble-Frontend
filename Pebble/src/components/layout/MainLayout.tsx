@@ -7,7 +7,7 @@ import type {
   CreateCategoryInput,
   CreateScheduleItemInput,
   UpdateCategoryInput,
-} from "@/features/calendar/hooks/useCalendarState";
+} from "@/features/calendar/types";
 import { useCalendarState } from "@/features/calendar/hooks/useCalendarState";
 import { CalendarSidebar } from "@/features/milestone/components/CalendarSidebar";
 import { SidebarDivider } from "@/features/milestone/components/SidebarDivider";

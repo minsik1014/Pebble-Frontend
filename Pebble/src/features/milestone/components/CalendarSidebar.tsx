@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import { type Category, type ScheduleItem } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
@@ -12,14 +12,12 @@ import { AddMenuModal } from "./AddMenuModal";
 import { MilestoneAccordion } from "./MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
-import {
-  filterCategoriesByMonth,
-  isScheduleItemInMonth,
-} from "./scheduleDateUtils";
+import { useCalendarSidebarState } from "@/features/milestone/hooks/useCalendarSidebarState";
+import { useSidebarButtonShadow } from "@/features/milestone/hooks/useSidebarButtonShadow";
 import type {
   CreateCategoryInput,
   CreateScheduleItemInput,
-} from "@/features/calendar/hooks/useCalendarState";
+} from "@/features/calendar/types";
 
 export const CalendarSidebar = ({
   isSidebarOpen = true,
@@ -54,81 +52,39 @@ export const CalendarSidebar = ({
   ) => void;
   onDeleteStandaloneTask?: (taskId: string) => void;
 }): JSX.Element => {
-  const [viewMode, setViewMode] = useState<"card" | "list">("card");
-  const [expandedCategories, setExpandedCategories] = useState<
-    Record<string, boolean>
-  >({});
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [editingStandaloneTaskId, setEditingStandaloneTaskId] = useState<string | null>(null);
-  const [hasHiddenContentUnderButton, setHasHiddenContentUnderButton] = useState(false);
-  const categoryListRef = useRef<HTMLDivElement>(null);
+  const [editingStandaloneTaskId, setEditingStandaloneTaskId] = useState<
+    string | null
+  >(null);
 
-  const monthLabel = useMemo(() => `${currentMonth}월`, [currentMonth]);
-  const displayedCategories = useMemo(
-    () => filterCategoriesByMonth(categories, currentYear, currentMonth),
-    [categories, currentYear, currentMonth],
-  );
-  const displayedStandaloneTasks = useMemo(
-    () =>
-      standaloneTasks.filter((task) =>
-        isScheduleItemInMonth(task, currentYear, currentMonth),
-      ),
-    [standaloneTasks, currentYear, currentMonth],
-  );
-  const hasDisplayedSchedules =
-    displayedStandaloneTasks.length > 0 ||
-    displayedCategories.some(
-      (category) =>
-        category.items.length > 0 || (category.tasks?.length ?? 0) > 0,
-    );
+  const {
+    viewMode,
+    setViewMode,
+    expandedCategories,
+    checkedItems,
+    monthLabel,
+    displayedCategories,
+    displayedStandaloneTasks,
+    hasDisplayedSchedules,
+    toggleCategory,
+    toggleCheckedItem,
+  } = useCalendarSidebarState({
+    categories,
+    standaloneTasks,
+    currentYear,
+    currentMonth,
+  });
+  const { scrollContainerRef, hasHiddenContentUnderButton } =
+    useSidebarButtonShadow({
+      displayedCategories,
+      displayedStandaloneTasks,
+      expandedCategories,
+    });
   const editingStandaloneTask =
     standaloneTasks.find((task) => task.id === editingStandaloneTaskId) ?? null;
-
-  const toggleCategory = (categoryId: string) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [categoryId]: !prev[categoryId],
-    }));
-  };
-
-  const toggleCheckedItem = (itemId: string) => {
-    setCheckedItems((prev) => ({
-      ...prev,
-      [itemId]: !prev[itemId],
-    }));
-  };
-
-  useEffect(() => {
-    const categoryList = categoryListRef.current;
-
-    if (!categoryList) {
-      return;
-    }
-
-    const updateButtonShadow = () => {
-      const hasOverflow = categoryList.scrollHeight > categoryList.clientHeight;
-      const isScrolledToBottom =
-        categoryList.scrollTop + categoryList.clientHeight >=
-        categoryList.scrollHeight - 1;
-
-      setHasHiddenContentUnderButton(hasOverflow && !isScrolledToBottom);
-    };
-
-    updateButtonShadow();
-    categoryList.addEventListener("scroll", updateButtonShadow);
-
-    const resizeObserver = new ResizeObserver(updateButtonShadow);
-    resizeObserver.observe(categoryList);
-
-    return () => {
-      categoryList.removeEventListener("scroll", updateButtonShadow);
-      resizeObserver.disconnect();
-    };
-  }, [displayedCategories, displayedStandaloneTasks, expandedCategories]);
 
   return (
     <aside 
@@ -151,7 +107,7 @@ export const CalendarSidebar = ({
           {/* Flexbox에서 내용이 부모를 뚫고 나가는 것을 방지하기 위해 min-h-0 추가 */}
           <div className="relative -left-px flex min-h-0 h-[888px] w-full flex-col px-5 pb-3 pt-1">
             <div
-              ref={categoryListRef}
+              ref={scrollContainerRef}
               className="flex max-h-[calc(100%-56px)] flex-col items-start gap-5 overflow-y-auto overflow-x-hidden custom-scrollbar"
             >
               {displayedStandaloneTasks.length > 0 && (

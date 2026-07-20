@@ -1,12 +1,19 @@
-export type ScheduleItem = {
+export type ScheduleBase = {
   id: string;
   title: string;
   start: string;
   end?: string;
   accent: string;
   rowWidthClass: string;
-  tasks?: ScheduleItem[];
 };
+
+export type TaskItem = ScheduleBase;
+
+export type MilestoneItem = ScheduleBase & {
+  tasks?: TaskItem[];
+};
+
+export type ScheduleItem = MilestoneItem;
 
 export type Category = {
   id: string;
@@ -16,6 +23,6 @@ export type Category = {
   themeMid: string;
   themeLight: string;
   imageUrl?: string;
-  items: ScheduleItem[];
-  tasks?: ScheduleItem[];
+  items: MilestoneItem[];
+  tasks?: TaskItem[];
 };
