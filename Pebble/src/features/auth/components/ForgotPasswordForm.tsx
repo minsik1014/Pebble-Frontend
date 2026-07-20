@@ -127,7 +127,8 @@ export const ForgotPasswordForm = ({
                   onChange={(e) => onChange("email", e.target.value)}
                   onBlur={() => onFieldBlur("email")}
                   placeholder="이메일을 입력해 주세요"
-                  className="w-full h-[48px] sm:h-[52px] px-[16px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white border-[#E5E7EB] focus:border-[#111111]"
+                  className={`w-full h-[48px] sm:h-[52px] px-[16px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white
+                    ${errors.email ? "border-[#FC4C46] focus:border-[#FC4C46]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
                 />
                 {errors.email && (
                   <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
@@ -163,7 +164,8 @@ export const ForgotPasswordForm = ({
                       onChange={(e) => onChange("newPassword", e.target.value)}
                       onBlur={() => onFieldBlur("newPassword")}
                       placeholder="비밀번호를 입력해 주세요"
-                      className="w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white border-[#E5E7EB] focus:border-[#111111]"
+                      className={`w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white
+                        ${errors.newPassword ? "border-[#FC4C46] focus:border-[#FC4C46]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
                     />
                     <button type="button" onClick={onTogglePw} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] flex items-center justify-center">
                       <EyeIcon open={showPw} />
@@ -186,7 +188,8 @@ export const ForgotPasswordForm = ({
                       onChange={(e) => onChange("passwordConfirm", e.target.value)}
                       onBlur={() => onFieldBlur("passwordConfirm")}
                       placeholder="비밀번호를 한 번 더 입력해 주세요"
-                      className="w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white border-[#E5E7EB] focus:border-[#111111]"
+                      className={`w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white
+                        ${errors.passwordConfirm ? "border-[#FC4C46] focus:border-[#FC4C46]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
                     />
                     <button type="button" onClick={onTogglePwConfirm} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] flex items-center justify-center">
                       <EyeIcon open={showPwConfirm} />

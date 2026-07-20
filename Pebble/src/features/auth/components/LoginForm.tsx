@@ -77,7 +77,7 @@ export const LoginForm = ({
             onBlur={() => onFieldBlur("email")} 
             placeholder="이메일을 입력해 주세요"
             className={`w-full h-[48px] sm:h-[52px] px-[16px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5]
-              ${errors?.email ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+              ${(errors?.email || errorMessage) ? "border-[#FC4C46] focus:border-[#FC4C46]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
           />
           {errors?.email && (
             <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
@@ -98,7 +98,7 @@ export const LoginForm = ({
               onBlur={() => onFieldBlur("password")} 
               placeholder="비밀번호를 입력해 주세요"
               className={`w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none placeholder-[#C5C5C5] transition-all
-                ${errors?.password ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+                ${(errors?.password || errorMessage) ? "border-[#FC4C46] focus:border-[#FC4C46]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
             />
             <button
               type="button"

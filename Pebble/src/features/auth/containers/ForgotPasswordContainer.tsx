@@ -58,7 +58,7 @@ export const ForgotPasswordContainer = (): JSX.Element => {
   const handleFieldBlur = (field: "email" | "newPassword" | "passwordConfirm") => {
     if (field === "email" && email !== "") {
       if (!emailRegex.test(email)) {
-        setErrors((prev) => ({ ...prev, email: "올바른 이메일 형식이 아닙니다." }));
+        setErrors((prev) => ({ ...prev, email: "올바른 이메일 형식이 아니에요" }));
         triggerShake("email");
       }
     }
@@ -67,14 +67,14 @@ export const ForgotPasswordContainer = (): JSX.Element => {
       // 8자 이상, 영문/숫자 포함 조합 규칙 체크 (간단히 정규식 처리 가능)
       const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
       if (!pwRegex.test(newPassword)) {
-        setErrors((prev) => ({ ...prev, newPassword: "8자 이상, 영문·숫자 포함이어야 합니다." }));
+        setErrors((prev) => ({ ...prev, newPassword: "8자 이상, 영문·숫자 포함" }));
         triggerShake("newPassword");
       }
     }
 
     if (field === "passwordConfirm" && passwordConfirm !== "" && newPassword !== "") {
       if (newPassword !== passwordConfirm) {
-        setErrors((prev) => ({ ...prev, passwordConfirm: "비밀번호가 일치하지 않습니다. 다시 확인해 주세요." }));
+        setErrors((prev) => ({ ...prev, passwordConfirm: "비밀번호를 다시 확인해 주세요" }));
         triggerShake("passwordConfirm");
       }
     }
@@ -85,7 +85,7 @@ export const ForgotPasswordContainer = (): JSX.Element => {
 
     if (step === 1) {
       if (!email.trim() || !emailRegex.test(email)) {
-        setErrors((prev) => ({ ...prev, email: "올바른 이메일 형식이 아닙니다." }));
+        setErrors((prev) => ({ ...prev, email: "올바른 이메일 형식이 아니에요" }));
         triggerShake("email");
         return;
       }
@@ -102,13 +102,13 @@ export const ForgotPasswordContainer = (): JSX.Element => {
       const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
       
       if (!pwRegex.test(newPassword)) {
-        setErrors((prev) => ({ ...prev, newPassword: "8자 이상, 영문·숫자 포함이어야 합니다." }));
+        setErrors((prev) => ({ ...prev, newPassword: "8자 이상, 영문·숫자 포함" }));
         triggerShake("newPassword");
         return;
       }
 
       if (newPassword !== passwordConfirm) {
-        setErrors((prev) => ({ ...prev, passwordConfirm: "비밀번호가 일치하지 않습니다. 다시 확인해 주세요." }));
+        setErrors((prev) => ({ ...prev, passwordConfirm: "비밀번호를 다시 확인해 주세요" }));
         triggerShake("passwordConfirm");
         return;
       }
