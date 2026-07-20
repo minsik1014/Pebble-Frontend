@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { type Category } from "@/types";
+import { type Category, type ScheduleItem } from "@/types";
 import { ScheduleDatePicker } from "@/components/ui/ScheduleDatePicker";
 import { useScheduleDatePicker } from "@/hooks/useScheduleDatePicker";
+import type { CreateScheduleItemInput } from "@/features/calendar/hooks/useCalendarState";
 
 type TaskFormModalProps = {
   isOpen: boolean;
@@ -9,8 +10,34 @@ type TaskFormModalProps = {
   categories: Category[];
   defaultCategoryId?: string | null;
   defaultMilestoneId?: string | null;
+  task?: ScheduleItem | null;
   mode?: "create" | "edit";
+  onSubmit?: (input: TaskFormSubmitInput) => void;
   onRequestDelete?: () => void;
+};
+
+export type TaskFormSubmitInput = {
+  categoryId: string | null;
+  milestoneId: string | null;
+  task: CreateScheduleItemInput;
+};
+
+const formatScheduleDate = (date: Date) =>
+  [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+
+const parseScheduleDate = (value: string) => {
+  const dateMatch = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+
+  if (!dateMatch) {
+    return null;
+  }
+
+  const [, year, month, day] = dateMatch;
+  return new Date(Number(year), Number(month) - 1, Number(day));
 };
 
 export const TaskFormModal = ({ 
@@ -19,7 +46,9 @@ export const TaskFormModal = ({
   categories,
   defaultCategoryId = null,
   defaultMilestoneId = null,
+  task = null,
   mode = "create",
+  onSubmit,
   onRequestDelete,
 }: TaskFormModalProps) => {
   const [taskName, setTaskName] = useState("");
@@ -28,22 +57,121 @@ export const TaskFormModal = ({
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isMilestoneDropdownOpen, setIsMilestoneDropdownOpen] = useState(false);
   const datePicker = useScheduleDatePicker();
-  const { reset } = datePicker;
+  const {
+    reset,
+    setCurrentYear,
+    setCurrentMonth,
+    setDateType,
+    setDateRange,
+    setSelectedDate,
+  } = datePicker;
   
   // Update defaults when modal opens
   useEffect(() => {
     if (isOpen) {
       setSelectedCategory(defaultCategoryId);
       setSelectedMilestone(defaultMilestoneId);
-      setTaskName("");
       reset();
+      setTaskName(task?.title ?? "");
+
+      if (!task) {
+        return;
+      }
+
+      const startDate = parseScheduleDate(task.start);
+      const endDate = task.end ? parseScheduleDate(task.end) : null;
+
+      if (!startDate) {
+        return;
+      }
+
+      setCurrentYear(startDate.getFullYear());
+      setCurrentMonth(startDate.getMonth());
+
+      if (endDate) {
+        setDateType("기간");
+        setDateRange({ start: startDate, end: endDate });
+        return;
+      }
+
+      setSelectedDate(startDate);
     }
-  }, [isOpen, defaultCategoryId, defaultMilestoneId, reset]);
+  }, [
+    isOpen,
+    defaultCategoryId,
+    defaultMilestoneId,
+    task,
+    reset,
+    setCurrentYear,
+    setCurrentMonth,
+    setDateType,
+    setDateRange,
+    setSelectedDate,
+  ]);
 
   if (!isOpen) return null;
 
   const activeCategory = categories.find(c => c.id === selectedCategory);
   const availableMilestones = activeCategory?.items || [];
+
+  const getScheduleRange = () => {
+    if (datePicker.dateType === "하루" && datePicker.selectedDate) {
+      return {
+        start: formatScheduleDate(datePicker.selectedDate),
+        end: undefined,
+      };
+    }
+
+    if (
+      datePicker.dateType === "기간" &&
+      datePicker.dateRange.start &&
+      datePicker.dateRange.end
+    ) {
+      return {
+        start: formatScheduleDate(datePicker.dateRange.start),
+        end: formatScheduleDate(datePicker.dateRange.end),
+      };
+    }
+
+    if (datePicker.dateType === "다중" && datePicker.multiDates.length > 0) {
+      const selectedDates = [...datePicker.multiDates].sort(
+        (a, b) => a.getTime() - b.getTime(),
+      );
+
+      return {
+        start: formatScheduleDate(selectedDates[0]),
+        end:
+          selectedDates.length > 1
+            ? formatScheduleDate(selectedDates[selectedDates.length - 1])
+            : undefined,
+      };
+    }
+
+    return null;
+  };
+
+  const handleSubmit = () => {
+    const scheduleRange = getScheduleRange();
+    const trimmedName = taskName.trim();
+
+    if (!trimmedName || !scheduleRange) {
+      return;
+    }
+
+    onSubmit?.({
+      categoryId: selectedCategory,
+      milestoneId: selectedMilestone,
+      task: {
+        title: trimmedName,
+        start: scheduleRange.start,
+        end: scheduleRange.end,
+        accent: activeCategory?.accent ?? "#171717",
+        rowWidthClass: selectedCategory && selectedMilestone ? "w-[308px]" : "w-80",
+      },
+    });
+    setTaskName("");
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
@@ -68,7 +196,10 @@ export const TaskFormModal = ({
               >
                 {selectedCategory ? (
                   <div className="flex items-center gap-2 w-full relative">
-                    <div className={`w-[6px] h-[24px] rounded-[4px] ${activeCategory?.themeBase || 'bg-black'}`} />
+                    <div
+                      className="w-[6px] h-[24px] rounded-[4px]"
+                      style={{ backgroundColor: activeCategory?.themeBase || "#171717" }}
+                    />
                     <span className="text-[16px] text-text-strong font-medium">
                       {activeCategory?.title}
                     </span>
@@ -86,6 +217,17 @@ export const TaskFormModal = ({
               </button>
               {isCategoryDropdownOpen && (
                 <div className="absolute top-[52px] left-0 w-full bg-fill-inverse border border-border-default rounded-[12px] shadow-shadow-m z-20 max-h-[200px] overflow-y-auto flex flex-col gap-1 p-2">
+                  <button
+                    className="flex items-center gap-2 p-2 hover:bg-fill-surface rounded-[8px] transition-colors text-left"
+                    onClick={() => {
+                      setSelectedCategory(null);
+                      setSelectedMilestone(null);
+                      setIsCategoryDropdownOpen(false);
+                    }}
+                  >
+                    <div className="w-[6px] h-[24px] rounded-[4px] bg-text-strong" />
+                    <span className="text-[16px] font-medium text-text-strong">선택 안 함</span>
+                  </button>
                   {categories.map(cat => (
                     <button 
                       key={cat.id} 
@@ -96,7 +238,10 @@ export const TaskFormModal = ({
                         setIsCategoryDropdownOpen(false);
                       }}
                     >
-                      <div className={`w-[6px] h-[24px] rounded-[4px] ${cat.themeBase || 'bg-black'}`} />
+                      <div
+                        className="w-[6px] h-[24px] rounded-[4px]"
+                        style={{ backgroundColor: cat.themeBase || "#171717" }}
+                      />
                       <span className="text-[16px] font-medium text-text-strong">{cat.title}</span>
                     </button>
                   ))}
@@ -109,13 +254,19 @@ export const TaskFormModal = ({
               <button 
                 className="w-full h-[48px] bg-fill-surface border border-border-secondary rounded-[12px] flex items-center justify-between px-5"
                 onClick={() => {
-                  if (activeCategory) setIsMilestoneDropdownOpen(!isMilestoneDropdownOpen);
+                  if (activeCategory) {
+                    setIsMilestoneDropdownOpen(!isMilestoneDropdownOpen);
+                  }
                   setIsCategoryDropdownOpen(false);
                 }}
+                disabled={!activeCategory}
               >
                 {selectedMilestone ? (
                   <div className="flex items-center gap-2 w-full relative">
-                    <div className={`w-[6px] h-[24px] rounded-[4px] ${activeCategory?.themeMid || 'bg-black/50'}`} />
+                    <div
+                      className="w-[6px] h-[24px] rounded-[4px]"
+                      style={{ backgroundColor: activeCategory?.themeMid || "rgba(23,23,23,0.5)" }}
+                    />
                     <span className="text-[16px] text-text-strong font-medium">
                       {availableMilestones.find(m => m.id === selectedMilestone)?.title}
                     </span>
@@ -133,6 +284,16 @@ export const TaskFormModal = ({
               </button>
               {isMilestoneDropdownOpen && (
                 <div className="absolute top-[52px] left-0 w-full bg-fill-inverse border border-border-default rounded-[12px] shadow-shadow-m z-20 max-h-[200px] overflow-y-auto flex flex-col gap-1 p-2">
+                  <button
+                    className="flex items-center gap-2 p-2 hover:bg-fill-surface rounded-[8px] transition-colors text-left"
+                    onClick={() => {
+                      setSelectedMilestone(null);
+                      setIsMilestoneDropdownOpen(false);
+                    }}
+                  >
+                    <div className="w-[6px] h-[24px] rounded-[4px] bg-text-strong" />
+                    <span className="text-[16px] font-medium text-text-strong">선택 안 함</span>
+                  </button>
                   {availableMilestones.length > 0 ? (
                     availableMilestones.map(ms => (
                       <button 
@@ -143,7 +304,10 @@ export const TaskFormModal = ({
                           setIsMilestoneDropdownOpen(false);
                         }}
                       >
-                        <div className={`w-[6px] h-[24px] rounded-[4px] ${activeCategory?.themeMid || 'bg-black/50'}`} />
+                        <div
+                          className="w-[6px] h-[24px] rounded-[4px]"
+                          style={{ backgroundColor: activeCategory?.themeMid || "rgba(23,23,23,0.5)" }}
+                        />
                         <span className="text-[16px] font-medium text-text-strong">{ms.title}</span>
                       </button>
                     ))
@@ -181,8 +345,8 @@ export const TaskFormModal = ({
           onNextMonth={datePicker.handleNextMonth}
           onDateClick={datePicker.handleDateClick}
           getDayStatus={datePicker.getDayStatus}
-          themeBaseClass={activeCategory?.themeBase}
-          themeLightClass={activeCategory?.themeLight}
+          themeBaseColor={activeCategory?.themeBase}
+          themeLightColor={activeCategory?.themeLight}
         />
 
         {/* Bottom Actions */}
@@ -205,10 +369,9 @@ export const TaskFormModal = ({
             취소
           </button>
           <button
+            onClick={handleSubmit}
             className="flex-[1] h-11 bg-btn-primary text-text-onFill rounded-[12px] font-medium hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
             disabled={
-              !selectedCategory || 
-              !selectedMilestone ||
               !taskName || 
               !datePicker.isDateSelectionComplete
             }

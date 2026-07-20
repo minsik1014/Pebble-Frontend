@@ -2,9 +2,16 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 
 import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
+import type {
+  CalendarStateModel,
+  CreateCategoryInput,
+  CreateScheduleItemInput,
+  UpdateCategoryInput,
+} from "@/features/calendar/hooks/useCalendarState";
+import { useCalendarState } from "@/features/calendar/hooks/useCalendarState";
 import { CalendarSidebar } from "@/features/milestone/components/CalendarSidebar";
 import { SidebarDivider } from "@/features/milestone/components/SidebarDivider";
-import { dummyCategories } from "@/mocks/dummyData";
+import type { TaskFormSubmitInput } from "@/features/task/components/TaskFormModal";
 import type { Category } from "@/types";
 
 const ORIGINAL_WIDTH = 1416;
@@ -13,7 +20,21 @@ const ORIGINAL_HEIGHT = 1000;
 export interface MainLayoutContext {
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
+  currentYear: number;
+  currentMonth: number;
+  onChangeCalendarMonth: (year: number, month: number) => void;
   categories: Category[];
+  standaloneTasks: CalendarStateModel["standaloneTasks"];
+  replaceCategories: CalendarStateModel["replaceCategories"];
+  createCategory: (input: CreateCategoryInput) => void;
+  createMilestone: (
+    categoryId: string,
+    input: CreateScheduleItemInput,
+  ) => void;
+  createTask: (input: TaskFormSubmitInput) => void;
+  updateCategoryTask: CalendarStateModel["updateCategoryTask"];
+  deleteCategoryTask: CalendarStateModel["deleteCategoryTask"];
+  updateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
   onDeleteCategory: (categoryId: string) => void;
   onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
   onDeleteTask: (
@@ -29,7 +50,27 @@ export const MainLayout = (): JSX.Element => {
 
   const [scale, setScale] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [categories, setCategories] = useState<Category[]>(dummyCategories);
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth() + 1);
+  const {
+    categories,
+    standaloneTasks,
+    replaceCategories,
+    selectCategory,
+    createCategory,
+    createMilestone,
+    createTask,
+    createCategoryTask,
+    updateCategoryTask,
+    deleteCategoryTask,
+    createStandaloneTask,
+    updateStandaloneTask,
+    deleteStandaloneTask,
+    updateCategory,
+    deleteCategory,
+    deleteMilestone,
+    deleteTask,
+  } = useCalendarState();
   const selectedCategoryId = searchParams.get("category");
 
   useEffect(() => {
@@ -56,14 +97,23 @@ export const MainLayout = (): JSX.Element => {
     setIsSidebarOpen((previous) => !previous);
   };
 
+  const handleChangeCalendarMonth = (year: number, month: number) => {
+    setCurrentYear(year);
+    setCurrentMonth(month);
+  };
+
   const handleSelectCategory = (categoryId: string) => {
+    selectCategory(categoryId);
     navigate(`/?category=${categoryId}`);
   };
 
+  const handleCreateCategory = (input: CreateCategoryInput) => {
+    const category = createCategory(input);
+    navigate(`/?category=${category.id}`);
+  };
+
   const handleDeleteCategory = (categoryId: string) => {
-    setCategories((prev) =>
-      prev.filter((category) => category.id !== categoryId),
-    );
+    deleteCategory(categoryId);
     navigate("/");
   };
 
@@ -71,16 +121,7 @@ export const MainLayout = (): JSX.Element => {
     categoryId: string,
     milestoneId: string,
   ) => {
-    setCategories((prev) =>
-      prev.map((category) =>
-        category.id === categoryId
-          ? {
-              ...category,
-              items: category.items.filter((item) => item.id !== milestoneId),
-            }
-          : category,
-      ),
-    );
+    deleteMilestone(categoryId, milestoneId);
   };
 
   const handleDeleteTask = (
@@ -88,23 +129,25 @@ export const MainLayout = (): JSX.Element => {
     milestoneId: string,
     taskId: string,
   ) => {
-    setCategories((prev) =>
-      prev.map((category) =>
-        category.id === categoryId
-          ? {
-              ...category,
-              items: category.items.map((item) =>
-                item.id === milestoneId
-                  ? {
-                      ...item,
-                      tasks: item.tasks?.filter((task) => task.id !== taskId),
-                    }
-                  : item,
-              ),
-            }
-          : category,
-      ),
-    );
+    deleteTask(categoryId, milestoneId, taskId);
+  };
+
+  const handleCreateTask = ({
+    categoryId,
+    milestoneId,
+    task,
+  }: TaskFormSubmitInput) => {
+    if (categoryId && milestoneId) {
+      createTask(categoryId, milestoneId, task);
+      return;
+    }
+
+    if (categoryId) {
+      createCategoryTask(categoryId, task);
+      return;
+    }
+
+    createStandaloneTask(task);
   };
 
   return (
@@ -128,8 +171,16 @@ export const MainLayout = (): JSX.Element => {
             <CalendarSidebar
               isSidebarOpen={isSidebarOpen}
               categories={categories}
+              standaloneTasks={standaloneTasks}
+              currentYear={currentYear}
+              currentMonth={currentMonth}
               onSelectCategory={handleSelectCategory}
               selectedCategoryId={selectedCategoryId}
+              onCreateCategory={handleCreateCategory}
+              onCreateMilestone={createMilestone}
+              onCreateTask={handleCreateTask}
+              onUpdateStandaloneTask={updateStandaloneTask}
+              onDeleteStandaloneTask={deleteStandaloneTask}
             />
           </div>
 
@@ -137,7 +188,18 @@ export const MainLayout = (): JSX.Element => {
             context={{
               isSidebarOpen,
               onToggleSidebar: handleToggleSidebar,
+              currentYear,
+              currentMonth,
+              onChangeCalendarMonth: handleChangeCalendarMonth,
               categories,
+              standaloneTasks,
+              replaceCategories,
+              createCategory: handleCreateCategory,
+              createMilestone,
+              createTask: handleCreateTask,
+              updateCategoryTask,
+              deleteCategoryTask,
+              updateCategory,
               onDeleteCategory: handleDeleteCategory,
               onDeleteMilestone: handleDeleteMilestone,
               onDeleteTask: handleDeleteTask,

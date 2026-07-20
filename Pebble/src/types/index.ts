@@ -15,5 +15,7 @@ export type Category = {
   themeBase: string;
   themeMid: string;
   themeLight: string;
+  imageUrl?: string;
   items: ScheduleItem[];
+  tasks?: ScheduleItem[];
 };
