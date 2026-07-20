@@ -171,7 +171,7 @@ export const SignUpForm = ({
         <button
           type="submit"
           disabled={!isFormValid}
-          className={`w-full h-[48px] sm:h-[52px] text-white font-semibold rounded-[8px] text-[16px] transition-colors mb-[24px]
+          className={`w-full h-[48px] sm:h-[52px] text-white rounded-[8px] text-[16px] transition-colors mb-[24px]
             ${isFormValid ? "bg-[#111111] hover:bg-[#222222] cursor-pointer" : "bg-[#737373] cursor-not-allowed"}`}
         >
           다음

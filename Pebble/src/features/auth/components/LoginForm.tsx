@@ -130,7 +130,7 @@ export const LoginForm = ({
         {/* 로그인 버튼 */}
         <button
           type="submit"
-          className="w-full h-[48px] sm:h-[52px] bg-[#111111] text-white font-semibold rounded-[8px] text-[16px] hover:bg-[#222222] transition-colors mb-[20px] sm:mb-[28px]"
+          className="w-full h-[48px] sm:h-[52px] bg-[#111111] text-white rounded-[8px] text-[16px] hover:bg-[#222222] transition-colors mb-[20px] sm:mb-[28px]"
         >
           로그인
         </button>
@@ -151,7 +151,7 @@ export const LoginForm = ({
           className="w-full h-[48px] sm:h-[52px] border border-[#E5E7EB] rounded-[8px] flex items-center justify-center relative hover:bg-[#F9FAFB] transition-colors"
         >
           <img src={google} alt="Google" className="absolute left-[20px] w-[20px] h-[20px] flex-shrink-0 object-contain aspect-square" />
-          <span className="text-[14px] font-medium text-[#222222]">Google로 계속하기</span>
+          <span className="text-[14px] text-[#222222]">Google로 계속하기</span>
         </button>
 
         <button
@@ -160,7 +160,7 @@ export const LoginForm = ({
           className="w-full h-[48px] sm:h-[52px] bg-[#03C75A] rounded-[8px] flex items-center justify-center relative hover:bg-[#02b34f] transition-colors"
         >
           <img src={naver} alt="Naver" className="absolute left-[20px] w-[18px] h-[18px] flex-shrink-0 object-contain aspect-square" />
-          <span className="text-[14px] font-medium text-white">네이버로 계속하기</span>
+          <span className="text-[14px] text-white">네이버로 계속하기</span>
         </button>
       </div>
 

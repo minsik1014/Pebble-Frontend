@@ -88,24 +88,28 @@ export const ForgotPasswordForm = ({
       <Header />
 
       {/* 메인 폼 영역 */}
-      <main className="flex-1 flex flex-col justify-center items-center py-[40px] md:py-[60px] px-[16px] relative z-10 bg-transparent">
-        <div className="w-full max-w-[440px] flex flex-col bg-transparent p-6 sm:p-0 rounded-2xl">
+      <main className={`flex-1 flex flex-col items-center px-[16px] relative z-10 bg-transparent ${step === 2 ? "justify-start pt-[131px]" : "justify-center py-[40px] md:py-[60px]"}`}>
+        <div className={`w-full flex flex-col bg-transparent rounded-2xl ${step === 2 ? "max-w-[692px] h-[350px] p-[32px]" : "max-w-[440px] p-6 sm:p-0"}`}>
           
           {/* 뒤로가기 및 타이틀 */}
-          <div className="flex items-center mb-[8px] relative">
-            <button type="button" onClick={onBackToLogin} className="absolute left-0 text-[#444444] hover:text-[#111111] transition-colors">
+          <div className={`flex items-center relative ${step === 2 ? "gap-[16px] mb-[23px]" : "mb-[8px]"}`}>
+            <button
+              type="button"
+              onClick={onBackToLogin}
+              className={`${step === 2 ? "relative w-[24px] h-[33px] flex items-center justify-center" : "absolute left-0"} text-[#737373] hover:text-[#111111] transition-colors flex-shrink-0`}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-[20px] h-[20px]">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
               </svg>
             </button>
-            <h2 className="text-[20px] sm:text-[22px] font-bold text-[#111111] tracking-tight mx-auto pl-[20px]">
+            <h2 className={`tracking-tight ${step === 2 ? "text-[22px] leading-[33px] font-semibold text-[#404040]" : "text-[20px] sm:text-[22px] font-bold text-[#111111] mx-auto pl-[20px]"}`}>
               {step === 1 && "비밀번호를 잊으셨나요?"}
               {step === 2 && "임시 비밀번호 발송 완료"}
               {step === 3 && "비밀번호 변경"}
             </h2>
           </div>
 
-          <p className="text-[14px] text-[#222222] text-center mt-[4px] mb-[32px] sm:mb-[40px] tracking-tight whitespace-pre-line">
+          <p className={`tracking-tight whitespace-pre-line ${step === 2 ? "text-[16px] leading-[24px] font-medium text-[#171717] text-left mb-[38px]" : "text-[14px] text-[#222222] text-center mt-[4px] mb-[32px] sm:mb-[40px]"}`}>
             {step === 1 && "가입하신 이메일로 임시 비밀번호를 보내드릴게요"}
             {step === 2 && "로그인 후 비밀번호를 변경해 주세요"}
             {step === 3 && `임시 비밀번호로 로그인되었어요\n새 비밀번호를 설정해 주세요`}
@@ -133,16 +137,14 @@ export const ForgotPasswordForm = ({
 
             {/* STEP 2: 발송 완료 단계 */}
             {step === 2 && (
-              <div className="flex flex-col items-center mb-[32px] w-full">
-                <div className="w-full bg-white/90 backdrop-blur-[4px] border border-[#E5E7EB] rounded-[12px] p-[20px] flex items-start gap-[12px]">
-                  <div className="w-[36px] h-[36px] rounded-full bg-white border border-[#E5E7EB] flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-[18px] h-[18px] text-[#666666]">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0l-7.5-4.615a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                    </svg>
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-[15px] font-bold text-[#111111]">{email || "sample@sample.com"} <span className="font-normal text-[#666666]">으로</span></span>
-                    <span className="text-[13px] text-[#666666] mt-[2px]">임시 비밀번호를 전송했어요</span>
+              <div className="flex flex-col mb-[40px] w-full">
+                <div className="w-full h-[72px] bg-[#FAFAFA] rounded-[12px] px-[20px] flex items-center gap-[16px]">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-[24px] h-[24px] text-[#737373] flex-shrink-0">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0l-7.5-4.615a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                  </svg>
+                  <div className="flex min-w-0 flex-col text-left leading-[20px]">
+                    <span className="text-[14px] font-semibold text-[#171717] break-all">{email || "sample@sample.com"} <span className="font-normal text-[#737373]">으로</span></span>
+                    <span className="text-[13px] text-[#737373]">임시 비밀번호를 전송했어요</span>
                   </div>
                 </div>
               </div>
@@ -201,7 +203,7 @@ export const ForgotPasswordForm = ({
             <button
               type="submit"
               disabled={step !== 2 && !isFormValid}
-              className={`w-full h-[48px] sm:h-[52px] text-white font-semibold rounded-[8px] text-[16px] transition-colors
+              className={`w-full text-white transition-colors ${step === 2 ? "h-[56px] rounded-[12px] text-[16px]" : "h-[48px] sm:h-[52px] rounded-[8px] text-[16px]"}
                 ${(step === 2 || isFormValid) ? "bg-[#111111] hover:bg-[#222222] cursor-pointer" : "bg-[#737373] cursor-not-allowed"}`}
             >
               {step === 1 && "임시 비밀번호 발급받기"}

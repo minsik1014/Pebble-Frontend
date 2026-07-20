@@ -20,15 +20,15 @@ return (
 </Link>
 
 {/* 상단 우측 퀵 가입 버튼 세트 */}
-<div className="flex items-center gap-[16px] sm:gap-[24px] text-[13px] sm:text-[14px] font-medium">
+<div className="flex items-center gap-[16px] sm:gap-[24px] text-[13px] sm:text-[14px]">
 <button
 onClick={handleSignUpClick}
-className="text-[#444444] hover:text-[#111111] transition-colors cursor-pointer bg-transparent border-none font-medium"
+className="text-[#444444] hover:text-[#111111] transition-colors cursor-pointer bg-transparent border-none"
 >
 회원가입
 </button>
 
-<Link to="/login" className="h-[34px] sm:h-[38px] px-[12px] sm:px-[16px] bg-[#111111] text-white rounded-[6px] text-[12px] sm:text-[13px] font-semibold hover:bg-[#222222] transition-colors flex items-center">
+<Link to="/login" className="h-[34px] sm:h-[38px] px-[12px] sm:px-[16px] bg-[#111111] text-white rounded-[6px] text-[12px] sm:text-[13px] hover:bg-[#222222] transition-colors flex items-center">
 로그인
 </Link>
 </div>
