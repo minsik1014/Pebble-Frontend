@@ -18,11 +18,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 비밀번호 찾기 배경: 각 조약돌은 동일한 0.7초 동안 목표 불투명도까지 선형으로 나타납니다. */
+/* 비밀번호 찾기 배경: 각 조약돌은 동일한 0.5초 동안 목표 불투명도까지 선형으로 나타납니다. */
 .forgot-password-pebble {
   position: absolute;
   opacity: 0;
-  animation: forgot-password-pebble-fade 700ms linear var(--pebble-delay) forwards;
+  animation: forgot-password-pebble-fade 500ms linear var(--pebble-delay) forwards;
 }
 
 @keyframes forgot-password-pebble-fade {

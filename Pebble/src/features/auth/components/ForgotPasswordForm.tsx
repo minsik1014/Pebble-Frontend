@@ -59,27 +59,30 @@ export const ForgotPasswordForm = ({
   return (
     <div className="w-full min-h-screen bg-white flex flex-col relative overflow-hidden">
       
-      {/* 폼의 가운데를 기준으로 배치하고, 1 → 2 → 3 순서로 같은 속도로 나타냅니다. */}
-      <div aria-hidden="true" className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden">
-        <img
-          src={pebble01}
-          alt=""
-          className="forgot-password-pebble hidden sm:block w-[380px] bottom-[-70px] left-[calc(50%-415px)]"
-          style={{ "--pebble-opacity": 0.07, "--pebble-delay": "0ms" } as React.CSSProperties}
-        />
-        <img
-          src={pebble02}
-          alt=""
-          className="forgot-password-pebble hidden sm:block w-[500px] bottom-[-80px] left-[calc(50%+55px)]"
-          style={{ "--pebble-opacity": 0.09, "--pebble-delay": "700ms" } as React.CSSProperties}
-        />
-        <img
-          src={pebble03}
-          alt=""
-          className="forgot-password-pebble hidden sm:block w-[480px] bottom-[165px] left-[calc(50%+400px)]"
-          style={{ "--pebble-opacity": 0.11, "--pebble-delay": "1400ms" } as React.CSSProperties}
-        />
-      </div>
+      {/* 조약돌 배경은 이메일을 입력하는 첫 단계에서만 노출합니다. */}
+      {step === 1 && (
+        <div aria-hidden="true" className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden">
+          {/* 폼의 가운데를 기준으로 배치하고, 1 → 2 → 3 순서로 같은 속도로 나타냅니다. */}
+          <img
+            src={pebble01}
+            alt=""
+            className="forgot-password-pebble hidden sm:block w-[380px] bottom-[-70px] left-[calc(50%-415px)]"
+            style={{ "--pebble-opacity": 0.07, "--pebble-delay": "0ms" } as React.CSSProperties}
+          />
+          <img
+            src={pebble02}
+            alt=""
+            className="forgot-password-pebble hidden sm:block w-[500px] bottom-[-80px] left-[calc(50%+55px)]"
+            style={{ "--pebble-opacity": 0.09, "--pebble-delay": "500ms" } as React.CSSProperties}
+          />
+          <img
+            src={pebble03}
+            alt=""
+            className="forgot-password-pebble hidden sm:block w-[480px] bottom-[165px] left-[calc(50%+400px)]"
+            style={{ "--pebble-opacity": 0.11, "--pebble-delay": "1000ms" } as React.CSSProperties}
+          />
+        </div>
+      )}
 
       {/* 상단 GNB 헤더 영역 */}
       <Header />
