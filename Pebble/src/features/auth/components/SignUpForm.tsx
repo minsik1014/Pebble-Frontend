@@ -1,5 +1,6 @@
 // @/features/auth/components/SignUpForm.tsx
 import React from "react";
+import { AuthErrorMessage } from "./AuthErrorMessage";
 import { Link } from "react-router-dom"; // 💡 새로고침 없는 매끄러운 화면 이동을 위해 추가
 
 const EyeIcon = ({ open }: { open: boolean }) => (
@@ -80,7 +81,7 @@ export const SignUpForm = ({
               ${errors.email ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
           />
           {errors.email && (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.email}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
           )}
         </div>
 
@@ -108,7 +109,7 @@ export const SignUpForm = ({
             </button>
           </div>
           {errors.password ? (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.password}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.password}</AuthErrorMessage>
           ) : (
             <div className="mt-[8px] text-[12px] text-[#999999] text-left">8자 이상, 영문·숫자 포함</div>
           )}
@@ -138,7 +139,7 @@ export const SignUpForm = ({
             </button>
           </div>
           {errors.passwordConfirm && (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.passwordConfirm}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.passwordConfirm}</AuthErrorMessage>
           )}
         </div>
 

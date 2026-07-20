@@ -3,6 +3,7 @@ import React from "react";
 import google from "@/assets/icons/logo-google.svg"; 
 import naver from "@/assets/icons/logo-naver.svg"; 
 import { Link } from "react-router-dom";
+import { AuthErrorMessage } from "./AuthErrorMessage";
 
 const EyeIcon = ({ open }: { open: boolean }) => (
   <svg
@@ -79,7 +80,7 @@ export const LoginForm = ({
               ${errors?.email ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
           />
           {errors?.email && (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.email}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
           )}
         </div>
 
@@ -108,15 +109,15 @@ export const LoginForm = ({
             </button>
           </div>
           {errors?.password && (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.password}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.password}</AuthErrorMessage>
           )}
         </div>
 
         {/* 로그인 실패 / 서버 에러 메시지 */}
         {errorMessage && (
-          <div className="mt-[12px] text-[13px] text-[#FF4D4D] leading-[1.6] text-left break-keep whitespace-pre-line font-medium">
+          <AuthErrorMessage className="mt-[12px] leading-[1.6] break-keep whitespace-pre-line">
             {errorMessage}
-          </div>
+          </AuthErrorMessage>
         )}
 
         {/* 비밀번호 찾기 */}

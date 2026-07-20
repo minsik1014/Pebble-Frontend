@@ -5,6 +5,7 @@ import React from "react";
 import pebble01 from "@/assets/icons/pebble01.png";
 import pebble02 from "@/assets/icons/pebble02.png";
 import pebble03 from "@/assets/icons/pebble03.png";
+import { AuthErrorMessage } from "./AuthErrorMessage";
 import { Header } from "./Header";
 
 const EyeIcon = ({ open }: { open: boolean }) => (
@@ -122,7 +123,7 @@ export const ForgotPasswordForm = ({
                   className="w-full h-[48px] sm:h-[52px] px-[16px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white border-[#E5E7EB] focus:border-[#111111]"
                 />
                 {errors.email && (
-                  <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.email}</div>
+                  <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
                 )}
               </div>
             )}
@@ -164,7 +165,7 @@ export const ForgotPasswordForm = ({
                     </button>
                   </div>
                   {errors.newPassword ? (
-                    <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.newPassword}</div>
+                    <AuthErrorMessage className="mt-[8px]">{errors.newPassword}</AuthErrorMessage>
                   ) : (
                     <div className="mt-[8px] text-[12px] text-[#999999] text-left">8자 이상, 영문·숫자 포함</div>
                   )}
@@ -187,7 +188,7 @@ export const ForgotPasswordForm = ({
                     </button>
                   </div>
                   {errors.passwordConfirm && (
-                    <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.passwordConfirm}</div>
+                    <AuthErrorMessage className="mt-[8px]">{errors.passwordConfirm}</AuthErrorMessage>
                   )}
                 </div>
               </>
