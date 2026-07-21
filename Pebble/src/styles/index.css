@@ -1,11 +1,77 @@
 /* src/index.css */
 
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+/* 인증 화면 GUI 명세에 사용하는 Pretendard 웹폰트 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css');
+
+/* 공식 배포본을 프로젝트에 포함해 로고가 네트워크 상태와 무관하게 동일하게 표시됩니다. */
+@font-face {
+  font-family: 'LaundryGothic';
+  src: url('../assets/fonts/LaundryGothic-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LaundryGothic';
+  src: url('../assets/fonts/LaundryGothic-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* 1. Tailwind 기본 필수 지시어 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Figma 인증 플로우의 타이포그래피를 실제 화면에서 자연스럽게 보이도록 보정한 공통 규칙 */
+@layer components {
+  .auth-title {
+    @apply text-[23px] leading-[130%] font-medium tracking-[-0.23px] text-[#404040];
+  }
+
+  .auth-label {
+    @apply text-[15px] leading-[150%] font-normal tracking-[-0.15px] text-[#737373];
+  }
+
+  .auth-required {
+    @apply ml-[2px] text-[#FC4C46];
+  }
+
+  .auth-input {
+    @apply w-full h-[52px] border border-[#D4D4D4] rounded-[12px] bg-white text-[15px] leading-[150%] font-normal tracking-[-0.15px] outline-none transition-colors placeholder:text-[15px] placeholder:font-normal placeholder:tracking-[-0.16px] placeholder:text-[#D4D4D4] focus:border-[#171717];
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .auth-body {
+    @apply text-[15px] leading-[150%] font-normal tracking-[-0.15px];
+  }
+}
+
+/* 비밀번호 찾기 배경: 각 조약돌은 동일한 0.5초 동안 목표 불투명도까지 선형으로 나타납니다. */
+.forgot-password-pebble {
+  position: absolute;
+  opacity: 0;
+  animation: forgot-password-pebble-fade 500ms linear var(--pebble-delay) forwards;
+}
+
+@keyframes forgot-password-pebble-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: var(--pebble-opacity);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forgot-password-pebble {
+    animation: none;
+    opacity: var(--pebble-opacity);
+  }
+}
 
 @layer base {
   button,

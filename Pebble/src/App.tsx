@@ -4,6 +4,8 @@ import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
+import { ProfileSetupPage } from '@/features/auth/pages/ProfileSetupPage';
+import { SignUpCompletePage } from '@/features/auth/pages/SignUpCompletePage';
 import SettingsPage from './pages/settings/SettingsPage';
 import MyPage from "@/pages/mypage/MyPage";
 
@@ -22,6 +24,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/profile-setup" element={<ProfileSetupPage />} />
+          <Route path="/signup-complete" element={<SignUpCompletePage />} />
         </Routes>
       </div>
     </BrowserRouter>
