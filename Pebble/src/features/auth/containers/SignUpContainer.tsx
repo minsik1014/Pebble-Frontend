@@ -3,6 +3,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SignUpForm } from "../components/SignUpForm";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]{3,}\.[^\s@]{2,}$/;
+// 새 비밀번호 화면과 동일하게 특수문자는 허용하고 영문·숫자 포함 여부만 검사합니다.
+const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
 export const SignUpContainer = (): JSX.Element => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -31,12 +35,12 @@ export const SignUpContainer = (): JSX.Element => {
     const hasValues = form.email !== "" && form.password !== "" && form.passwordConfirm !== "";
     
     // @ 이후 최소 3자, 첫 번째 . 이후 최소 2자 조건 만족 검사
-    const emailRegex = /^[^\s@]+@[^\s@]{3,}\.[^\s@]{2,}$/;
-    const isEmailValid = emailRegex.test(form.email);
+    const isEmailValid = EMAIL_REGEX.test(form.email);
+    const isPasswordValid = PASSWORD_REGEX.test(form.password);
     
     const hasNoErrors = !errors.email && !errors.password && !errors.passwordConfirm;
     
-    setIsFormValid(hasValues && isEmailValid && hasNoErrors && form.agreeTerms);
+    setIsFormValid(hasValues && isEmailValid && isPasswordValid && hasNoErrors && form.agreeTerms);
   }, [form, errors]);
 
   // 값 입력 핸들러: 타이핑 중에는 에러 상태를 초기화하여 실시간 경고 차단
@@ -53,8 +57,7 @@ export const SignUpContainer = (): JSX.Element => {
     if (form[field] === "") return;
 
     if (field === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]{3,}\.[^\s@]{2,}$/;
-      if (!emailRegex.test(form.email)) {
+      if (!EMAIL_REGEX.test(form.email)) {
         setErrors((prev) => ({ ...prev, email: "올바른 이메일 형식이 아니에요" }));
         triggerShake("email");
       } else if (form.email === "example123@sample.com") {
@@ -64,8 +67,8 @@ export const SignUpContainer = (): JSX.Element => {
     }
 
     if (field === "password") {
-      if (form.password.length < 8) {
-        setErrors((prev) => ({ ...prev, password: "비밀번호는 8자 이상이어야 합니다." }));
+      if (!PASSWORD_REGEX.test(form.password)) {
+        setErrors((prev) => ({ ...prev, password: "8자 이상, 영문·숫자 포함" }));
         triggerShake("password");
       }
     }
@@ -84,6 +87,12 @@ export const SignUpContainer = (): JSX.Element => {
     if (form.email === "example123@sample.com") {
       setErrors((prev) => ({ ...prev, email: "이미 가입된 이메일이에요" }));
       triggerShake("email");
+      return;
+    }
+
+    if (!PASSWORD_REGEX.test(form.password)) {
+      setErrors((prev) => ({ ...prev, password: "8자 이상, 영문·숫자 포함" }));
+      triggerShake("password");
       return;
     }
 

@@ -57,7 +57,7 @@ export const ForgotPasswordForm = ({
   onBackToLogin,
 }: ForgotPasswordFormProps) => {
   return (
-    <div className="w-full min-h-screen bg-white flex flex-col relative overflow-hidden">
+    <div className="w-full min-h-screen bg-white flex flex-col relative overflow-hidden [font-family:'Pretendard',sans-serif]">
       
       {/* 조약돌 배경은 이메일을 입력하는 첫 단계에서만 노출합니다. */}
       {step === 1 && (
@@ -102,14 +102,14 @@ export const ForgotPasswordForm = ({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
               </svg>
             </button>
-            <h2 className={`tracking-tight ${step === 2 ? "text-[22px] leading-[33px] font-semibold text-[#404040]" : "text-[20px] sm:text-[22px] font-bold text-[#111111] mx-auto pl-[20px]"}`}>
+            <h2 className={`auth-title ${step === 2 ? "leading-[33px]" : "mx-auto pl-[20px]"}`}>
               {step === 1 && "비밀번호를 잊으셨나요?"}
               {step === 2 && "임시 비밀번호 발송 완료"}
               {step === 3 && "비밀번호 변경"}
             </h2>
           </div>
 
-          <p className={`tracking-tight whitespace-pre-line ${step === 2 ? "text-[16px] leading-[24px] font-medium text-[#171717] text-left mb-[38px]" : "text-[14px] text-[#222222] text-center mt-[4px] mb-[32px] sm:mb-[40px]"}`}>
+          <p className={`auth-body whitespace-pre-line text-[#171717] ${step === 2 ? "text-left mb-[38px]" : "text-center mt-[4px] mb-[32px] sm:mb-[40px]"}`}>
             {step === 1 && "가입하신 이메일로 임시 비밀번호를 보내드릴게요"}
             {step === 2 && "로그인 후 비밀번호를 변경해 주세요"}
             {step === 3 && `임시 비밀번호로 로그인되었어요\n새 비밀번호를 설정해 주세요`}
@@ -120,15 +120,14 @@ export const ForgotPasswordForm = ({
             {/* STEP 1: 이메일 입력 단계 */}
             {step === 1 && (
               <div className={`flex flex-col mb-[32px] ${shakeTarget.email && errors.email ? "animate-shake" : ""}`}>
-                <label className="text-[14px] font-medium text-[#444444] mb-[8px]">이메일</label>
+                <label className="auth-label mb-[8px]">이메일<span className="auth-required">*</span></label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => onChange("email", e.target.value)}
                   onBlur={() => onFieldBlur("email")}
                   placeholder="이메일을 입력해 주세요"
-                  className={`w-full h-[48px] sm:h-[52px] px-[16px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white
-                    ${errors.email ? "border-[#FC4C46] focus:border-[#FC4C46]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+                  className={`auth-input px-[12px] ${errors.email ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
                 />
                 {errors.email && (
                   <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
@@ -144,8 +143,8 @@ export const ForgotPasswordForm = ({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0l-7.5-4.615a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                   </svg>
                   <div className="flex min-w-0 flex-col text-left leading-[20px]">
-                    <span className="text-[14px] font-semibold text-[#171717] break-all">{email || "sample@sample.com"} <span className="font-normal text-[#737373]">으로</span></span>
-                    <span className="text-[13px] text-[#737373]">임시 비밀번호를 전송했어요</span>
+                    <span className="text-[15px] font-medium tracking-[-0.15px] text-[#171717] break-all">{email || "sample@sample.com"} <span className="font-normal text-[#737373]">으로</span></span>
+                    <span className="text-[14px] font-normal tracking-[-0.14px] text-[#737373]">임시 비밀번호를 전송했어요</span>
                   </div>
                 </div>
               </div>
@@ -156,7 +155,7 @@ export const ForgotPasswordForm = ({
               <>
                 {/* 새 비밀번호 */}
                 <div className={`flex flex-col mb-[20px] relative ${shakeTarget.newPassword && errors.newPassword ? "animate-shake" : ""}`}>
-                  <label className="text-[14px] font-medium text-[#444444] mb-[8px]">새 비밀번호<span className="text-[#FF4D4D] ml-[2px]">*</span></label>
+                  <label className="auth-label mb-[8px]">새 비밀번호<span className="auth-required">*</span></label>
                   <div className="relative w-full">
                     <input
                       type={showPw ? "text" : "password"}
@@ -164,8 +163,7 @@ export const ForgotPasswordForm = ({
                       onChange={(e) => onChange("newPassword", e.target.value)}
                       onBlur={() => onFieldBlur("newPassword")}
                       placeholder="비밀번호를 입력해 주세요"
-                      className={`w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white
-                        ${errors.newPassword ? "border-[#FC4C46] focus:border-[#FC4C46]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+                      className={`auth-input pl-[12px] pr-[48px] ${errors.newPassword ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
                     />
                     <button type="button" onClick={onTogglePw} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] flex items-center justify-center">
                       <EyeIcon open={showPw} />
@@ -180,7 +178,7 @@ export const ForgotPasswordForm = ({
 
                 {/* 새 비밀번호 확인 */}
                 <div className={`flex flex-col mb-[32px] relative ${shakeTarget.passwordConfirm && errors.passwordConfirm ? "animate-shake" : ""}`}>
-                  <label className="text-[14px] font-medium text-[#444444] mb-[8px]">새 비밀번호 확인<span className="text-[#FF4D4D] ml-[2px]">*</span></label>
+                  <label className="auth-label mb-[8px]">새 비밀번호 확인<span className="auth-required">*</span></label>
                   <div className="relative w-full">
                     <input
                       type={showPwConfirm ? "text" : "password"}
@@ -188,8 +186,7 @@ export const ForgotPasswordForm = ({
                       onChange={(e) => onChange("passwordConfirm", e.target.value)}
                       onBlur={() => onFieldBlur("passwordConfirm")}
                       placeholder="비밀번호를 한 번 더 입력해 주세요"
-                      className={`w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white
-                        ${errors.passwordConfirm ? "border-[#FC4C46] focus:border-[#FC4C46]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+                      className={`auth-input pl-[12px] pr-[48px] ${errors.passwordConfirm ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
                     />
                     <button type="button" onClick={onTogglePwConfirm} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] flex items-center justify-center">
                       <EyeIcon open={showPwConfirm} />
@@ -206,7 +203,7 @@ export const ForgotPasswordForm = ({
             <button
               type="submit"
               disabled={step !== 2 && !isFormValid}
-              className={`w-full text-white transition-colors ${step === 2 ? "h-[56px] rounded-[12px] text-[16px]" : "h-[48px] sm:h-[52px] rounded-[8px] text-[16px]"}
+              className={`w-full auth-body text-white transition-colors ${step === 2 ? "h-[56px] rounded-[12px]" : "h-[52px] rounded-[12px]"}
                 ${(step === 2 || isFormValid) ? "bg-[#111111] hover:bg-[#222222] cursor-pointer" : "bg-[#737373] cursor-not-allowed"}`}
             >
               {step === 1 && "임시 비밀번호 발급받기"}

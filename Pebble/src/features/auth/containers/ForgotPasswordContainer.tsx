@@ -3,6 +3,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ForgotPasswordForm } from "../components/ForgotPasswordForm";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]{3,}\.[^\s@]{2,}$/;
+// 특수문자는 허용하고, 8자 이상이면서 영문과 숫자를 모두 포함하는지만 확인합니다.
+const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
 export const ForgotPasswordContainer = (): JSX.Element => {
   const navigate = useNavigate();
   
@@ -20,8 +24,6 @@ export const ForgotPasswordContainer = (): JSX.Element => {
   const [shakeTarget, setShakeTarget] = useState<{ email?: boolean; newPassword?: boolean; passwordConfirm?: boolean }>({});
   const [isFormValid, setIsFormValid] = useState(false);
 
-  const emailRegex = /^[^\s@]+@[^\s@]{3,}\.[^\s@]{2,}$/;
-
   // 셰이크 모션 트리거
   const triggerShake = (field: "email" | "newPassword" | "passwordConfirm") => {
     setShakeTarget((prev) => ({ ...prev, [field]: true }));
@@ -31,7 +33,7 @@ export const ForgotPasswordContainer = (): JSX.Element => {
   // 폼 유효성 실시간 체크 (버튼 활성화 스위치)
   useEffect(() => {
     if (step === 1) {
-      setIsFormValid(email.trim() !== "" && emailRegex.test(email) && !errors.email);
+      setIsFormValid(email.trim() !== "" && EMAIL_REGEX.test(email) && !errors.email);
     } else if (step === 3) {
       const hasValues = newPassword !== "" && passwordConfirm !== "";
       const hasNoErrors = !errors.newPassword && !errors.passwordConfirm;
@@ -57,16 +59,14 @@ export const ForgotPasswordContainer = (): JSX.Element => {
   // 포커스 아웃(onBlur) 핸들러 (회원가입/로그인 양식과 동일하게 빈 값 패스 조건 포함)
   const handleFieldBlur = (field: "email" | "newPassword" | "passwordConfirm") => {
     if (field === "email" && email !== "") {
-      if (!emailRegex.test(email)) {
+      if (!EMAIL_REGEX.test(email)) {
         setErrors((prev) => ({ ...prev, email: "올바른 이메일 형식이 아니에요" }));
         triggerShake("email");
       }
     }
 
     if (field === "newPassword" && newPassword !== "") {
-      // 8자 이상, 영문/숫자 포함 조합 규칙 체크 (간단히 정규식 처리 가능)
-      const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-      if (!pwRegex.test(newPassword)) {
+      if (!PASSWORD_REGEX.test(newPassword)) {
         setErrors((prev) => ({ ...prev, newPassword: "8자 이상, 영문·숫자 포함" }));
         triggerShake("newPassword");
       }
@@ -84,7 +84,7 @@ export const ForgotPasswordContainer = (): JSX.Element => {
     e.preventDefault();
 
     if (step === 1) {
-      if (!email.trim() || !emailRegex.test(email)) {
+      if (!email.trim() || !EMAIL_REGEX.test(email)) {
         setErrors((prev) => ({ ...prev, email: "올바른 이메일 형식이 아니에요" }));
         triggerShake("email");
         return;
@@ -99,9 +99,7 @@ export const ForgotPasswordContainer = (): JSX.Element => {
     } 
     
     else if (step === 3) {
-      const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-      
-      if (!pwRegex.test(newPassword)) {
+      if (!PASSWORD_REGEX.test(newPassword)) {
         setErrors((prev) => ({ ...prev, newPassword: "8자 이상, 영문·숫자 포함" }));
         triggerShake("newPassword");
         return;
