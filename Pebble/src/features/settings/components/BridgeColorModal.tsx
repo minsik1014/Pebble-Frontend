@@ -183,7 +183,7 @@ export function BridgeColorModal({
           <Button
             type="button"
             variant="secondary"
-            className="h-11 w-[282px] bg-btn-quaternary text-text-strong hover:bg-btn-pressed"
+            className="h-11 w-[282px] !bg-btn-quaternary !text-text-strong hover:!bg-btn-pressed"
             onClick={handleClose}
           >
             취소
@@ -195,8 +195,8 @@ export function BridgeColorModal({
             className={[
               'h-11 w-[282px] disabled:opacity-100',
               hasChanged
-                ? 'bg-btn-primary text-text-onFill hover:brightness-95'
-                : 'bg-text-secondary text-text-teritary hover:bg-text-secondary',
+                ? '!bg-btn-primary !text-text-onFill'
+                : '!bg-text-secondary !text-text-teritary',
             ].join(' ')}
             onClick={handleConfirm}
           >
