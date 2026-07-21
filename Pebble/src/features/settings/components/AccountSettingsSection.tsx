@@ -31,7 +31,7 @@ export function AccountSettingsSection({
 
   return (
     <>
-      <SettingsSection className="min-h-[268px]">
+      <SettingsSection className="min-h-[284px]">
         <SettingsSectionHeader icon={UserIcon} title="계정 관리" />
 
         <div className="mt-token-l flex flex-col gap-token-l">

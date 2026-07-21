@@ -14,8 +14,9 @@ type ScheduleDatePickerProps = {
   onNextMonth: () => void;
   onDateClick: (day: number) => void;
   getDayStatus: (day: number) => DayStatus;
-  themeBaseClass?: string;
-  themeLightClass?: string;
+  themeBaseColor?: string;
+  themeMidColor?: string;
+  themeLightColor?: string;
 };
 
 const DATE_TYPES: DateType[] = ["하루", "기간", "다중"];
@@ -39,21 +40,24 @@ export const ScheduleDatePicker = ({
   onNextMonth,
   onDateClick,
   getDayStatus,
-  themeBaseClass = "bg-btn-primary",
-  themeLightClass = "bg-black/5",
+  themeBaseColor = "#171717",
+  themeMidColor = "#9CE7FF",
+  themeLightColor = "rgba(23, 23, 23, 0.05)",
 }: ScheduleDatePickerProps) => {
   const isTaskVariant = variant === "task";
   const daySizeClass = isTaskVariant ? "w-10 h-10" : "w-12 h-12";
   const wrapperHeightClass = isTaskVariant ? "h-10" : "h-12";
+  const getSelectedColor = (type: DateType) =>
+    type === "다중" ? themeMidColor : themeBaseColor;
+  const getSelectedTextClass = (type: DateType) =>
+    type === "다중" ? "text-text-strong" : "text-fill-inverse";
 
   const getTypeButtonClass = (type: DateType) => {
     const baseClass = isTaskVariant
       ? "flex-[1] px-5 py-3 rounded-[12px] flex flex-col items-start justify-center gap-1 transition-colors"
       : "flex-1 p-4 rounded-[12px] flex flex-col items-start gap-1 transition-colors";
 
-    const activeClass = isTaskVariant
-      ? "bg-btn-primary text-text-onFill"
-      : "bg-btn-primary text-fill-inverse";
+    const activeClass = "text-fill-inverse";
 
     const inactiveClass = isTaskVariant
       ? "bg-btn-quaternary text-text-strong"
@@ -66,7 +70,7 @@ export const ScheduleDatePicker = ({
     const baseClass = `${daySizeClass} rounded-[12px] flex items-center justify-center text-[16px] font-medium transition-colors z-10 relative`;
 
     if (status === "selected" || status === "range-start" || status === "range-end") {
-      return `${baseClass} ${themeBaseClass} text-fill-inverse`;
+      return `${baseClass} ${getSelectedTextClass(dateType)}`;
     }
 
     if (status === "today") {
@@ -78,15 +82,15 @@ export const ScheduleDatePicker = ({
 
   const renderRangeBackground = (status: DayStatus) => {
     if (status === "range-start") {
-      return <div className={`absolute right-0 top-0 h-full w-1/2 ${themeLightClass}`} />;
+      return <div className="absolute right-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
     }
 
     if (status === "range-end") {
-      return <div className={`absolute left-0 top-0 h-full w-1/2 ${themeLightClass}`} />;
+      return <div className="absolute left-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
     }
 
     if (status === "in-range") {
-      return <div className={`absolute inset-0 ${themeLightClass}`} />;
+      return <div className="absolute inset-0" style={{ backgroundColor: themeLightColor }} />;
     }
 
     return null;
@@ -100,15 +104,24 @@ export const ScheduleDatePicker = ({
             key={type}
             onClick={() => onDateTypeChange(type)}
             className={getTypeButtonClass(type)}
+            style={
+              dateType === type
+                ? { backgroundColor: getSelectedColor(type) }
+                : undefined
+            }
           >
             <span
               className={
                 isTaskVariant
                   ? `text-[16px] font-medium tracking-[-0.16px] leading-[1.5] ${
-                      dateType === type ? "text-fill-inverse" : "text-text-strong"
+                      dateType === type
+                        ? getSelectedTextClass(type)
+                        : "text-text-strong"
                     }`
                   : `text-[16px] font-semibold ${
-                      dateType === type ? "text-fill-inverse" : "text-text-strong"
+                      dateType === type
+                        ? getSelectedTextClass(type)
+                        : "text-text-strong"
                     }`
               }
             >
@@ -118,10 +131,14 @@ export const ScheduleDatePicker = ({
               className={
                 isTaskVariant
                   ? `text-[14px] tracking-[-0.14px] leading-[1.5] ${
-                      dateType === type ? "text-fill-inverse opacity-80" : "text-text-secondary"
+                      dateType === type
+                        ? getSelectedTextClass(type)
+                        : "text-text-secondary"
                     }`
                   : `text-[13px] ${
-                      dateType === type ? "text-fill-inverse opacity-80" : "text-text-secondary"
+                      dateType === type
+                        ? getSelectedTextClass(type)
+                        : "text-text-secondary"
                     }`
               }
             >
@@ -189,7 +206,17 @@ export const ScheduleDatePicker = ({
             return (
               <div key={day} className={`w-full ${wrapperHeightClass} flex items-center justify-center relative overflow-hidden`}>
                 {renderRangeBackground(status)}
-                <button onClick={() => onDateClick(day)} className={getDayButtonClass(status)}>
+                <button
+                  onClick={() => onDateClick(day)}
+                  className={getDayButtonClass(status)}
+                  style={
+                    status === "selected" ||
+                    status === "range-start" ||
+                    status === "range-end"
+                      ? { backgroundColor: getSelectedColor(dateType) }
+                      : undefined
+                  }
+                >
                   {day}
                 </button>
               </div>

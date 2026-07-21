@@ -1,4 +1,5 @@
 import { type ScheduleItem } from "@/types";
+import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type TaskListItemProps = {
   item: ScheduleItem;
@@ -11,16 +12,17 @@ export const TaskListItem = ({
   checked,
   onToggle,
 }: TaskListItemProps) => {
-  const dateLabel = item.end ? `${item.start} ~ ${item.end}` : item.start;
+  const dateLabel = formatScheduleDisplayLabel(item);
+  const accentColor = item.accent ?? "#171717";
 
   return (
     <label
-      className={`${item.rowWidthClass} gap-2 pr-2 py-2 flex items-center relative rounded-token-s overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors shrink-0`}
+      className="w-80 gap-2 pr-2 py-2 flex items-center relative rounded-token-s overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors shrink-0"
     >
       <div className="flex flex-1 grow items-center gap-2 relative min-w-0">
         <div
           className="relative w-2 h-8 rounded shrink-0"
-          style={{ backgroundColor: item.accent }}
+          style={{ backgroundColor: accentColor }}
         />
         <div className="relative min-w-0 max-w-[170px] text-body-02-m text-text-strong truncate">
           {item.title}

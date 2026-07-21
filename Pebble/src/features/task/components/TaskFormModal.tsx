@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
-import { type Category } from "@/types";
+import { type Category, type ScheduleItem } from "@/types";
 import { ScheduleDatePicker } from "@/components/ui/ScheduleDatePicker";
+import {
+  CategorySelect,
+  MilestoneSelect,
+} from "@/features/calendar/components/ScheduleRelationSelects";
+import { ScheduleFormModalFrame } from "@/features/calendar/components/ScheduleFormModalFrame";
+import { ScheduleNameInput } from "@/features/calendar/components/ScheduleNameInput";
+import { useScheduleFormDateInitializer } from "@/features/calendar/hooks/useScheduleFormDateInitializer";
 import { useScheduleDatePicker } from "@/hooks/useScheduleDatePicker";
+import type { CreateScheduleItemInput } from "@/features/calendar/types";
+import { getScheduleRangeFromSelection } from "@/utils/scheduleDate";
 
 type TaskFormModalProps = {
   isOpen: boolean;
@@ -9,8 +18,16 @@ type TaskFormModalProps = {
   categories: Category[];
   defaultCategoryId?: string | null;
   defaultMilestoneId?: string | null;
+  task?: ScheduleItem | null;
   mode?: "create" | "edit";
+  onSubmit?: (input: TaskFormSubmitInput) => void;
   onRequestDelete?: () => void;
+};
+
+export type TaskFormSubmitInput = {
+  categoryId: string | null;
+  milestoneId: string | null;
+  task: CreateScheduleItemInput;
 };
 
 export const TaskFormModal = ({ 
@@ -19,204 +36,140 @@ export const TaskFormModal = ({
   categories,
   defaultCategoryId = null,
   defaultMilestoneId = null,
+  task = null,
   mode = "create",
+  onSubmit,
   onRequestDelete,
 }: TaskFormModalProps) => {
   const [taskName, setTaskName] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(defaultCategoryId);
-  const [selectedMilestone, setSelectedMilestone] = useState<string | null>(defaultMilestoneId);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    defaultCategoryId,
+  );
+  const [selectedMilestone, setSelectedMilestone] = useState<string | null>(
+    defaultMilestoneId,
+  );
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isMilestoneDropdownOpen, setIsMilestoneDropdownOpen] = useState(false);
   const datePicker = useScheduleDatePicker();
-  const { reset } = datePicker;
-  
-  // Update defaults when modal opens
+
+  useScheduleFormDateInitializer({
+    isOpen,
+    task,
+    datePicker,
+  });
+
   useEffect(() => {
     if (isOpen) {
       setSelectedCategory(defaultCategoryId);
       setSelectedMilestone(defaultMilestoneId);
-      setTaskName("");
-      reset();
+      setTaskName(task?.title ?? "");
     }
-  }, [isOpen, defaultCategoryId, defaultMilestoneId, reset]);
+  }, [isOpen, defaultCategoryId, defaultMilestoneId, task]);
 
   if (!isOpen) return null;
 
-  const activeCategory = categories.find(c => c.id === selectedCategory);
+  const activeCategory = categories.find(
+    (category) => category.id === selectedCategory,
+  );
   const availableMilestones = activeCategory?.items || [];
 
+  const handleSubmit = () => {
+    const scheduleRange = getScheduleRangeFromSelection(datePicker);
+    const trimmedName = taskName.trim();
+
+    if (!trimmedName || !scheduleRange) {
+      return;
+    }
+
+    onSubmit?.({
+      categoryId: selectedCategory,
+      milestoneId: selectedMilestone,
+      task: {
+        title: trimmedName,
+        start: scheduleRange.start,
+        end: scheduleRange.end,
+        dates: scheduleRange.dates,
+        accent: activeCategory?.accent ?? "#171717",
+      },
+    });
+    setTaskName("");
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
-      <div className="w-[640px] p-8 bg-fill-inverse rounded-[32px] flex flex-col gap-5 shadow-shadow-m relative">
-        <h2 className="text-[24px] font-semibold text-text-strong leading-[1.3] tracking-[-0.24px]">
-          {mode === "edit" ? "태스크 편집" : "태스크 추가하기"}
-        </h2>
-
-        {/* Form Inputs Container */}
-        <div className="flex flex-col gap-3 w-full mt-2">
-          
-          {/* Row 1: Dropdowns */}
-          <div className="flex items-center gap-3 w-full">
-            {/* Category Dropdown */}
-            <div className="relative flex-[1]">
-              <button 
-                className="w-full h-[48px] bg-fill-surface border border-border-secondary rounded-[12px] flex items-center justify-between px-5"
-                onClick={() => {
-                  setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
-                  setIsMilestoneDropdownOpen(false);
-                }}
-              >
-                {selectedCategory ? (
-                  <div className="flex items-center gap-2 w-full relative">
-                    <div className={`w-[6px] h-[24px] rounded-[4px] ${activeCategory?.themeBase || 'bg-black'}`} />
-                    <span className="text-[16px] text-text-strong font-medium">
-                      {activeCategory?.title}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center w-full relative">
-                    <span className="text-[16px] text-text-strong font-medium">카테고리</span>
-                  </div>
-                )}
-                <div className="absolute right-3">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 10L12 15L17 10H7Z" fill="#171717"/>
-                  </svg>
-                </div>
-              </button>
-              {isCategoryDropdownOpen && (
-                <div className="absolute top-[52px] left-0 w-full bg-fill-inverse border border-border-default rounded-[12px] shadow-shadow-m z-20 max-h-[200px] overflow-y-auto flex flex-col gap-1 p-2">
-                  {categories.map(cat => (
-                    <button 
-                      key={cat.id} 
-                      className="flex items-center gap-2 p-2 hover:bg-fill-surface rounded-[8px] transition-colors text-left"
-                      onClick={() => {
-                        setSelectedCategory(cat.id);
-                        setSelectedMilestone(null); // Reset milestone when category changes
-                        setIsCategoryDropdownOpen(false);
-                      }}
-                    >
-                      <div className={`w-[6px] h-[24px] rounded-[4px] ${cat.themeBase || 'bg-black'}`} />
-                      <span className="text-[16px] font-medium text-text-strong">{cat.title}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Milestone Dropdown */}
-            <div className="relative flex-[1]">
-              <button 
-                className="w-full h-[48px] bg-fill-surface border border-border-secondary rounded-[12px] flex items-center justify-between px-5"
-                onClick={() => {
-                  if (activeCategory) setIsMilestoneDropdownOpen(!isMilestoneDropdownOpen);
-                  setIsCategoryDropdownOpen(false);
-                }}
-              >
-                {selectedMilestone ? (
-                  <div className="flex items-center gap-2 w-full relative">
-                    <div className={`w-[6px] h-[24px] rounded-[4px] ${activeCategory?.themeMid || 'bg-black/50'}`} />
-                    <span className="text-[16px] text-text-strong font-medium">
-                      {availableMilestones.find(m => m.id === selectedMilestone)?.title}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center w-full relative">
-                    <span className="text-[16px] text-text-strong font-medium">마일스톤</span>
-                  </div>
-                )}
-                <div className="absolute right-3">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 10L12 15L17 10H7Z" fill="#171717"/>
-                  </svg>
-                </div>
-              </button>
-              {isMilestoneDropdownOpen && (
-                <div className="absolute top-[52px] left-0 w-full bg-fill-inverse border border-border-default rounded-[12px] shadow-shadow-m z-20 max-h-[200px] overflow-y-auto flex flex-col gap-1 p-2">
-                  {availableMilestones.length > 0 ? (
-                    availableMilestones.map(ms => (
-                      <button 
-                        key={ms.id} 
-                        className="flex items-center gap-2 p-2 hover:bg-fill-surface rounded-[8px] transition-colors text-left"
-                        onClick={() => {
-                          setSelectedMilestone(ms.id);
-                          setIsMilestoneDropdownOpen(false);
-                        }}
-                      >
-                        <div className={`w-[6px] h-[24px] rounded-[4px] ${activeCategory?.themeMid || 'bg-black/50'}`} />
-                        <span className="text-[16px] font-medium text-text-strong">{ms.title}</span>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="p-2 text-center text-text-teritary text-sm">
-                      마일스톤이 없습니다.
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+    <ScheduleFormModalFrame
+      title={mode === "edit" ? "태스크 편집" : "태스크 추가하기"}
+      submitLabel={mode === "edit" ? "수정" : "추가"}
+      disabled={!taskName || !datePicker.isDateSelectionComplete}
+      titleClassName="leading-[1.3]"
+      onCancel={onClose}
+      onSubmit={handleSubmit}
+      onDelete={mode === "edit" ? onRequestDelete : undefined}
+    >
+      <div className="flex flex-col gap-3 w-full mt-2">
+        <div className="flex items-center gap-3 w-full">
+          <div className="flex-[1]">
+            <CategorySelect
+              categories={categories}
+              selectedCategoryId={selectedCategory}
+              isOpen={isCategoryDropdownOpen}
+              allowEmpty
+              onToggleOpen={() => {
+                setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+                setIsMilestoneDropdownOpen(false);
+              }}
+              onSelectCategory={(categoryId) => {
+                setSelectedCategory(categoryId);
+                setSelectedMilestone(null);
+                setIsCategoryDropdownOpen(false);
+              }}
+            />
           </div>
 
-          {/* Row 2: Name Input */}
-          <div className="w-full">
-            <input 
-              type="text" 
-              placeholder="태스크 이름을 입력해 주세요"
-              value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
-              className="w-full h-[48px] bg-fill-inverse border border-border-default rounded-[12px] px-4 text-[16px] font-medium text-text-strong placeholder:text-text-quaternary outline-none focus:border-border-primary transition-colors"
+          <div className="flex-[1]">
+            <MilestoneSelect
+              milestones={availableMilestones}
+              selectedMilestoneId={selectedMilestone}
+              themeColor={activeCategory?.themeMid}
+              disabled={!activeCategory}
+              isOpen={isMilestoneDropdownOpen}
+              onToggleOpen={() => {
+                if (activeCategory) {
+                  setIsMilestoneDropdownOpen(!isMilestoneDropdownOpen);
+                }
+                setIsCategoryDropdownOpen(false);
+              }}
+              onSelectMilestone={(milestoneId) => {
+                setSelectedMilestone(milestoneId);
+                setIsMilestoneDropdownOpen(false);
+              }}
             />
           </div>
         </div>
 
-        <ScheduleDatePicker
-          variant="task"
-          dateType={datePicker.dateType}
-          onDateTypeChange={datePicker.setDateType}
-          currentYear={datePicker.currentYear}
-          currentMonth={datePicker.currentMonth}
-          daysInMonth={datePicker.daysInMonth}
-          firstDay={datePicker.firstDay}
-          onPrevMonth={datePicker.handlePrevMonth}
-          onNextMonth={datePicker.handleNextMonth}
-          onDateClick={datePicker.handleDateClick}
-          getDayStatus={datePicker.getDayStatus}
-          themeBaseClass={activeCategory?.themeBase}
-          themeLightClass={activeCategory?.themeLight}
+        <ScheduleNameInput
+          placeholder="태스크 이름을 입력해 주세요"
+          value={taskName}
+          onChange={setTaskName}
         />
-
-        {/* Bottom Actions */}
-        <div className="flex gap-3 w-full mt-4">
-          {mode === "edit" && (
-            <button
-              onClick={onRequestDelete}
-              className="w-11 h-11 bg-fill-danger rounded-[12px] flex items-center justify-center hover:opacity-90 transition-opacity flex-shrink-0"
-              aria-label="삭제"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z" fill="white"/>
-              </svg>
-            </button>
-          )}
-          <button
-            onClick={onClose}
-            className="flex-[1] h-11 bg-btn-quaternary text-text-strong rounded-[12px] font-medium hover:bg-black/5 transition-colors"
-          >
-            취소
-          </button>
-          <button
-            className="flex-[1] h-11 bg-btn-primary text-text-onFill rounded-[12px] font-medium hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
-            disabled={
-              !selectedCategory || 
-              !selectedMilestone ||
-              !taskName || 
-              !datePicker.isDateSelectionComplete
-            }
-          >
-            {mode === "edit" ? "수정" : "추가"}
-          </button>
-        </div>
       </div>
-    </div>
+
+      <ScheduleDatePicker
+        variant="task"
+        dateType={datePicker.dateType}
+        onDateTypeChange={datePicker.setDateType}
+        currentYear={datePicker.currentYear}
+        currentMonth={datePicker.currentMonth}
+        daysInMonth={datePicker.daysInMonth}
+        firstDay={datePicker.firstDay}
+        onPrevMonth={datePicker.handlePrevMonth}
+        onNextMonth={datePicker.handleNextMonth}
+        onDateClick={datePicker.handleDateClick}
+        getDayStatus={datePicker.getDayStatus}
+        themeBaseColor={activeCategory?.themeBase}
+        themeMidColor={activeCategory?.themeMid}
+        themeLightColor={activeCategory?.themeLight}
+      />
+    </ScheduleFormModalFrame>
   );
 };

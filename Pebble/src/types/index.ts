@@ -1,12 +1,31 @@
-export type ScheduleItem = {
-  id: string;
-  title: string;
+export type ScheduleDateFields = {
   start: string;
   end?: string;
-  accent: string;
-  rowWidthClass: string;
-  tasks?: ScheduleItem[];
+  dates?: string[];
 };
+
+export type ScheduleEntityBase = ScheduleDateFields & {
+  id: string;
+  title: string;
+};
+
+export type ScheduleStyleFields = {
+  accent?: string;
+};
+
+export type TaskItem = ScheduleEntityBase &
+  ScheduleStyleFields & {
+    itemType?: "task";
+    tasks?: never;
+  };
+
+export type MilestoneItem = ScheduleEntityBase &
+  ScheduleStyleFields & {
+    itemType?: "milestone";
+    tasks?: TaskItem[];
+  };
+
+export type ScheduleItem = MilestoneItem | TaskItem;
 
 export type Category = {
   id: string;
@@ -15,5 +34,9 @@ export type Category = {
   themeBase: string;
   themeMid: string;
   themeLight: string;
-  items: ScheduleItem[];
+  themeTextOnMid?: string;
+  themeTextOnLight?: string;
+  imageUrl?: string;
+  items: MilestoneItem[];
+  tasks?: TaskItem[];
 };

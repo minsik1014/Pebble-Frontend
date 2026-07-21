@@ -10,16 +10,22 @@ import MySolidIcon from "@/assets/icons/user-solid.svg?react";
 import SettingsOutlineIcon from "@/assets/icons/settings-outline.svg?react";
 import SettingsSolidIcon from "@/assets/icons/settings-solid.svg?react";
 import LogOutIcon from "@/assets/icons/Logout.svg?react";
+import SidebarOpenIcon from "@/assets/icons/sidebar-open.svg?react";
+import SidebarCloseIcon from "@/assets/icons/sidebar-close.svg?react";
 
 import { AlarmPopover } from "@/features/alarm/components/AlarmPopover";
 import { useAlarms } from "@/features/alarm/hooks/useAlarm";
 
 type GlobalNavigationBarProps = {
   variant?: "embedded" | "collapsed";
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 };
 
 export const GlobalNavigationBar = ({
   variant = "embedded",
+  isSidebarOpen = true,
+  onToggleSidebar,
 }: GlobalNavigationBarProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -113,6 +119,21 @@ export const GlobalNavigationBar = ({
       <div className="flex-1 flex flex-col justify-between items-center w-full">
         {/* 상단: 알림 그룹 */}
         <div className="flex flex-col justify-start items-center gap-5 w-full">
+          {onToggleSidebar && (
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              className="size-11 relative flex items-center justify-center rounded-token-s cursor-pointer text-text-secondary transition-colors hover:bg-fill-surface hover:text-text-strong"
+              aria-label={isSidebarOpen ? "사이드바 닫기" : "사이드바 열기"}
+            >
+              {isSidebarOpen ? (
+                <SidebarCloseIcon className="size-6" />
+              ) : (
+                <SidebarOpenIcon className="size-6" />
+              )}
+            </button>
+          )}
+
           <div className="size-11 relative flex items-center justify-center rounded-token-s">
             <button
               ref={alarmButtonRef}

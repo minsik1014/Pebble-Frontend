@@ -1,56 +1,55 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { MonthSelector } from "./MonthSelector";
-import { SidebarToggleButton } from "./SidebarToggleButton";
 import { CalendarGrid } from "./CalendarGrid";
 import { generateWeeks } from "./calendarWeeks";
-
-const INITIAL_YEAR = 2026;
-const INITIAL_MONTH = 6;
-const INITIAL_SELECTED_DATE = new Date(2026, 5, 4);
+import { type Category, type TaskItem } from "@/types";
 
 type CalendarBoardProps = {
   isSidebarOpen?: boolean;
-  onToggleSidebar?: () => void;
+  categories?: Category[];
+  standaloneTasks?: TaskItem[];
+  currentYear: number;
+  currentMonth: number;
+  onChangeCalendarMonth: (year: number, month: number) => void;
 };
 
 export const CalendarBoard = ({
   isSidebarOpen = true,
-  onToggleSidebar,
-}: CalendarBoardProps = {}): JSX.Element => {
-  const todayDate = INITIAL_SELECTED_DATE;
-  const [currentYear, setCurrentYear] = useState(INITIAL_YEAR);
-  const [currentMonth, setCurrentMonth] = useState(INITIAL_MONTH);
-
+  categories = [],
+  standaloneTasks = [],
+  currentYear,
+  currentMonth,
+  onChangeCalendarMonth,
+}: CalendarBoardProps): JSX.Element => {
+  const todayDate = useMemo(() => new Date(), []);
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
   const weeks = useMemo(
-    () => generateWeeks(currentYear, currentMonth, isSidebarOpen),
-    [currentYear, currentMonth, isSidebarOpen],
+    () => generateWeeks(currentYear, currentMonth, categories, standaloneTasks),
+    [currentYear, currentMonth, categories, standaloneTasks],
   );
 
   const handlePreviousMonth = () => {
-    setCurrentMonth((prevMonth) => {
-      if (prevMonth === 1) {
-        setCurrentYear((prevYear) => prevYear - 1);
-        return 12;
-      }
-      return prevMonth - 1;
-    });
+    if (currentMonth === 1) {
+      onChangeCalendarMonth(currentYear - 1, 12);
+      return;
+    }
+
+    onChangeCalendarMonth(currentYear, currentMonth - 1);
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth((prevMonth) => {
-      if (prevMonth === 12) {
-        setCurrentYear((prevYear) => prevYear + 1);
-        return 1;
-      }
-      return prevMonth + 1;
-    });
+    if (currentMonth === 12) {
+      onChangeCalendarMonth(currentYear + 1, 1);
+      return;
+    }
+
+    onChangeCalendarMonth(currentYear, currentMonth + 1);
   };
 
   const handleToday = () => {
-    setCurrentYear(INITIAL_YEAR);
-    setCurrentMonth(INITIAL_MONTH);
+    const today = new Date();
+    onChangeCalendarMonth(today.getFullYear(), today.getMonth() + 1);
   };
 
   return (
@@ -66,11 +65,7 @@ export const CalendarBoard = ({
         }`}
         style={{ width: isSidebarOpen ? 876 : 1130 }}
       >
-        <header className="inline-flex items-end gap-1">
-          <SidebarToggleButton 
-            isSidebarOpen={isSidebarOpen} 
-            onToggle={onToggleSidebar || (() => {})} 
-          />
+        <header className="inline-flex items-end">
           <MonthSelector 
             displayedYear={displayedYear}
             displayedMonth={displayedMonth}

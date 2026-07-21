@@ -6,8 +6,15 @@ import { useOutletContext, useSearchParams } from "react-router-dom";
 export const CalendarMainPage = (): JSX.Element => {
   const {
     isSidebarOpen,
-    onToggleSidebar,
+    currentYear,
+    currentMonth,
+    onChangeCalendarMonth,
     categories,
+    standaloneTasks,
+    createTask,
+    updateCategoryTask,
+    deleteCategoryTask,
+    updateCategory,
     onDeleteCategory,
     onDeleteMilestone,
     onDeleteTask,
@@ -23,6 +30,10 @@ export const CalendarMainPage = (): JSX.Element => {
       category={selectedCategory}
       onBack={() => setSearchParams({})}
       categories={categories}
+      onUpdateCategory={updateCategory}
+      onCreateTask={createTask}
+      onUpdateCategoryTask={updateCategoryTask}
+      onDeleteCategoryTask={deleteCategoryTask}
       onDeleteCategory={onDeleteCategory}
       onDeleteMilestone={onDeleteMilestone}
       onDeleteTask={onDeleteTask}
@@ -30,7 +41,11 @@ export const CalendarMainPage = (): JSX.Element => {
   ) : (
     <CalendarBoard
       isSidebarOpen={isSidebarOpen}
-      onToggleSidebar={onToggleSidebar}
+      categories={categories}
+      standaloneTasks={standaloneTasks}
+      currentYear={currentYear}
+      currentMonth={currentMonth}
+      onChangeCalendarMonth={onChangeCalendarMonth}
     />
   );
 };

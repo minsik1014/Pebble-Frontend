@@ -6,11 +6,12 @@ export type CalendarDay = {
 export type CalendarEvent = {
   id: string;
   title: string;
-  widthClass: string;
-  topClass: string;
-  leftClass: string;
-  bgClass: string;
-  accentClass: string;
+  leftPercent: number;
+  widthPercent: number;
+  topOffset: number;
+  backgroundColor: string;
+  accentColor: string;
+  textColor: string;
 };
 
 export type CalendarWeek = {

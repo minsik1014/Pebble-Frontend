@@ -34,7 +34,6 @@ export function WithdrawalSection() {
       setIsConfirmModalOpen(false);
       navigate('/login');
     } catch {
-      // 실패 시 세션과 모달 상태 유지
       setErrorMessage('회원탈퇴 요청에 실패했어요. 다시 시도해 주세요.');
     } finally {
       setIsSubmitting(false);
@@ -43,7 +42,7 @@ export function WithdrawalSection() {
 
   return (
     <>
-      <SettingsSection className="min-h-[179px]">
+      <SettingsSection className="min-h-[195px]">
         <SettingsSectionHeader icon={CautionIcon} title="회원 탈퇴" />
 
         <div className="mt-token-l flex flex-col gap-token-l">

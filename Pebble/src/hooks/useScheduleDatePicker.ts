@@ -121,7 +121,9 @@ export const useScheduleDatePicker = () => {
     dateType,
     setDateType,
     currentYear,
+    setCurrentYear,
     currentMonth,
+    setCurrentMonth,
     daysInMonth,
     firstDay,
     handlePrevMonth,
@@ -130,5 +132,11 @@ export const useScheduleDatePicker = () => {
     getDayStatus,
     reset,
     isDateSelectionComplete,
+    selectedDate,
+    setSelectedDate,
+    dateRange,
+    setDateRange,
+    multiDates,
+    setMultiDates,
   };
 };

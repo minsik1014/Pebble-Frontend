@@ -3,6 +3,7 @@ import React from "react";
 import google from "@/assets/icons/logo-google.svg"; 
 import naver from "@/assets/icons/logo-naver.svg"; 
 import { Link } from "react-router-dom";
+import { AuthErrorMessage } from "./AuthErrorMessage";
 
 const EyeIcon = ({ open }: { open: boolean }) => (
   <svg
@@ -57,8 +58,8 @@ export const LoginForm = ({
   onSocialLogin,
 }: LoginFormProps) => {
   return (
-    <div className="w-full md:w-[440px] flex flex-col px-[4px] sm:px-0" data-id="login-form-section">
-      <h2 className="text-[24px] sm:text-[28px] font-bold text-[#111111] mb-[24px] sm:mb-[36px] tracking-tight text-center sm:text-left">
+    <div className="w-full md:w-[506px] flex flex-col px-[4px] sm:px-0" data-id="login-form-section">
+      <h2 className="auth-title mb-[36px] text-center sm:text-left">
         로그인
       </h2>
 
@@ -66,8 +67,8 @@ export const LoginForm = ({
         {/* 이메일 섹션 */}
         {/* shakeTarget 유무에 따라 animate-shake 클래스 부여 */}
         <div className={`flex flex-col mb-[16px] sm:mb-[20px] ${shakeTarget.email && errors.email ? "animate-shake" : ""}`}>
-          <label className="text-[14px] font-medium text-[#444444] mb-[8px]">
-            이메일<span className="text-[#FF4D4D] ml-[2px]">*</span>
+          <label className="auth-label mb-[8px]">
+            이메일<span className="auth-required">*</span>
           </label>
           <input
             type="email"
@@ -75,19 +76,19 @@ export const LoginForm = ({
             onChange={(e) => onEmailChange(e.target.value)}
             onBlur={() => onFieldBlur("email")} 
             placeholder="이메일을 입력해 주세요"
-            className={`w-full h-[48px] sm:h-[52px] px-[16px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5]
-              ${errors?.email ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+            className={`auth-input px-[12px]
+              ${(errors?.email || errorMessage) ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
           />
           {errors?.email && (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.email}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
           )}
         </div>
 
         {/* 비밀번호 섹션 */}
         {/* shakeTarget 유무에 따라 animate-shake 클래스 부여 */}
         <div className={`flex flex-col relative ${errors?.password || errorMessage ? 'mb-0' : 'mb-[16px]'} ${shakeTarget.password && errors.password ? "animate-shake" : ""}`}>
-          <label className="text-[14px] font-medium text-[#444444] mb-[8px]">
-            비밀번호<span className="text-[#FF4D4D] ml-[2px]">*</span>
+          <label className="auth-label mb-[8px]">
+            비밀번호<span className="auth-required">*</span>
           </label>
           <div className="relative w-full">
             <input
@@ -96,8 +97,8 @@ export const LoginForm = ({
               onChange={(e) => onPasswordChange(e.target.value)}
               onBlur={() => onFieldBlur("password")} 
               placeholder="비밀번호를 입력해 주세요"
-              className={`w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none placeholder-[#C5C5C5] transition-all
-                ${errors?.password ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+              className={`auth-input pl-[12px] pr-[48px]
+                ${(errors?.password || errorMessage) ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
             />
             <button
               type="button"
@@ -108,28 +109,28 @@ export const LoginForm = ({
             </button>
           </div>
           {errors?.password && (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.password}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.password}</AuthErrorMessage>
           )}
         </div>
 
         {/* 로그인 실패 / 서버 에러 메시지 */}
         {errorMessage && (
-          <div className="mt-[12px] text-[13px] text-[#FF4D4D] leading-[1.6] text-left break-keep whitespace-pre-line font-medium">
+          <AuthErrorMessage className="mt-[12px] leading-[1.6] break-keep whitespace-pre-line">
             {errorMessage}
-          </div>
+          </AuthErrorMessage>
         )}
 
         {/* 비밀번호 찾기 */}
         <div className={`flex justify-end ${(errors?.password || errorMessage) ? 'mt-[16px]' : 'mt-0'} mb-[24px]`}>
-          <a href="#forgot" className="text-[13px] text-[#888888] hover:underline">
+          <Link to="/forgot-password" className="auth-body text-[#A3A3A3] hover:underline">
             비밀번호를 잊으셨나요?
-          </a>
+          </Link>
         </div>
 
         {/* 로그인 버튼 */}
         <button
           type="submit"
-          className="w-full h-[48px] sm:h-[52px] bg-[#111111] text-white font-semibold rounded-[8px] text-[16px] hover:bg-[#222222] transition-colors mb-[20px] sm:mb-[28px]"
+          className="w-full h-[52px] bg-[#171717] text-white rounded-[12px] auth-body hover:bg-[#262626] transition-colors mb-[20px] sm:mb-[28px]"
         >
           로그인
         </button>
@@ -138,7 +139,7 @@ export const LoginForm = ({
       {/* 구분선 */}
       <div className="flex items-center my-[8px] w-full">
         <div className="flex-1 h-[1px] bg-[#E5E7EB]"></div>
-        <span className="px-[12px] text-[13px] text-[#999999]">또는</span>
+        <span className="px-[12px] text-[13px] font-normal text-[#A3A3A3]">또는</span>
         <div className="flex-1 h-[1px] bg-[#E5E7EB]"></div>
       </div>
 
@@ -147,26 +148,26 @@ export const LoginForm = ({
         <button
           type="button"
           onClick={() => onSocialLogin("google")}
-          className="w-full h-[48px] sm:h-[52px] border border-[#E5E7EB] rounded-[8px] flex items-center justify-center relative hover:bg-[#F9FAFB] transition-colors"
+          className="w-full h-[52px] border border-[#D4D4D4] rounded-[12px] flex items-center justify-center relative hover:bg-[#FAFAFA] transition-colors"
         >
           <img src={google} alt="Google" className="absolute left-[20px] w-[20px] h-[20px] flex-shrink-0 object-contain aspect-square" />
-          <span className="text-[14px] font-medium text-[#222222]">Google로 계속하기</span>
+          <span className="auth-body text-[#171717]">Google로 계속하기</span>
         </button>
 
         <button
           type="button"
           onClick={() => onSocialLogin("naver")}
-          className="w-full h-[48px] sm:h-[52px] bg-[#03C75A] rounded-[8px] flex items-center justify-center relative hover:bg-[#02b34f] transition-colors"
+          className="w-full h-[52px] bg-[#03C75A] rounded-[12px] flex items-center justify-center relative hover:bg-[#02b34f] transition-colors"
         >
           <img src={naver} alt="Naver" className="absolute left-[20px] w-[18px] h-[18px] flex-shrink-0 object-contain aspect-square" />
-          <span className="text-[14px] font-medium text-white">네이버로 계속하기</span>
+          <span className="auth-body text-white">네이버로 계속하기</span>
         </button>
       </div>
 
       {/* 하단 회원가입 유도 */}
-      <div className="flex justify-center gap-[6px] mt-[32px] sm:mt-[40px] text-[14px]">
-        <span className="text-[#888888]">Pebble이 처음이신가요?</span>
-        <Link to="/signup" className="text-[#111111] font-semibold hover:underline">
+      <div className="auth-body flex justify-center gap-[8px] mt-[40px]">
+        <span className="text-[#A3A3A3]">Pebble이 처음이신가요?</span>
+        <Link to="/signup" className="text-[#171717] hover:underline">
           회원가입
         </Link>
       </div>

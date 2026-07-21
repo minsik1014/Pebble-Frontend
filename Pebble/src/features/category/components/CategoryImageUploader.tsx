@@ -1,17 +1,91 @@
+import { useId, useRef } from "react";
+import type { ChangeEvent } from "react";
 import UploadIcon from "@/assets/icons/Upload.svg?react";
 
-export const CategoryImageUploader = () => (
-  <div className="w-60 h-96 flex flex-col items-start gap-2">
-    <label className="text-body-01-sb text-text-primary">대표 이미지 (선택)</label>
-    <button
-      type="button"
-      className="w-full flex-1 flex flex-col items-center justify-center gap-2 bg-fill-surface rounded-token-s border border-border-default hover:bg-fill-surface transition-colors overflow-hidden"
-    >
-      <UploadIcon className="w-10 h-10 text-text-secondary" />
-      <span className="text-body-02-m text-text-secondary">이미지 추가</span>
-    </button>
-    <span className="w-full text-left text-xs text-text-teritary">
-      JPEG · PNG · WEBP 최대 5MB
-    </span>
-  </div>
-);
+type CategoryImageUploaderProps = {
+  imageUrl?: string;
+  onImageChange: (imageUrl: string | undefined) => void;
+};
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+export const CategoryImageUploader = ({
+  imageUrl,
+  onImageChange,
+}: CategoryImageUploaderProps) => {
+  const inputId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type) || file.size > MAX_IMAGE_SIZE) {
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        onImageChange(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="flex w-[175px] shrink-0 flex-col items-start gap-2">
+      <label className="text-body-01-sb text-text-primary" htmlFor={inputId}>
+        대표 이미지 (선택)
+      </label>
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        className="relative flex h-[234px] w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-token-s border border-dashed border-border-default bg-fill-inverse transition-colors hover:bg-fill-surface"
+      >
+        {imageUrl ? (
+          <>
+            <img
+              src={imageUrl}
+              alt="선택한 대표 이미지"
+              className="h-full w-full object-cover"
+            />
+            <span className="absolute inset-x-0 bottom-0 bg-fill-shadow px-3 py-2 text-center text-caption-01 text-text-onFill">
+              이미지 변경
+            </span>
+          </>
+        ) : (
+          <>
+            <UploadIcon className="h-11 w-11 text-text-secondary" />
+            <span className="text-body-02-m text-text-secondary">이미지 추가</span>
+            <span className="mt-3 whitespace-pre-line text-center text-caption-01 text-text-teritary">
+              JPEG · PNG · WEBP{"\n"}최대 5MB
+            </span>
+          </>
+        )}
+      </button>
+      {imageUrl && (
+        <button
+          type="button"
+          onClick={() => onImageChange(undefined)}
+          className="w-full text-center text-caption-01 text-text-secondary hover:text-fill-danger"
+        >
+          이미지 삭제
+        </button>
+      )}
+      <input
+        ref={inputRef}
+        id={inputId}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="sr-only"
+        onChange={handleFileChange}
+      />
+    </div>
+  );
+};

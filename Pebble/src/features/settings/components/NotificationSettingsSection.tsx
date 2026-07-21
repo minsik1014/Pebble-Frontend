@@ -11,7 +11,7 @@ const DEFAULT_NOTIFICATION_ENABLED = true;
 
 /**
  * API 연동 전 Mock 서버 값입니다.
- * undefined이면 신규 계정으로 보고 기본값 true를 사용합니다.
+ * undefined면 신규 계정으로 보고 기본값 true를 사용합니다.
  * boolean 값이 들어오면 서버 상태를 우선합니다.
  */
 const mockServerNotificationEnabled: boolean | undefined = undefined;
@@ -30,7 +30,6 @@ export function NotificationSettingsSection() {
 
     const previousChecked = notificationEnabled;
 
-    // 낙관적 업데이트
     setNotificationEnabled(nextChecked);
     setIsUpdating(true);
 
@@ -38,7 +37,6 @@ export function NotificationSettingsSection() {
       // TODO: 알림 설정 변경 API 연동
       await Promise.resolve();
     } catch {
-      // 실패 시 롤백
       setNotificationEnabled(previousChecked);
     } finally {
       setIsUpdating(false);
@@ -46,7 +44,7 @@ export function NotificationSettingsSection() {
   };
 
   return (
-    <SettingsSection className="min-h-[176px]">
+    <SettingsSection className="min-h-[192px]">
       <SettingsSectionHeader icon={BellIcon} title="알림" />
 
       <div className="mt-token-l flex flex-col gap-token-l">
