@@ -86,7 +86,7 @@ export const CategoryDetailSection = ({
         <div className="w-11 h-11 flex items-center justify-center rounded-xl relative">
           <ChevronLeftIcon className="w-6 h-6 text-text-strong" />
         </div>
-        <span className="text-[24px] font-medium leading-8 text-text-strong font-['Pretendard']">
+        <span className="text-[24px] font-medium leading-8 text-text-strong">
           캘린더
         </span>
       </button>

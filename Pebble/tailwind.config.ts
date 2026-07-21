@@ -7,6 +7,21 @@ const config: Config = {
   theme: {
     extend: {
       // 1. 타이포그래피
+      fontFamily: {
+        sans: [
+          'Pretendard',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'system-ui',
+          'Segoe UI',
+          'Roboto',
+          'Helvetica Neue',
+          'Arial',
+          'Apple SD Gothic Neo',
+          'Noto Sans KR',
+          'sans-serif',
+        ],
+      },
       fontSize: {
         'heading-01': ['40px', { lineHeight: '1.3', fontWeight: '700' }],
         'heading-02': ['32px', { lineHeight: '1.3', fontWeight: '700' }],

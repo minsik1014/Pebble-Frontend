@@ -1,5 +1,7 @@
 /* src/index.css */
 
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+
 /* 1. Tailwind 기본 필수 지시어 */
 @tailwind base;
 @tailwind components;
