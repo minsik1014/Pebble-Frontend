@@ -5,6 +5,7 @@ import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
+import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type MilestoneAccordionProps = {
   category: Category;
@@ -25,17 +26,6 @@ type SidebarScheduleRowProps = {
   widthClassName: string;
 };
 
-const formatDisplayDate = (value: string) => {
-  const isoMatch = value.match(/^\d{4}-(\d{1,2})-(\d{1,2})$/);
-
-  if (!isoMatch) {
-    return value;
-  }
-
-  const [, month, day] = isoMatch;
-  return `${Number(month)}/${Number(day)}`;
-};
-
 const SidebarScheduleRow = ({
   item,
   checked,
@@ -44,9 +34,7 @@ const SidebarScheduleRow = ({
   textColor,
   widthClassName,
 }: SidebarScheduleRowProps) => {
-  const dateLabel = item.end
-    ? `${formatDisplayDate(item.start)} ~ ${formatDisplayDate(item.end)}`
-    : formatDisplayDate(item.start);
+  const dateLabel = formatScheduleDisplayLabel(item);
 
   return (
     <label

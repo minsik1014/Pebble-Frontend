@@ -44,6 +44,7 @@ export const MilestoneFormModal = ({
       title: trimmedName,
       start: scheduleRange.start,
       end: scheduleRange.end,
+      dates: scheduleRange.dates,
       accent: activeCategory?.accent ?? "#171717",
       rowWidthClass: "w-80",
     });
@@ -103,6 +104,7 @@ export const MilestoneFormModal = ({
           onDateClick={datePicker.handleDateClick}
           getDayStatus={datePicker.getDayStatus}
           themeBaseColor={activeCategory?.themeBase}
+          themeMidColor={activeCategory?.themeMid}
           themeLightColor={activeCategory?.themeLight}
         />
 

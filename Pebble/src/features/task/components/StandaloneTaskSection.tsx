@@ -1,21 +1,11 @@
 import { type ScheduleItem } from "@/types";
+import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type StandaloneTaskSectionProps = {
   tasks: ScheduleItem[];
   checkedItems: Record<string, boolean>;
   onToggleChecked: (itemId: string) => void;
   onEditTask: (taskId: string) => void;
-};
-
-const formatDisplayDate = (value: string) => {
-  const isoMatch = value.match(/^\d{4}-(\d{1,2})-(\d{1,2})$/);
-
-  if (!isoMatch) {
-    return value;
-  }
-
-  const [, month, day] = isoMatch;
-  return `${Number(month)}/${Number(day)}`;
 };
 
 export const StandaloneTaskSection = ({
@@ -26,9 +16,7 @@ export const StandaloneTaskSection = ({
 }: StandaloneTaskSectionProps): JSX.Element => (
   <>
     {tasks.map((task) => {
-      const dateLabel = task.end
-        ? `${formatDisplayDate(task.start)} ~ ${formatDisplayDate(task.end)}`
-        : formatDisplayDate(task.start);
+      const dateLabel = formatScheduleDisplayLabel(task);
 
       return (
         <section

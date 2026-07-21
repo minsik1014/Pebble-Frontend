@@ -3,6 +3,7 @@ import EditIcon from "@/assets/icons/newedit.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { TaskDetailRow } from "@/features/task/components/TaskDetailRow";
 import { type ScheduleItem } from "@/types";
+import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type MilestoneDetailItemProps = {
   item: ScheduleItem & { tasks?: ScheduleItem[] };
@@ -17,17 +18,6 @@ type MilestoneDetailItemProps = {
   onEditTask?: (taskId: string) => void;
 };
 
-const formatDisplayDate = (value: string) => {
-  const isoMatch = value.match(/^\d{4}-(\d{1,2})-(\d{1,2})$/);
-
-  if (!isoMatch) {
-    return value;
-  }
-
-  const [, month, day] = isoMatch;
-  return `${Number(month)}/${Number(day)}`;
-};
-
 export const MilestoneDetailItem = ({
   item,
   themeMidColor,
@@ -40,6 +30,8 @@ export const MilestoneDetailItem = ({
   onAddTask,
   onEditTask,
 }: MilestoneDetailItemProps) => {
+  const dateLabel = formatScheduleDisplayLabel(item);
+
   return (
     <div className="w-full bg-fill-inverse rounded-[20px] shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] flex flex-col overflow-hidden">
       <div 
@@ -64,24 +56,8 @@ export const MilestoneDetailItem = ({
               className="text-body-02-m"
               style={{ color: themeTextOnMidColor }}
             >
-              {formatDisplayDate(item.start)}
+              {dateLabel}
             </span>
-            {item.end && (
-              <>
-                <span
-                  className="mx-1 text-body-02-m"
-                  style={{ color: themeTextOnMidColor }}
-                >
-                  ~
-                </span>
-                <span
-                  className="text-body-02-m"
-                  style={{ color: themeTextOnMidColor }}
-                >
-                  {formatDisplayDate(item.end)}
-                </span>
-              </>
-            )}
           </div>
           <div className="w-6 h-6 rounded-token-xs border border-border-default flex-shrink-0" />
           <button 

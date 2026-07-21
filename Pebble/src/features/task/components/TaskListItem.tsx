@@ -1,4 +1,5 @@
 import { type ScheduleItem } from "@/types";
+import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type TaskListItemProps = {
   item: ScheduleItem;
@@ -11,7 +12,7 @@ export const TaskListItem = ({
   checked,
   onToggle,
 }: TaskListItemProps) => {
-  const dateLabel = item.end ? `${item.start} ~ ${item.end}` : item.start;
+  const dateLabel = formatScheduleDisplayLabel(item);
 
   return (
     <label

@@ -3,6 +3,7 @@ export type ScheduleBase = {
   title: string;
   start: string;
   end?: string;
+  dates?: string[];
   accent: string;
   rowWidthClass: string;
 };

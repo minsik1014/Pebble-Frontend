@@ -1,5 +1,6 @@
 import { type ScheduleItem } from "@/types";
 import EditIcon from "@/assets/icons/newedit.svg?react";
+import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 // The task definition inside a category detail item seems to be just a standard ScheduleItem
 type TaskDetailRowProps = {
@@ -9,23 +10,14 @@ type TaskDetailRowProps = {
   onEdit?: () => void;
 };
 
-const formatDisplayDate = (value: string) => {
-  const isoMatch = value.match(/^\d{4}-(\d{1,2})-(\d{1,2})$/);
-
-  if (!isoMatch) {
-    return value;
-  }
-
-  const [, month, day] = isoMatch;
-  return `${Number(month)}/${Number(day)}`;
-};
-
 export const TaskDetailRow = ({
   task,
   themeLightColor,
   themeTextColor,
   onEdit,
 }: TaskDetailRowProps) => {
+  const dateLabel = formatScheduleDisplayLabel(task);
+
   return (
     <div className="w-[736px] pr-2 py-2 bg-fill-inverse rounded-xl inline-flex justify-start items-center gap-2 overflow-hidden">
       <div className="flex-1 flex justify-start items-center gap-2">
@@ -43,18 +35,8 @@ export const TaskDetailRow = ({
       <div className="flex justify-end items-center gap-3">
         <div className="flex justify-end items-center">
           <span className="text-body-02-m" style={{ color: themeTextColor }}>
-            {formatDisplayDate(task.start)}
+            {dateLabel}
           </span>
-          {task.end && (
-            <>
-              <span className="mx-1 text-body-02-m" style={{ color: themeTextColor }}>
-                ~
-              </span>
-              <span className="text-body-02-m" style={{ color: themeTextColor }}>
-                {formatDisplayDate(task.end)}
-              </span>
-            </>
-          )}
         </div>
         <div className="w-6 h-6 rounded-token-xs border border-border-default flex-shrink-0" />
         <button 

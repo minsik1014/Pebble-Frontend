@@ -59,6 +59,7 @@ export const TaskFormModal = ({
     setDateType,
     setDateRange,
     setSelectedDate,
+    setMultiDates,
   } = datePicker;
   
   // Update defaults when modal opens
@@ -75,21 +76,34 @@ export const TaskFormModal = ({
 
       const startDate = parseIsoScheduleDate(task.start);
       const endDate = task.end ? parseIsoScheduleDate(task.end) : null;
+      const multiDates =
+        task.dates
+          ?.map(parseIsoScheduleDate)
+          .filter((date): date is Date => Boolean(date)) ?? [];
 
-      if (!startDate) {
+      if (!startDate && multiDates.length === 0) {
         return;
       }
 
-      setCurrentYear(startDate.getFullYear());
-      setCurrentMonth(startDate.getMonth());
+      const initialVisibleDate = startDate ?? multiDates[0];
+      setCurrentYear(initialVisibleDate.getFullYear());
+      setCurrentMonth(initialVisibleDate.getMonth());
 
-      if (endDate) {
+      if (multiDates.length > 0) {
+        setDateType("다중");
+        setMultiDates(multiDates);
+        return;
+      }
+
+      if (startDate && endDate) {
         setDateType("기간");
         setDateRange({ start: startDate, end: endDate });
         return;
       }
 
-      setSelectedDate(startDate);
+      if (startDate) {
+        setSelectedDate(startDate);
+      }
     }
   }, [
     isOpen,
@@ -102,6 +116,7 @@ export const TaskFormModal = ({
     setDateType,
     setDateRange,
     setSelectedDate,
+    setMultiDates,
   ]);
 
   if (!isOpen) return null;
@@ -126,6 +141,7 @@ export const TaskFormModal = ({
         title: trimmedName,
         start: scheduleRange.start,
         end: scheduleRange.end,
+        dates: scheduleRange.dates,
         accent: activeCategory?.accent ?? "#171717",
         rowWidthClass:
           selectedCategory && selectedMilestone ? "w-[308px]" : "w-80",
@@ -211,6 +227,7 @@ export const TaskFormModal = ({
           onDateClick={datePicker.handleDateClick}
           getDayStatus={datePicker.getDayStatus}
           themeBaseColor={activeCategory?.themeBase}
+          themeMidColor={activeCategory?.themeMid}
           themeLightColor={activeCategory?.themeLight}
         />
 

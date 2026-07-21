@@ -26,6 +26,22 @@ const getScheduleDateRange = (
   item: ScheduleItem,
   fallbackYear: number,
 ) => {
+  if (item.dates && item.dates.length > 0) {
+    const dates = item.dates
+      .map((date) => parseScheduleDate(date, fallbackYear))
+      .filter((date): date is Date => Boolean(date))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    if (dates.length === 0) {
+      return null;
+    }
+
+    return {
+      startDate: dates[0],
+      endDate: dates[dates.length - 1],
+    };
+  }
+
   const startDate = parseScheduleDate(item.start, fallbackYear);
   const endDate = item.end ? parseScheduleDate(item.end, fallbackYear) : startDate;
 
@@ -43,6 +59,17 @@ export const isScheduleItemInMonth = (
   year: number,
   month: number,
 ) => {
+  if (item.dates && item.dates.length > 0) {
+    return item.dates.some((date) => {
+      const parsedDate = parseScheduleDate(date, year);
+
+      return (
+        parsedDate?.getFullYear() === year &&
+        parsedDate.getMonth() + 1 === month
+      );
+    });
+  }
+
   const dateRange = getScheduleDateRange(item, year);
 
   if (!dateRange) {
