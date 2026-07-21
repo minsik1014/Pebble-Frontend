@@ -7,6 +7,19 @@ export type CategoryColorTheme = {
   themeTextOnLight: string;
 };
 
+export const CATEGORY_PRESET_COLORS = [
+  "#ff7580",
+  "#f99d3d",
+  "#ffdd47",
+  "#60d062",
+  "#00cef5",
+  "#bf73fd",
+] as const;
+
+export type CategoryPresetColor = (typeof CATEGORY_PRESET_COLORS)[number];
+
+export const DEFAULT_CATEGORY_COLOR = CATEGORY_PRESET_COLORS[0];
+
 export const normalizeHexColor = (color: string) => {
   const trimmedColor = color.trim();
 

@@ -3,9 +3,12 @@ import { type Category } from "@/types";
 import { CategoryColorPicker } from "./CategoryColorPicker";
 import { CategoryImageUploader } from "./CategoryImageUploader";
 import { CategoryMemberSelector } from "./CategoryMemberSelector";
-import { DEFAULT_CATEGORY_COLOR } from "./categoryFormOptions";
-import { DUMMY_FRIENDS, type Friend } from "@/features/category/mock/friends";
-import { createCategoryColorTheme } from "@/utils/categoryColorTheme";
+import { DUMMY_FRIENDS } from "@/features/category/mock/friends";
+import type { Friend } from "@/features/category/types";
+import {
+  createCategoryColorTheme,
+  DEFAULT_CATEGORY_COLOR,
+} from "@/utils/categoryColorTheme";
 import type { CreateCategoryInput } from "@/features/calendar/types";
 
 type CategoryFormModalProps = {

@@ -1,7 +1,4 @@
-export type Friend = {
-  id: number;
-  name: string;
-};
+import type { Friend } from "@/features/category/types";
 
 export const DUMMY_FRIENDS: Friend[] = [
   { id: 1, name: "담검이" },

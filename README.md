@@ -139,7 +139,8 @@ Pebble/src/
 │   │   └── utils/       # 캘린더 상태 변경 순수 함수
 │   ├── category/        # 카테고리 CRUD, 색상 선택, 이미지/멤버 UI
 │   │   ├── components/  # 카테고리 화면 및 모달 컴포넌트
-│   │   └── mock/        # 백엔드 연동 전 임시 데이터
+│   │   ├── mock/        # 백엔드 연동 전 임시 데이터
+│   │   └── types.ts     # 카테고리 도메인 전용 타입
 │   ├── milestone/       # 마일스톤 관리 및 캘린더/사이드바 UI
 │   │   ├── components/  # CalendarBoard, Sidebar, Milestone UI
 │   │   └── hooks/       # 사이드바 표시/스크롤/모달 상태 훅
