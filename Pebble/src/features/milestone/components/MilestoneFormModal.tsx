@@ -47,7 +47,6 @@ export const MilestoneFormModal = ({
       end: scheduleRange.end,
       dates: scheduleRange.dates,
       accent: activeCategory?.accent ?? "#171717",
-      rowWidthClass: "w-80",
     });
     setMilestoneName("");
     onClose();

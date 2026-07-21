@@ -11,7 +11,6 @@ export type ScheduleEntityBase = ScheduleDateFields & {
 
 export type ScheduleStyleFields = {
   accent?: string;
-  rowWidthClass?: string;
 };
 
 export type TaskItem = ScheduleEntityBase &

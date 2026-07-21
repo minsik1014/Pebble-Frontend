@@ -7,12 +7,10 @@ import {
 } from "@/features/calendar/components/ScheduleRelationSelects";
 import { ScheduleFormModalFrame } from "@/features/calendar/components/ScheduleFormModalFrame";
 import { ScheduleNameInput } from "@/features/calendar/components/ScheduleNameInput";
+import { useScheduleFormDateInitializer } from "@/features/calendar/hooks/useScheduleFormDateInitializer";
 import { useScheduleDatePicker } from "@/hooks/useScheduleDatePicker";
 import type { CreateScheduleItemInput } from "@/features/calendar/types";
-import {
-  getScheduleRangeFromSelection,
-  parseIsoScheduleDate,
-} from "@/utils/scheduleDate";
+import { getScheduleRangeFromSelection } from "@/utils/scheduleDate";
 
 type TaskFormModalProps = {
   isOpen: boolean;
@@ -53,72 +51,20 @@ export const TaskFormModal = ({
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isMilestoneDropdownOpen, setIsMilestoneDropdownOpen] = useState(false);
   const datePicker = useScheduleDatePicker();
-  const {
-    reset,
-    setCurrentYear,
-    setCurrentMonth,
-    setDateType,
-    setDateRange,
-    setSelectedDate,
-    setMultiDates,
-  } = datePicker;
-  
-  // Update defaults when modal opens
+
+  useScheduleFormDateInitializer({
+    isOpen,
+    task,
+    datePicker,
+  });
+
   useEffect(() => {
     if (isOpen) {
       setSelectedCategory(defaultCategoryId);
       setSelectedMilestone(defaultMilestoneId);
-      reset();
       setTaskName(task?.title ?? "");
-
-      if (!task) {
-        return;
-      }
-
-      const startDate = parseIsoScheduleDate(task.start);
-      const endDate = task.end ? parseIsoScheduleDate(task.end) : null;
-      const multiDates =
-        task.dates
-          ?.map(parseIsoScheduleDate)
-          .filter((date): date is Date => Boolean(date)) ?? [];
-
-      if (!startDate && multiDates.length === 0) {
-        return;
-      }
-
-      const initialVisibleDate = startDate ?? multiDates[0];
-      setCurrentYear(initialVisibleDate.getFullYear());
-      setCurrentMonth(initialVisibleDate.getMonth());
-
-      if (multiDates.length > 0) {
-        setDateType("다중");
-        setMultiDates(multiDates);
-        return;
-      }
-
-      if (startDate && endDate) {
-        setDateType("기간");
-        setDateRange({ start: startDate, end: endDate });
-        return;
-      }
-
-      if (startDate) {
-        setSelectedDate(startDate);
-      }
     }
-  }, [
-    isOpen,
-    defaultCategoryId,
-    defaultMilestoneId,
-    task,
-    reset,
-    setCurrentYear,
-    setCurrentMonth,
-    setDateType,
-    setDateRange,
-    setSelectedDate,
-    setMultiDates,
-  ]);
+  }, [isOpen, defaultCategoryId, defaultMilestoneId, task]);
 
   if (!isOpen) return null;
 
@@ -144,8 +90,6 @@ export const TaskFormModal = ({
         end: scheduleRange.end,
         dates: scheduleRange.dates,
         accent: activeCategory?.accent ?? "#171717",
-        rowWidthClass:
-          selectedCategory && selectedMilestone ? "w-[308px]" : "w-80",
       },
     });
     setTaskName("");
