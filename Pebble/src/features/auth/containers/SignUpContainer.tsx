@@ -1,8 +1,10 @@
 // @/features/auth/containers/SignUpContainer.tsx
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SignUpForm } from "../components/SignUpForm";
 
 export const SignUpContainer = (): JSX.Element => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -92,6 +94,7 @@ export const SignUpContainer = (): JSX.Element => {
     }
 
     console.log("다음 단계 진입 성공 데이터:", form);
+    navigate("/profile-setup");
   };
 
   return (

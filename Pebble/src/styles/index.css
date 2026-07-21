@@ -1,5 +1,8 @@
 /* src/index.css */
 
+/* 인증 화면 GUI 명세에 사용하는 Pretendard 웹폰트 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css');
+
 /* 런드리고딕 공식 웹폰트 서버 연결 및 정의 */
 @import url('https://www.lifegoeson.kr/font/LaundryGothic.css');
 
