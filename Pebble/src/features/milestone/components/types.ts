@@ -11,6 +11,7 @@ export type CalendarEvent = {
   topOffset: number;
   backgroundColor: string;
   accentColor: string;
+  textColor: string;
 };
 
 export type CalendarWeek = {

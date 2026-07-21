@@ -15,7 +15,10 @@ export const ScheduleBar = ({ event }: ScheduleBarProps) => {
         backgroundColor: event.backgroundColor,
       }}
     >
-      <div className="flex-1 truncate text-body-03-r text-text-strong">
+      <div
+        className="flex-1 truncate text-body-03-r"
+        style={{ color: event.textColor }}
+      >
         {event.title}
       </div>
       <div

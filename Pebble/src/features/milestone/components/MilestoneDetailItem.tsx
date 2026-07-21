@@ -2,12 +2,15 @@ import ChevronDownIcon from "@/assets/icons/chevron-down.svg?react";
 import EditIcon from "@/assets/icons/newedit.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { TaskDetailRow } from "@/features/task/components/TaskDetailRow";
-import { type ScheduleItem } from "@/types";
+import { type MilestoneItem } from "@/types";
+import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type MilestoneDetailItemProps = {
-  item: ScheduleItem & { tasks?: ScheduleItem[] };
+  item: MilestoneItem;
   themeMidColor: string;
   themeLightColor: string;
+  themeTextOnMidColor: string;
+  themeTextOnLightColor: string;
   isExpanded: boolean;
   onToggle: () => void;
   onEdit?: () => void;
@@ -15,27 +18,20 @@ type MilestoneDetailItemProps = {
   onEditTask?: (taskId: string) => void;
 };
 
-const formatDisplayDate = (value: string) => {
-  const isoMatch = value.match(/^\d{4}-(\d{1,2})-(\d{1,2})$/);
-
-  if (!isoMatch) {
-    return value;
-  }
-
-  const [, month, day] = isoMatch;
-  return `${Number(month)}/${Number(day)}`;
-};
-
 export const MilestoneDetailItem = ({
   item,
   themeMidColor,
   themeLightColor,
+  themeTextOnMidColor,
+  themeTextOnLightColor,
   isExpanded,
   onToggle,
   onEdit,
   onAddTask,
   onEditTask,
 }: MilestoneDetailItemProps) => {
+  const dateLabel = formatScheduleDisplayLabel(item);
+
   return (
     <div className="w-full bg-fill-inverse rounded-[20px] shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] flex flex-col overflow-hidden">
       <div 
@@ -47,19 +43,21 @@ export const MilestoneDetailItem = ({
             className="w-2 h-10 rounded-sm"
             style={{ backgroundColor: themeMidColor }}
           />
-          <span className="text-title-03-sb text-text-strong truncate">
+          <span
+            className="text-title-03-sb truncate"
+            style={{ color: themeTextOnMidColor }}
+          >
             {item.title}
           </span>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center">
-            <span className="text-body-02-m text-text-teritary">{formatDisplayDate(item.start)}</span>
-            {item.end && (
-              <>
-                <span className="text-body-02-m text-text-teritary mx-1">~</span>
-                <span className="text-body-02-m text-text-teritary">{formatDisplayDate(item.end)}</span>
-              </>
-            )}
+            <span
+              className="text-body-02-m"
+              style={{ color: themeTextOnMidColor }}
+            >
+              {dateLabel}
+            </span>
           </div>
           <div className="w-6 h-6 rounded-token-xs border border-border-default flex-shrink-0" />
           <button 
@@ -92,6 +90,7 @@ export const MilestoneDetailItem = ({
                   key={task.id} 
                   task={task} 
                   themeLightColor={themeLightColor} 
+                  themeTextColor={themeTextOnLightColor}
                   onEdit={() => onEditTask?.(task.id)}
                 />
               ))}

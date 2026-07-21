@@ -18,6 +18,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route index element={<CalendarMainPage />} />
             <Route path="my" element={<MyPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           <Route path="/login" element={<LoginPage />} />
@@ -25,7 +26,6 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/profile-setup" element={<ProfileSetupPage />} />
           <Route path="/signup-complete" element={<SignUpCompletePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </div>
     </BrowserRouter>

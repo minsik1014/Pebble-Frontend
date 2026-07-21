@@ -1,5 +1,5 @@
 import { useId, useRef } from "react";
-import { CATEGORY_PRESET_COLORS } from "./categoryFormOptions";
+import { CATEGORY_PRESET_COLORS } from "@/utils/categoryColorTheme";
 
 type CategoryColorPickerProps = {
   selectedColor: string;

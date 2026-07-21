@@ -15,6 +15,11 @@
 
 <br/>
 
+## 🚀 배포 링크 (Deployment)
+-> **[Pebble 배포 페이지 바로가기](https://pebble-frontend-six.vercel.app/)**
+
+<br/>
+
 ## 👥 팀원 및 프론트엔드 역할 분담 (Team & Roles)
 
 | 이름 | 역할 및 담당 도메인 | Github |
@@ -45,11 +50,12 @@
 <br/>
 
 ## Implementation Highlights
-Pebble 프론트엔드는 데이터가 누적되어도 쾌적한 사용성을 유지하기 위해 **렌더링 최적화**와 **상태 관리**에 집중합니다.
+Pebble 프론트엔드는 백엔드 연동 전에도 핵심 캘린더 흐름을 검증할 수 있도록 **프론트 로컬 상태 모델**과 **기능 중심 구조**를 기준으로 구현합니다.
 
-* **트리 구조 상태 관리:** 하위 Task 완료 시 상위 Milestone의 진행률이 즉각적으로 자동 재계산되는 유기적인 상태 관리를 `Zustand`로 구현합니다.
-* **렌더링 최적화 (Virtual Scroll):** 무한정 쌓일 수 있는 할 일 목록의 특성을 고려하여, `useMemo`와 가상 스크롤(Virtual Scroll) 기법을 도입해 브라우저 성능 저하(DOM 과부하)를 방지합니다.
-* **디자인 시스템 연동:** 피그마의 동적 변수(Variables)를 `Tailwind CSS` 토큰으로 완벽하게 추출하여, 테마 전환 시 하드코딩 없이 즉각적이고 안정적인 UI 변경을 보장합니다.
+- **캘린더 로컬 상태 모델:** Category, Milestone, Task 생성/수정/삭제를 `useCalendarState`와 도메인별 액션 훅으로 관리해 백엔드 API 전환 지점을 예측 가능하게 유지합니다.
+- **도메인 타입 분리:** 전역 타입에서 Category, Milestone, Task 역할을 구분하고, 화면 표시용 색상/폭 값은 별도 스타일 필드로 분리해 데이터 모델과 UI 책임을 명확히 합니다.
+- **디자인 시스템 연동:** `design.md`, `tailwind.config`, `styles/index.css`의 토큰을 기준으로 피그마 UI를 구현하고, 카테고리 색상은 유틸 함수로 파생 색상/텍스트 색상을 계산합니다.
+- **Feature 중심 컴포넌트 구성:** category, milestone, task가 각각 자기 도메인의 UI를 소유하고, 여러 도메인이 공유하는 캘린더 폼/선택 UI는 `features/calendar/`에 배치합니다.
 
 ---
 
@@ -58,8 +64,8 @@ Pebble 프론트엔드는 데이터가 누적되어도 쾌적한 사용성을 �
 | 분류 | 기술 | 비고 |
 | :--- | :--- | :--- |
 | **Core** | ![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue) | UI 라이브러리 및 언어 |
-| **Build** | ![Vite](https://img.shields.io/badge/Vite-5.x-purple) | 빌드 도구 및 빠른 HMR |
-| **State** | **Zustand** (Client), **TanStack Query** (Server) | 트리 구조 진행률 관리 및 서버 캐싱 |
+| **Build** | ![Vite](https://img.shields.io/badge/Vite-8.x-purple) | 빌드 도구 및 빠른 HMR |
+| **State** | React Hooks, **Zustand**, **TanStack Query** | 로컬 UI 상태, 클라이언트 상태, 서버 캐싱 |
 | **Network** | **Axios** | HTTP 비동기 통신 |
 | **Style** | ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC) | 디자인 토큰 기반 유틸리티 CSS |
 | **Routing** | **React Router DOM** | SPA 라우팅 |
@@ -74,8 +80,8 @@ Pebble 프론트엔드는 데이터가 누적되어도 쾌적한 사용성을 �
 
 원활한 프로젝트 실행을 위해 아래의 환경이 세팅되어 있어야 합니다.
 
-* **Node.js:** `v20.x` (LTS) 이상
-* **npm:** `v10.x` 이상
+- **Node.js:** `v20.x` (LTS) 이상
+- **npm:** `v10.x` 이상
 > **Tip:** 팀원 간 노드 버전을 통일하기 위해 [NVM(Node Version Manager)](https://github.com/nvm-sh/nvm) 사용을 적극 권장합니다. 터미널에서 `nvm use 20` 명령어로 버전을 맞춰주세요.
 
 <br/>
@@ -118,17 +124,29 @@ Pebble/src/
 ├── assets/              # 아이콘, 이미지 등 정적 리소스
 ├── components/          # 도메인 종속성이 없는 공용 UI / 레이아웃
 │   ├── layout/          # GNB, Sidebar, AppLayout
-│   └── ui/              # Button, Input, Modal (디자인 토큰 기반)
+│   └── ui/              # Button, ModalActionBar, ScheduleDatePicker 등 공용 UI
 │
-├── types/               # 전역 공통 타입 정의 (index.ts 등)
+├── types/               # 전역 공통 타입 정의 (Category, Milestone, Task 등)
 │
-├── mocks/               # 프론트엔드 테스트용 더미 데이터 (dummyData.ts 등)
+├── hooks/               # 도메인에 종속되지 않는 재사용 커스텀 훅
+├── utils/               # 날짜, 색상 토큰 등 순수 유틸리티 함수
 │
 ├── features/            # 핵심 비즈니스 도메인
 │   ├── auth/            # 소셜 로그인 (카카오, 구글), 온보딩
-│   ├── category/        # 카테고리 CRUD
-│   ├── milestone/       # 마일스톤 관리 및 캘린더 UI
-│   ├── task/            # 투두 생성, 체크, 가상 스크롤 렌더링
+│   ├── calendar/        # 캘린더 상태 모델, 페이지 조립용 컴포넌트/유틸
+│   │   ├── components/  # 캘린더 도메인에서 공유되는 폼/선택 UI
+│   │   ├── hooks/       # 캘린더 상태 조립 및 도메인별 액션 훅
+│   │   └── utils/       # 캘린더 상태 변경 순수 함수
+│   ├── category/        # 카테고리 CRUD, 색상 선택, 이미지/멤버 UI
+│   │   ├── components/  # 카테고리 화면 및 모달 컴포넌트
+│   │   ├── mock/        # 백엔드 연동 전 임시 데이터
+│   │   └── types.ts     # 카테고리 도메인 전용 타입
+│   ├── milestone/       # 마일스톤 관리 및 캘린더/사이드바 UI
+│   │   ├── components/  # CalendarBoard, Sidebar, Milestone UI
+│   │   └── hooks/       # 사이드바 표시/스크롤/모달 상태 훅
+│   ├── task/            # 태스크 생성, 편집, 체크 UI
+│   ├── mypage/          # 마이페이지 프로필 및 사용자 활동 UI
+│   ├── alarm/           # 알림 목록, 상태, mock API
 │   ├── grass/           # 잔디밭 컴포넌트 및 로직
 │   ├── report/          # 월말 리포트 (GIF 생성 및 열람)
 │   └── settings/        # 설정 화면 섹션 및 토글/세그먼트 컴포넌트
@@ -142,23 +160,24 @@ Pebble/src/
 │   └── premium/         # 구독 결제 및 관리
 │
 ├── store/               # 전역 클라이언트 상태 (usePebbleStore.ts)
-├── hooks/               # 재사용 커스텀 훅 (useTheme, useVirtualScroll)
-├── utils/               # 유틸리티 함수 (날짜 계산, 진행률 계산 로직)
 ├── styles/              # 전역 스타일 (index.css, CSS Variables)
 └── App.tsx
 ```
 
 ### 개발 원칙
 1. **Colocation:** 특정 도메인(예: task)에서만 쓰이는 컴포넌트와 훅은 `features/task/` 내부에 응집시킵니다.
-2. **Absolute Import:** 상대 경로(`../../`) 대신 `@/features/...` 형태의 절대 경로를 사용합니다.
+2. **Shared UI First:** 버튼, 모달 액션, 날짜 선택기처럼 도메인 지식이 없는 UI는 `components/ui/`에 둡니다.
+3. **Feature Shared Layer:** 여러 캘린더 하위 도메인(category/milestone/task)이 함께 쓰는 타입, 선택 UI, 상태 유틸은 `features/calendar/`에 둡니다.
+4. **Pure Utils:** 날짜 포맷, 색상 파생 계산처럼 화면 상태와 무관한 함수는 `utils/`에 둡니다.
+5. **Absolute Import:** 상대 경로(`../../`) 대신 `@/features/...` 형태의 절대 경로를 사용합니다.
 
 <br/>
 
 ## Contribution Guide (협업 규칙)
 
 ### 1. Git Flow 및 브랜치 전략
-* `main`: 실제 배포되는 프로덕션 버전
-* `develop`: 개발 및 통합 중인 코드 (PR 대상)
+- `main`: 실제 배포되는 프로덕션 버전
+- `develop`: 개발 및 통합 중인 코드 (PR 대상)
 
 **📌 브랜치 명명 규칙: `타입/기능명_닉네임`**
 <br/>
@@ -174,8 +193,8 @@ Pebble/src/
 
 ### 2. Commit Convention
 커밋 메시지는 **Conventional Commits**를 따르며 직관적으로 작성합니다.
-* `feat: Category 렌더링 및 CRUD 로직 구현`
-* `fix: Milestone 삭제 시 하위 Task 고아 객체 에러 수정`
+- `feat: Category 렌더링 및 CRUD 로직 구현`
+- `fix: Milestone 삭제 시 하위 Task 고아 객체 에러 수정`
 
 ### 3. Code Quality (PR 전 필수 확인)
 원격 저장소에 Push 하거나 PR을 생성하기 전, 로컬에서 터미널을 통해 반드시 에러 여부를 점검합니다.
@@ -183,8 +202,8 @@ Pebble/src/
 ```bash
 npm run type-check && npm run lint
 ```
-* `type-check`: TypeScript 타입 불일치 검사
-* `lint`: ESLint 코드 컨벤션 및 미사용 변수 검사
+- `type-check`: TypeScript 타입 불일치 검사
+- `lint`: ESLint 코드 컨벤션 및 미사용 변수 검사
 
 <br/>
 
@@ -192,7 +211,7 @@ npm run type-check && npm run lint
 
 ### 1. PR 제목 규칙
 > **형식:** `태그: 작업 내용 요약 (#이슈번호)`
-> *예시: `feat: 매칭 인터랙션 완결 및 카드 레이아웃 최적화 (#36)`*
+> 예시: `feat: 매칭 인터랙션 완결 및 카드 레이아웃 최적화 (#36)`
 
 | 태그 (Tag) | 설명 |
 | :--- | :--- |
@@ -213,14 +232,14 @@ npm run type-check && npm run lint
 
 ### 3. 코드 리뷰 규칙 (P-Rule)
 리뷰 코멘트 작성 시 앞단에 우선순위 태그를 달아 작성자의 수정 부담을 줄이고 의도를 명확히 전달합니다.
-* **`[P1] 필수:`** 버그, 아키텍처 규칙 위반 등 반드시 수정해야만 Merge 가능한 사항
-* **`[P2] 권장:`** 더 나은 구현 방법 제안 (작성자가 합당한 이유가 있다면 수정하지 않아도 무방)
-* **`[P3] 단순 의견:`** 코드에 대한 칭찬, 가벼운 제안 등 사소한 코멘트
+- `[P1] 필수:` 버그, 아키텍처 규칙 위반 등 반드시 수정해야만 Merge 가능한 사항
+- `[P2] 권장:` 더 나은 구현 방법 제안 (작성자가 합당한 이유가 있다면 수정하지 않아도 무방)
+- `[P3] 단순 의견:` 코드에 대한 칭찬, 가벼운 제안 등 사소한 코멘트
 
 ### 4. 머지(Merge) 조건
-* 팀원 중 **최소 1명 이상의 `Approve`**를 받아야 합니다.
-* 본인 로컬 터미널에서 타입 체크 및 린트(`npm run type-check`, `npm run lint`)를 통과해야 합니다.
-* 모든 피드백 반영이 끝난 후, **PR을 올린 본인이 직접 Merge** 하는 것을 원칙으로 합니다.
+- 팀원 중 최소 1명 이상의 `Approve`를 받아야 합니다.
+- 본인 로컬 터미널에서 타입 체크 및 린트(`npm run type-check`, `npm run lint`)를 통과해야 합니다.
+- 모든 피드백 반영이 끝난 후, PR을 올린 본인이 직접 Merge하는 것을 원칙으로 합니다.
 
 <br/>
 

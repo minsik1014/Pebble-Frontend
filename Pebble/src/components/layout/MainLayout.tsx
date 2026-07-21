@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Outlet,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 import type {
@@ -7,7 +11,7 @@ import type {
   CreateCategoryInput,
   CreateScheduleItemInput,
   UpdateCategoryInput,
-} from "@/features/calendar/hooks/useCalendarState";
+} from "@/features/calendar/types";
 import { useCalendarState } from "@/features/calendar/hooks/useCalendarState";
 import { CalendarSidebar } from "@/features/milestone/components/CalendarSidebar";
 import { SidebarDivider } from "@/features/milestone/components/SidebarDivider";
@@ -166,7 +170,10 @@ export const MainLayout = (): JSX.Element => {
           }}
         >
           <div className="relative flex h-[1000px] shrink-0 overflow-hidden rounded-[20px] shadow-shadow-m">
-            <GlobalNavigationBar />
+            <GlobalNavigationBar
+              isSidebarOpen={isSidebarOpen}
+              onToggleSidebar={handleToggleSidebar}
+            />
             <SidebarDivider visible={isSidebarOpen} />
             <CalendarSidebar
               isSidebarOpen={isSidebarOpen}
