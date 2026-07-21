@@ -104,7 +104,7 @@ export const GlobalNavigationBar = ({
     ].join(" ");
 
   const isCalendarActive = pathname === "/";
-  const isMyPageActive = pathname === "/my";
+  const isMyPageActive = pathname.startsWith("/my");
   const isSettingsActive = pathname.startsWith("/settings");
 
   return (

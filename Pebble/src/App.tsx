@@ -8,6 +8,7 @@ import { ProfileSetupPage } from '@/features/auth/pages/ProfileSetupPage';
 import { SignUpCompletePage } from '@/features/auth/pages/SignUpCompletePage';
 import SettingsPage from './pages/settings/SettingsPage';
 import MyPage from "@/pages/mypage/MyPage";
+import ProfileEditPage from "@/pages/mypage/ProfileEditPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route index element={<CalendarMainPage />} />
             <Route path="my" element={<MyPage />} />
+            <Route path="my/profile" element={<ProfileEditPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
 

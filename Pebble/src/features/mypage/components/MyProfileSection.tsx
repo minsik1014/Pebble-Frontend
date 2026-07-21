@@ -1,51 +1,86 @@
 import MySolidIcon from "@/assets/icons/user-solid.svg?react";
+import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
 type MyProfileSectionProps = {
   isCompact: boolean;
+  onEditProfile: () => void;
 };
 
 export const MyProfileSection = ({
   isCompact,
+  onEditProfile,
 }: MyProfileSectionProps): JSX.Element => {
+  const profile = useProfileStore((state) => state.profile);
+
   return (
     <header
-      className={`sticky top-0 z-10 bg-fill-inverse transition-[height] duration-500 ease-in-out ${
-        isCompact ? "h-[260px]" : "h-[316px]"
+      className={`sticky top-0 z-10 bg-fill-inverse transition-[height] duration-[220ms] ease-out ${
+        isCompact ? "h-[260px]" : "h-[340px]"
       }`}
     >
       <div
-        className={`absolute top-[110px] flex items-center justify-center rounded-full bg-theme-2-base text-text-strong transition-[left,width,height] duration-500 ease-in-out ${
-          isCompact ? "left-5 size-24" : "left-[326px] size-32"
+        className={`absolute inset-0 transition-[opacity,transform] duration-[220ms] ease-out ${
+          isCompact
+            ? "pointer-events-none -translate-y-2 opacity-0"
+            : "translate-y-0 opacity-100"
         }`}
+        aria-hidden={isCompact}
       >
-        <MySolidIcon
-          className={`transition-[width,height] duration-500 ease-in-out ${
-            isCompact ? "size-12" : "size-16"
-          }`}
-        />
+        <div className="absolute left-1/2 top-[110px] flex size-40 -translate-x-1/2 items-center justify-center rounded-full bg-theme-2-base text-text-strong">
+          <MySolidIcon className="size-20" />
+        </div>
+
+        <div className="absolute left-0 top-[286px] w-full text-center">
+          <h1 className="text-title-03-sb text-text-strong">
+            {profile.nickname}
+          </h1>
+          <p className="mt-1 text-body-02-m text-text-teritary">
+            {profile.bio}
+          </p>
+        </div>
+
+        <div className="absolute left-1/2 top-[110px] w-[640px] -translate-x-1/2">
+          <button
+            type="button"
+            onClick={onEditProfile}
+            className="absolute right-0 h-12 rounded-token-s border border-border-default px-5 text-body-02-m text-text-secondary hover:bg-fill-surface"
+          >
+            프로필 편집
+          </button>
+        </div>
       </div>
 
       <div
-        className={`absolute transition-[left,top,width] duration-500 ease-in-out ${
+        className={`absolute inset-x-0 top-[110px] transition-[opacity,transform] duration-[220ms] ease-out ${
           isCompact
-            ? "left-[132px] top-32 w-[360px] text-left"
-            : "left-0 top-[258px] w-full text-center"
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-2 opacity-0"
         }`}
+        aria-hidden={!isCompact}
       >
-        <h1 className="text-title-03-sb text-text-strong">페블이</h1>
-        <p className="mt-2 text-body-02-m text-text-teritary">
-          일상이없는게제일상입니다.
-        </p>
-      </div>
+        <div className="mx-auto flex w-[640px] items-center">
+          <div className="flex size-28 shrink-0 items-center justify-center rounded-full bg-theme-2-base text-text-strong">
+            <MySolidIcon className="size-14" />
+          </div>
 
-      <button
-        type="button"
-        className={`absolute right-0 h-12 rounded-token-s border border-border-default px-5 text-body-02-m text-text-secondary transition-[top,background-color] duration-500 ease-in-out hover:bg-fill-surface ${
-          isCompact ? "top-[134px]" : "top-[110px]"
-        }`}
-      >
-        프로필 편집
-      </button>
+          <div className="ml-4 min-w-0 flex-1 text-left">
+            <h1 className="text-title-02-sb text-text-strong">
+              {profile.nickname}
+            </h1>
+            <p className="mt-1 truncate text-body-01-m text-text-teritary">
+              {profile.bio}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onEditProfile}
+            className="ml-6 h-12 shrink-0 rounded-token-s border border-border-default px-5 text-body-02-m text-text-secondary hover:bg-fill-surface"
+          >
+            프로필 편집
+          </button>
+        </div>
+      </div>
     </header>
   );
 };
