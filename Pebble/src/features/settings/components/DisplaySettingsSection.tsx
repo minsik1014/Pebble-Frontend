@@ -2,9 +2,9 @@ import { useState } from 'react';
 
 import DesktopIcon from '@/assets/icons/Desktop.svg?react';
 
+import { Button } from '@/components/ui/Button';
 import { Divider } from '@/components/ui/Divider';
 
-import { SettingsNavigationRow } from './SettingsNavigationRow';
 import { SettingsRow } from './SettingsRow';
 import { SettingsSection } from './SettingsSection';
 import { SettingsSectionHeader } from './SettingsSectionHeader';
@@ -17,7 +17,7 @@ export function DisplaySettingsSection() {
   const [themeMode, setThemeMode] = useState<ThemeMode>('light');
 
   return (
-    <SettingsSection className="min-h-[351px]">
+    <SettingsSection className="min-h-[284px]">
       <SettingsSectionHeader icon={DesktopIcon} title="화면" />
 
       <div className="mt-token-l flex flex-col gap-token-l">
@@ -31,24 +31,14 @@ export function DisplaySettingsSection() {
 
         <Divider />
 
-        <SettingsNavigationRow
-          title="테마 색상"
-          description="언제든 다시 바꿀 수 있어요"
-          aria-label="테마 색상 설정 열기"
-          onClick={() => {
-            // TODO: 테마 색상 설정 화면/모달 연결
-          }}
-        />
-
-        <Divider />
-
-        <SettingsNavigationRow
+        <SettingsRow
           title="징검다리 색상"
           description="언제든 다시 바꿀 수 있어요"
-          aria-label="징검다리 색상 설정 열기"
-          onClick={() => {
-            // TODO: 징검다리 색상 설정 화면/모달 연결
-          }}
+          actions={
+            <Button type="button" aria-label="징검다리 색상 변경">
+              변경
+            </Button>
+          }
         />
       </div>
     </SettingsSection>
