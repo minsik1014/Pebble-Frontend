@@ -6,7 +6,7 @@ interface SettingsContentProps {
 
 export function SettingsContent({ children }: SettingsContentProps) {
   return (
-    <main className="flex h-[1010px] w-[1288px] flex-col gap-token-m overflow-visible bg-transparent">
+    <main className="flex h-[1000px] w-[1316px] flex-col gap-token-m overflow-y-auto bg-transparent custom-scrollbar">
       {children}
     </main>
   );

@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
 import type {
@@ -45,6 +50,7 @@ export interface MainLayoutContext {
 }
 
 export const MainLayout = (): JSX.Element => {
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -72,6 +78,7 @@ export const MainLayout = (): JSX.Element => {
     deleteTask,
   } = useCalendarState();
   const selectedCategoryId = searchParams.get("category");
+  const shouldShowCalendarSidebar = !pathname.startsWith("/settings");
 
   useEffect(() => {
     const handleResize = () => {
@@ -166,22 +173,31 @@ export const MainLayout = (): JSX.Element => {
           }}
         >
           <div className="relative flex h-[1000px] shrink-0 overflow-hidden rounded-[20px] shadow-shadow-m">
-            <GlobalNavigationBar />
-            <SidebarDivider visible={isSidebarOpen} />
-            <CalendarSidebar
+            <GlobalNavigationBar
               isSidebarOpen={isSidebarOpen}
-              categories={categories}
-              standaloneTasks={standaloneTasks}
-              currentYear={currentYear}
-              currentMonth={currentMonth}
-              onSelectCategory={handleSelectCategory}
-              selectedCategoryId={selectedCategoryId}
-              onCreateCategory={handleCreateCategory}
-              onCreateMilestone={createMilestone}
-              onCreateTask={handleCreateTask}
-              onUpdateStandaloneTask={updateStandaloneTask}
-              onDeleteStandaloneTask={deleteStandaloneTask}
+              onToggleSidebar={
+                shouldShowCalendarSidebar ? handleToggleSidebar : undefined
+              }
             />
+            {shouldShowCalendarSidebar && (
+              <>
+                <SidebarDivider visible={isSidebarOpen} />
+                <CalendarSidebar
+                  isSidebarOpen={isSidebarOpen}
+                  categories={categories}
+                  standaloneTasks={standaloneTasks}
+                  currentYear={currentYear}
+                  currentMonth={currentMonth}
+                  onSelectCategory={handleSelectCategory}
+                  selectedCategoryId={selectedCategoryId}
+                  onCreateCategory={handleCreateCategory}
+                  onCreateMilestone={createMilestone}
+                  onCreateTask={handleCreateTask}
+                  onUpdateStandaloneTask={updateStandaloneTask}
+                  onDeleteStandaloneTask={deleteStandaloneTask}
+                />
+              </>
+            )}
           </div>
 
           <Outlet

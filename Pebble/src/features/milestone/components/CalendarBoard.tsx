@@ -1,13 +1,11 @@
 import { useMemo } from "react";
 import { MonthSelector } from "./MonthSelector";
-import { SidebarToggleButton } from "./SidebarToggleButton";
 import { CalendarGrid } from "./CalendarGrid";
 import { generateWeeks } from "./calendarWeeks";
 import { type Category, type ScheduleItem } from "@/types";
 
 type CalendarBoardProps = {
   isSidebarOpen?: boolean;
-  onToggleSidebar?: () => void;
   categories?: Category[];
   standaloneTasks?: ScheduleItem[];
   currentYear: number;
@@ -17,7 +15,6 @@ type CalendarBoardProps = {
 
 export const CalendarBoard = ({
   isSidebarOpen = true,
-  onToggleSidebar,
   categories = [],
   standaloneTasks = [],
   currentYear,
@@ -68,11 +65,7 @@ export const CalendarBoard = ({
         }`}
         style={{ width: isSidebarOpen ? 876 : 1130 }}
       >
-        <header className="inline-flex items-end gap-1">
-          <SidebarToggleButton 
-            isSidebarOpen={isSidebarOpen} 
-            onToggle={onToggleSidebar || (() => {})} 
-          />
+        <header className="inline-flex items-end">
           <MonthSelector 
             displayedYear={displayedYear}
             displayedMonth={displayedMonth}
