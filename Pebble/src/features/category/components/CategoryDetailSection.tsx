@@ -15,6 +15,7 @@ import type {
   CreateScheduleItemInput,
   UpdateCategoryInput,
 } from "@/features/calendar/types";
+import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
@@ -56,6 +57,12 @@ export const CategoryDetailSection = ({
   const [selectedMilestoneForTask, setSelectedMilestoneForTask] = React.useState<string | null>(null);
   const editingCategoryTask =
     category.tasks?.find((task) => task.id === editingCategoryTaskId) ?? null;
+  const milestoneTextColor =
+    category.themeTextOnMid ??
+    getReadableCategoryTextColor(category.themeBase, category.themeMid);
+  const taskTextColor =
+    category.themeTextOnLight ??
+    getReadableCategoryTextColor(category.themeBase, category.themeLight);
 
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
@@ -112,6 +119,7 @@ export const CategoryDetailSection = ({
                   key={task.id}
                   task={task}
                   themeLightColor={category.themeLight}
+                  themeTextColor={taskTextColor}
                   onEdit={() => setEditingCategoryTaskId(task.id)}
                 />
               ))}
@@ -125,6 +133,8 @@ export const CategoryDetailSection = ({
             item={item}
             themeMidColor={category.themeMid}
             themeLightColor={category.themeLight}
+            themeTextOnMidColor={milestoneTextColor}
+            themeTextOnLightColor={taskTextColor}
             isExpanded={Boolean(expandedMilestones[item.id])}
             onToggle={() => toggleMilestone(item.id)}
             onEdit={() => setEditingMilestoneId(item.id)}

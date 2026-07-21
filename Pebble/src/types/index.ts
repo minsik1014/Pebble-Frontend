@@ -22,6 +22,8 @@ export type Category = {
   themeBase: string;
   themeMid: string;
   themeLight: string;
+  themeTextOnMid?: string;
+  themeTextOnLight?: string;
   imageUrl?: string;
   items: MilestoneItem[];
   tasks?: TaskItem[];

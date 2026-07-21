@@ -1,4 +1,5 @@
 import { type Category, type ScheduleItem } from "@/types";
+import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 import { type CalendarDay, type CalendarEvent, type CalendarWeek } from "./types";
 import { parseScheduleDate } from "./scheduleDateUtils";
 
@@ -92,6 +93,17 @@ const createCalendarEvent = (
   const startColumn = eventStartDate.getDay();
   const endColumn = eventEndDate.getDay();
   const columnSpan = endColumn - startColumn + 1;
+  const backgroundColor =
+    datedItem.variant === "milestone"
+      ? datedItem.category?.themeMid ?? "#E9EAEB"
+      : datedItem.category?.themeLight ?? "#F4F4F5";
+  const accentColor = datedItem.category?.themeBase ?? datedItem.item.accent;
+  const textColor =
+    datedItem.variant === "milestone"
+      ? datedItem.category?.themeTextOnMid ??
+        getReadableCategoryTextColor(accentColor, backgroundColor)
+      : datedItem.category?.themeTextOnLight ??
+        getReadableCategoryTextColor(accentColor, backgroundColor);
 
   return {
     id: `${datedItem.variant}-${datedItem.item.id}-${weekStartDate.toISOString()}`,
@@ -99,11 +111,9 @@ const createCalendarEvent = (
     leftPercent: (startColumn / DAY_COUNT_IN_WEEK) * 100,
     widthPercent: (columnSpan / DAY_COUNT_IN_WEEK) * 100,
     topOffset: EVENT_START_TOP_OFFSET + laneIndex * EVENT_ROW_HEIGHT,
-    backgroundColor:
-      datedItem.variant === "milestone"
-        ? datedItem.category?.themeMid ?? "#E9EAEB"
-        : datedItem.category?.themeLight ?? "#F4F4F5",
-    accentColor: datedItem.category?.themeBase ?? datedItem.item.accent,
+    backgroundColor,
+    accentColor,
+    textColor,
   };
 };
 

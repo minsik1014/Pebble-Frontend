@@ -132,6 +132,8 @@ export const CategoryFormModal = ({
       themeBase: selectedTheme.themeBase,
       themeMid: selectedTheme.themeMid,
       themeLight: selectedTheme.themeLight,
+      themeTextOnMid: selectedTheme.themeTextOnMid,
+      themeTextOnLight: selectedTheme.themeTextOnLight,
       imageUrl,
     });
     onClose();
@@ -183,13 +185,23 @@ export const CategoryFormModal = ({
                     className="flex h-full flex-1 items-center justify-center rounded-token-s shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)]"
                     style={{ backgroundColor: selectedTheme.themeMid }}
                   >
-                    <span className="text-body-03-r text-text-strong">마일스톤</span>
+                    <span
+                      className="text-body-03-r"
+                      style={{ color: selectedTheme.themeTextOnMid }}
+                    >
+                      마일스톤
+                    </span>
                   </div>
                   <div
                     className="flex h-full flex-1 items-center justify-center rounded-token-s shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)]"
                     style={{ backgroundColor: selectedTheme.themeLight }}
                   >
-                    <span className="text-body-03-r text-text-strong">태스크</span>
+                    <span
+                      className="text-body-03-r"
+                      style={{ color: selectedTheme.themeTextOnLight }}
+                    >
+                      태스크
+                    </span>
                   </div>
                 </div>
               </div>

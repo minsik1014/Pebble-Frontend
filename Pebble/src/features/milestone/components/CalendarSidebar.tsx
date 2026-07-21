@@ -108,7 +108,7 @@ export const CalendarSidebar = ({
           <div className="relative -left-px flex min-h-0 h-[888px] w-full flex-col px-5 pb-3 pt-1">
             <div
               ref={scrollContainerRef}
-              className="flex max-h-[calc(100%-56px)] flex-col items-start gap-5 overflow-y-auto overflow-x-hidden custom-scrollbar"
+              className="-mx-3 flex max-h-[calc(100%-56px)] w-[calc(100%+24px)] flex-col items-start gap-5 overflow-y-auto overflow-x-hidden px-3 py-3 custom-scrollbar"
             >
               {displayedStandaloneTasks.length > 0 && (
                 <StandaloneTaskSection

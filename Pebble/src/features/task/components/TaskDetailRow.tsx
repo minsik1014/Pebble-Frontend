@@ -5,6 +5,7 @@ import EditIcon from "@/assets/icons/newedit.svg?react";
 type TaskDetailRowProps = {
   task: ScheduleItem;
   themeLightColor: string;
+  themeTextColor: string;
   onEdit?: () => void;
 };
 
@@ -19,7 +20,12 @@ const formatDisplayDate = (value: string) => {
   return `${Number(month)}/${Number(day)}`;
 };
 
-export const TaskDetailRow = ({ task, themeLightColor, onEdit }: TaskDetailRowProps) => {
+export const TaskDetailRow = ({
+  task,
+  themeLightColor,
+  themeTextColor,
+  onEdit,
+}: TaskDetailRowProps) => {
   return (
     <div className="w-[736px] pr-2 py-2 bg-fill-inverse rounded-xl inline-flex justify-start items-center gap-2 overflow-hidden">
       <div className="flex-1 flex justify-start items-center gap-2">
@@ -27,17 +33,26 @@ export const TaskDetailRow = ({ task, themeLightColor, onEdit }: TaskDetailRowPr
           className="w-2 h-8 rounded-sm"
           style={{ backgroundColor: themeLightColor }}
         />
-        <span className="max-w-64 text-body-02-m text-text-strong truncate">
+        <span
+          className="max-w-64 text-body-02-m truncate"
+          style={{ color: themeTextColor }}
+        >
           {task.title}
         </span>
       </div>
       <div className="flex justify-end items-center gap-3">
         <div className="flex justify-end items-center">
-          <span className="text-body-02-m text-text-teritary">{formatDisplayDate(task.start)}</span>
+          <span className="text-body-02-m" style={{ color: themeTextColor }}>
+            {formatDisplayDate(task.start)}
+          </span>
           {task.end && (
             <>
-              <span className="text-body-02-m text-text-teritary mx-1">~</span>
-              <span className="text-body-02-m text-text-teritary">{formatDisplayDate(task.end)}</span>
+              <span className="mx-1 text-body-02-m" style={{ color: themeTextColor }}>
+                ~
+              </span>
+              <span className="text-body-02-m" style={{ color: themeTextColor }}>
+                {formatDisplayDate(task.end)}
+              </span>
             </>
           )}
         </div>
