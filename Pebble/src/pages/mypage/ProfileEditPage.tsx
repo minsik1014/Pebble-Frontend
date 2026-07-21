@@ -2,11 +2,13 @@ import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
 import type { MainLayoutContext } from "@/components/layout/MainLayout";
 import { ProfileEditForm } from "@/features/mypage/components/ProfileEditForm";
 import { ProfileImageEditor } from "@/features/mypage/components/ProfileImageEditor";
+import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 export default function ProfileEditPage() {
   const navigate = useNavigate();
   const { isSidebarOpen } = useOutletContext<MainLayoutContext>();
+  const profile = useProfileStore((state) => state.profile);
 
   return (
     <section
@@ -32,9 +34,11 @@ export default function ProfileEditPage() {
             </div>
 
             <div className="absolute left-0 top-[258px] w-full text-center">
-              <h1 className="text-title-03-sb text-text-strong">페블이</h1>
+              <h1 className="text-title-03-sb text-text-strong">
+                {profile.nickname}
+              </h1>
               <p className="mt-2 text-body-02-m text-text-teritary">
-                일상이없는게제일상입니다.
+                {profile.bio}
               </p>
             </div>
           </header>
