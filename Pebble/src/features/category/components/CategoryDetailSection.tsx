@@ -14,7 +14,8 @@ import { type Category } from "@/types";
 import type {
   CreateScheduleItemInput,
   UpdateCategoryInput,
-} from "@/features/calendar/hooks/useCalendarState";
+} from "@/features/calendar/types";
+import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
@@ -56,6 +57,12 @@ export const CategoryDetailSection = ({
   const [selectedMilestoneForTask, setSelectedMilestoneForTask] = React.useState<string | null>(null);
   const editingCategoryTask =
     category.tasks?.find((task) => task.id === editingCategoryTaskId) ?? null;
+  const milestoneTextColor =
+    category.themeTextOnMid ??
+    getReadableCategoryTextColor(category.themeBase, category.themeMid);
+  const taskTextColor =
+    category.themeTextOnLight ??
+    getReadableCategoryTextColor(category.themeBase, category.themeLight);
 
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
@@ -79,7 +86,7 @@ export const CategoryDetailSection = ({
         <div className="w-11 h-11 flex items-center justify-center rounded-xl relative">
           <ChevronLeftIcon className="w-6 h-6 text-text-strong" />
         </div>
-        <span className="text-[24px] font-medium leading-8 text-text-strong font-['Pretendard']">
+        <span className="text-[24px] font-medium leading-8 text-text-strong">
           캘린더
         </span>
       </button>
@@ -112,6 +119,7 @@ export const CategoryDetailSection = ({
                   key={task.id}
                   task={task}
                   themeLightColor={category.themeLight}
+                  themeTextColor={taskTextColor}
                   onEdit={() => setEditingCategoryTaskId(task.id)}
                 />
               ))}
@@ -125,6 +133,8 @@ export const CategoryDetailSection = ({
             item={item}
             themeMidColor={category.themeMid}
             themeLightColor={category.themeLight}
+            themeTextOnMidColor={milestoneTextColor}
+            themeTextOnLightColor={taskTextColor}
             isExpanded={Boolean(expandedMilestones[item.id])}
             onToggle={() => toggleMilestone(item.id)}
             onEdit={() => setEditingMilestoneId(item.id)}

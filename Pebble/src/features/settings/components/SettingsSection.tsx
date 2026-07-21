@@ -12,8 +12,8 @@ export function SettingsSection({
   return (
     <section
       className={[
-        'w-[1316px] rounded-token-m bg-fill-surface',
-        'px-[240px] py-token-xxl',
+        'w-full rounded-token-m bg-fill-surface',
+        'px-[58px] py-token-xxl',
         'shadow-[0px_0px_28px_rgba(23,23,23,0.03)]',
         className,
       ].join(' ')}

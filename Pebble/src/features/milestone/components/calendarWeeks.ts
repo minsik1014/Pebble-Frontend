@@ -1,4 +1,5 @@
-import { type Category, type ScheduleItem } from "@/types";
+import { type Category, type ScheduleItem, type TaskItem } from "@/types";
+import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 import { type CalendarDay, type CalendarEvent, type CalendarWeek } from "./types";
 import { parseScheduleDate } from "./scheduleDateUtils";
 
@@ -19,26 +20,41 @@ const normalizeScheduleItem = (
   category: Category | undefined,
   variant: DatedScheduleItem["variant"],
   fallbackYear: number,
-): DatedScheduleItem | null => {
+): DatedScheduleItem[] => {
+  if (item.dates && item.dates.length > 0) {
+    return item.dates
+      .map((date) => parseScheduleDate(date, fallbackYear))
+      .filter((date): date is Date => Boolean(date))
+      .map((date) => ({
+        item,
+        category,
+        variant,
+        startDate: date,
+        endDate: date,
+      }));
+  }
+
   const startDate = parseScheduleDate(item.start, fallbackYear);
   const endDate = item.end ? parseScheduleDate(item.end, fallbackYear) : startDate;
 
   if (!startDate || !endDate) {
-    return null;
+    return [];
   }
 
-  return {
-    item,
-    category,
-    variant,
-    startDate: startDate.getTime() <= endDate.getTime() ? startDate : endDate,
-    endDate: startDate.getTime() <= endDate.getTime() ? endDate : startDate,
-  };
+  return [
+    {
+      item,
+      category,
+      variant,
+      startDate: startDate.getTime() <= endDate.getTime() ? startDate : endDate,
+      endDate: startDate.getTime() <= endDate.getTime() ? endDate : startDate,
+    },
+  ];
 };
 
 const collectScheduleItems = (
   categories: Category[],
-  standaloneTasks: ScheduleItem[],
+  standaloneTasks: TaskItem[],
   fallbackYear: number,
 ): DatedScheduleItem[] => {
   const categoryItems = categories.flatMap((category) =>
@@ -47,25 +63,23 @@ const collectScheduleItems = (
         normalizeScheduleItem(task, category, "task", fallbackYear),
       ),
       ...category.items.flatMap((item) => {
-        const milestone = normalizeScheduleItem(
+        const milestones = normalizeScheduleItem(
           item,
           category,
           "milestone",
           fallbackYear,
         );
-        const tasks = (item.tasks ?? [])
-          .map((task) => normalizeScheduleItem(task, category, "task", fallbackYear))
-          .filter((task): task is DatedScheduleItem => Boolean(task));
+        const tasks = (item.tasks ?? []).flatMap((task) =>
+          normalizeScheduleItem(task, category, "task", fallbackYear),
+        );
 
-        return milestone ? [milestone, ...tasks] : tasks;
+        return [...milestones, ...tasks];
       }),
-    ].filter((item): item is DatedScheduleItem => Boolean(item)),
+    ].flat(),
   );
-  const rootTasks = standaloneTasks
-    .map((task) =>
-      normalizeScheduleItem(task, undefined, "standaloneTask", fallbackYear),
-    )
-    .filter((task): task is DatedScheduleItem => Boolean(task));
+  const rootTasks = standaloneTasks.flatMap((task) =>
+    normalizeScheduleItem(task, undefined, "standaloneTask", fallbackYear),
+  );
 
   return [...categoryItems, ...rootTasks];
 };
@@ -92,18 +106,33 @@ const createCalendarEvent = (
   const startColumn = eventStartDate.getDay();
   const endColumn = eventEndDate.getDay();
   const columnSpan = endColumn - startColumn + 1;
+  const backgroundColor =
+    datedItem.variant === "milestone"
+      ? datedItem.category?.themeMid ?? "#E9EAEB"
+      : datedItem.category?.themeLight ?? "#F4F4F5";
+  const accentColor =
+    datedItem.category?.themeBase ?? datedItem.item.accent ?? "#171717";
+  const textColor =
+    datedItem.variant === "milestone"
+      ? datedItem.category?.themeTextOnMid ??
+        getReadableCategoryTextColor(accentColor, backgroundColor)
+      : datedItem.category?.themeTextOnLight ??
+        getReadableCategoryTextColor(accentColor, backgroundColor);
 
   return {
-    id: `${datedItem.variant}-${datedItem.item.id}-${weekStartDate.toISOString()}`,
+    id: [
+      datedItem.variant,
+      datedItem.item.id,
+      datedItem.startDate.toISOString(),
+      weekStartDate.toISOString(),
+    ].join("-"),
     title: datedItem.item.title,
     leftPercent: (startColumn / DAY_COUNT_IN_WEEK) * 100,
     widthPercent: (columnSpan / DAY_COUNT_IN_WEEK) * 100,
     topOffset: EVENT_START_TOP_OFFSET + laneIndex * EVENT_ROW_HEIGHT,
-    backgroundColor:
-      datedItem.variant === "milestone"
-        ? datedItem.category?.themeMid ?? "#E9EAEB"
-        : datedItem.category?.themeLight ?? "#F4F4F5",
-    accentColor: datedItem.category?.themeBase ?? datedItem.item.accent,
+    backgroundColor,
+    accentColor,
+    textColor,
   };
 };
 
@@ -111,7 +140,7 @@ export const generateWeeks = (
   year: number,
   month: number,
   categories: Category[],
-  standaloneTasks: ScheduleItem[] = [],
+  standaloneTasks: TaskItem[] = [],
 ): CalendarWeek[] => {
   const firstDayOfMonth = new Date(year, month - 1, 1);
   const startDayOfWeek = firstDayOfMonth.getDay();
