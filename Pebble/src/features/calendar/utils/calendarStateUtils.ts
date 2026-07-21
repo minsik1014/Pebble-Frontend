@@ -1,15 +1,19 @@
-import type { Category, ScheduleItem } from "@/types";
+import type { Category, MilestoneItem, ScheduleItem, TaskItem } from "@/types";
 import type {
   CreateCategoryInput,
   CreateScheduleItemInput,
   UpdateCategoryInput,
 } from "@/features/calendar/types";
 
-export const cloneScheduleItems = (items: ScheduleItem[]): ScheduleItem[] =>
-  items.map((item) => ({
-    ...item,
-    tasks: item.tasks ? cloneScheduleItems(item.tasks) : undefined,
-  }));
+export const cloneScheduleItems = <T extends ScheduleItem>(items: T[]): T[] =>
+  items.map((item) =>
+    (item.tasks
+      ? {
+          ...item,
+          tasks: cloneScheduleItems(item.tasks),
+        }
+      : { ...item }) as T,
+  );
 
 const createClientCategoryId = () => `category-${crypto.randomUUID()}`;
 const createClientMilestoneId = () => `milestone-${crypto.randomUUID()}`;
@@ -26,18 +30,24 @@ export const createCategoryEntity = (
 
 export const createMilestoneEntity = (
   input: CreateScheduleItemInput,
-): ScheduleItem => ({
+): MilestoneItem => ({
   ...input,
   id: input.id ?? createClientMilestoneId(),
+  itemType: "milestone",
   tasks: input.tasks ? cloneScheduleItems(input.tasks) : [],
 });
 
 export const createTaskEntity = (
   input: CreateScheduleItemInput,
-): ScheduleItem => ({
-  ...input,
-  id: input.id ?? createClientTaskId(),
-});
+): TaskItem => {
+  const { tasks: _tasks, ...taskInput } = input;
+
+  return {
+    ...taskInput,
+    id: taskInput.id ?? createClientTaskId(),
+    itemType: "task",
+  };
+};
 
 export const replaceCategoryList = (categories: Category[]) =>
   categories.map(createCategoryEntity);
@@ -61,7 +71,7 @@ export const updateCategoryInList = (
 export const appendMilestoneToCategory = (
   categories: Category[],
   categoryId: string,
-  milestone: ScheduleItem,
+  milestone: MilestoneItem,
 ) =>
   categories.map((category) =>
     category.id === categoryId
@@ -76,7 +86,7 @@ export const appendTaskToMilestone = (
   categories: Category[],
   categoryId: string,
   milestoneId: string,
-  task: ScheduleItem,
+  task: TaskItem,
 ) =>
   categories.map((category) =>
     category.id === categoryId
@@ -97,7 +107,7 @@ export const appendTaskToMilestone = (
 export const appendTaskToCategory = (
   categories: Category[],
   categoryId: string,
-  task: ScheduleItem,
+  task: TaskItem,
 ) =>
   categories.map((category) =>
     category.id === categoryId
@@ -113,8 +123,10 @@ export const updateCategoryTaskInList = (
   categoryId: string,
   taskId: string,
   input: CreateScheduleItemInput,
-) =>
-  categories.map((category) =>
+) => {
+  const { tasks: _tasks, ...taskInput } = input;
+
+  return categories.map((category) =>
     category.id === categoryId
       ? {
           ...category,
@@ -122,13 +134,14 @@ export const updateCategoryTaskInList = (
             task.id === taskId
               ? {
                   ...task,
-                  ...input,
+                  ...taskInput,
                 }
               : task,
           ),
         }
       : category,
   );
+};
 
 export const removeCategoryTaskFromList = (
   categories: Category[],

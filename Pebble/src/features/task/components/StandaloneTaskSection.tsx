@@ -1,8 +1,8 @@
-import { type ScheduleItem } from "@/types";
+import { type TaskItem } from "@/types";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type StandaloneTaskSectionProps = {
-  tasks: ScheduleItem[];
+  tasks: TaskItem[];
   checkedItems: Record<string, boolean>;
   onToggleChecked: (itemId: string) => void;
   onEditTask: (taskId: string) => void;
@@ -17,6 +17,7 @@ export const StandaloneTaskSection = ({
   <>
     {tasks.map((task) => {
       const dateLabel = formatScheduleDisplayLabel(task);
+      const accentColor = task.accent ?? "#171717";
 
       return (
         <section
@@ -31,7 +32,7 @@ export const StandaloneTaskSection = ({
             <div className="flex min-w-0 flex-1 items-center gap-2">
               <div
                 className="h-10 w-2 shrink-0 rounded"
-                style={{ backgroundColor: task.accent }}
+                style={{ backgroundColor: accentColor }}
               />
               <span className="min-w-0 flex-1 truncate text-title-02-sb text-text-strong">
                 {task.title}

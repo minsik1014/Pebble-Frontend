@@ -1,4 +1,4 @@
-import { type Category, type ScheduleItem } from "@/types";
+import { type Category, type ScheduleItem, type TaskItem } from "@/types";
 import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 import { type CalendarDay, type CalendarEvent, type CalendarWeek } from "./types";
 import { parseScheduleDate } from "./scheduleDateUtils";
@@ -54,7 +54,7 @@ const normalizeScheduleItem = (
 
 const collectScheduleItems = (
   categories: Category[],
-  standaloneTasks: ScheduleItem[],
+  standaloneTasks: TaskItem[],
   fallbackYear: number,
 ): DatedScheduleItem[] => {
   const categoryItems = categories.flatMap((category) =>
@@ -110,7 +110,8 @@ const createCalendarEvent = (
     datedItem.variant === "milestone"
       ? datedItem.category?.themeMid ?? "#E9EAEB"
       : datedItem.category?.themeLight ?? "#F4F4F5";
-  const accentColor = datedItem.category?.themeBase ?? datedItem.item.accent;
+  const accentColor =
+    datedItem.category?.themeBase ?? datedItem.item.accent ?? "#171717";
   const textColor =
     datedItem.variant === "milestone"
       ? datedItem.category?.themeTextOnMid ??
@@ -139,7 +140,7 @@ export const generateWeeks = (
   year: number,
   month: number,
   categories: Category[],
-  standaloneTasks: ScheduleItem[] = [],
+  standaloneTasks: TaskItem[] = [],
 ): CalendarWeek[] => {
   const firstDayOfMonth = new Date(year, month - 1, 1);
   const startDayOfWeek = firstDayOfMonth.getDay();

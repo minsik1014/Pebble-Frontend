@@ -2,12 +2,12 @@ import { useMemo } from "react";
 import { MonthSelector } from "./MonthSelector";
 import { CalendarGrid } from "./CalendarGrid";
 import { generateWeeks } from "./calendarWeeks";
-import { type Category, type ScheduleItem } from "@/types";
+import { type Category, type TaskItem } from "@/types";
 
 type CalendarBoardProps = {
   isSidebarOpen?: boolean;
   categories?: Category[];
-  standaloneTasks?: ScheduleItem[];
+  standaloneTasks?: TaskItem[];
   currentYear: number;
   currentMonth: number;
   onChangeCalendarMonth: (year: number, month: number) => void;

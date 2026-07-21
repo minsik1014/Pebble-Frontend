@@ -1,23 +1,30 @@
-import type { Category, ScheduleItem } from "@/types";
+import type {
+  Category,
+  MilestoneItem,
+  ScheduleEntityBase,
+  ScheduleStyleFields,
+  TaskItem,
+} from "@/types";
 
 export type CreateCategoryInput = Omit<Category, "id" | "items"> & {
   id?: string;
-  items?: ScheduleItem[];
-  tasks?: ScheduleItem[];
+  items?: MilestoneItem[];
+  tasks?: TaskItem[];
 };
 
 export type UpdateCategoryInput = Partial<Omit<Category, "id" | "items">> & {
-  items?: ScheduleItem[];
+  items?: MilestoneItem[];
 };
 
-export type CreateScheduleItemInput = Omit<ScheduleItem, "id" | "tasks"> & {
+export type CreateScheduleItemInput = Omit<ScheduleEntityBase, "id"> &
+  ScheduleStyleFields & {
   id?: string;
-  tasks?: ScheduleItem[];
+  tasks?: TaskItem[];
 };
 
 export type CalendarState = {
   categories: Category[];
-  standaloneTasks: ScheduleItem[];
+  standaloneTasks: TaskItem[];
   selectedCategory: Category | null;
   selectedCategoryId: string | null;
 };
@@ -31,23 +38,23 @@ export type CalendarActions = {
   createMilestone: (
     categoryId: string,
     input: CreateScheduleItemInput,
-  ) => ScheduleItem;
+  ) => MilestoneItem;
   createTask: (
     categoryId: string,
     milestoneId: string,
     input: CreateScheduleItemInput,
-  ) => ScheduleItem;
+  ) => TaskItem;
   createCategoryTask: (
     categoryId: string,
     input: CreateScheduleItemInput,
-  ) => ScheduleItem;
+  ) => TaskItem;
   updateCategoryTask: (
     categoryId: string,
     taskId: string,
     input: CreateScheduleItemInput,
   ) => void;
   deleteCategoryTask: (categoryId: string, taskId: string) => void;
-  createStandaloneTask: (input: CreateScheduleItemInput) => ScheduleItem;
+  createStandaloneTask: (input: CreateScheduleItemInput) => TaskItem;
   updateStandaloneTask: (
     taskId: string,
     input: CreateScheduleItemInput,

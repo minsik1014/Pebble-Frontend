@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { type Category, type ScheduleItem } from "@/types";
+import { type Category, type TaskItem } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
 import { MilestoneFormModal } from "./MilestoneFormModal";
@@ -12,6 +11,7 @@ import { AddMenuModal } from "./AddMenuModal";
 import { MilestoneAccordion } from "./MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
+import { useCalendarSidebarModals } from "@/features/milestone/hooks/useCalendarSidebarModals";
 import { useCalendarSidebarState } from "@/features/milestone/hooks/useCalendarSidebarState";
 import { useSidebarButtonShadow } from "@/features/milestone/hooks/useSidebarButtonShadow";
 import type {
@@ -35,7 +35,7 @@ export const CalendarSidebar = ({
 }: {
   isSidebarOpen?: boolean;
   categories: Category[];
-  standaloneTasks: ScheduleItem[];
+  standaloneTasks: TaskItem[];
   currentYear: number;
   currentMonth: number;
   onSelectCategory?: (categoryId: string) => void;
@@ -52,14 +52,6 @@ export const CalendarSidebar = ({
   ) => void;
   onDeleteStandaloneTask?: (taskId: string) => void;
 }): JSX.Element => {
-  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [editingStandaloneTaskId, setEditingStandaloneTaskId] = useState<
-    string | null
-  >(null);
-
   const {
     viewMode,
     setViewMode,
@@ -83,8 +75,22 @@ export const CalendarSidebar = ({
       displayedStandaloneTasks,
       expandedCategories,
     });
-  const editingStandaloneTask =
-    standaloneTasks.find((task) => task.id === editingStandaloneTaskId) ?? null;
+  const {
+    isAddMenuOpen,
+    openAddMenu,
+    closeAddMenu,
+    isCategoryModalOpen,
+    isMilestoneModalOpen,
+    isTaskModalOpen,
+    openCategoryModal,
+    openMilestoneModal,
+    openTaskModal,
+    closeCreateModal,
+    editingStandaloneTaskId,
+    editingStandaloneTask,
+    openStandaloneTaskEditor,
+    closeStandaloneTaskEditor,
+  } = useCalendarSidebarModals({ standaloneTasks });
 
   return (
     <aside 
@@ -115,7 +121,7 @@ export const CalendarSidebar = ({
                   tasks={displayedStandaloneTasks}
                   checkedItems={checkedItems}
                   onToggleChecked={toggleCheckedItem}
-                  onEditTask={setEditingStandaloneTaskId}
+                  onEditTask={openStandaloneTaskEditor}
                 />
               )}
 
@@ -147,7 +153,7 @@ export const CalendarSidebar = ({
                 variant="primary"
                 className="w-[352px]"
                 showIcon={false}
-                onClick={() => setIsAddMenuOpen(true)}
+                onClick={openAddMenu}
               />
             </div>
           </div>
@@ -156,36 +162,36 @@ export const CalendarSidebar = ({
       
       <AddMenuModal
         isOpen={isAddMenuOpen}
-        onClose={() => setIsAddMenuOpen(false)}
-        onSelectCategory={() => setIsCreateModalOpen(true)}
-        onSelectMilestone={() => setIsMilestoneModalOpen(true)}
-        onSelectTask={() => setIsTaskModalOpen(true)}
+        onClose={closeAddMenu}
+        onSelectCategory={openCategoryModal}
+        onSelectMilestone={openMilestoneModal}
+        onSelectTask={openTaskModal}
       />
 
-      <CategoryFormModal 
-        isOpen={isCreateModalOpen} 
+      <CategoryFormModal
+        isOpen={isCategoryModalOpen}
         mode="create"
         onSubmit={onCreateCategory}
-        onClose={() => setIsCreateModalOpen(false)} 
+        onClose={closeCreateModal}
       />
 
       <MilestoneFormModal
         isOpen={isMilestoneModalOpen}
-        onClose={() => setIsMilestoneModalOpen(false)}
+        onClose={closeCreateModal}
         categories={categories}
         onSubmit={onCreateMilestone}
       />
 
       <TaskFormModal
         isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
+        onClose={closeCreateModal}
         categories={categories}
         onSubmit={onCreateTask}
       />
 
       <TaskFormModal
         isOpen={Boolean(editingStandaloneTask)}
-        onClose={() => setEditingStandaloneTaskId(null)}
+        onClose={closeStandaloneTaskEditor}
         categories={categories}
         task={editingStandaloneTask}
         mode="edit"
@@ -195,7 +201,7 @@ export const CalendarSidebar = ({
           }
 
           onUpdateStandaloneTask?.(editingStandaloneTaskId, task);
-          setEditingStandaloneTaskId(null);
+          closeStandaloneTaskEditor();
         }}
         onRequestDelete={() => {
           if (!editingStandaloneTaskId) {
@@ -203,7 +209,7 @@ export const CalendarSidebar = ({
           }
 
           onDeleteStandaloneTask?.(editingStandaloneTaskId);
-          setEditingStandaloneTaskId(null);
+          closeStandaloneTaskEditor();
         }}
       />
     </aside>

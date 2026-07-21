@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import type { Category, ScheduleItem } from "@/types";
+import type { Category, TaskItem } from "@/types";
 import {
   filterCategoriesByMonth,
   isScheduleItemInMonth,
@@ -8,7 +8,7 @@ import {
 
 type UseCalendarSidebarStateParams = {
   categories: Category[];
-  standaloneTasks: ScheduleItem[];
+  standaloneTasks: TaskItem[];
   currentYear: number;
   currentMonth: number;
 };

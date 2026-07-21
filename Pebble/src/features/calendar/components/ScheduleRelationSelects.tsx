@@ -1,4 +1,4 @@
-import type { Category, ScheduleItem } from "@/types";
+import type { Category, MilestoneItem } from "@/types";
 
 type SelectButtonVariant = "surface" | "inverse";
 
@@ -14,7 +14,7 @@ type CategorySelectProps = {
 };
 
 type MilestoneSelectProps = {
-  milestones: ScheduleItem[];
+  milestones: MilestoneItem[];
   selectedMilestoneId: string | null;
   themeColor?: string;
   disabled?: boolean;

@@ -13,15 +13,17 @@ export const TaskListItem = ({
   onToggle,
 }: TaskListItemProps) => {
   const dateLabel = formatScheduleDisplayLabel(item);
+  const rowWidthClass = item.rowWidthClass ?? "w-80";
+  const accentColor = item.accent ?? "#171717";
 
   return (
     <label
-      className={`${item.rowWidthClass} gap-2 pr-2 py-2 flex items-center relative rounded-token-s overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors shrink-0`}
+      className={`${rowWidthClass} gap-2 pr-2 py-2 flex items-center relative rounded-token-s overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors shrink-0`}
     >
       <div className="flex flex-1 grow items-center gap-2 relative min-w-0">
         <div
           className="relative w-2 h-8 rounded shrink-0"
-          style={{ backgroundColor: item.accent }}
+          style={{ backgroundColor: accentColor }}
         />
         <div className="relative min-w-0 max-w-[170px] text-body-02-m text-text-strong truncate">
           {item.title}

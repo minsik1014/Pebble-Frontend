@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
-import type { Category, ScheduleItem } from "@/types";
+import type { Category, TaskItem } from "@/types";
 
 type UseSidebarButtonShadowParams = {
   displayedCategories: Category[];
-  displayedStandaloneTasks: ScheduleItem[];
+  displayedStandaloneTasks: TaskItem[];
   expandedCategories: Record<string, boolean>;
 };
 

@@ -2,11 +2,11 @@ import ChevronDownIcon from "@/assets/icons/chevron-down.svg?react";
 import EditIcon from "@/assets/icons/newedit.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { TaskDetailRow } from "@/features/task/components/TaskDetailRow";
-import { type ScheduleItem } from "@/types";
+import { type MilestoneItem } from "@/types";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type MilestoneDetailItemProps = {
-  item: ScheduleItem & { tasks?: ScheduleItem[] };
+  item: MilestoneItem;
   themeMidColor: string;
   themeLightColor: string;
   themeTextOnMidColor: string;

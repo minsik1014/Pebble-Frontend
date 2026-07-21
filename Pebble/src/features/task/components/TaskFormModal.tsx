@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { type Category, type ScheduleItem } from "@/types";
 import { ScheduleDatePicker } from "@/components/ui/ScheduleDatePicker";
-import { ModalActionBar } from "@/components/ui/ModalActionBar";
 import {
   CategorySelect,
   MilestoneSelect,
 } from "@/features/calendar/components/ScheduleRelationSelects";
+import { ScheduleFormModalFrame } from "@/features/calendar/components/ScheduleFormModalFrame";
+import { ScheduleNameInput } from "@/features/calendar/components/ScheduleNameInput";
 import { useScheduleDatePicker } from "@/hooks/useScheduleDatePicker";
 import type { CreateScheduleItemInput } from "@/features/calendar/types";
 import {
@@ -152,96 +153,79 @@ export const TaskFormModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
-      <div className="w-[640px] p-8 bg-fill-inverse rounded-[32px] flex flex-col gap-5 shadow-shadow-m relative">
-        <h2 className="text-[24px] font-semibold text-text-strong leading-[1.3] tracking-[-0.24px]">
-          {mode === "edit" ? "태스크 편집" : "태스크 추가하기"}
-        </h2>
-
-        {/* Form Inputs Container */}
-        <div className="flex flex-col gap-3 w-full mt-2">
-          
-          {/* Row 1: Dropdowns */}
-          <div className="flex items-center gap-3 w-full">
-            <div className="flex-[1]">
-              <CategorySelect
-                categories={categories}
-                selectedCategoryId={selectedCategory}
-                isOpen={isCategoryDropdownOpen}
-                allowEmpty
-                onToggleOpen={() => {
-                  setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
-                  setIsMilestoneDropdownOpen(false);
-                }}
-                onSelectCategory={(categoryId) => {
-                  setSelectedCategory(categoryId);
-                  setSelectedMilestone(null);
-                  setIsCategoryDropdownOpen(false);
-                }}
-              />
-            </div>
-
-            <div className="flex-[1]">
-              <MilestoneSelect
-                milestones={availableMilestones}
-                selectedMilestoneId={selectedMilestone}
-                themeColor={activeCategory?.themeMid}
-                disabled={!activeCategory}
-                isOpen={isMilestoneDropdownOpen}
-                onToggleOpen={() => {
-                  if (activeCategory) {
-                    setIsMilestoneDropdownOpen(!isMilestoneDropdownOpen);
-                  }
-                  setIsCategoryDropdownOpen(false);
-                }}
-                onSelectMilestone={(milestoneId) => {
-                  setSelectedMilestone(milestoneId);
-                  setIsMilestoneDropdownOpen(false);
-                }}
-              />
-            </div>
+    <ScheduleFormModalFrame
+      title={mode === "edit" ? "태스크 편집" : "태스크 추가하기"}
+      submitLabel={mode === "edit" ? "수정" : "추가"}
+      disabled={!taskName || !datePicker.isDateSelectionComplete}
+      titleClassName="leading-[1.3]"
+      onCancel={onClose}
+      onSubmit={handleSubmit}
+      onDelete={mode === "edit" ? onRequestDelete : undefined}
+    >
+      <div className="flex flex-col gap-3 w-full mt-2">
+        <div className="flex items-center gap-3 w-full">
+          <div className="flex-[1]">
+            <CategorySelect
+              categories={categories}
+              selectedCategoryId={selectedCategory}
+              isOpen={isCategoryDropdownOpen}
+              allowEmpty
+              onToggleOpen={() => {
+                setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+                setIsMilestoneDropdownOpen(false);
+              }}
+              onSelectCategory={(categoryId) => {
+                setSelectedCategory(categoryId);
+                setSelectedMilestone(null);
+                setIsCategoryDropdownOpen(false);
+              }}
+            />
           </div>
 
-          {/* Row 2: Name Input */}
-          <div className="w-full">
-            <input 
-              type="text" 
-              placeholder="태스크 이름을 입력해 주세요"
-              value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
-              className="w-full h-[48px] bg-fill-inverse border border-border-default rounded-[12px] px-4 text-[16px] font-medium text-text-strong placeholder:text-text-quaternary outline-none focus:border-border-primary transition-colors"
+          <div className="flex-[1]">
+            <MilestoneSelect
+              milestones={availableMilestones}
+              selectedMilestoneId={selectedMilestone}
+              themeColor={activeCategory?.themeMid}
+              disabled={!activeCategory}
+              isOpen={isMilestoneDropdownOpen}
+              onToggleOpen={() => {
+                if (activeCategory) {
+                  setIsMilestoneDropdownOpen(!isMilestoneDropdownOpen);
+                }
+                setIsCategoryDropdownOpen(false);
+              }}
+              onSelectMilestone={(milestoneId) => {
+                setSelectedMilestone(milestoneId);
+                setIsMilestoneDropdownOpen(false);
+              }}
             />
           </div>
         </div>
 
-        <ScheduleDatePicker
-          variant="task"
-          dateType={datePicker.dateType}
-          onDateTypeChange={datePicker.setDateType}
-          currentYear={datePicker.currentYear}
-          currentMonth={datePicker.currentMonth}
-          daysInMonth={datePicker.daysInMonth}
-          firstDay={datePicker.firstDay}
-          onPrevMonth={datePicker.handlePrevMonth}
-          onNextMonth={datePicker.handleNextMonth}
-          onDateClick={datePicker.handleDateClick}
-          getDayStatus={datePicker.getDayStatus}
-          themeBaseColor={activeCategory?.themeBase}
-          themeMidColor={activeCategory?.themeMid}
-          themeLightColor={activeCategory?.themeLight}
+        <ScheduleNameInput
+          placeholder="태스크 이름을 입력해 주세요"
+          value={taskName}
+          onChange={setTaskName}
         />
-
-        {/* Bottom Actions */}
-        <div className="mt-4">
-          <ModalActionBar
-            submitLabel={mode === "edit" ? "수정" : "추가"}
-            disabled={!taskName || !datePicker.isDateSelectionComplete}
-            onCancel={onClose}
-            onSubmit={handleSubmit}
-            onDelete={mode === "edit" ? onRequestDelete : undefined}
-          />
-        </div>
       </div>
-    </div>
+
+      <ScheduleDatePicker
+        variant="task"
+        dateType={datePicker.dateType}
+        onDateTypeChange={datePicker.setDateType}
+        currentYear={datePicker.currentYear}
+        currentMonth={datePicker.currentMonth}
+        daysInMonth={datePicker.daysInMonth}
+        firstDay={datePicker.firstDay}
+        onPrevMonth={datePicker.handlePrevMonth}
+        onNextMonth={datePicker.handleNextMonth}
+        onDateClick={datePicker.handleDateClick}
+        getDayStatus={datePicker.getDayStatus}
+        themeBaseColor={activeCategory?.themeBase}
+        themeMidColor={activeCategory?.themeMid}
+        themeLightColor={activeCategory?.themeLight}
+      />
+    </ScheduleFormModalFrame>
   );
 };

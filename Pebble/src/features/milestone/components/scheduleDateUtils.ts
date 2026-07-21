@@ -1,4 +1,4 @@
-import { type Category, type ScheduleItem } from "@/types";
+import { type Category, type MilestoneItem, type ScheduleItem } from "@/types";
 
 export const parseScheduleDate = (
   value: string,
@@ -96,7 +96,7 @@ export const filterCategoriesByMonth = (
       isScheduleItemInMonth(task, year, month),
     ),
     items: category.items
-      .map((item): ScheduleItem | null => {
+      .map((item): MilestoneItem | null => {
         const filteredTasks = item.tasks?.filter((task) =>
           isScheduleItemInMonth(task, year, month),
         );
@@ -111,5 +111,5 @@ export const filterCategoriesByMonth = (
           tasks: filteredTasks,
         };
       })
-      .filter((item): item is ScheduleItem => Boolean(item)),
+      .filter((item): item is MilestoneItem => Boolean(item)),
   }));

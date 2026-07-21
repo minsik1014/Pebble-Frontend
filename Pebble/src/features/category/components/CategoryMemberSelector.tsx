@@ -1,4 +1,4 @@
-import { type Friend } from "./categoryFormOptions";
+import { type Friend } from "@/features/category/mock/friends";
 
 type CategoryMemberSelectorProps = {
   selectedMembers: Friend[];
