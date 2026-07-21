@@ -5,6 +5,7 @@ import UploadIcon from "@/assets/icons/Upload.svg?react";
 type CategoryImageUploaderProps = {
   imageUrl?: string;
   onImageChange: (imageUrl: string | undefined) => void;
+  onSelectImageFile?: (imageUrl: string) => void;
 };
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
@@ -13,6 +14,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 export const CategoryImageUploader = ({
   imageUrl,
   onImageChange,
+  onSelectImageFile,
 }: CategoryImageUploaderProps) => {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -29,13 +31,16 @@ export const CategoryImageUploader = ({
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        onImageChange(reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
+    const nextImageUrl = URL.createObjectURL(file);
+
+    if (onSelectImageFile) {
+      onSelectImageFile(nextImageUrl);
+      event.target.value = "";
+      return;
+    }
+
+    onImageChange(nextImageUrl);
+    event.target.value = "";
   };
 
   return (
@@ -82,7 +87,7 @@ export const CategoryImageUploader = ({
         ref={inputRef}
         id={inputId}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept={ACCEPTED_IMAGE_TYPES.join(",")}
         className="sr-only"
         onChange={handleFileChange}
       />

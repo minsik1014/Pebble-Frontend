@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 import MySolidIcon from "@/assets/icons/user-solid.svg?react";
+import { ImageCropModal } from "@/components/ui/image-crop/ImageCropModal";
 
 type MyProfileSectionProps = {
   isCompact: boolean;
@@ -7,6 +10,9 @@ type MyProfileSectionProps = {
 export const MyProfileSection = ({
   isCompact,
 }: MyProfileSectionProps): JSX.Element => {
+  const [isProfileCropModalOpen, setIsProfileCropModalOpen] = useState(false);
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+
   return (
     <header
       className={`sticky top-0 z-10 bg-fill-inverse transition-[height] duration-500 ease-in-out ${
@@ -14,15 +20,23 @@ export const MyProfileSection = ({
       }`}
     >
       <div
-        className={`absolute top-[110px] flex items-center justify-center rounded-full bg-theme-2-base text-text-strong transition-[left,width,height] duration-500 ease-in-out ${
+        className={`absolute top-[110px] flex items-center justify-center rounded-full text-text-strong transition-[left,width,height,background-color] duration-500 ease-in-out ${
           isCompact ? "left-5 size-24" : "left-[326px] size-32"
-        }`}
+        } ${profileImageUrl ? "bg-fill-surface" : "bg-theme-2-base"}`}
       >
-        <MySolidIcon
-          className={`transition-[width,height] duration-500 ease-in-out ${
-            isCompact ? "size-12" : "size-16"
-          }`}
-        />
+        {profileImageUrl ? (
+          <img
+            src={profileImageUrl}
+            alt="프로필 이미지"
+            className="h-full w-full rounded-full object-cover"
+          />
+        ) : (
+          <MySolidIcon
+            className={`transition-[width,height] duration-500 ease-in-out ${
+              isCompact ? "size-12" : "size-16"
+            }`}
+          />
+        )}
       </div>
 
       <div
@@ -43,9 +57,21 @@ export const MyProfileSection = ({
         className={`absolute right-0 h-12 rounded-token-s border border-border-default px-5 text-body-02-m text-text-secondary transition-[top,background-color] duration-500 ease-in-out hover:bg-fill-surface ${
           isCompact ? "top-[134px]" : "top-[110px]"
         }`}
+        onClick={() => setIsProfileCropModalOpen(true)}
       >
         프로필 편집
       </button>
+
+      <ImageCropModal
+        isOpen={isProfileCropModalOpen}
+        imageUrl={profileImageUrl}
+        title="프로필 사진 편집"
+        description="이미지를 드래그하고 확대해서 원형 프로필 영역을 맞춰보세요."
+        closeLabel="프로필 사진 편집 닫기"
+        cropShape="round"
+        onClose={() => setIsProfileCropModalOpen(false)}
+        onChangeImage={setProfileImageUrl}
+      />
     </header>
   );
 };

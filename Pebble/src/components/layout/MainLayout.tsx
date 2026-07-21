@@ -112,8 +112,8 @@ export const MainLayout = (): JSX.Element => {
   };
 
   const handleCreateCategory = (input: CreateCategoryInput) => {
-    const category = createCategory(input);
-    navigate(`/?category=${category.id}`);
+    createCategory(input);
+    navigate("/");
   };
 
   const handleDeleteCategory = (categoryId: string) => {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { type Category } from "@/types";
+import { ImageCropModal } from "@/components/ui/image-crop/ImageCropModal";
 import { CategoryColorPicker } from "./CategoryColorPicker";
 import { CategoryImageUploader } from "./CategoryImageUploader";
 import { CategoryMemberSelector } from "./CategoryMemberSelector";
@@ -26,6 +27,8 @@ type ToggleControlProps = {
   uncheckedLabel: string;
   onToggle: () => void;
 };
+
+const CATEGORY_IMAGE_ASPECT_RATIO = 175 / 234;
 
 const InfoBadge = ({ description }: { description: string }) => (
   <span className="group relative inline-flex h-5 w-5 items-center justify-center rounded-full border border-border-default text-caption-01 text-text-quaternary">
@@ -76,6 +79,9 @@ export const CategoryFormModal = ({
   const [isShared, setIsShared] = useState(false);
   const [categoryName, setCategoryName] = useState(category?.title || "");
   const [imageUrl, setImageUrl] = useState<string | undefined>(category?.imageUrl);
+  const [cropSourceImageUrl, setCropSourceImageUrl] = useState<string | null>(
+    null,
+  );
 
   const [selectedMembers, setSelectedMembers] = useState<Friend[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -142,6 +148,23 @@ export const CategoryFormModal = ({
     onClose();
   };
 
+  const handleCloseCropModal = () => {
+    if (cropSourceImageUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(cropSourceImageUrl);
+    }
+
+    setCropSourceImageUrl(null);
+  };
+
+  const handleChangeCroppedImage = (croppedImageUrl: string) => {
+    if (cropSourceImageUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(cropSourceImageUrl);
+    }
+
+    setImageUrl(croppedImageUrl);
+    setCropSourceImageUrl(null);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
       <div className="flex w-[607px] flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m">
@@ -156,6 +179,7 @@ export const CategoryFormModal = ({
             <CategoryImageUploader
               imageUrl={imageUrl}
               onImageChange={setImageUrl}
+              onSelectImageFile={setCropSourceImageUrl}
             />
 
             <div className="flex w-[328px] flex-col justify-center gap-5">
@@ -307,6 +331,20 @@ export const CategoryFormModal = ({
             </button>
           </div>
         </div>
+
+        <ImageCropModal
+          isOpen={Boolean(cropSourceImageUrl)}
+          imageUrl={cropSourceImageUrl}
+          title="대표 이미지 편집"
+          description="선택한 이미지를 드래그하고 확대해서 카테고리 대표 이미지 영역을 맞춰보세요."
+          closeLabel="대표 이미지 편집 닫기"
+          applyLabel="저장"
+          changeImageLabel="이미지 다시 선택"
+          aspect={CATEGORY_IMAGE_ASPECT_RATIO}
+          cropShape="rect"
+          onClose={handleCloseCropModal}
+          onChangeImage={handleChangeCroppedImage}
+        />
       </div>
     </div>
   );
