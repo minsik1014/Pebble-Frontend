@@ -27,19 +27,21 @@ export const CompletedCategoryGrid = ({
 }: CompletedCategoryGridProps): JSX.Element => {
   return (
     <section
-      className={`mx-auto w-[640px] transition-[margin] duration-500 ease-in-out ${
-        isCompact ? "mt-11" : "mt-12"
+      className={`relative z-20 mx-auto w-[640px] bg-fill-inverse transition-[margin] duration-500 ease-in-out ${
+        isCompact ? "mt-9" : "mt-12"
       }`}
       aria-labelledby="my-category-heading"
     >
-      <h2
-        id="my-category-heading"
-        className="text-title-02-sb text-text-strong"
-      >
-        완료한 카테고리
-      </h2>
+      <div className="sticky top-0 z-30 bg-fill-inverse pb-3 pt-8">
+        <h2
+          id="my-category-heading"
+          className="text-title-02-sb text-text-strong"
+        >
+          완료한 카테고리
+        </h2>
+      </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-5">
+      <div className="grid grid-cols-3 gap-5">
         {categoryCardStyles.map(({ title, backgroundClassName }) => (
           <CompletedCategoryCard
             key={title}

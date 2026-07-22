@@ -5,25 +5,31 @@ import { MyPageStats } from "@/features/mypage/components/MyPageStats";
 import { MyProfileSection } from "@/features/mypage/components/MyProfileSection";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
+const PROFILE_SCROLL_START = 80;
+
 export default function MyPage() {
   const navigate = useNavigate();
   const { isSidebarOpen } = useOutletContext<MainLayoutContext>();
   const [isCompact, setIsCompact] = useState(false);
+  const [scrollTop, setScrollTop] = useState(0);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
-    const scrollTop = event.currentTarget.scrollTop;
+    const currentScrollTop = event.currentTarget.scrollTop;
+
+    setScrollTop(currentScrollTop);
 
     setIsCompact((previous) => {
-      if (!previous && scrollTop >= 48) {
+      if (!previous && currentScrollTop >= 48) {
         return true;
       }
 
-      if (previous && scrollTop <= 16) {
+      if (previous && currentScrollTop <= 16) {
         return false;
       }
 
       return previous;
     });
+
   };
 
   return (
@@ -39,6 +45,7 @@ export default function MyPage() {
         <div className="relative mx-auto flex w-full max-w-[780px] flex-col">
           <MyProfileSection
             isCompact={isCompact}
+            scrollOffset={Math.max(0, scrollTop - PROFILE_SCROLL_START)}
             onEditProfile={() => navigate("/my/profile")}
           />
           <MyPageStats isCompact={isCompact} />
