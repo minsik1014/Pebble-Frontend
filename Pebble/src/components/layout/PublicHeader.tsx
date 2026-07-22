@@ -16,7 +16,7 @@ export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
   return (
     <header
       className={[
-        'w-full [font-family:\'Pretendard\',sans-serif]',
+        'w-full bg-transparent [font-family:\'Pretendard\',sans-serif]',
         isLanding ? 'h-[108px]' : 'h-[95px]',
       ].join(' ')}
     >
