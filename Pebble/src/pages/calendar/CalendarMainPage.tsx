@@ -1,7 +1,7 @@
 import { CalendarBoard } from "@/features/milestone/components/CalendarBoard";
 import { CategoryDetailSection } from "@/features/category/components/CategoryDetailSection";
-import type { MainLayoutContext } from "@/components/layout/MainLayout";
-import { useOutletContext, useSearchParams } from "react-router-dom";
+import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
+import { useSearchParams } from "react-router-dom";
 
 export const CalendarMainPage = (): JSX.Element => {
   const {
@@ -14,10 +14,10 @@ export const CalendarMainPage = (): JSX.Element => {
     updateCategoryTask,
     deleteCategoryTask,
     updateCategory,
-    onDeleteCategory,
-    onDeleteMilestone,
-    onDeleteTask,
-  } = useOutletContext<MainLayoutContext>();
+    deleteCategory,
+    deleteMilestone,
+    deleteTask,
+  } = useCalendarLayoutContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategoryId = searchParams.get("category");
 
@@ -32,9 +32,9 @@ export const CalendarMainPage = (): JSX.Element => {
       onCreateTask={createTask}
       onUpdateCategoryTask={updateCategoryTask}
       onDeleteCategoryTask={deleteCategoryTask}
-      onDeleteCategory={onDeleteCategory}
-      onDeleteMilestone={onDeleteMilestone}
-      onDeleteTask={onDeleteTask}
+      onDeleteCategory={deleteCategory}
+      onDeleteMilestone={deleteMilestone}
+      onDeleteTask={deleteTask}
     />
   ) : (
     <CalendarBoard

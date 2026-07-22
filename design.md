@@ -58,3 +58,15 @@
 | **M** | `20px` | `rounded-token-m` |
 | **L** | `32px` | `rounded-token-l` |
 | **Infinite**| `999px`| `rounded-token-infinite` |
+
+---
+
+## 4.Layout Tokens
+
+| Token | Value | Usage |
+| :--- | :--- | :--- |
+| **App Shell Padding** | `12px` | 화면 바깥 상하좌우 여백 |
+| **App Shell Gap** | `16px` | 사이드바와 콘텐츠 사이 간격 |
+| **App Shell Max Width** | `1728px` | 메인 앱 셸 최대 너비 |
+| **App Shell Max Height** | `1100px` | 메인 앱 셸 최대 높이 |
+| **Calendar Sidebar Width** | `clamp(336px, calc(35vw - 112px), 392px)` | 1280~1440px 구간에서 좌측 카테고리 영역 적응형 축소 |

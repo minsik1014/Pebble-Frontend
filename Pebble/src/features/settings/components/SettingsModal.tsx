@@ -1,5 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 
+import { useModalViewportScale } from '@/hooks/useModalViewportScale';
+
 interface SettingsModalProps {
   open: boolean;
   title: string;
@@ -15,6 +17,8 @@ export function SettingsModal({
   children,
   onOpenChange,
 }: SettingsModalProps) {
+  const scale = useModalViewportScale();
+
   useEffect(() => {
     if (!open) return;
 
@@ -33,7 +37,7 @@ export function SettingsModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(23,23,23,0.45)]"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
       onClick={() => onOpenChange(false)}
     >
       <section
@@ -41,7 +45,8 @@ export function SettingsModal({
         aria-modal="true"
         aria-labelledby="settings-modal-title"
         aria-describedby={description ? 'settings-modal-description' : undefined}
-        className="w-[520px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        className="w-[520px] origin-center rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        style={{ transform: `scale(${scale})` }}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-token-l">

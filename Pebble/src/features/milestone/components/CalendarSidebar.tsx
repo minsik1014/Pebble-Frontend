@@ -14,13 +14,11 @@ import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
 import { useCalendarSidebarModals } from "@/features/milestone/hooks/useCalendarSidebarModals";
 import { useCalendarSidebarState } from "@/features/milestone/hooks/useCalendarSidebarState";
 import { useSidebarButtonShadow } from "@/features/milestone/hooks/useSidebarButtonShadow";
+import { RESPONSIVE_CALENDAR_SIDEBAR_WIDTH_CLASS } from "@/components/layout/layoutTokens";
 import type {
   CreateCategoryInput,
   CreateScheduleItemInput,
 } from "@/features/calendar/types";
-
-const RESPONSIVE_SIDEBAR_WIDTH_CLASS =
-  "w-[clamp(336px,calc(35vw_-_112px),392px)]";
 
 export const CalendarSidebar = ({
   isSidebarOpen = true,
@@ -98,19 +96,19 @@ export const CalendarSidebar = ({
   return (
     <aside 
       className={`flex h-full shrink-0 relative items-stretch overflow-hidden transition-all duration-300 ${
-        isSidebarOpen ? RESPONSIVE_SIDEBAR_WIDTH_CLASS : "w-0"
+        isSidebarOpen ? RESPONSIVE_CALENDAR_SIDEBAR_WIDTH_CLASS : "w-0"
       }`}
     >
       {/* 메인 마일스톤 관리 영역 */}
       <section 
         className={`relative h-full bg-fill-inverse rounded-[0px_32px_32px_0px] flex flex-col transition-all duration-300 overflow-hidden ${
           isSidebarOpen
-            ? `${RESPONSIVE_SIDEBAR_WIDTH_CLASS} opacity-100`
+            ? `${RESPONSIVE_CALENDAR_SIDEBAR_WIDTH_CLASS} opacity-100`
             : "w-0 opacity-0"
         }`}
       >
         <div
-          className={`flex h-full min-w-[336px] flex-col ${RESPONSIVE_SIDEBAR_WIDTH_CLASS}`}
+          className={`flex h-full min-w-[336px] flex-col ${RESPONSIVE_CALENDAR_SIDEBAR_WIDTH_CLASS}`}
         >
           <CalendarSidebarHeader
             monthLabel={monthLabel}

@@ -5,6 +5,7 @@ import DeleteIcon from '@/assets/icons/Delete.svg?react';
 import XIcon from '@/assets/icons/X.svg?react';
 
 import { Button } from '@/components/ui/Button';
+import { useModalViewportScale } from '@/hooks/useModalViewportScale';
 
 interface WithdrawalConfirmModalProps {
   open: boolean;
@@ -19,6 +20,7 @@ export function WithdrawalConfirmModal({
   onOpenChange,
   onConfirm,
 }: WithdrawalConfirmModalProps) {
+  const scale = useModalViewportScale();
   const [isAgreed, setIsAgreed] = useState(false);
   const titleId = useId();
   const descriptionId = useId();
@@ -46,7 +48,7 @@ export function WithdrawalConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(23,23,23,0.45)]"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
       onClick={() => {
         if (!isSubmitting) onOpenChange(false);
       }}
@@ -56,7 +58,8 @@ export function WithdrawalConfirmModal({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="flex h-[359px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        className="flex h-[359px] w-[640px] origin-center flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        style={{ transform: `scale(${scale})` }}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex h-[67px] w-full items-start justify-between">

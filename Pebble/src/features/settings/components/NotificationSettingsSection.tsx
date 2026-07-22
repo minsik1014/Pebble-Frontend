@@ -5,7 +5,7 @@ import BellIcon from '@/assets/icons/bell-outline.svg?react';
 import { SettingsRow } from './SettingsRow';
 import { SettingsSection } from './SettingsSection';
 import { SettingsSectionHeader } from './SettingsSectionHeader';
-import { ToggleSwitch } from './ToggleSwitch';
+import { ToggleSwitch } from '@/components/ui/ToggleSwitch';
 
 const DEFAULT_NOTIFICATION_ENABLED = true;
 
@@ -56,6 +56,7 @@ export function NotificationSettingsSection() {
               checked={notificationEnabled}
               disabled={isUpdating}
               aria-label="당일 일정 알림"
+              uncheckedClassName="bg-text-quaternary"
               onCheckedChange={handleNotificationChange}
             />
           }

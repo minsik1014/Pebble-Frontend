@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { requestEmailChange } from '@/features/settings/api/mockSettingsApi';
+import { useModalViewportScale } from '@/hooks/useModalViewportScale';
 
 interface EmailChangeModalProps {
   open: boolean;
@@ -31,6 +32,7 @@ export function EmailChangeModal({
   currentEmail,
   onOpenChange,
 }: EmailChangeModalProps) {
+  const scale = useModalViewportScale();
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -70,7 +72,7 @@ export function EmailChangeModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(23,23,23,0.45)]"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
       onClick={() => {
         if (!isSubmitting) onOpenChange(false);
       }}
@@ -79,7 +81,8 @@ export function EmailChangeModal({
         role="dialog"
         aria-modal="true"
         aria-label="이메일 변경"
-        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        className="w-[480px] origin-center rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        style={{ transform: `scale(${scale})` }}
         onClick={(event) => event.stopPropagation()}
       >
         <h2 className="text-title-02-sb text-text-strong">이메일 변경</h2>

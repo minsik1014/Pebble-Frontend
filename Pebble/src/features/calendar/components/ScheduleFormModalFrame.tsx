@@ -1,6 +1,7 @@
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import { ModalActionBar } from "@/components/ui/ModalActionBar";
+import { useModalViewportScale } from "@/hooks/useModalViewportScale";
 
 type ScheduleFormModalFrameProps = {
   title: string;
@@ -24,28 +25,33 @@ export const ScheduleFormModalFrame = ({
   onDelete,
   gapClassName = "gap-5",
   titleClassName = "leading-[1.4]",
-}: ScheduleFormModalFrameProps) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
-    <div
-      className={`w-[640px] p-8 bg-fill-inverse rounded-[32px] flex flex-col ${gapClassName} shadow-shadow-m relative`}
-    >
-      <h2
-        className={`text-[24px] font-semibold text-text-strong tracking-[-0.24px] ${titleClassName}`}
+}: ScheduleFormModalFrameProps) => {
+  const scale = useModalViewportScale();
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow">
+      <div
+        className={`w-[640px] origin-center p-8 bg-fill-inverse rounded-[32px] flex flex-col ${gapClassName} shadow-shadow-m relative`}
+        style={{ transform: `scale(${scale})` }}
       >
-        {title}
-      </h2>
+        <h2
+          className={`text-[24px] font-semibold text-text-strong tracking-[-0.24px] ${titleClassName}`}
+        >
+          {title}
+        </h2>
 
-      {children}
+        {children}
 
-      <div className="mt-4">
-        <ModalActionBar
-          submitLabel={submitLabel}
-          disabled={disabled}
-          onCancel={onCancel}
-          onSubmit={onSubmit}
-          onDelete={onDelete}
-        />
+        <div className="mt-4">
+          <ModalActionBar
+            submitLabel={submitLabel}
+            disabled={disabled}
+            onCancel={onCancel}
+            onSubmit={onSubmit}
+            onDelete={onDelete}
+          />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};

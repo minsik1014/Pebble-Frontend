@@ -8,10 +8,10 @@ export function SettingsContent({
   children,
 }: SettingsContentProps) {
   return (
-    <main
+    <div
       className="flex h-full w-full min-w-0 flex-col gap-token-m overflow-y-auto bg-transparent transition-all duration-300 custom-scrollbar"
     >
       {children}
-    </main>
+    </div>
   );
 }

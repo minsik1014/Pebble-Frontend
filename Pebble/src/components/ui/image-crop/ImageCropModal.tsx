@@ -5,10 +5,10 @@ import "react-easy-crop/react-easy-crop.css";
 import CloseIcon from "@/assets/icons/Close.svg?react";
 import { getCroppedImageUrl } from "@/components/ui/image-crop/cropImage";
 import {
-  ACCEPTED_IMAGE_TYPE_LIST,
   ACCEPTED_IMAGE_TYPES,
-  MAX_IMAGE_SIZE,
+  validateImageFile,
 } from "@/components/ui/image-crop/imageCropConfig";
+import { useModalViewportScale } from "@/hooks/useModalViewportScale";
 
 type ImageCropShape = "round" | "rect";
 
@@ -41,6 +41,7 @@ export const ImageCropModal = ({
   onClose,
   onChangeImage,
 }: ImageCropModalProps) => {
+  const scale = useModalViewportScale();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createdObjectUrlRef = useRef<string | null>(null);
   const [sourceImageUrl, setSourceImageUrl] = useState<string | null>(imageUrl);
@@ -48,6 +49,7 @@ export const ImageCropModal = ({
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const revokeCreatedObjectUrl = useCallback(() => {
     if (createdObjectUrlRef.current) {
@@ -75,6 +77,7 @@ export const ImageCropModal = ({
     setZoom(1);
     setRotation(0);
     setCroppedAreaPixels(null);
+    setErrorMessage("");
   }, [imageFile, imageUrl, isOpen, revokeCreatedObjectUrl]);
 
   useEffect(
@@ -94,12 +97,10 @@ export const ImageCropModal = ({
       return;
     }
 
-    if (
-      !ACCEPTED_IMAGE_TYPE_LIST.includes(
-        file.type as (typeof ACCEPTED_IMAGE_TYPE_LIST)[number],
-      ) ||
-      file.size > MAX_IMAGE_SIZE
-    ) {
+    const validationMessage = validateImageFile(file);
+
+    if (validationMessage) {
+      setErrorMessage(validationMessage);
       return;
     }
 
@@ -113,6 +114,7 @@ export const ImageCropModal = ({
     setZoom(1);
     setRotation(0);
     setCroppedAreaPixels(null);
+    setErrorMessage("");
   };
 
   const handleApply = async () => {
@@ -145,8 +147,11 @@ export const ImageCropModal = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
-      <section className="flex w-[640px] flex-col gap-6 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow">
+      <section
+        className="flex w-[640px] origin-center flex-col gap-6 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m"
+        style={{ transform: `scale(${scale})` }}
+      >
         <header className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-title-02-sb text-text-strong">
@@ -227,6 +232,10 @@ export const ImageCropModal = ({
             />
           </label>
         </div>
+
+        {errorMessage && (
+          <p className="text-body-03-r text-fill-danger">{errorMessage}</p>
+        )}
 
         <input
           ref={fileInputRef}

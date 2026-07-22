@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { changePassword } from '@/features/settings/api/mockSettingsApi';
+import { useModalViewportScale } from '@/hooks/useModalViewportScale';
 
 interface PasswordChangeModalProps {
   open: boolean;
@@ -40,6 +41,7 @@ export function PasswordChangeModal({
   open,
   onOpenChange,
 }: PasswordChangeModalProps) {
+  const scale = useModalViewportScale();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
@@ -88,7 +90,7 @@ export function PasswordChangeModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(23,23,23,0.45)]"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
       onClick={() => {
         if (!isSubmitting) onOpenChange(false);
       }}
@@ -97,7 +99,8 @@ export function PasswordChangeModal({
         role="dialog"
         aria-modal="true"
         aria-label="비밀번호 변경"
-        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        className="w-[480px] origin-center rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        style={{ transform: `scale(${scale})` }}
         onClick={(event) => event.stopPropagation()}
       >
         <h2 className="text-title-02-sb text-text-strong">비밀번호 변경</h2>
