@@ -145,7 +145,7 @@ export const CalendarSidebar = ({
             </div>
 
             <div
-              className={`relative z-10 shrink-0 transition-shadow ${
+              className={`relative z-10 -mx-5 shrink-0 bg-fill-inverse px-5 pb-5 pt-3 transition-shadow ${
                 hasDisplayedSchedules ? "mt-2" : "mt-auto"
               } ${
                 hasHiddenContentUnderButton
@@ -156,7 +156,7 @@ export const CalendarSidebar = ({
               <AddButton
                 label="추가하기"
                 variant="primary"
-                className="w-[352px]"
+                className="w-full"
                 showIcon={false}
                 onClick={openAddMenu}
               />
