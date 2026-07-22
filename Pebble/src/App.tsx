@@ -9,6 +9,7 @@ import { SignUpCompletePage } from '@/features/auth/pages/SignUpCompletePage';
 import SettingsPage from './pages/settings/SettingsPage';
 import MyPage from "@/pages/mypage/MyPage";
 import ProfileEditPage from "@/pages/mypage/ProfileEditPage";
+import MyCategoryDetailPage from "@/pages/mypage/MyCategoryDetailPage";
 
 function App() {
   return (
@@ -20,6 +21,10 @@ function App() {
             <Route index element={<CalendarMainPage />} />
             <Route path="my" element={<MyPage />} />
             <Route path="my/profile" element={<ProfileEditPage />} />
+            <Route
+              path="my/categories/:categoryId"
+              element={<MyCategoryDetailPage />}
+            />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
 

@@ -49,7 +49,12 @@ export default function MyPage() {
             onEditProfile={() => navigate("/my/profile")}
           />
           <MyPageStats isCompact={isCompact} />
-          <CompletedCategoryGrid isCompact={isCompact} />
+          <CompletedCategoryGrid
+            isCompact={isCompact}
+            onSelectCategory={(categoryId) =>
+              navigate(`/my/categories/${categoryId}`)
+            }
+          />
         </div>
       </div>
     </section>
