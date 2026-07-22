@@ -26,11 +26,14 @@
 | **Title 01_M** | Medium (500) | `28px` | 130% | `text-title-01-m` |
 | **Title 02_SB** | SemiBold (600) | `24px` | 130% | `text-title-02-sb` |
 | **Title 02_M** | Medium (500) | `24px` | 130% | `text-title-02-m` |
+| **Title 03_SB** | SemiBold (600) | `20px` | 130% | `text-title-03-sb` |
+| **Title 03_M** | Medium (500) | `20px` | 130% | `text-title-03-m` |
 | **Body 01_SB** | SemiBold (600) | `18px` | 150% | `text-body-01-sb` |
 | **Body 01_M** | Medium (500) | `18px` | 150% | `text-body-01-m` |
 | **Body 02_SB** | SemiBold (600) | `16px` | 150% | `text-body-02-sb` |
 | **Body 02_M** | Medium (500) | `16px` | 150% | `text-body-02-m` |
 | **Body 03_R** | Regular (400) | `14px` | 150% | `text-body-03-r` |
+| **Body 04_M** | Medium (500) | `13px` | 130% | `text-body-04-m` |
 | **Caption 01** | Regular (400) | `13px` | 130% | `text-caption-01` |
 
 ---

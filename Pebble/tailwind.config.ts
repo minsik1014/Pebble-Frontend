@@ -36,6 +36,7 @@ const config: Config = {
         'body-02-sb': ['16px', { lineHeight: '1.5', fontWeight: '600' }],
         'body-02-m': ['16px', { lineHeight: '1.5', fontWeight: '500' }],
         'body-03-r': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
+        'body-04-m': ['13px', { lineHeight: '1.3', fontWeight: '500' }],
         'caption-01': ['13px', { lineHeight: '1.3', fontWeight: '400' }],
       },
       // 2. 색상 시스템
