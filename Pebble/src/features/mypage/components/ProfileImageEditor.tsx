@@ -6,17 +6,21 @@ import { ImageCropModal } from "@/components/ui/image-crop/ImageCropModal";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
 export const ProfileImageEditor = (): JSX.Element => {
-  const profile = useProfileStore((state) => state.profile);
-  const updateProfile = useProfileStore((state) => state.updateProfile);
+  const imageUrl = useProfileStore(
+    (state) => state.pendingImageUrl ?? state.profile.imageUrl,
+  );
+  const setPendingProfileImage = useProfileStore(
+    (state) => state.setPendingProfileImage,
+  );
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
 
   return (
     <>
       <div className="relative size-32">
         <div className="flex size-full items-center justify-center overflow-hidden rounded-full bg-theme-2-base text-text-strong">
-          {profile.imageUrl ? (
+          {imageUrl ? (
             <img
-              src={profile.imageUrl}
+              src={imageUrl}
               alt="프로필 이미지"
               className="size-full object-cover"
             />
@@ -37,7 +41,7 @@ export const ProfileImageEditor = (): JSX.Element => {
 
       <ImageCropModal
         isOpen={isCropModalOpen}
-        imageUrl={profile.imageUrl ?? null}
+        imageUrl={imageUrl ?? null}
         title="프로필 사진 편집"
         description="이미지를 드래그하고 확대해서 원형 프로필 영역을 맞춰보세요."
         closeLabel="프로필 사진 편집 닫기"
@@ -45,8 +49,8 @@ export const ProfileImageEditor = (): JSX.Element => {
         changeImageLabel="이미지 다시 선택"
         cropShape="round"
         onClose={() => setIsCropModalOpen(false)}
-        onChangeImage={(imageUrl) => {
-          updateProfile({ imageUrl });
+        onChangeImage={(croppedImageUrl) => {
+          setPendingProfileImage(croppedImageUrl);
           setIsCropModalOpen(false);
         }}
       />

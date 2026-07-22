@@ -3,30 +3,25 @@ import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
 type MyProfileSectionProps = {
   isCompact: boolean;
+  scrollOffset: number;
   onEditProfile: () => void;
 };
 
 export const MyProfileSection = ({
   isCompact,
+  scrollOffset,
   onEditProfile,
 }: MyProfileSectionProps): JSX.Element => {
   const profile = useProfileStore((state) => state.profile);
-  const renderProfileImage = (iconClassName: string) =>
-    profile.imageUrl ? (
-      <img
-        src={profile.imageUrl}
-        alt="프로필 이미지"
-        className="size-full rounded-full object-cover"
-      />
-    ) : (
-      <MySolidIcon className={iconClassName} />
-    );
 
   return (
     <header
       className={`sticky top-0 z-10 bg-fill-inverse transition-[height] duration-[220ms] ease-out ${
         isCompact ? "h-[260px]" : "h-[340px]"
       }`}
+      style={{
+        transform: `translateY(-${scrollOffset}px)`,
+      }}
     >
       <div
         className={`absolute inset-0 transition-[opacity,transform] duration-[220ms] ease-out ${
@@ -37,7 +32,15 @@ export const MyProfileSection = ({
         aria-hidden={isCompact}
       >
         <div className="absolute left-1/2 top-[110px] flex size-40 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full bg-theme-2-base text-text-strong">
-          {renderProfileImage("size-20")}
+          {profile.imageUrl ? (
+            <img
+              src={profile.imageUrl}
+              alt={`${profile.nickname}님의 프로필`}
+              className="absolute inset-0 h-full w-full max-w-none object-cover object-center"
+            />
+          ) : (
+            <MySolidIcon className="size-20" />
+          )}
         </div>
 
         <div className="absolute left-0 top-[286px] w-full text-center">
@@ -69,8 +72,16 @@ export const MyProfileSection = ({
         aria-hidden={!isCompact}
       >
         <div className="mx-auto flex w-[640px] items-center">
-          <div className="flex size-28 shrink-0 items-center justify-center overflow-hidden rounded-full bg-theme-2-base text-text-strong">
-            {renderProfileImage("size-14")}
+          <div className="relative flex size-28 shrink-0 items-center justify-center overflow-hidden rounded-full bg-theme-2-base text-text-strong">
+            {profile.imageUrl ? (
+              <img
+                src={profile.imageUrl}
+                alt={`${profile.nickname}님의 프로필`}
+                className="absolute inset-0 h-full w-full max-w-none object-cover object-center"
+              />
+            ) : (
+              <MySolidIcon className="size-14" />
+            )}
           </div>
 
           <div className="ml-4 min-w-0 flex-1 text-left">

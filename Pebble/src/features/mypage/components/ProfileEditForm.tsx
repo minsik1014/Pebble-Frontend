@@ -9,11 +9,15 @@ export const ProfileEditForm = (): JSX.Element => {
   const lastNicknameChangedAt = useProfileStore(
     (state) => state.lastNicknameChangedAt,
   );
+  const hasPendingImage = useProfileStore(
+    (state) => state.pendingImageUrl !== null,
+  );
   const updateProfile = useProfileStore((state) => state.updateProfile);
   const [nickname, setNickname] = useState(profile.nickname);
   const [bio, setBio] = useState(profile.bio);
   const [isToastMounted, setIsToastMounted] = useState(false);
   const [isToastVisible, setIsToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const nicknameAvailableAt = lastNicknameChangedAt
     ? lastNicknameChangedAt + NICKNAME_COOLDOWN_DAYS * DAY_IN_MS
@@ -27,7 +31,9 @@ export const ProfileEditForm = (): JSX.Element => {
   const normalizedNickname = nickname.trim();
   const normalizedBio = bio.trim();
   const hasChanges =
-    normalizedNickname !== profile.nickname || normalizedBio !== profile.bio;
+    normalizedNickname !== profile.nickname ||
+    normalizedBio !== profile.bio ||
+    hasPendingImage;
   const canSave = normalizedNickname.length > 0 && hasChanges;
 
   useEffect(() => {
@@ -60,6 +66,7 @@ export const ProfileEditForm = (): JSX.Element => {
     }
 
     const nicknameChanged = normalizedNickname !== profile.nickname;
+    const bioChanged = normalizedBio !== profile.bio;
 
     updateProfile({
       nickname: normalizedNickname,
@@ -69,8 +76,16 @@ export const ProfileEditForm = (): JSX.Element => {
     setBio(normalizedBio);
 
     if (nicknameChanged) {
-      setIsToastMounted(true);
+      setToastMessage(
+        "닉네임이 변경되었어요. 15일 후에 다시 변경할 수 있어요.",
+      );
+    } else if (hasPendingImage) {
+      setToastMessage("프로필 이미지가 변경되었어요.");
+    } else if (bioChanged) {
+      setToastMessage("한 줄 소개가 변경되었어요.");
     }
+
+    setIsToastMounted(true);
   };
 
   const inputClassName =
@@ -137,7 +152,7 @@ export const ProfileEditForm = (): JSX.Element => {
               : "translate-y-3 opacity-0"
           }`}
         >
-          닉네임이 변경되었어요. 15일 후에 다시 변경할 수 있어요.
+          {toastMessage}
         </div>
       )}
     </form>
