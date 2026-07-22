@@ -8,7 +8,6 @@ import {
   ACCEPTED_IMAGE_TYPES,
   validateImageFile,
 } from "@/components/ui/image-crop/imageCropConfig";
-import { ModalViewportPanel } from "@/components/ui/ModalViewportPanel";
 
 type ImageCropShape = "round" | "rect";
 
@@ -146,11 +145,8 @@ export const ImageCropModal = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow">
-      <ModalViewportPanel
-        as="section"
-        className="flex w-[640px] flex-col gap-6 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m"
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
+      <section className="flex w-[640px] flex-col gap-6 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m">
         <header className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-title-02-sb text-text-strong">
@@ -261,7 +257,7 @@ export const ImageCropModal = ({
             {applyLabel}
           </button>
         </footer>
-      </ModalViewportPanel>
+      </section>
     </div>
   );
 };

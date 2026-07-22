@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 
 export const CalendarMainPage = (): JSX.Element => {
   const {
+    isSidebarOpen,
     currentYear,
     currentMonth,
     onChangeCalendarMonth,
@@ -25,6 +26,7 @@ export const CalendarMainPage = (): JSX.Element => {
 
   return selectedCategory ? (
     <CategoryDetailSection
+      isSidebarOpen={isSidebarOpen}
       category={selectedCategory}
       onBack={() => setSearchParams({})}
       categories={categories}
@@ -38,6 +40,7 @@ export const CalendarMainPage = (): JSX.Element => {
     />
   ) : (
     <CalendarBoard
+      isSidebarOpen={isSidebarOpen}
       categories={categories}
       standaloneTasks={standaloneTasks}
       currentYear={currentYear}

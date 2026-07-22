@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { type Category } from "@/types";
 import { ImageCropModal } from "@/components/ui/image-crop/ImageCropModal";
 import { ModalActionBar } from "@/components/ui/ModalActionBar";
-import { ModalViewportPanel } from "@/components/ui/ModalViewportPanel";
 import { CategoryColorPicker } from "./CategoryColorPicker";
 import { CategoryImageUploader } from "./CategoryImageUploader";
 import { CategoryMemberSelector } from "./CategoryMemberSelector";
@@ -121,10 +120,8 @@ export const CategoryFormModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow">
-      <ModalViewportPanel
-        className="flex w-[607px] flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
+      <div className="flex w-[607px] flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m">
         <header className="flex w-full items-center justify-between">
           <h2 className="w-full text-title-02-sb text-text-strong">
             {mode === "create" ? "카테고리 추가하기" : "카테고리 편집하기"}
@@ -212,7 +209,7 @@ export const CategoryFormModal = ({
           onClose={handleCloseCropModal}
           onChangeImage={handleChangeCroppedImage}
         />
-      </ModalViewportPanel>
+      </div>
     </div>
   );
 };

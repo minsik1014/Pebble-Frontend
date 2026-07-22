@@ -1,9 +1,9 @@
 import { useRef, useState, type UIEvent, type WheelEvent } from "react";
-import type { MainLayoutContext } from "@/components/layout/MainLayout";
 import { CompletedCategoryGrid } from "@/features/mypage/components/CompletedCategoryGrid";
+import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import { MyPageStats } from "@/features/mypage/components/MyPageStats";
 import { MyProfileSection } from "@/features/mypage/components/MyProfileSection";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const PROFILE_SCROLL_START = 80;
 const COMPACT_PROFILE_SCROLL_TOP = 64;
@@ -12,7 +12,7 @@ const WHEEL_GESTURE_LOCK_MS = 650;
 
 export default function MyPage() {
   const navigate = useNavigate();
-  const { isSidebarOpen } = useOutletContext<MainLayoutContext>();
+  const { isSidebarOpen } = useCalendarLayoutContext();
   const [isCompact, setIsCompact] = useState(false);
   const [scrollTop, setScrollTop] = useState(0);
   const isWheelGestureLockedRef = useRef(false);

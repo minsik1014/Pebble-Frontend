@@ -3,7 +3,6 @@ import { useEffect, useId, useMemo, useState } from 'react';
 import CloseIcon from '@/assets/icons/Close.svg?react';
 
 import { Button } from '@/components/ui/Button';
-import { ModalViewportPanel } from '@/components/ui/ModalViewportPanel';
 
 import {
   BRIDGE_COLOR_PALETTES,
@@ -93,8 +92,7 @@ export function BridgeColorModal({
       role="presentation"
       onMouseDown={handleClose}
     >
-      <ModalViewportPanel
-        as="section"
+      <section
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -205,7 +203,7 @@ export function BridgeColorModal({
             변경
           </Button>
         </div>
-      </ModalViewportPanel>
+      </section>
     </div>
   );
 }

@@ -1,6 +1,3 @@
-import CloseIcon from "@/assets/icons/Close.svg?react";
-import { ModalViewportPanel } from "@/components/ui/ModalViewportPanel";
-
 type AddMenuModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -19,29 +16,24 @@ export const AddMenuModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow">
-      <ModalViewportPanel
-        className="relative flex w-[359px] flex-col gap-5 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m"
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
+      <div className="w-[320px] p-[32px] bg-fill-inverse rounded-[32px] flex flex-col gap-[20px] shadow-shadow-m relative">
         <header className="flex items-center justify-between">
-          <h2 className="text-title-02-sb text-text-strong">추가하기</h2>
-          <button
-            type="button"
-            aria-label="추가하기 모달 닫기"
-            onClick={onClose}
-            className="flex size-11 items-center justify-center rounded-token-s text-text-secondary transition-colors hover:bg-fill-surface hover:text-text-strong"
-          >
-            <CloseIcon className="size-6" aria-hidden="true" />
+          <h2 className="font-semibold text-[20px] leading-[1.4] text-text-strong tracking-[-0.2px]">추가하기</h2>
+          <button onClick={onClose} className="hover:opacity-70 transition-opacity">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="#171717"/>
+            </svg>
           </button>
         </header>
 
-        <div className="flex w-full flex-col gap-3">
+        <div className="flex flex-col gap-[12px]">
           <button
             onClick={() => {
               onClose();
               onSelectCategory();
             }}
-            className="flex h-11 w-full items-center justify-center rounded-token-s bg-btn-quaternary px-5 text-body-02-m text-text-strong transition-colors hover:bg-btn-pressed"
+            className="w-full flex items-center justify-center h-[44px] px-[20px] bg-btn-quaternary rounded-[12px] text-[16px] font-medium text-text-strong hover:bg-black/5 transition-colors"
           >
             카테고리
           </button>
@@ -51,7 +43,7 @@ export const AddMenuModal = ({
               onClose();
               onSelectMilestone();
             }}
-            className="flex h-11 w-full items-center justify-center rounded-token-s bg-btn-quaternary px-5 text-body-02-m text-text-strong transition-colors hover:bg-btn-pressed"
+            className="w-full flex items-center justify-center h-[44px] px-[20px] bg-btn-quaternary rounded-[12px] text-[16px] font-medium text-text-strong hover:bg-black/5 transition-colors"
           >
             마일스톤
           </button>
@@ -61,12 +53,12 @@ export const AddMenuModal = ({
               onClose();
               onSelectTask();
             }}
-            className="flex h-11 w-full items-center justify-center rounded-token-s bg-btn-quaternary px-5 text-body-02-m text-text-strong transition-colors hover:bg-btn-pressed"
+            className="w-full flex items-center justify-center h-[44px] px-[20px] bg-btn-quaternary rounded-[12px] text-[16px] font-medium text-text-strong hover:bg-black/5 transition-colors"
           >
             태스크
           </button>
         </div>
-      </ModalViewportPanel>
+      </div>
     </div>
   );
 };

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import { ModalViewportPanel } from '@/components/ui/ModalViewportPanel';
 import { changePassword } from '@/features/settings/api/mockSettingsApi';
 
 interface PasswordChangeModalProps {
@@ -94,8 +93,7 @@ export function PasswordChangeModal({
         if (!isSubmitting) onOpenChange(false);
       }}
     >
-      <ModalViewportPanel
-        as="section"
+      <section
         role="dialog"
         aria-modal="true"
         aria-label="비밀번호 변경"
@@ -186,7 +184,7 @@ export function PasswordChangeModal({
             {isSubmitting ? '변경 중...' : '변경하기'}
           </button>
         </div>
-      </ModalViewportPanel>
+      </section>
     </div>
   );
 }

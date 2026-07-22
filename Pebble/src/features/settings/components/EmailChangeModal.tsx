@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import { ModalViewportPanel } from '@/components/ui/ModalViewportPanel';
 import { requestEmailChange } from '@/features/settings/api/mockSettingsApi';
 
 interface EmailChangeModalProps {
@@ -76,8 +75,7 @@ export function EmailChangeModal({
         if (!isSubmitting) onOpenChange(false);
       }}
     >
-      <ModalViewportPanel
-        as="section"
+      <section
         role="dialog"
         aria-modal="true"
         aria-label="이메일 변경"
@@ -139,7 +137,7 @@ export function EmailChangeModal({
             {isSubmitting ? '요청 중...' : '인증 메일 보내기'}
           </button>
         </div>
-      </ModalViewportPanel>
+      </section>
     </div>
   );
 }

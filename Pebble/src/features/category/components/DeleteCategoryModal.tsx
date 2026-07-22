@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import CloseIcon from "@/assets/icons/Close.svg?react";
-import { ModalViewportPanel } from "@/components/ui/ModalViewportPanel";
 import { type Category } from "@/types";
 
 type DeleteCategoryModalProps = {
@@ -29,10 +28,8 @@ export const DeleteCategoryModal = ({
   const isMatched = confirmText === category.title;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-hidden bg-fill-shadow">
-      <ModalViewportPanel
-        className="relative flex w-[655px] flex-col gap-5 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m"
-      >
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-fill-shadow">
+      <div className="w-[655px] p-8 bg-fill-inverse rounded-[32px] shadow-shadow-m flex flex-col gap-5 relative">
         
         {/* 헤더 */}
         <div className="flex items-start justify-between">
@@ -88,7 +85,7 @@ export const DeleteCategoryModal = ({
             삭제
           </button>
         </div>
-      </ModalViewportPanel>
+      </div>
     </div>
   );
 };

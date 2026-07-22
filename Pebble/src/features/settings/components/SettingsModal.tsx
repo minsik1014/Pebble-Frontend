@@ -1,6 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
 
-import { ModalViewportPanel } from '@/components/ui/ModalViewportPanel';
 
 interface SettingsModalProps {
   open: boolean;
@@ -38,8 +37,7 @@ export function SettingsModal({
       className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
       onClick={() => onOpenChange(false)}
     >
-      <ModalViewportPanel
-        as="section"
+      <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-modal-title"
@@ -77,7 +75,7 @@ export function SettingsModal({
         </div>
 
         <div className="mt-token-l">{children}</div>
-      </ModalViewportPanel>
+      </section>
     </div>
   );
 }

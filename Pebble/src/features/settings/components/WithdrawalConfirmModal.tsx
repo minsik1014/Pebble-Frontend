@@ -5,7 +5,6 @@ import DeleteIcon from '@/assets/icons/Delete.svg?react';
 import XIcon from '@/assets/icons/X.svg?react';
 
 import { Button } from '@/components/ui/Button';
-import { ModalViewportPanel } from '@/components/ui/ModalViewportPanel';
 
 interface WithdrawalConfirmModalProps {
   open: boolean;
@@ -52,8 +51,7 @@ export function WithdrawalConfirmModal({
         if (!isSubmitting) onOpenChange(false);
       }}
     >
-      <ModalViewportPanel
-        as="section"
+      <section
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -177,7 +175,7 @@ export function WithdrawalConfirmModal({
             {isSubmitting ? '탈퇴 중...' : '탈퇴하기'}
           </Button>
         </div>
-      </ModalViewportPanel>
+      </section>
     </div>
   );
 }

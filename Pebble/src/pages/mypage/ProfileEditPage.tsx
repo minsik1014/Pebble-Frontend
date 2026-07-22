@@ -1,4 +1,5 @@
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
+import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import { ProfileEditForm } from "@/features/mypage/components/ProfileEditForm";
 import { ProfileImageEditor } from "@/features/mypage/components/ProfileImageEditor";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
@@ -6,11 +7,14 @@ import { useNavigate } from "react-router-dom";
 
 export default function ProfileEditPage() {
   const navigate = useNavigate();
+  const { isSidebarOpen } = useCalendarLayoutContext();
   const profile = useProfileStore((state) => state.profile);
 
   return (
     <section
-      className="relative h-full w-full min-w-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300"
+      className={`relative h-[1000px] shrink-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
+        isSidebarOpen ? "w-[924px]" : "w-[1316px]"
+      }`}
     >
       <button
         type="button"
