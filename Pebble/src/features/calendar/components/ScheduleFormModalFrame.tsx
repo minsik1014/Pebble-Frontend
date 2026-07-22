@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 
 import { ModalActionBar } from "@/components/ui/ModalActionBar";
-import { useModalViewportScale } from "@/hooks/useModalViewportScale";
+import { ModalViewportPanel } from "@/components/ui/ModalViewportPanel";
 
 type ScheduleFormModalFrameProps = {
   title: string;
@@ -26,13 +26,10 @@ export const ScheduleFormModalFrame = ({
   gapClassName = "gap-5",
   titleClassName = "leading-[1.4]",
 }: ScheduleFormModalFrameProps) => {
-  const scale = useModalViewportScale();
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow">
-      <div
-        className={`w-[640px] origin-center p-8 bg-fill-inverse rounded-[32px] flex flex-col ${gapClassName} shadow-shadow-m relative`}
-        style={{ transform: `scale(${scale})` }}
+      <ModalViewportPanel
+        className={`relative flex w-[640px] flex-col ${gapClassName} rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m`}
       >
         <h2
           className={`text-[24px] font-semibold text-text-strong tracking-[-0.24px] ${titleClassName}`}
@@ -51,7 +48,7 @@ export const ScheduleFormModalFrame = ({
             onDelete={onDelete}
           />
         </div>
-      </div>
+      </ModalViewportPanel>
     </div>
   );
 };

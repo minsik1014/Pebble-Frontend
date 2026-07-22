@@ -1,18 +1,11 @@
 import { Outlet } from "react-router-dom";
 
+import { AppShellLayout } from "@/components/layout/AppShellLayout";
 import { GlobalNavigationBar } from "@/components/layout/GlobalNavigationBar";
-import {
-  APP_SHELL_GAP_CLASS,
-  APP_SHELL_MAX_HEIGHT_CLASS,
-  APP_SHELL_MAX_WIDTH_CLASS,
-  APP_SHELL_PADDING_CLASS,
-} from "@/components/layout/layoutTokens";
-import {
-  CalendarLayoutProvider,
-} from "@/features/calendar/context/CalendarLayoutProvider";
+import { CalendarLayoutProvider } from "@/features/calendar/context/CalendarLayoutProvider";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
-import { CalendarSidebar } from "@/features/milestone/components/CalendarSidebar";
-import { SidebarDivider } from "@/features/milestone/components/SidebarDivider";
+import { CalendarSidebar } from "@/features/calendar/components/sidebar/CalendarSidebar";
+import { SidebarDivider } from "@/features/calendar/components/sidebar/SidebarDivider";
 
 const MainLayoutFrame = (): JSX.Element => {
   const {
@@ -32,12 +25,8 @@ const MainLayoutFrame = (): JSX.Element => {
   } = useCalendarLayoutContext();
 
   return (
-    <main
-      className={`flex h-screen w-screen items-center justify-center overflow-hidden bg-fill-surface ${APP_SHELL_PADDING_CLASS}`}
-    >
-      <div
-        className={`flex h-full ${APP_SHELL_MAX_HEIGHT_CLASS} min-h-0 w-full ${APP_SHELL_MAX_WIDTH_CLASS} min-w-0 ${APP_SHELL_GAP_CLASS}`}
-      >
+    <AppShellLayout
+      sidePanel={
         <div className="relative flex h-full shrink-0 overflow-hidden rounded-[20px] shadow-shadow-m">
           <GlobalNavigationBar
             isSidebarOpen={isSidebarOpen}
@@ -59,12 +48,10 @@ const MainLayoutFrame = (): JSX.Element => {
             onDeleteStandaloneTask={deleteStandaloneTask}
           />
         </div>
-
-        <div className="min-w-0 flex-1">
-          <Outlet />
-        </div>
-      </div>
-    </main>
+      }
+    >
+      <Outlet />
+    </AppShellLayout>
   );
 };
 

@@ -3,7 +3,7 @@ import { useEffect, useId, useMemo, useState } from 'react';
 import CloseIcon from '@/assets/icons/Close.svg?react';
 
 import { Button } from '@/components/ui/Button';
-import { useModalViewportScale } from '@/hooks/useModalViewportScale';
+import { ModalViewportPanel } from '@/components/ui/ModalViewportPanel';
 
 import {
   BRIDGE_COLOR_PALETTES,
@@ -49,7 +49,6 @@ export function BridgeColorModal({
   onOpenChange,
   onConfirm,
 }: BridgeColorModalProps) {
-  const scale = useModalViewportScale();
   const titleId = useId();
   const [draftPaletteId, setDraftPaletteId] = useState(selectedPaletteId);
 
@@ -94,12 +93,12 @@ export function BridgeColorModal({
       role="presentation"
       onMouseDown={handleClose}
     >
-      <section
+      <ModalViewportPanel
+        as="section"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="flex h-[547px] w-[640px] origin-center flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
-        style={{ transform: `scale(${scale})` }}
+        className="flex h-[547px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="flex h-11 w-full items-start justify-between">
@@ -206,7 +205,7 @@ export function BridgeColorModal({
             변경
           </Button>
         </div>
-      </section>
+      </ModalViewportPanel>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { type Category } from "@/types";
 import { ImageCropModal } from "@/components/ui/image-crop/ImageCropModal";
 import { ModalActionBar } from "@/components/ui/ModalActionBar";
-import { useModalViewportScale } from "@/hooks/useModalViewportScale";
+import { ModalViewportPanel } from "@/components/ui/ModalViewportPanel";
 import { CategoryColorPicker } from "./CategoryColorPicker";
 import { CategoryImageUploader } from "./CategoryImageUploader";
 import { CategoryMemberSelector } from "./CategoryMemberSelector";
@@ -36,7 +36,6 @@ export const CategoryFormModal = ({
   onRequestDelete,
   onSubmit,
 }: CategoryFormModalProps) => {
-  const scale = useModalViewportScale();
   const [selectedColor, setSelectedColor] = useState<string>(DEFAULT_CATEGORY_COLOR);
   const [isPublic, setIsPublic] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -123,9 +122,8 @@ export const CategoryFormModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow">
-      <div
-        className="flex w-[607px] origin-center flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
-        style={{ transform: `scale(${scale})` }}
+      <ModalViewportPanel
+        className="flex w-[607px] flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
       >
         <header className="flex w-full items-center justify-between">
           <h2 className="w-full text-title-02-sb text-text-strong">
@@ -214,7 +212,7 @@ export const CategoryFormModal = ({
           onClose={handleCloseCropModal}
           onChangeImage={handleChangeCroppedImage}
         />
-      </div>
+      </ModalViewportPanel>
     </div>
   );
 };

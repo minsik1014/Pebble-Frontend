@@ -5,7 +5,7 @@ import DeleteIcon from '@/assets/icons/Delete.svg?react';
 import XIcon from '@/assets/icons/X.svg?react';
 
 import { Button } from '@/components/ui/Button';
-import { useModalViewportScale } from '@/hooks/useModalViewportScale';
+import { ModalViewportPanel } from '@/components/ui/ModalViewportPanel';
 
 interface WithdrawalConfirmModalProps {
   open: boolean;
@@ -20,7 +20,6 @@ export function WithdrawalConfirmModal({
   onOpenChange,
   onConfirm,
 }: WithdrawalConfirmModalProps) {
-  const scale = useModalViewportScale();
   const [isAgreed, setIsAgreed] = useState(false);
   const titleId = useId();
   const descriptionId = useId();
@@ -53,13 +52,13 @@ export function WithdrawalConfirmModal({
         if (!isSubmitting) onOpenChange(false);
       }}
     >
-      <section
+      <ModalViewportPanel
+        as="section"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="flex h-[359px] w-[640px] origin-center flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
-        style={{ transform: `scale(${scale})` }}
+        className="flex h-[359px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex h-[67px] w-full items-start justify-between">
@@ -178,7 +177,7 @@ export function WithdrawalConfirmModal({
             {isSubmitting ? '탈퇴 중...' : '탈퇴하기'}
           </Button>
         </div>
-      </section>
+      </ModalViewportPanel>
     </div>
   );
 }

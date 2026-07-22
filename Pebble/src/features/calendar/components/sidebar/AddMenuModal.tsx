@@ -1,6 +1,6 @@
 
 
-import { useModalViewportScale } from "@/hooks/useModalViewportScale";
+import { ModalViewportPanel } from "@/components/ui/ModalViewportPanel";
 
 type AddMenuModalProps = {
   isOpen: boolean;
@@ -17,15 +17,12 @@ export const AddMenuModal = ({
   onSelectMilestone,
   onSelectTask,
 }: AddMenuModalProps) => {
-  const scale = useModalViewportScale();
-
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow">
-      <div
-        className="relative flex w-[320px] origin-center flex-col gap-[20px] rounded-[32px] bg-fill-inverse p-[32px] shadow-shadow-m"
-        style={{ transform: `scale(${scale})` }}
+      <ModalViewportPanel
+        className="relative flex w-[320px] flex-col gap-[20px] rounded-[32px] bg-fill-inverse p-[32px] shadow-shadow-m"
       >
         <header className="flex items-center justify-between">
           <h2 className="font-semibold text-[20px] leading-[1.4] text-text-strong tracking-[-0.2px]">추가하기</h2>
@@ -67,7 +64,7 @@ export const AddMenuModal = ({
             태스크
           </button>
         </div>
-      </div>
+      </ModalViewportPanel>
     </div>
   );
 };

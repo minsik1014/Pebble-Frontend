@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import CloseIcon from "@/assets/icons/Close.svg?react";
-import { useModalViewportScale } from "@/hooks/useModalViewportScale";
+import { ModalViewportPanel } from "@/components/ui/ModalViewportPanel";
 import { type Category } from "@/types";
 
 type DeleteCategoryModalProps = {
@@ -16,7 +16,6 @@ export const DeleteCategoryModal = ({
   onClose,
   onDelete,
 }: DeleteCategoryModalProps) => {
-  const scale = useModalViewportScale();
   const [confirmText, setConfirmText] = useState("");
 
   useEffect(() => {
@@ -31,9 +30,8 @@ export const DeleteCategoryModal = ({
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-hidden bg-fill-shadow">
-      <div
-        className="relative flex w-[655px] origin-center flex-col gap-5 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m"
-        style={{ transform: `scale(${scale})` }}
+      <ModalViewportPanel
+        className="relative flex w-[655px] flex-col gap-5 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m"
       >
         
         {/* 헤더 */}
@@ -90,7 +88,7 @@ export const DeleteCategoryModal = ({
             삭제
           </button>
         </div>
-      </div>
+      </ModalViewportPanel>
     </div>
   );
 };

@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 
+import { ModalViewportPanel } from '@/components/ui/ModalViewportPanel';
 import { requestEmailChange } from '@/features/settings/api/mockSettingsApi';
-import { useModalViewportScale } from '@/hooks/useModalViewportScale';
 
 interface EmailChangeModalProps {
   open: boolean;
@@ -32,7 +32,6 @@ export function EmailChangeModal({
   currentEmail,
   onOpenChange,
 }: EmailChangeModalProps) {
-  const scale = useModalViewportScale();
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -77,12 +76,12 @@ export function EmailChangeModal({
         if (!isSubmitting) onOpenChange(false);
       }}
     >
-      <section
+      <ModalViewportPanel
+        as="section"
         role="dialog"
         aria-modal="true"
         aria-label="이메일 변경"
-        className="w-[480px] origin-center rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
-        style={{ transform: `scale(${scale})` }}
+        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 className="text-title-02-sb text-text-strong">이메일 변경</h2>
@@ -140,7 +139,7 @@ export function EmailChangeModal({
             {isSubmitting ? '요청 중...' : '인증 메일 보내기'}
           </button>
         </div>
-      </section>
+      </ModalViewportPanel>
     </div>
   );
 }
