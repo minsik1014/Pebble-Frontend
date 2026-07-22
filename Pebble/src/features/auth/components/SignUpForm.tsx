@@ -1,5 +1,6 @@
 // @/features/auth/components/SignUpForm.tsx
 import React from "react";
+import { AuthErrorMessage } from "./AuthErrorMessage";
 import { Link } from "react-router-dom"; // 💡 새로고침 없는 매끄러운 화면 이동을 위해 추가
 
 const EyeIcon = ({ open }: { open: boolean }) => (
@@ -59,16 +60,16 @@ export const SignUpForm = ({
   onSubmit,
 }: SignUpFormProps) => {
   return (
-    <div className="w-full max-w-[440px] flex flex-col px-[16px] sm:px-0 mx-auto mt-[40px] md:mt-[80px]">
-      <h2 className="text-[24px] sm:text-[26px] font-bold text-[#111111] mb-[32px] sm:mb-[40px] tracking-tight text-left">
+    <div className="w-full max-w-[506px] flex flex-col px-[16px] sm:px-0 mx-auto">
+      <h2 className="auth-title mb-[40px] text-left">
         Pebble 시작하기
       </h2>
 
       <form onSubmit={onSubmit} className="flex flex-col w-full">
         {/* 1. 이메일 필드 */}
         <div className={`flex flex-col mb-[20px] ${shakeTarget.email && errors.email ? "animate-shake" : ""}`}>
-          <label className="text-[14px] font-medium text-[#444444] mb-[8px]">
-            이메일<span className="text-[#FF4D4D] ml-[2px]">*</span>
+          <label className="auth-label mb-[8px]">
+            이메일<span className="auth-required">*</span>
           </label>
           <input
             type="text"
@@ -76,18 +77,17 @@ export const SignUpForm = ({
             onChange={(e) => onChange("email", e.target.value)}
             onBlur={() => onFieldBlur("email")}
             placeholder="이메일을 입력해 주세요"
-            className={`w-full h-[48px] sm:h-[52px] px-[16px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5]
-              ${errors.email ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+            className={`auth-input px-[12px] ${errors.email ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
           />
           {errors.email && (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.email}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
           )}
         </div>
 
         {/* 2. 비밀번호 필드 */}
         <div className={`flex flex-col mb-[20px] relative ${shakeTarget.password && errors.password ? "animate-shake" : ""}`}>
-          <label className="text-[14px] font-medium text-[#444444] mb-[8px]">
-            비밀번호<span className="text-[#FF4D4D] ml-[2px]">*</span>
+          <label className="auth-label mb-[8px]">
+            비밀번호<span className="auth-required">*</span>
           </label>
           <div className="relative w-full">
             <input
@@ -96,8 +96,7 @@ export const SignUpForm = ({
               onChange={(e) => onChange("password", e.target.value)}
               onBlur={() => onFieldBlur("password")}
               placeholder="비밀번호를 입력해 주세요"
-              className={`w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5]
-                ${errors.password ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+              className={`auth-input pl-[12px] pr-[48px] ${errors.password ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
             />
             <button
               type="button"
@@ -108,7 +107,7 @@ export const SignUpForm = ({
             </button>
           </div>
           {errors.password ? (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.password}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.password}</AuthErrorMessage>
           ) : (
             <div className="mt-[8px] text-[12px] text-[#999999] text-left">8자 이상, 영문·숫자 포함</div>
           )}
@@ -116,8 +115,8 @@ export const SignUpForm = ({
 
         {/* 3. 비밀번호 확인 필드 */}
         <div className={`flex flex-col mb-[24px] relative ${shakeTarget.passwordConfirm && errors.passwordConfirm ? "animate-shake" : ""}`}>
-          <label className="text-[14px] font-medium text-[#444444] mb-[8px]">
-            비밀번호 확인<span className="text-[#FF4D4D] ml-[2px]">*</span>
+          <label className="auth-label mb-[8px]">
+            비밀번호 확인<span className="auth-required">*</span>
           </label>
           <div className="relative w-full">
             <input
@@ -126,8 +125,7 @@ export const SignUpForm = ({
               onChange={(e) => onChange("passwordConfirm", e.target.value)}
               onBlur={() => onFieldBlur("passwordConfirm")}
               placeholder="비밀번호를 한 번 더 입력해 주세요"
-              className={`w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5]
-                ${errors.passwordConfirm ? "border-[#FF4D4D] focus:border-[#FF4D4D]" : "border-[#E5E7EB] focus:border-[#111111]"}`}
+              className={`auth-input pl-[12px] pr-[48px] ${errors.passwordConfirm ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
             />
             <button
               type="button"
@@ -138,13 +136,13 @@ export const SignUpForm = ({
             </button>
           </div>
           {errors.passwordConfirm && (
-            <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.passwordConfirm}</div>
+            <AuthErrorMessage className="mt-[8px]">{errors.passwordConfirm}</AuthErrorMessage>
           )}
         </div>
 
         {/* 4. 약관 동의 체크박스 영역 */}
         <div className="flex items-center mb-[32px] text-left">
-          <label className="flex items-center cursor-pointer select-none text-[14px] text-[#444444]">
+          <label className="auth-body flex items-center cursor-pointer select-none text-[#737373]">
             <input
               type="checkbox"
               checked={form.agreeTerms}
@@ -170,7 +168,7 @@ export const SignUpForm = ({
         <button
           type="submit"
           disabled={!isFormValid}
-          className={`w-full h-[48px] sm:h-[52px] text-white font-semibold rounded-[8px] text-[16px] transition-colors mb-[24px]
+          className={`w-full h-[52px] text-white rounded-[12px] auth-body transition-colors mb-[24px]
             ${isFormValid ? "bg-[#111111] hover:bg-[#222222] cursor-pointer" : "bg-[#737373] cursor-not-allowed"}`}
         >
           다음
@@ -178,9 +176,9 @@ export const SignUpForm = ({
       </form>
 
       {/* 💡 <a> 태그를 <Link> 컴포넌트로 깔끔하게 변경 완료 */}
-      <div className="flex justify-center gap-[6px] text-[14px]">
-        <span className="text-[#888888]">이미 계정이 있으신가요?</span>
-        <Link to="/login" className="text-[#111111] font-semibold hover:underline">
+      <div className="auth-body flex justify-center gap-[8px]">
+        <span className="text-[#A3A3A3]">이미 계정이 있으신가요?</span>
+        <Link to="/login" className="text-[#171717] hover:underline">
           로그인
         </Link>
       </div>

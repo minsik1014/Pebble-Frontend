@@ -1,11 +1,12 @@
 // @/features/auth/components/ForgotPasswordForm.tsx
 import React from "react";
-import { Link } from "react-router-dom";
 
-// 이미지 에셋 임포트 (기존 경로 유지)
+// 비밀번호 찾기 화면의 배경 조약돌 이미지
 import pebble01 from "@/assets/icons/pebble01.png";
 import pebble02 from "@/assets/icons/pebble02.png";
 import pebble03 from "@/assets/icons/pebble03.png";
+import { AuthErrorMessage } from "./AuthErrorMessage";
+import { Header } from "./Header";
 
 const EyeIcon = ({ open }: { open: boolean }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-[22px] h-[22px] flex-shrink-0">
@@ -18,15 +19,6 @@ const EyeIcon = ({ open }: { open: boolean }) => (
       <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M21.034 12a10.448 10.448 0 0 0-2.012-3.777M11.542 4.427A10.417 10.417 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 17.772 17.772m-3.6-3.6a3.5 3.5 0 1 1-4.95-4.95 3.5 3.5 0 0 1 4.95 4.95Z" />
     )}
   </svg>
-);
-
-const PebbleLogo = () => (
-  <div className="flex items-center gap-[8px] cursor-pointer">
-    <div className="w-[24px] h-[24px] bg-[#111111] rounded-[6px] flex items-center justify-center">
-      <span className="text-white text-[12px] font-bold">P</span>
-    </div>
-    <span className="text-[18px] font-bold text-[#111111] tracking-tight">Pebble</span>
-  </div>
 );
 
 interface ForgotPasswordFormProps {
@@ -65,63 +57,59 @@ export const ForgotPasswordForm = ({
   onBackToLogin,
 }: ForgotPasswordFormProps) => {
   return (
-    <div className="w-full min-h-screen bg-white flex flex-col relative overflow-hidden">
+    <div className="w-full min-h-screen bg-white flex flex-col relative overflow-hidden [font-family:'Pretendard',sans-serif]">
       
-      {/* 💡 제공해주신 레퍼런스 구도 완벽 반영: 전체 화면 우측 하단 중심 배경 조약돌 레이아웃 */}
-      <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden">
-        {/* pebble01: 가장 좌측 하단에 은은하게 배치 */}
-        <img 
-          src={pebble01} 
-          alt="Background Pebble 01" 
-          className="absolute bottom-[-5%] right-[40%] w-[320px] md:w-[420px] object-contain opacity-0 animate-fade-up" 
-          style={{ "--animation-delay": "0ms" } as React.CSSProperties}
-        />
-        {/* pebble02: 중앙 하단에 크게 안착 */}
-        <img 
-          src={pebble02} 
-          alt="Background Pebble 02" 
-          className="absolute bottom-[-8%] right-[10%] w-[440px] md:w-[580px] object-contain opacity-0 animate-fade-up" 
-          style={{ "--animation-delay": "200ms" } as React.CSSProperties}
-        />
-        {/* pebble03: 우측 화면 밖으로 크게 잘려나가는 조약돌 */}
-        <img 
-          src={pebble03} 
-          alt="Background Pebble 03" 
-          className="absolute bottom-[10%] right-[-15%] w-[400px] md:w-[520px] object-contain opacity-0 animate-fade-up" 
-          style={{ "--animation-delay": "400ms" } as React.CSSProperties}
-        />
-      </div>
+      {/* 조약돌 배경은 이메일을 입력하는 첫 단계에서만 노출합니다. */}
+      {step === 1 && (
+        <div aria-hidden="true" className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden">
+          {/* 폼의 가운데를 기준으로 배치하고, 1 → 2 → 3 순서로 같은 속도로 나타냅니다. */}
+          <img
+            src={pebble01}
+            alt=""
+            className="forgot-password-pebble hidden sm:block w-[380px] bottom-[-70px] left-[calc(50%-415px)]"
+            style={{ "--pebble-opacity": 0.07, "--pebble-delay": "0ms" } as React.CSSProperties}
+          />
+          <img
+            src={pebble02}
+            alt=""
+            className="forgot-password-pebble hidden sm:block w-[500px] bottom-[-80px] left-[calc(50%+55px)]"
+            style={{ "--pebble-opacity": 0.09, "--pebble-delay": "500ms" } as React.CSSProperties}
+          />
+          <img
+            src={pebble03}
+            alt=""
+            className="forgot-password-pebble hidden sm:block w-[480px] bottom-[165px] left-[calc(50%+400px)]"
+            style={{ "--pebble-opacity": 0.11, "--pebble-delay": "1000ms" } as React.CSSProperties}
+          />
+        </div>
+      )}
 
       {/* 상단 GNB 헤더 영역 */}
-      <header className="w-full h-[64px] px-[20px] md:px-[40px] flex items-center justify-between border-b border-[#F3F4F6] relative z-10 bg-white">
-        <Link to="/">
-          <PebbleLogo />
-        </Link>
-        <div className="flex items-center gap-[16px]">
-          <Link to="/signup" className="text-[14px] font-medium text-[#444444] hover:text-[#111111]">회원가입</Link>
-          <Link to="/login" className="px-[16px] h-[36px] bg-[#111111] text-white text-[14px] font-medium rounded-[6px] flex items-center justify-center hover:bg-[#222222] transition-colors">로그인</Link>
-        </div>
-      </header>
+      <Header />
 
-      {/* 메인 폼 영역 (배경 조약돌을 가리지 않도록 투명 처리) */}
-      <main className="flex-1 flex flex-col justify-center items-center py-[40px] md:py-[60px] px-[16px] relative z-10 bg-transparent">
-        <div className="w-full max-w-[440px] flex flex-col">
+      {/* 메인 폼 영역 */}
+      <main className={`flex-1 flex flex-col items-center px-[16px] relative z-10 bg-transparent ${step === 2 ? "justify-start pt-[131px]" : "justify-center py-[40px] md:py-[60px]"}`}>
+        <div className={`w-full flex flex-col bg-transparent rounded-2xl ${step === 2 ? "max-w-[692px] h-[350px] p-[32px]" : "max-w-[440px] p-6 sm:p-0"}`}>
           
           {/* 뒤로가기 및 타이틀 */}
-          <div className="flex items-center mb-[8px] relative">
-            <button type="button" onClick={onBackToLogin} className="absolute left-0 text-[#444444] hover:text-[#111111] transition-colors">
+          <div className={`flex items-center relative ${step === 2 ? "gap-[16px] mb-[23px]" : "mb-[8px]"}`}>
+            <button
+              type="button"
+              onClick={onBackToLogin}
+              className={`${step === 2 ? "relative w-[24px] h-[33px] flex items-center justify-center" : "absolute left-0"} text-[#737373] hover:text-[#111111] transition-colors flex-shrink-0`}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-[20px] h-[20px]">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
               </svg>
             </button>
-            <h2 className="text-[20px] sm:text-[22px] font-bold text-[#111111] tracking-tight mx-auto pl-[20px]">
+            <h2 className={`auth-title ${step === 2 ? "leading-[33px]" : "mx-auto pl-[20px]"}`}>
               {step === 1 && "비밀번호를 잊으셨나요?"}
               {step === 2 && "임시 비밀번호 발송 완료"}
               {step === 3 && "비밀번호 변경"}
             </h2>
           </div>
 
-          <p className="text-[14px] text-[#222222] text-center mt-[4px] mb-[32px] sm:mb-[40px] tracking-tight whitespace-pre-line">
+          <p className={`auth-body whitespace-pre-line text-[#171717] ${step === 2 ? "text-left mb-[38px]" : "text-center mt-[4px] mb-[32px] sm:mb-[40px]"}`}>
             {step === 1 && "가입하신 이메일로 임시 비밀번호를 보내드릴게요"}
             {step === 2 && "로그인 후 비밀번호를 변경해 주세요"}
             {step === 3 && `임시 비밀번호로 로그인되었어요\n새 비밀번호를 설정해 주세요`}
@@ -132,33 +120,31 @@ export const ForgotPasswordForm = ({
             {/* STEP 1: 이메일 입력 단계 */}
             {step === 1 && (
               <div className={`flex flex-col mb-[32px] ${shakeTarget.email && errors.email ? "animate-shake" : ""}`}>
-                <label className="text-[14px] font-medium text-[#444444] mb-[8px]">이메일</label>
+                <label className="auth-label mb-[8px]">이메일<span className="auth-required">*</span></label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => onChange("email", e.target.value)}
                   onBlur={() => onFieldBlur("email")}
                   placeholder="이메일을 입력해 주세요"
-                  className="w-full h-[48px] sm:h-[52px] px-[16px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white border-[#E5E7EB] focus:border-[#111111]"
+                  className={`auth-input px-[12px] ${errors.email ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
                 />
                 {errors.email && (
-                  <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.email}</div>
+                  <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
                 )}
               </div>
             )}
 
             {/* STEP 2: 발송 완료 단계 */}
             {step === 2 && (
-              <div className="flex flex-col items-center mb-[32px] w-full">
-                <div className="w-full bg-white/90 backdrop-blur-[4px] border border-[#E5E7EB] rounded-[12px] p-[20px] flex items-start gap-[12px]">
-                  <div className="w-[36px] h-[36px] rounded-full bg-white border border-[#E5E7EB] flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-[18px] h-[18px] text-[#666666]">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0l-7.5-4.615a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                    </svg>
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-[15px] font-bold text-[#111111]">{email || "sample@sample.com"} <span className="font-normal text-[#666666]">으로</span></span>
-                    <span className="text-[13px] text-[#666666] mt-[2px]">임시 비밀번호를 전송했어요</span>
+              <div className="flex flex-col mb-[40px] w-full">
+                <div className="w-full h-[72px] bg-[#FAFAFA] rounded-[12px] px-[20px] flex items-center gap-[16px]">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-[24px] h-[24px] text-[#737373] flex-shrink-0">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0l-7.5-4.615a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                  </svg>
+                  <div className="flex min-w-0 flex-col text-left leading-[20px]">
+                    <span className="text-[15px] font-medium tracking-[-0.15px] text-[#171717] break-all">{email || "sample@sample.com"} <span className="font-normal text-[#737373]">으로</span></span>
+                    <span className="text-[14px] font-normal tracking-[-0.14px] text-[#737373]">임시 비밀번호를 전송했어요</span>
                   </div>
                 </div>
               </div>
@@ -169,7 +155,7 @@ export const ForgotPasswordForm = ({
               <>
                 {/* 새 비밀번호 */}
                 <div className={`flex flex-col mb-[20px] relative ${shakeTarget.newPassword && errors.newPassword ? "animate-shake" : ""}`}>
-                  <label className="text-[14px] font-medium text-[#444444] mb-[8px]">새 비밀번호<span className="text-[#FF4D4D] ml-[2px]">*</span></label>
+                  <label className="auth-label mb-[8px]">새 비밀번호<span className="auth-required">*</span></label>
                   <div className="relative w-full">
                     <input
                       type={showPw ? "text" : "password"}
@@ -177,14 +163,14 @@ export const ForgotPasswordForm = ({
                       onChange={(e) => onChange("newPassword", e.target.value)}
                       onBlur={() => onFieldBlur("newPassword")}
                       placeholder="비밀번호를 입력해 주세요"
-                      className="w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white border-[#E5E7EB] focus:border-[#111111]"
+                      className={`auth-input pl-[12px] pr-[48px] ${errors.newPassword ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
                     />
                     <button type="button" onClick={onTogglePw} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] flex items-center justify-center">
                       <EyeIcon open={showPw} />
                     </button>
                   </div>
                   {errors.newPassword ? (
-                    <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.newPassword}</div>
+                    <AuthErrorMessage className="mt-[8px]">{errors.newPassword}</AuthErrorMessage>
                   ) : (
                     <div className="mt-[8px] text-[12px] text-[#999999] text-left">8자 이상, 영문·숫자 포함</div>
                   )}
@@ -192,7 +178,7 @@ export const ForgotPasswordForm = ({
 
                 {/* 새 비밀번호 확인 */}
                 <div className={`flex flex-col mb-[32px] relative ${shakeTarget.passwordConfirm && errors.passwordConfirm ? "animate-shake" : ""}`}>
-                  <label className="text-[14px] font-medium text-[#444444] mb-[8px]">새 비밀번호 확인<span className="text-[#FF4D4D] ml-[2px]">*</span></label>
+                  <label className="auth-label mb-[8px]">새 비밀번호 확인<span className="auth-required">*</span></label>
                   <div className="relative w-full">
                     <input
                       type={showPwConfirm ? "text" : "password"}
@@ -200,14 +186,14 @@ export const ForgotPasswordForm = ({
                       onChange={(e) => onChange("passwordConfirm", e.target.value)}
                       onBlur={() => onFieldBlur("passwordConfirm")}
                       placeholder="비밀번호를 한 번 더 입력해 주세요"
-                      className="w-full h-[48px] sm:h-[52px] pl-[16px] pr-[48px] border rounded-[8px] text-[15px] outline-none transition-all placeholder-[#C5C5C5] bg-white border-[#E5E7EB] focus:border-[#111111]"
+                      className={`auth-input pl-[12px] pr-[48px] ${errors.passwordConfirm ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
                     />
                     <button type="button" onClick={onTogglePwConfirm} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] flex items-center justify-center">
                       <EyeIcon open={showPwConfirm} />
                     </button>
                   </div>
                   {errors.passwordConfirm && (
-                    <div className="mt-[8px] text-[13px] text-[#FF4D4D] font-medium text-left">{errors.passwordConfirm}</div>
+                    <AuthErrorMessage className="mt-[8px]">{errors.passwordConfirm}</AuthErrorMessage>
                   )}
                 </div>
               </>
@@ -217,7 +203,7 @@ export const ForgotPasswordForm = ({
             <button
               type="submit"
               disabled={step !== 2 && !isFormValid}
-              className={`w-full h-[48px] sm:h-[52px] text-white font-semibold rounded-[8px] text-[16px] transition-colors
+              className={`w-full auth-body text-white transition-colors ${step === 2 ? "h-[56px] rounded-[12px]" : "h-[52px] rounded-[12px]"}
                 ${(step === 2 || isFormValid) ? "bg-[#111111] hover:bg-[#222222] cursor-pointer" : "bg-[#737373] cursor-not-allowed"}`}
             >
               {step === 1 && "임시 비밀번호 발급받기"}

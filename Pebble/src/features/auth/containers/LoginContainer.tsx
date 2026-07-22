@@ -1,8 +1,16 @@
 // @/features/auth/containers/LoginContainer.tsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoginForm } from "../components/LoginForm";
 
+// 실제 로그인 API 연결 전 화면 흐름 확인에 사용하는 임시 계정입니다.
+const MOCK_LOGIN_ACCOUNT = {
+  email: "example123@sample.com",
+  password: "abcd1234!",
+};
+
 export const LoginContainer = (): JSX.Element => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -86,6 +94,14 @@ export const LoginContainer = (): JSX.Element => {
 
     if (hasError) {
       setErrors(nextErrors);
+      return;
+    }
+
+    // 인증 성공 시 메인 홈페이지로 이동합니다.
+    if (email === MOCK_LOGIN_ACCOUNT.email && password === MOCK_LOGIN_ACCOUNT.password) {
+      setErrors({});
+      setErrorMessage(null);
+      navigate("/", { replace: true });
       return;
     }
     
