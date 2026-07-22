@@ -1,3 +1,7 @@
+import CheckIcon from '@/assets/icons/Check.svg?react';
+import ChevronUpIcon from '@/assets/icons/chevron-up.svg?react';
+import EyeOnIcon from '@/assets/icons/eye-on.svg?react';
+
 const previewTasks = [
   {
     title: '1차 MVP 완성',
@@ -36,9 +40,9 @@ export function CategoryPreviewCard() {
           </strong>
         </div>
 
-        <div className="flex items-center gap-[22px] text-[26px] text-text-secondary">
-          <span>⌃</span>
-          <span>⊙</span>
+        <div className="flex items-center gap-[22px] text-text-secondary">
+          <ChevronUpIcon className="size-6" aria-hidden="true" />
+          <EyeOnIcon className="size-6" aria-hidden="true" />
         </div>
       </div>
 
@@ -71,7 +75,9 @@ export function CategoryPreviewCard() {
                     : 'border-[#D4D4D4] bg-fill-inverse',
                 ].join(' ')}
               >
-                {task.done ? '✓' : ''}
+                {task.done ? (
+                  <CheckIcon className="size-4" aria-hidden="true" />
+                ) : null}
               </span>
             </div>
           </div>

@@ -1,3 +1,6 @@
+import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
+import ChevronRightIcon from '@/assets/icons/chevron-right.svg?react';
+
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
 const weeks = [
@@ -102,13 +105,15 @@ function CalendarMock({ isBackground = false }: { isBackground?: boolean }) {
         </strong>
 
         <span className="flex size-[24px] items-center justify-center rounded-full bg-[#F5F5F5] text-text-secondary">
-          ‹
+          <ChevronLeftIcon className="size-4" aria-hidden="true" />
         </span>
+
         <span className="flex h-[24px] items-center rounded-full bg-[#F5F5F5] px-[10px] text-[10px] font-medium text-text-secondary">
           오늘
         </span>
+
         <span className="flex size-[24px] items-center justify-center rounded-full bg-[#F5F5F5] text-text-secondary">
-          ›
+          <ChevronRightIcon className="size-4" aria-hidden="true" />
         </span>
       </div>
 
