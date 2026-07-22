@@ -10,6 +10,7 @@ import SettingsPage from './pages/settings/SettingsPage';
 import MyPage from "@/pages/mypage/MyPage";
 import ProfileEditPage from "@/pages/mypage/ProfileEditPage";
 import MyCategoryDetailPage from "@/pages/mypage/MyCategoryDetailPage";
+import { LandingPage } from '@/pages/landing/LandingPage';
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
       {/* 테마 스위칭을 테스트하려면 아래 div에 className="theme-popart" 등을 추가하세요 */}
       <div className="min-h-screen font-sans">
         <Routes>
+          <Route path="/landing" element={<LandingPage />} />
+
           <Route element={<MainLayout />}>
             <Route index element={<CalendarMainPage />} />
             <Route path="my" element={<MyPage />} />
