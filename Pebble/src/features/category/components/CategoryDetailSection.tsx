@@ -73,7 +73,7 @@ export const CategoryDetailSection = ({
 
   return (
     <section
-      className={`relative h-[1000px] bg-fill-inverse rounded-[20px] shadow-shadow-m transition-all duration-300 overflow-hidden ${
+      className={`relative h-[1000px] overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
         isSidebarOpen ? "w-[898px]" : "w-[1290px]"
       }`}
     >

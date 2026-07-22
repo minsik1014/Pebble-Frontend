@@ -1,19 +1,19 @@
 import { type Category, type TaskItem } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
-import { MilestoneFormModal } from "./MilestoneFormModal";
+import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
 import {
   TaskFormModal,
   type TaskFormSubmitInput,
 } from "@/features/task/components/TaskFormModal";
 import { StandaloneTaskSection } from "@/features/task/components/StandaloneTaskSection";
 import { AddMenuModal } from "./AddMenuModal";
-import { MilestoneAccordion } from "./MilestoneAccordion";
+import { MilestoneAccordion } from "@/features/milestone/components/MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
-import { useCalendarSidebarModals } from "@/features/milestone/hooks/useCalendarSidebarModals";
-import { useCalendarSidebarState } from "@/features/milestone/hooks/useCalendarSidebarState";
-import { useSidebarButtonShadow } from "@/features/milestone/hooks/useSidebarButtonShadow";
+import { useCalendarSidebarModals } from "@/features/calendar/hooks/useCalendarSidebarModals";
+import { useCalendarSidebarState } from "@/features/calendar/hooks/useCalendarSidebarState";
+import { useSidebarButtonShadow } from "@/features/calendar/hooks/useSidebarButtonShadow";
 import type {
   CreateCategoryInput,
   CreateScheduleItemInput,

@@ -34,7 +34,7 @@ export const StandaloneTaskSection = ({
                 className="h-10 w-2 shrink-0 rounded"
                 style={{ backgroundColor: accentColor }}
               />
-              <span className="min-w-0 flex-1 truncate text-title-02-sb text-text-strong">
+              <span className="min-w-0 flex-1 truncate text-title-03-sb text-text-strong">
                 {task.title}
               </span>
             </div>

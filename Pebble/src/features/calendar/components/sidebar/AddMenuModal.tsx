@@ -1,5 +1,3 @@
-
-
 type AddMenuModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -39,7 +37,7 @@ export const AddMenuModal = ({
           >
             카테고리
           </button>
-          
+
           <button
             onClick={() => {
               onClose();

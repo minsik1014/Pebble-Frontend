@@ -1,16 +1,15 @@
-import type { MainLayoutContext } from '@/components/layout/MainLayout';
+import { useCalendarLayoutContext } from '@/features/calendar/context/useCalendarLayoutContext';
 import { AccountSettingsSection } from './AccountSettingsSection';
 import { DisplaySettingsSection } from './DisplaySettingsSection';
 import { NotificationSettingsSection } from './NotificationSettingsSection';
 import { SettingsContent } from './SettingsContent';
 import { WithdrawalSection } from './WithdrawalSection';
-import { useOutletContext } from 'react-router-dom';
 
 const MOCK_EMAIL = 'example1234@naver.com';
 const MOCK_IS_SOCIAL_ACCOUNT = false;
 
 export function SettingsView() {
-  const { isSidebarOpen } = useOutletContext<MainLayoutContext>();
+  const { isSidebarOpen } = useCalendarLayoutContext();
 
   return (
     <SettingsContent isSidebarOpen={isSidebarOpen}>

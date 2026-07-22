@@ -1,14 +1,14 @@
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
-import type { MainLayoutContext } from "@/components/layout/MainLayout";
+import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import { MyCategoryDetailHeader } from "@/features/mypage/components/MyCategoryDetailHeader";
 import { MyCategoryMilestoneItem } from "@/features/mypage/components/MyCategoryMilestoneItem";
 import { completedCategoryMocks } from "@/features/mypage/mock/completedCategoryMock";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function MyCategoryDetailPage(): JSX.Element {
   const navigate = useNavigate();
   const { categoryId } = useParams();
-  const { isSidebarOpen } = useOutletContext<MainLayoutContext>();
+  const { isSidebarOpen } = useCalendarLayoutContext();
   const detail = completedCategoryMocks.find(
     ({ category }) => category.id === categoryId,
   );

@@ -105,7 +105,7 @@ export const MilestoneAccordion = ({
             className="relative w-2 h-10 rounded"
             style={{ backgroundColor: category.accent }}
           />
-          <h2 className="text-title-02-sb text-text-strong">
+          <h2 className="text-title-03-sb text-text-strong">
             {category.title}
           </h2>
         </div>

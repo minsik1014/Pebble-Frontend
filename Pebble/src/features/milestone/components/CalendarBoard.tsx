@@ -55,7 +55,7 @@ export const CalendarBoard = ({
   return (
     <section
       aria-label="월간 캘린더"
-      className={`flex h-[1000px] flex-col overflow-hidden bg-fill-inverse shadow-shadow-m shrink-0 transition-all duration-300 ${
+      className={`flex h-[1000px] shrink-0 flex-col overflow-hidden bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
         isSidebarOpen ? "w-[924px] rounded-[20px]" : "w-[1316px] rounded-token-l"
       }`}
     >

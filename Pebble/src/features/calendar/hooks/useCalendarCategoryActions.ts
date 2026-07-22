@@ -45,7 +45,7 @@ export const useCalendarCategoryActions = ({
       const category = createCategoryEntity(input);
 
       setCategories((previousCategories) => [...previousCategories, category]);
-      setSelectedCategoryId(category.id);
+      setSelectedCategoryId(null);
 
       return category;
     },

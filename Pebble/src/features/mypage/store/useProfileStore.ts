@@ -21,6 +21,7 @@ export const useProfileStore = create<ProfileStore>((set) => ({
   updateProfile: (updatedProfile) =>
     set((state) => {
       const nicknameChanged =
+        updatedProfile.nickname !== undefined &&
         updatedProfile.nickname !== state.profile.nickname;
 
       return {

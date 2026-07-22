@@ -46,7 +46,7 @@ export function WithdrawalConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(23,23,23,0.45)]"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
       onClick={() => {
         if (!isSubmitting) onOpenChange(false);
       }}

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import { ModalActionBar } from "@/components/ui/ModalActionBar";
 
@@ -29,23 +29,23 @@ export const ScheduleFormModalFrame = ({
     <div
       className={`w-[640px] p-8 bg-fill-inverse rounded-[32px] flex flex-col ${gapClassName} shadow-shadow-m relative`}
     >
-      <h2
-        className={`text-[24px] font-semibold text-text-strong tracking-[-0.24px] ${titleClassName}`}
-      >
-        {title}
-      </h2>
+        <h2
+          className={`text-[24px] font-semibold text-text-strong tracking-[-0.24px] ${titleClassName}`}
+        >
+          {title}
+        </h2>
 
-      {children}
+        {children}
 
-      <div className="mt-4">
-        <ModalActionBar
-          submitLabel={submitLabel}
-          disabled={disabled}
-          onCancel={onCancel}
-          onSubmit={onSubmit}
-          onDelete={onDelete}
-        />
-      </div>
+        <div className="mt-4">
+          <ModalActionBar
+            submitLabel={submitLabel}
+            disabled={disabled}
+            onCancel={onCancel}
+            onSubmit={onSubmit}
+            onDelete={onDelete}
+          />
+        </div>
     </div>
   </div>
 );

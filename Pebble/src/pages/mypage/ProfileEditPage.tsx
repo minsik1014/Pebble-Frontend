@@ -1,13 +1,13 @@
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
-import type { MainLayoutContext } from "@/components/layout/MainLayout";
+import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import { ProfileEditForm } from "@/features/mypage/components/ProfileEditForm";
 import { ProfileImageEditor } from "@/features/mypage/components/ProfileImageEditor";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfileEditPage() {
   const navigate = useNavigate();
-  const { isSidebarOpen } = useOutletContext<MainLayoutContext>();
+  const { isSidebarOpen } = useCalendarLayoutContext();
   const profile = useProfileStore((state) => state.profile);
 
   return (

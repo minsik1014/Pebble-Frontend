@@ -1,81 +1,59 @@
-import { useRef, useState, type ChangeEvent } from "react";
+import { useState } from "react";
+
 import MySolidIcon from "@/assets/icons/user-solid.svg?react";
 import EditIcon from "@/assets/icons/newedit.svg?react";
-import { ProfileImageCropModal } from "@/features/mypage/components/ProfileImageCropModal";
+import { ImageCropModal } from "@/components/ui/image-crop/ImageCropModal";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
 export const ProfileImageEditor = (): JSX.Element => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [cropSource, setCropSource] = useState<string | null>(null);
   const imageUrl = useProfileStore(
     (state) => state.pendingImageUrl ?? state.profile.imageUrl,
   );
   const setPendingProfileImage = useProfileStore(
     (state) => state.setPendingProfileImage,
   );
-
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      if (typeof reader.result === "string") {
-        setCropSource(reader.result);
-      }
-    });
-    reader.readAsDataURL(file);
-
-    event.target.value = "";
-  };
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
 
   return (
-    <div className="relative size-32">
-      <div className="relative flex size-full overflow-hidden rounded-full bg-theme-2-base text-text-strong">
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt="현재 프로필"
-            className="absolute inset-0 h-full w-full max-w-none object-cover object-center"
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center">
+    <>
+      <div className="relative size-32">
+        <div className="flex size-full items-center justify-center overflow-hidden rounded-full bg-theme-2-base text-text-strong">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt="프로필 이미지"
+              className="size-full object-cover"
+            />
+          ) : (
             <MySolidIcon className="size-16" />
-          </div>
-        )}
+          )}
+        </div>
+
+        <button
+          type="button"
+          className="absolute bottom-0 right-0 flex size-10 items-center justify-center rounded-full border border-border-default bg-fill-inverse text-text-secondary shadow-shadow-s transition-colors hover:bg-fill-surface hover:text-text-strong"
+          aria-label="프로필 이미지 변경"
+          onClick={() => setIsCropModalOpen(true)}
+        >
+          <EditIcon className="size-5" />
+        </button>
       </div>
 
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        className="sr-only"
-        aria-label="프로필 이미지 파일 선택"
+      <ImageCropModal
+        isOpen={isCropModalOpen}
+        imageUrl={imageUrl ?? null}
+        title="프로필 사진 편집"
+        description="이미지를 드래그하고 확대해서 원형 프로필 영역을 맞춰보세요."
+        closeLabel="프로필 사진 편집 닫기"
+        applyLabel="저장"
+        changeImageLabel="이미지 다시 선택"
+        cropShape="round"
+        onClose={() => setIsCropModalOpen(false)}
+        onChangeImage={(croppedImageUrl) => {
+          setPendingProfileImage(croppedImageUrl);
+          setIsCropModalOpen(false);
+        }}
       />
-
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        className="absolute bottom-0 right-0 flex size-10 items-center justify-center rounded-full border border-border-default bg-fill-inverse text-text-secondary shadow-shadow-s transition-colors hover:bg-fill-surface hover:text-text-strong"
-        aria-label="프로필 이미지 변경"
-      >
-        <EditIcon className="size-5" />
-      </button>
-
-      {cropSource && (
-        <ProfileImageCropModal
-          source={cropSource}
-          onCancel={() => setCropSource(null)}
-          onComplete={(croppedImageUrl) => {
-            setPendingProfileImage(croppedImageUrl);
-            setCropSource(null);
-          }}
-        />
-      )}
-    </div>
+    </>
   );
 };

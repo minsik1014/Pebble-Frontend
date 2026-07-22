@@ -1,21 +1,25 @@
 import { useId, useRef } from "react";
-import type { ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import UploadIcon from "@/assets/icons/Upload.svg?react";
+import {
+  ACCEPTED_IMAGE_TYPES,
+  validateImageFile,
+} from "@/components/ui/image-crop/imageCropConfig";
 
 type CategoryImageUploaderProps = {
   imageUrl?: string;
   onImageChange: (imageUrl: string | undefined) => void;
+  onSelectImageFile: (imageFile: File) => void;
 };
-
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export const CategoryImageUploader = ({
   imageUrl,
   onImageChange,
+  onSelectImageFile,
 }: CategoryImageUploaderProps) => {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -24,18 +28,17 @@ export const CategoryImageUploader = ({
       return;
     }
 
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type) || file.size > MAX_IMAGE_SIZE) {
+    const validationMessage = validateImageFile(file);
+
+    if (validationMessage) {
+      setErrorMessage(validationMessage);
       event.target.value = "";
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        onImageChange(reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
+    setErrorMessage("");
+    onSelectImageFile(file);
+    event.target.value = "";
   };
 
   return (
@@ -78,11 +81,14 @@ export const CategoryImageUploader = ({
           이미지 삭제
         </button>
       )}
+      {errorMessage && (
+        <p className="text-caption-01 text-fill-danger">{errorMessage}</p>
+      )}
       <input
         ref={inputRef}
         id={inputId}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept={ACCEPTED_IMAGE_TYPES}
         className="sr-only"
         onChange={handleFileChange}
       />
