@@ -47,7 +47,7 @@ const schedules = [
 
 export function LandingCalendarPreview() {
   return (
-    <div className="absolute left-[200px] top-[734px] h-[640px] w-[1040px] overflow-hidden rounded-token-l bg-fill-inverse shadow-shadow-m">
+    <div className="absolute left-[200px] top-[626px] h-[640px] w-[1040px] overflow-hidden rounded-token-l bg-fill-inverse shadow-shadow-m">
       <div className="absolute left-[70px] top-[64px] flex h-[640px] w-[900px] bg-fill-inverse">
         <aside className="h-[625px] w-[298px] rounded-[12.5px] bg-fill-inverse shadow-[0_0_17.5px_rgba(23,23,23,0.05)]">
           <div className="flex h-full">
