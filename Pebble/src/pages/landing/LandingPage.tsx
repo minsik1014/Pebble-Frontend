@@ -2,6 +2,7 @@ import { PublicHeader } from '@/components/layout/PublicHeader';
 import { HeroSection } from '@/features/landing/components/HeroSection';
 import { LandingFigmaSection } from '@/features/landing/components/LandingFigmaSection';
 import { LandingShell } from '@/features/landing/components/LandingShell';
+import { StepStructureSection } from '@/features/landing/components/StepStructureSection';
 
 export function LandingPage() {
   return (
@@ -13,6 +14,10 @@ export function LandingPage() {
 
         <LandingFigmaSection height={1474}>
           <HeroSection />
+        </LandingFigmaSection>
+
+        <LandingFigmaSection height={1024}>
+          <StepStructureSection />
         </LandingFigmaSection>
       </div>
     </LandingShell>
