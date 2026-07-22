@@ -13,11 +13,15 @@ export const CompletedCategoryGrid = ({
   return (
     <section
       className={`relative z-20 mx-auto w-[640px] bg-fill-inverse transition-[margin] duration-500 ease-in-out ${
-        isCompact ? "mt-9" : "mt-12"
+        isCompact ? "mt-16" : "mt-12"
       }`}
       aria-labelledby="my-category-heading"
     >
-      <div className="sticky top-0 z-30 bg-fill-inverse pb-3 pt-8">
+      <div
+        className={`sticky top-0 z-30 bg-fill-inverse pb-3 transition-[padding] duration-500 ease-in-out ${
+          isCompact ? "pt-8" : "pt-0"
+        }`}
+      >
         <h2
           id="my-category-heading"
           className="text-title-02-sb text-text-strong"
