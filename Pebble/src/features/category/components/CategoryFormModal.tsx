@@ -79,7 +79,7 @@ export const CategoryFormModal = ({
   const [isShared, setIsShared] = useState(false);
   const [categoryName, setCategoryName] = useState(category?.title || "");
   const [imageUrl, setImageUrl] = useState<string | undefined>(category?.imageUrl);
-  const [cropSourceImageUrl, setCropSourceImageUrl] = useState<string | null>(
+  const [cropSourceImageFile, setCropSourceImageFile] = useState<File | null>(
     null,
   );
 
@@ -149,20 +149,12 @@ export const CategoryFormModal = ({
   };
 
   const handleCloseCropModal = () => {
-    if (cropSourceImageUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(cropSourceImageUrl);
-    }
-
-    setCropSourceImageUrl(null);
+    setCropSourceImageFile(null);
   };
 
   const handleChangeCroppedImage = (croppedImageUrl: string) => {
-    if (cropSourceImageUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(cropSourceImageUrl);
-    }
-
     setImageUrl(croppedImageUrl);
-    setCropSourceImageUrl(null);
+    setCropSourceImageFile(null);
   };
 
   return (
@@ -179,7 +171,7 @@ export const CategoryFormModal = ({
             <CategoryImageUploader
               imageUrl={imageUrl}
               onImageChange={setImageUrl}
-              onSelectImageFile={setCropSourceImageUrl}
+              onSelectImageFile={setCropSourceImageFile}
             />
 
             <div className="flex w-[328px] flex-col justify-center gap-5">
@@ -333,8 +325,9 @@ export const CategoryFormModal = ({
         </div>
 
         <ImageCropModal
-          isOpen={Boolean(cropSourceImageUrl)}
-          imageUrl={cropSourceImageUrl}
+          isOpen={Boolean(cropSourceImageFile)}
+          imageUrl={null}
+          imageFile={cropSourceImageFile}
           title="대표 이미지 편집"
           description="선택한 이미지를 드래그하고 확대해서 카테고리 대표 이미지 영역을 맞춰보세요."
           closeLabel="대표 이미지 편집 닫기"

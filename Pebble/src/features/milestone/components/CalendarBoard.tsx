@@ -5,7 +5,6 @@ import { generateWeeks } from "./calendarWeeks";
 import { type Category, type TaskItem } from "@/types";
 
 type CalendarBoardProps = {
-  isSidebarOpen?: boolean;
   categories?: Category[];
   standaloneTasks?: TaskItem[];
   currentYear: number;
@@ -14,7 +13,6 @@ type CalendarBoardProps = {
 };
 
 export const CalendarBoard = ({
-  isSidebarOpen = true,
   categories = [],
   standaloneTasks = [],
   currentYear,
@@ -55,15 +53,10 @@ export const CalendarBoard = ({
   return (
     <section
       aria-label="월간 캘린더"
-      className={`flex h-[1000px] flex-col overflow-hidden bg-fill-inverse shadow-shadow-m shrink-0 transition-all duration-300 ${
-        isSidebarOpen ? "w-[924px] rounded-[20px]" : "w-[1316px] rounded-token-l"
-      }`}
+      className="flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300"
     >
       <div 
-        className={`relative flex flex-col items-start gap-token-l transition-all duration-300 ${
-          isSidebarOpen ? "ml-6 mt-8 h-[936px]" : "ml-[93px] mt-10 h-[920px]"
-        }`}
-        style={{ width: isSidebarOpen ? 876 : 1130 }}
+        className="relative flex h-full min-h-0 w-full flex-col items-start gap-token-l px-6 pt-8 pb-6 transition-all duration-300"
       >
         <header className="inline-flex items-end">
           <MonthSelector 

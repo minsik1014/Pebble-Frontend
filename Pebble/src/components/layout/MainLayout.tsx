@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Outlet,
   useNavigate,
@@ -17,9 +17,6 @@ import { CalendarSidebar } from "@/features/milestone/components/CalendarSidebar
 import { SidebarDivider } from "@/features/milestone/components/SidebarDivider";
 import type { TaskFormSubmitInput } from "@/features/task/components/TaskFormModal";
 import type { Category } from "@/types";
-
-const ORIGINAL_WIDTH = 1416;
-const ORIGINAL_HEIGHT = 1000;
 
 export interface MainLayoutContext {
   isSidebarOpen: boolean;
@@ -52,7 +49,6 @@ export const MainLayout = (): JSX.Element => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const [scale, setScale] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth() + 1);
@@ -76,26 +72,6 @@ export const MainLayout = (): JSX.Element => {
     deleteTask,
   } = useCalendarState();
   const selectedCategoryId = searchParams.get("category");
-
-  useEffect(() => {
-    const handleResize = () => {
-      const availableWidth = window.innerWidth - 24;
-      const availableHeight = window.innerHeight - 24;
-
-      const widthScale = availableWidth / ORIGINAL_WIDTH;
-      const heightScale = availableHeight / ORIGINAL_HEIGHT;
-
-      const nextScale = Math.min(widthScale, heightScale, 1);
-      setScale(Math.max(0.5, nextScale));
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen((previous) => !previous);
@@ -155,42 +131,31 @@ export const MainLayout = (): JSX.Element => {
   };
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center overflow-hidden bg-fill-surface">
-      <div
-        className="relative"
-        style={{
-          width: ORIGINAL_WIDTH * scale,
-          height: ORIGINAL_HEIGHT * scale,
-        }}
-      >
-        <div
-          className="absolute left-0 top-0 flex origin-top-left gap-4"
-          style={{
-            transform: `scale(${scale})`,
-          }}
-        >
-          <div className="relative flex h-[1000px] shrink-0 overflow-hidden rounded-[20px] shadow-shadow-m">
-            <GlobalNavigationBar
-              isSidebarOpen={isSidebarOpen}
-              onToggleSidebar={handleToggleSidebar}
-            />
-            <SidebarDivider visible={isSidebarOpen} />
-            <CalendarSidebar
-              isSidebarOpen={isSidebarOpen}
-              categories={categories}
-              standaloneTasks={standaloneTasks}
-              currentYear={currentYear}
-              currentMonth={currentMonth}
-              onSelectCategory={handleSelectCategory}
-              selectedCategoryId={selectedCategoryId}
-              onCreateCategory={handleCreateCategory}
-              onCreateMilestone={createMilestone}
-              onCreateTask={handleCreateTask}
-              onUpdateStandaloneTask={updateStandaloneTask}
-              onDeleteStandaloneTask={deleteStandaloneTask}
-            />
-          </div>
+    <main className="flex h-screen w-screen items-center justify-center overflow-hidden bg-fill-surface p-3">
+      <div className="flex h-full max-h-[1100px] min-h-0 w-full max-w-[1728px] min-w-0 gap-4">
+        <div className="relative flex h-full shrink-0 overflow-hidden rounded-[20px] shadow-shadow-m">
+          <GlobalNavigationBar
+            isSidebarOpen={isSidebarOpen}
+            onToggleSidebar={handleToggleSidebar}
+          />
+          <SidebarDivider visible={isSidebarOpen} />
+          <CalendarSidebar
+            isSidebarOpen={isSidebarOpen}
+            categories={categories}
+            standaloneTasks={standaloneTasks}
+            currentYear={currentYear}
+            currentMonth={currentMonth}
+            onSelectCategory={handleSelectCategory}
+            selectedCategoryId={selectedCategoryId}
+            onCreateCategory={handleCreateCategory}
+            onCreateMilestone={createMilestone}
+            onCreateTask={handleCreateTask}
+            onUpdateStandaloneTask={updateStandaloneTask}
+            onDeleteStandaloneTask={deleteStandaloneTask}
+          />
+        </div>
 
+        <div className="min-w-0 flex-1">
           <Outlet
             context={{
               isSidebarOpen,

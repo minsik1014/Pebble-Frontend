@@ -18,7 +18,6 @@ import type {
 import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 
 export const CategoryDetailSection = ({
-  isSidebarOpen,
   category,
   onBack,
   categories,
@@ -30,7 +29,6 @@ export const CategoryDetailSection = ({
   onDeleteMilestone,
   onDeleteTask,
 }: {
-  isSidebarOpen: boolean;
   category: Category;
   onBack: () => void;
   categories: Category[];
@@ -73,9 +71,7 @@ export const CategoryDetailSection = ({
 
   return (
     <section
-      className={`relative h-[1000px] bg-fill-inverse rounded-[20px] shadow-shadow-m transition-all duration-300 overflow-hidden ${
-        isSidebarOpen ? "w-[898px]" : "w-[1290px]"
-      }`}
+      className="relative h-full w-full min-w-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300"
     >
       {/* 캘린더 돌아가기 버튼 */}
       <button

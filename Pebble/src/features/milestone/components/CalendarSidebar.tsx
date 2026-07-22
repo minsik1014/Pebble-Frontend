@@ -19,6 +19,9 @@ import type {
   CreateScheduleItemInput,
 } from "@/features/calendar/types";
 
+const RESPONSIVE_SIDEBAR_WIDTH_CLASS =
+  "w-[clamp(336px,calc(35vw_-_112px),392px)]";
+
 export const CalendarSidebar = ({
   isSidebarOpen = true,
   categories,
@@ -94,24 +97,28 @@ export const CalendarSidebar = ({
 
   return (
     <aside 
-      className={`flex shrink-0 h-[1000px] relative items-stretch overflow-hidden transition-all duration-300 ${
-        isSidebarOpen ? "w-[392px]" : "w-0"
+      className={`flex h-full shrink-0 relative items-stretch overflow-hidden transition-all duration-300 ${
+        isSidebarOpen ? RESPONSIVE_SIDEBAR_WIDTH_CLASS : "w-0"
       }`}
     >
       {/* 메인 마일스톤 관리 영역 */}
       <section 
-        className={`relative h-[1000px] bg-fill-inverse rounded-[0px_32px_32px_0px] flex flex-col transition-all duration-300 overflow-hidden ${
-          isSidebarOpen ? "w-[392px] opacity-100" : "w-0 opacity-0"
+        className={`relative h-full bg-fill-inverse rounded-[0px_32px_32px_0px] flex flex-col transition-all duration-300 overflow-hidden ${
+          isSidebarOpen
+            ? `${RESPONSIVE_SIDEBAR_WIDTH_CLASS} opacity-100`
+            : "w-0 opacity-0"
         }`}
       >
-        <div className="w-[392px] min-w-[392px] h-[1000px] flex flex-col">
+        <div
+          className={`flex h-full min-w-[336px] flex-col ${RESPONSIVE_SIDEBAR_WIDTH_CLASS}`}
+        >
           <CalendarSidebarHeader
             monthLabel={monthLabel}
             viewMode={viewMode}
             onChangeViewMode={setViewMode}
           />
           {/* Flexbox에서 내용이 부모를 뚫고 나가는 것을 방지하기 위해 min-h-0 추가 */}
-          <div className="relative -left-px flex min-h-0 h-[888px] w-full flex-col px-5 pb-3 pt-1">
+          <div className="relative -left-px flex min-h-0 flex-1 w-full flex-col px-5 pb-3 pt-1">
             <div
               ref={scrollContainerRef}
               className="-mx-3 flex max-h-[calc(100%-56px)] w-[calc(100%+24px)] flex-col items-start gap-5 overflow-y-auto overflow-x-hidden px-3 py-3 custom-scrollbar"

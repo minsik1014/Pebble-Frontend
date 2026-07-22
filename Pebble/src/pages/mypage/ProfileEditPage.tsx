@@ -1,20 +1,16 @@
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
-import type { MainLayoutContext } from "@/components/layout/MainLayout";
 import { ProfileEditForm } from "@/features/mypage/components/ProfileEditForm";
 import { ProfileImageEditor } from "@/features/mypage/components/ProfileImageEditor";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfileEditPage() {
   const navigate = useNavigate();
-  const { isSidebarOpen } = useOutletContext<MainLayoutContext>();
   const profile = useProfileStore((state) => state.profile);
 
   return (
     <section
-      className={`relative h-[1000px] shrink-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
-        isSidebarOpen ? "w-[924px]" : "w-[1316px]"
-      }`}
+      className="relative h-full w-full min-w-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300"
     >
       <button
         type="button"

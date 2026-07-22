@@ -1,15 +1,17 @@
 import { useId, useRef } from "react";
 import type { ChangeEvent } from "react";
 import UploadIcon from "@/assets/icons/Upload.svg?react";
+import {
+  ACCEPTED_IMAGE_TYPE_LIST,
+  ACCEPTED_IMAGE_TYPES,
+  MAX_IMAGE_SIZE,
+} from "@/components/ui/image-crop/imageCropConfig";
 
 type CategoryImageUploaderProps = {
   imageUrl?: string;
   onImageChange: (imageUrl: string | undefined) => void;
-  onSelectImageFile?: (imageUrl: string) => void;
+  onSelectImageFile: (imageFile: File) => void;
 };
-
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export const CategoryImageUploader = ({
   imageUrl,
@@ -26,20 +28,17 @@ export const CategoryImageUploader = ({
       return;
     }
 
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type) || file.size > MAX_IMAGE_SIZE) {
+    if (
+      !ACCEPTED_IMAGE_TYPE_LIST.includes(
+        file.type as (typeof ACCEPTED_IMAGE_TYPE_LIST)[number],
+      ) ||
+      file.size > MAX_IMAGE_SIZE
+    ) {
       event.target.value = "";
       return;
     }
 
-    const nextImageUrl = URL.createObjectURL(file);
-
-    if (onSelectImageFile) {
-      onSelectImageFile(nextImageUrl);
-      event.target.value = "";
-      return;
-    }
-
-    onImageChange(nextImageUrl);
+    onSelectImageFile(file);
     event.target.value = "";
   };
 
@@ -87,7 +86,7 @@ export const CategoryImageUploader = ({
         ref={inputRef}
         id={inputId}
         type="file"
-        accept={ACCEPTED_IMAGE_TYPES.join(",")}
+        accept={ACCEPTED_IMAGE_TYPES}
         className="sr-only"
         onChange={handleFileChange}
       />

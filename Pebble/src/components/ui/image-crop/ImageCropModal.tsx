@@ -4,12 +4,18 @@ import "react-easy-crop/react-easy-crop.css";
 
 import CloseIcon from "@/assets/icons/Close.svg?react";
 import { getCroppedImageUrl } from "@/components/ui/image-crop/cropImage";
+import {
+  ACCEPTED_IMAGE_TYPE_LIST,
+  ACCEPTED_IMAGE_TYPES,
+  MAX_IMAGE_SIZE,
+} from "@/components/ui/image-crop/imageCropConfig";
 
 type ImageCropShape = "round" | "rect";
 
 type ImageCropModalProps = {
   isOpen: boolean;
   imageUrl: string | null;
+  imageFile?: File | null;
   title: string;
   description: string;
   closeLabel: string;
@@ -21,11 +27,10 @@ type ImageCropModalProps = {
   onChangeImage: (imageUrl: string) => void;
 };
 
-const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/webp";
-
 export const ImageCropModal = ({
   isOpen,
   imageUrl,
+  imageFile = null,
   title,
   description,
   closeLabel,
@@ -44,23 +49,37 @@ export const ImageCropModal = ({
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      setSourceImageUrl(imageUrl);
-      setCrop({ x: 0, y: 0 });
-      setZoom(1);
-      setRotation(0);
-      setCroppedAreaPixels(null);
+  const revokeCreatedObjectUrl = useCallback(() => {
+    if (createdObjectUrlRef.current) {
+      URL.revokeObjectURL(createdObjectUrlRef.current);
+      createdObjectUrlRef.current = null;
     }
-  }, [imageUrl, isOpen]);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      revokeCreatedObjectUrl();
+      return;
+    }
+
+    revokeCreatedObjectUrl();
+
+    const nextImageUrl = imageFile ? URL.createObjectURL(imageFile) : imageUrl;
+
+    if (imageFile) {
+      createdObjectUrlRef.current = nextImageUrl;
+    }
+
+    setSourceImageUrl(nextImageUrl);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setRotation(0);
+    setCroppedAreaPixels(null);
+  }, [imageFile, imageUrl, isOpen, revokeCreatedObjectUrl]);
 
   useEffect(
-    () => () => {
-      if (createdObjectUrlRef.current) {
-        URL.revokeObjectURL(createdObjectUrlRef.current);
-      }
-    },
-    [],
+    () => () => revokeCreatedObjectUrl(),
+    [revokeCreatedObjectUrl],
   );
 
   const handleCropComplete = useCallback(
@@ -75,9 +94,16 @@ export const ImageCropModal = ({
       return;
     }
 
-    if (createdObjectUrlRef.current) {
-      URL.revokeObjectURL(createdObjectUrlRef.current);
+    if (
+      !ACCEPTED_IMAGE_TYPE_LIST.includes(
+        file.type as (typeof ACCEPTED_IMAGE_TYPE_LIST)[number],
+      ) ||
+      file.size > MAX_IMAGE_SIZE
+    ) {
+      return;
     }
+
+    revokeCreatedObjectUrl();
 
     const nextImageUrl = URL.createObjectURL(file);
 
@@ -86,6 +112,7 @@ export const ImageCropModal = ({
     setCrop({ x: 0, y: 0 });
     setZoom(1);
     setRotation(0);
+    setCroppedAreaPixels(null);
   };
 
   const handleApply = async () => {
@@ -108,10 +135,7 @@ export const ImageCropModal = ({
   };
 
   const handleClose = () => {
-    if (createdObjectUrlRef.current) {
-      URL.revokeObjectURL(createdObjectUrlRef.current);
-      createdObjectUrlRef.current = null;
-    }
+    revokeCreatedObjectUrl();
 
     onClose();
   };
@@ -223,7 +247,7 @@ export const ImageCropModal = ({
           <button
             type="button"
             className="h-11 rounded-token-s bg-btn-primary px-5 text-body-02-m text-text-onFill disabled:bg-btn-teritary"
-            disabled={!sourceImageUrl}
+            disabled={!sourceImageUrl || !croppedAreaPixels}
             onClick={handleApply}
           >
             {applyLabel}

@@ -110,7 +110,7 @@ export const GlobalNavigationBar = ({
   return (
     <nav
       className={[
-        "relative z-50 h-[1000px] w-[84px] shrink-0 px-5 py-8",
+        "relative z-50 h-full w-[84px] shrink-0 px-5 py-8",
         "bg-fill-inverse inline-flex flex-col justify-start items-center gap-10",
         "overflow-visible",
         variant === "collapsed" ? "rounded-token-m shadow-shadow-m" : "",
