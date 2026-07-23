@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
 import SearchIcon from "@/assets/icons/Search.svg?react";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
+import { mockUsers } from "@/features/friends/mock/friendMock";
 import { useFriendStore } from "@/features/friends/store/useFriendStore";
 import type { Friend } from "@/features/friends/types/friend";
 
@@ -64,10 +65,10 @@ export default function FriendsPage(): JSX.Element {
 
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const searchResults = normalizedSearchQuery
-    ? friends.filter(
-        ({ id, nickname }) =>
+    ? mockUsers.filter(
+        ({ email, nickname }) =>
           nickname.toLowerCase().includes(normalizedSearchQuery) ||
-          String(id).includes(normalizedSearchQuery),
+          email.toLowerCase().includes(normalizedSearchQuery),
       )
     : [];
 
@@ -213,21 +214,27 @@ export default function FriendsPage(): JSX.Element {
                   <p className="text-body-02-m text-text-teritary">
                     검색 결과 ({searchResults.length})
                   </p>
-                  {searchResults.map((friend) => (
-                    <div key={friend.id} className="flex min-h-16 items-center">
-                      <FriendProfile friend={friend} hideBio />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleDeleteFriend(friend.id, friend.nickname)
-                        }
-                        className="ml-auto flex size-11 items-center justify-center rounded-token-s bg-[#FF8A8A] text-text-onFill transition-opacity hover:opacity-80"
-                        aria-label={`${friend.nickname} 친구 삭제`}
-                      >
-                        <Trash2 className="size-5" strokeWidth={2} />
-                      </button>
-                    </div>
-                  ))}
+                  {searchResults.map((user) => {
+                    const isFriend = friends.some(({ id }) => id === user.id);
+
+                    return (
+                      <div key={user.id} className="flex min-h-16 items-center">
+                        <FriendProfile friend={user} hideBio />
+                        {isFriend && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDeleteFriend(user.id, user.nickname)
+                            }
+                            className="ml-auto flex size-11 items-center justify-center rounded-token-s bg-[#FF8A8A] text-text-onFill transition-opacity hover:opacity-80"
+                            aria-label={`${user.nickname} 친구 삭제`}
+                          >
+                            <Trash2 className="size-5" strokeWidth={2} />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div
