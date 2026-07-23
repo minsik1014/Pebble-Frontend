@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import {
   mockFriendRequests,
-  mockFriends,
+  mockUsers,
 } from "@/features/friends/mock/friendMock";
 import type {
   Friend,
@@ -11,14 +11,15 @@ import type {
 } from "@/features/friends/types/friend";
 
 type FriendStore = {
-  friends: Friend[];
+  users: Friend[];
   requests: FriendRequest[];
   respondRequest: (requestId: number, action: FriendRequestAction) => void;
   deleteFriend: (friendId: number) => void;
+  sendFriendRequest: (userId: number) => void;
 };
 
 export const useFriendStore = create<FriendStore>((set) => ({
-  friends: mockFriends,
+  users: mockUsers,
   requests: mockFriendRequests,
 
   respondRequest: (requestId, action) =>
@@ -31,9 +32,6 @@ export const useFriendStore = create<FriendStore>((set) => ({
       }
 
       const isAccepted = action === "ACCEPT";
-      const alreadyFriends = state.friends.some(
-        ({ id }) => id === request.user.id,
-      );
 
       return {
         requests: state.requests.map((item) =>
@@ -44,15 +42,32 @@ export const useFriendStore = create<FriendStore>((set) => ({
               }
             : item,
         ),
-        friends:
-          isAccepted && !alreadyFriends
-            ? [request.user, ...state.friends]
-            : state.friends,
+        users: state.users.map((user) =>
+          user.id === request.userId
+            ? {
+                ...user,
+                relationshipStatus: isAccepted ? "FRIEND" : "NONE",
+              }
+            : user,
+        ),
       };
     }),
 
   deleteFriend: (friendId) =>
     set((state) => ({
-      friends: state.friends.filter(({ id }) => id !== friendId),
+      users: state.users.map((user) =>
+        user.id === friendId
+          ? { ...user, relationshipStatus: "NONE" }
+          : user,
+      ),
+    })),
+
+  sendFriendRequest: (userId) =>
+    set((state) => ({
+      users: state.users.map((user) =>
+        user.id === userId && user.relationshipStatus === "NONE"
+          ? { ...user, relationshipStatus: "OUTGOING" }
+          : user,
+      ),
     })),
 }));

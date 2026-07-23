@@ -4,7 +4,6 @@ import { Trash2 } from "lucide-react";
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
 import SearchIcon from "@/assets/icons/Search.svg?react";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
-import { mockUsers } from "@/features/friends/mock/friendMock";
 import { useFriendStore } from "@/features/friends/store/useFriendStore";
 import type { Friend } from "@/features/friends/types/friend";
 
@@ -12,13 +11,24 @@ export default function FriendsPage(): JSX.Element {
   const { isSidebarOpen } = useCalendarLayoutContext();
   const [activeTab, setActiveTab] = useState<"friends" | "search">("friends");
   const [searchQuery, setSearchQuery] = useState("");
-  const friends = useFriendStore((state) => state.friends);
-  const requests = useFriendStore((state) => state.requests);
-  const pendingRequests = requests.filter(
-    ({ status }) => status === "PENDING",
+  const users = useFriendStore((state) => state.users);
+  const friends = users.filter(
+    ({ relationshipStatus }) => relationshipStatus === "FRIEND",
   );
+  const requests = useFriendStore((state) => state.requests);
+  const pendingRequests = requests.flatMap((request) => {
+    if (request.status !== "PENDING") {
+      return [];
+    }
+
+    const user = users.find(({ id }) => id === request.userId);
+    return user ? [{ request, user }] : [];
+  });
   const respondRequest = useFriendStore((state) => state.respondRequest);
   const deleteFriend = useFriendStore((state) => state.deleteFriend);
+  const sendFriendRequest = useFriendStore(
+    (state) => state.sendFriendRequest,
+  );
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -63,9 +73,14 @@ export default function FriendsPage(): JSX.Element {
     showToast(`${nickname}님을 친구에서 삭제했어요`);
   };
 
+  const handleSendFriendRequest = (userId: number, nickname: string) => {
+    sendFriendRequest(userId);
+    showToast(`${nickname}님에게 친구 신청을 보냈어요`);
+  };
+
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const searchResults = normalizedSearchQuery
-    ? mockUsers.filter(
+    ? users.filter(
         ({ email, nickname }) =>
           nickname.toLowerCase().includes(normalizedSearchQuery) ||
           email.toLowerCase().includes(normalizedSearchQuery),
@@ -78,18 +93,18 @@ export default function FriendsPage(): JSX.Element {
         isSidebarOpen ? "w-[924px]" : "w-[1316px]"
       }`}
     >
+      <button
+        type="button"
+        onClick={() => window.history.back()}
+        className="absolute left-6 top-10 z-20 flex size-11 items-center justify-center rounded-token-s text-text-strong transition-colors hover:bg-fill-surface"
+        aria-label="이전 페이지로 돌아가기"
+      >
+        <ChevronLeftIcon className="size-6" />
+      </button>
+
       <div className="h-full overflow-y-auto px-[72px] pb-12 custom-scrollbar">
         <div className="mx-auto w-full max-w-[780px] pt-10">
           <div className="relative flex h-12 items-center justify-center">
-            <button
-              type="button"
-              onClick={() => window.history.back()}
-              className="absolute left-0 flex size-11 items-center justify-center rounded-token-s text-text-strong transition-colors hover:bg-fill-surface"
-              aria-label="이전 페이지로 돌아가기"
-            >
-              <ChevronLeftIcon className="size-6" />
-            </button>
-
             <div className="grid h-11 w-[440px] grid-cols-2 rounded-token-s bg-fill-surface p-1">
               <button
                 type="button"
@@ -127,16 +142,16 @@ export default function FriendsPage(): JSX.Element {
                 </h2>
 
                 <div className="mt-5 flex flex-col gap-5">
-                  {pendingRequests.map((request) => (
+                  {pendingRequests.map(({ request, user }) => (
                     <div key={request.id} className="flex min-h-16 items-center">
-                      <FriendProfile friend={request.user} />
+                      <FriendProfile friend={user} />
                       <div className="ml-auto flex gap-3">
                         <button
                           type="button"
                           onClick={() =>
                             handleRequestResponse(
                               request.id,
-                              request.user.nickname,
+                              user.nickname,
                               "ACCEPT",
                             )
                           }
@@ -149,7 +164,7 @@ export default function FriendsPage(): JSX.Element {
                           onClick={() =>
                             handleRequestResponse(
                               request.id,
-                              request.user.nickname,
+                              user.nickname,
                               "REJECT",
                             )
                           }
@@ -215,12 +230,10 @@ export default function FriendsPage(): JSX.Element {
                     검색 결과 ({searchResults.length})
                   </p>
                   {searchResults.map((user) => {
-                    const isFriend = friends.some(({ id }) => id === user.id);
-
                     return (
                       <div key={user.id} className="flex min-h-16 items-center">
                         <FriendProfile friend={user} hideBio />
-                        {isFriend && (
+                        {user.relationshipStatus === "FRIEND" && (
                           <button
                             type="button"
                             onClick={() =>
@@ -231,6 +244,31 @@ export default function FriendsPage(): JSX.Element {
                           >
                             <Trash2 className="size-5" strokeWidth={2} />
                           </button>
+                        )}
+                        {user.relationshipStatus === "NONE" && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleSendFriendRequest(user.id, user.nickname)
+                            }
+                            className="ml-auto h-11 min-w-[96px] rounded-token-s bg-fill-primary px-5 text-body-02-m text-text-onFill"
+                          >
+                            친구 신청
+                          </button>
+                        )}
+                        {user.relationshipStatus === "OUTGOING" && (
+                          <button
+                            type="button"
+                            disabled
+                            className="ml-auto h-11 min-w-[96px] cursor-default rounded-token-s bg-fill-surface px-5 text-body-02-m text-text-strong"
+                          >
+                            요청 중
+                          </button>
+                        )}
+                        {user.relationshipStatus === "INCOMING" && (
+                          <span className="ml-auto text-body-02-m text-text-teritary">
+                            받은 요청
+                          </span>
                         )}
                       </div>
                     );
