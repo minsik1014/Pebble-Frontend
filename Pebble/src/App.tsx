@@ -10,6 +10,7 @@ import SettingsPage from './pages/settings/SettingsPage';
 import MyPage from "@/pages/mypage/MyPage";
 import ProfileEditPage from "@/pages/mypage/ProfileEditPage";
 import MyCategoryDetailPage from "@/pages/mypage/MyCategoryDetailPage";
+import FriendsPage from "@/pages/freinds/FriendsPage";
 import { LandingPage } from '@/pages/landing/LandingPage';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
 
           <Route element={<MainLayout />}>
             <Route index element={<CalendarMainPage />} />
+            <Route path="friends" element={<FriendsPage />} />
             <Route path="my" element={<MyPage />} />
             <Route path="my/profile" element={<ProfileEditPage />} />
             <Route

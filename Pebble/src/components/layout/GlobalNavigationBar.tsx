@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import BellOutlineIcon from "@/assets/icons/bell-outline no-dot.svg?react";
 import SocialOutlineIcon from "@/assets/icons/social-outline.svg?react";
+import SocialSolidIcon from "@/assets/icons/social-solid.svg?react";
 import CalendarOutlineIcon from "@/assets/icons/calendar-nav-default.svg?react";
 import CalendarSolidIcon from "@/assets/icons/calendar-nav-selected.svg?react";
 import MyOutlineIcon from "@/assets/icons/user-outline.svg?react";
@@ -104,6 +105,7 @@ export const GlobalNavigationBar = ({
     ].join(" ");
 
   const isCalendarActive = pathname === "/";
+  const isFriendsActive = pathname.startsWith("/friends");
   const isMyPageActive = pathname.startsWith("/my");
   const isSettingsActive = pathname.startsWith("/settings");
 
@@ -172,10 +174,16 @@ export const GlobalNavigationBar = ({
         <div className="flex flex-col justify-start items-center gap-10 w-full">
           <button
             type="button"
-            className={getNavigationButtonClassName(false)}
+            onClick={() => navigate("/friends")}
+            className={getNavigationButtonClassName(isFriendsActive)}
             aria-label="소셜 페이지로 이동"
+            aria-current={isFriendsActive ? "page" : undefined}
           >
-            <SocialOutlineIcon className="size-6" />
+            {isFriendsActive ? (
+              <SocialSolidIcon className="size-6" />
+            ) : (
+              <SocialOutlineIcon className="size-6" />
+            )}
           </button>
 
           <button
