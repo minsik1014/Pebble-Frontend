@@ -5,7 +5,7 @@ import type {
   UpdateCategoryInput,
 } from "@/features/calendar/types";
 import type { TaskFormSubmitInput } from "@/features/task/components/TaskFormModal";
-import type { Category } from "@/types";
+import type { Category, MilestoneItem } from "@/types";
 
 export type CalendarLayoutContextValue = {
   isSidebarOpen: boolean;
@@ -16,24 +16,32 @@ export type CalendarLayoutContextValue = {
   selectedCategoryId: string | null;
   categories: Category[];
   standaloneTasks: CalendarStateModel["standaloneTasks"];
+  isCalendarLoading: boolean;
+  calendarErrorMessage: string | null;
+  reloadCalendarData: CalendarStateModel["reloadCalendarData"];
   replaceCategories: CalendarStateModel["replaceCategories"];
   selectCategory: (categoryId: string) => void;
-  createCategory: (input: CreateCategoryInput) => void;
+  createCategory: (input: CreateCategoryInput) => Promise<void>;
   createMilestone: (
     categoryId: string,
     input: CreateScheduleItemInput,
-  ) => void;
-  createTask: (input: TaskFormSubmitInput) => void;
+  ) => Promise<MilestoneItem[]>;
+  createTask: (input: TaskFormSubmitInput) => Promise<void>;
   updateCategoryTask: CalendarStateModel["updateCategoryTask"];
   deleteCategoryTask: CalendarStateModel["deleteCategoryTask"];
-  updateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
-  deleteCategory: (categoryId: string) => void;
-  deleteMilestone: (categoryId: string, milestoneId: string) => void;
+  updateCategory: (
+    categoryId: string,
+    input: UpdateCategoryInput,
+  ) => Promise<void>;
+  deleteCategory: (categoryId: string) => Promise<void>;
+  updateMilestone: CalendarStateModel["updateMilestone"];
+  deleteMilestone: (categoryId: string, milestoneId: string) => Promise<void>;
+  updateTask: CalendarStateModel["updateTask"];
   deleteTask: (
     categoryId: string,
     milestoneId: string,
     taskId: string,
-  ) => void;
+  ) => Promise<void>;
   updateStandaloneTask: CalendarStateModel["updateStandaloneTask"];
   deleteStandaloneTask: CalendarStateModel["deleteStandaloneTask"];
 };

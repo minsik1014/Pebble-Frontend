@@ -4,8 +4,8 @@ type ModalActionBarProps = {
   submitLabel: string;
   disabled?: boolean;
   onCancel: () => void;
-  onSubmit: () => void;
-  onDelete?: () => void;
+  onSubmit: () => void | Promise<void>;
+  onDelete?: () => void | Promise<void>;
   deleteLabel?: string;
 };
 
