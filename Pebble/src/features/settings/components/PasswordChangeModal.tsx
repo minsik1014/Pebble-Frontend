@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 
+import EyeOffIcon from '@/assets/icons/eye-off.svg?react';
+import EyeOnIcon from '@/assets/icons/eye-on.svg?react';
+
 import { Button } from '@/components/ui/Button';
 import { changePassword } from '@/features/settings/api/mockSettingsApi';
 
@@ -47,6 +50,10 @@ export function PasswordChangeModal({
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showNewPasswordConfirm, setShowNewPasswordConfirm] = useState(false);
+
   useEffect(() => {
     if (!open) {
       setCurrentPassword('');
@@ -54,6 +61,9 @@ export function PasswordChangeModal({
       setNewPasswordConfirm('');
       setErrorMessage('');
       setIsSubmitting(false);
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowNewPasswordConfirm(false);
     }
   }, [open]);
 
@@ -128,17 +138,36 @@ export function PasswordChangeModal({
               현재 비밀번호
             </span>
 
-            <input
-              type="password"
-              value={currentPassword}
-              disabled={isSubmitting}
-              placeholder="현재 비밀번호를 입력해 주세요"
-              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
-              onChange={(event) => {
-                setCurrentPassword(event.target.value);
-                setErrorMessage('');
-              }}
-            />
+            <div className="relative mt-token-s">
+              <input
+                type={showCurrentPassword ? 'text' : 'password'}
+                value={currentPassword}
+                disabled={isSubmitting}
+                placeholder="현재 비밀번호를 입력해 주세요"
+                className="h-12 w-full rounded-token-s border border-border-teritory px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+                onChange={(event) => {
+                  setCurrentPassword(event.target.value);
+                  setErrorMessage('');
+                }}
+              />
+
+              <button
+                type="button"
+                disabled={isSubmitting}
+                aria-label="현재 비밀번호 누르는 동안 보기"
+                className="absolute right-token-m top-1/2 flex size-6 -translate-y-1/2 items-center justify-center text-text-secondary disabled:cursor-not-allowed"
+                onMouseDown={() => setShowCurrentPassword(true)}
+                onMouseUp={() => setShowCurrentPassword(false)}
+                onMouseLeave={() => setShowCurrentPassword(false)}
+                onBlur={() => setShowCurrentPassword(false)}
+              >
+                {showCurrentPassword ? (
+                  <EyeOffIcon className="size-5" aria-hidden="true" />
+                ) : (
+                  <EyeOnIcon className="size-5" aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </label>
 
           <label>
@@ -146,17 +175,36 @@ export function PasswordChangeModal({
               새 비밀번호
             </span>
 
-            <input
-              type="password"
-              value={newPassword}
-              disabled={isSubmitting}
-              placeholder="새 비밀번호를 입력해 주세요"
-              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
-              onChange={(event) => {
-                setNewPassword(event.target.value);
-                setErrorMessage('');
-              }}
-            />
+            <div className="relative mt-token-s">
+              <input
+                type={showNewPassword ? 'text' : 'password'}
+                value={newPassword}
+                disabled={isSubmitting}
+                placeholder="새 비밀번호를 입력해 주세요"
+                className="h-12 w-full rounded-token-s border border-border-teritory px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+                onChange={(event) => {
+                  setNewPassword(event.target.value);
+                  setErrorMessage('');
+                }}
+              />
+
+              <button
+                type="button"
+                disabled={isSubmitting}
+                aria-label="새 비밀번호 누르는 동안 보기"
+                className="absolute right-token-m top-1/2 flex size-6 -translate-y-1/2 items-center justify-center text-text-secondary disabled:cursor-not-allowed"
+                onMouseDown={() => setShowNewPassword(true)}
+                onMouseUp={() => setShowNewPassword(false)}
+                onMouseLeave={() => setShowNewPassword(false)}
+                onBlur={() => setShowNewPassword(false)}
+              >
+                {showNewPassword ? (
+                  <EyeOffIcon className="size-5" aria-hidden="true" />
+                ) : (
+                  <EyeOnIcon className="size-5" aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </label>
 
           <label>
@@ -164,17 +212,36 @@ export function PasswordChangeModal({
               새 비밀번호 확인
             </span>
 
-            <input
-              type="password"
-              value={newPasswordConfirm}
-              disabled={isSubmitting}
-              placeholder="새 비밀번호를 다시 입력해 주세요"
-              className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
-              onChange={(event) => {
-                setNewPasswordConfirm(event.target.value);
-                setErrorMessage('');
-              }}
-            />
+            <div className="relative mt-token-s">
+              <input
+                type={showNewPasswordConfirm ? 'text' : 'password'}
+                value={newPasswordConfirm}
+                disabled={isSubmitting}
+                placeholder="새 비밀번호를 다시 입력해 주세요"
+                className="h-12 w-full rounded-token-s border border-border-teritory px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+                onChange={(event) => {
+                  setNewPasswordConfirm(event.target.value);
+                  setErrorMessage('');
+                }}
+              />
+
+              <button
+                type="button"
+                disabled={isSubmitting}
+                aria-label="새 비밀번호 확인 누르는 동안 보기"
+                className="absolute right-token-m top-1/2 flex size-6 -translate-y-1/2 items-center justify-center text-text-secondary disabled:cursor-not-allowed"
+                onMouseDown={() => setShowNewPasswordConfirm(true)}
+                onMouseUp={() => setShowNewPasswordConfirm(false)}
+                onMouseLeave={() => setShowNewPasswordConfirm(false)}
+                onBlur={() => setShowNewPasswordConfirm(false)}
+              >
+                {showNewPasswordConfirm ? (
+                  <EyeOffIcon className="size-5" aria-hidden="true" />
+                ) : (
+                  <EyeOnIcon className="size-5" aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </label>
         </div>
 
@@ -201,9 +268,7 @@ export function PasswordChangeModal({
             disabled={!canSubmit}
             className={[
               'h-11 w-full disabled:cursor-not-allowed disabled:!opacity-100',
-              canSubmit
-                ? ''
-                : '!bg-[#737373] !text-[#A3A3A3]',
+              canSubmit ? '' : '!bg-[#737373] !text-[#A3A3A3]',
             ].join(' ')}
             onClick={handleSubmit}
           >
