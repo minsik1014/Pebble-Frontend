@@ -13,6 +13,39 @@ interface PasswordChangeModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+function getNewPasswordError(password: string) {
+  if (!password.trim()) return '';
+
+  if (password.length < 8) {
+    return '8자 이상 입력해 주세요.';
+  }
+
+  const hasEnglish = /[A-Za-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+
+  if (!hasEnglish || !hasNumber) {
+    return '영문과 숫자를 모두 포함해 주세요.';
+  }
+
+  return '';
+}
+
+function getPasswordConfirmError({
+  newPassword,
+  newPasswordConfirm,
+}: {
+  newPassword: string;
+  newPasswordConfirm: string;
+}) {
+  if (!newPasswordConfirm.trim()) return '';
+
+  if (newPassword !== newPasswordConfirm) {
+    return '새 비밀번호가 일치하지 않아요.';
+  }
+
+  return '';
+}
+
 function validatePasswordForm({
   currentPassword,
   newPassword,
@@ -24,14 +57,18 @@ function validatePasswordForm({
 }) {
   if (!currentPassword.trim()) return '현재 비밀번호를 입력해 주세요.';
   if (!newPassword.trim()) return '새 비밀번호를 입력해 주세요.';
+  if (!newPasswordConfirm.trim()) return '새 비밀번호 확인을 입력해 주세요.';
 
-  if (newPassword.length < 8) {
-    return '새 비밀번호는 8자 이상이어야 해요.';
-  }
+  const newPasswordError = getNewPasswordError(newPassword);
 
-  if (newPassword !== newPasswordConfirm) {
-    return '새 비밀번호가 일치하지 않아요.';
-  }
+  if (newPasswordError) return newPasswordError;
+
+  const confirmError = getPasswordConfirmError({
+    newPassword,
+    newPasswordConfirm,
+  });
+
+  if (confirmError) return confirmError;
 
   if (currentPassword === newPassword) {
     return '현재 비밀번호와 다른 비밀번호를 입력해 주세요.';
@@ -69,12 +106,22 @@ export function PasswordChangeModal({
 
   if (!open) return null;
 
+  const newPasswordError = getNewPasswordError(newPassword);
+  const passwordConfirmError = getPasswordConfirmError({
+    newPassword,
+    newPasswordConfirm,
+  });
+
   const hasPasswordValues =
     currentPassword.trim().length > 0 &&
     newPassword.trim().length > 0 &&
     newPasswordConfirm.trim().length > 0;
 
-  const canSubmit = hasPasswordValues && !isSubmitting;
+  const canSubmit =
+    hasPasswordValues &&
+    !newPasswordError &&
+    !passwordConfirmError &&
+    !isSubmitting;
 
   const handleClose = () => {
     if (isSubmitting) return;
@@ -114,6 +161,13 @@ export function PasswordChangeModal({
     }
   };
 
+  const inputBaseClassName =
+    'h-12 w-full rounded-token-s border px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary';
+
+  const normalInputClassName = `${inputBaseClassName} border-border-teritory`;
+
+  const errorInputClassName = `${inputBaseClassName} border-fill-danger focus:border-fill-danger`;
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
@@ -144,7 +198,7 @@ export function PasswordChangeModal({
                 value={currentPassword}
                 disabled={isSubmitting}
                 placeholder="현재 비밀번호를 입력해 주세요"
-                className="h-12 w-full rounded-token-s border border-border-teritory px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+                className={normalInputClassName}
                 onChange={(event) => {
                   setCurrentPassword(event.target.value);
                   setErrorMessage('');
@@ -160,6 +214,9 @@ export function PasswordChangeModal({
                 onMouseUp={() => setShowCurrentPassword(false)}
                 onMouseLeave={() => setShowCurrentPassword(false)}
                 onBlur={() => setShowCurrentPassword(false)}
+                onTouchStart={() => setShowCurrentPassword(true)}
+                onTouchEnd={() => setShowCurrentPassword(false)}
+                onTouchCancel={() => setShowCurrentPassword(false)}
               >
                 {showCurrentPassword ? (
                   <EyeOffIcon className="size-5" aria-hidden="true" />
@@ -181,7 +238,13 @@ export function PasswordChangeModal({
                 value={newPassword}
                 disabled={isSubmitting}
                 placeholder="새 비밀번호를 입력해 주세요"
-                className="h-12 w-full rounded-token-s border border-border-teritory px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+                className={
+                  newPasswordError ? errorInputClassName : normalInputClassName
+                }
+                aria-invalid={!!newPasswordError}
+                aria-describedby={
+                  newPasswordError ? 'new-password-error' : undefined
+                }
                 onChange={(event) => {
                   setNewPassword(event.target.value);
                   setErrorMessage('');
@@ -197,6 +260,9 @@ export function PasswordChangeModal({
                 onMouseUp={() => setShowNewPassword(false)}
                 onMouseLeave={() => setShowNewPassword(false)}
                 onBlur={() => setShowNewPassword(false)}
+                onTouchStart={() => setShowNewPassword(true)}
+                onTouchEnd={() => setShowNewPassword(false)}
+                onTouchCancel={() => setShowNewPassword(false)}
               >
                 {showNewPassword ? (
                   <EyeOffIcon className="size-5" aria-hidden="true" />
@@ -205,6 +271,15 @@ export function PasswordChangeModal({
                 )}
               </button>
             </div>
+
+            {newPasswordError && (
+              <p
+                id="new-password-error"
+                className="mt-token-xs text-caption-01-r text-fill-danger"
+              >
+                {newPasswordError}
+              </p>
+            )}
           </label>
 
           <label>
@@ -218,7 +293,17 @@ export function PasswordChangeModal({
                 value={newPasswordConfirm}
                 disabled={isSubmitting}
                 placeholder="새 비밀번호를 다시 입력해 주세요"
-                className="h-12 w-full rounded-token-s border border-border-teritory px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+                className={
+                  passwordConfirmError
+                    ? errorInputClassName
+                    : normalInputClassName
+                }
+                aria-invalid={!!passwordConfirmError}
+                aria-describedby={
+                  passwordConfirmError
+                    ? 'new-password-confirm-error'
+                    : undefined
+                }
                 onChange={(event) => {
                   setNewPasswordConfirm(event.target.value);
                   setErrorMessage('');
@@ -234,6 +319,9 @@ export function PasswordChangeModal({
                 onMouseUp={() => setShowNewPasswordConfirm(false)}
                 onMouseLeave={() => setShowNewPasswordConfirm(false)}
                 onBlur={() => setShowNewPasswordConfirm(false)}
+                onTouchStart={() => setShowNewPasswordConfirm(true)}
+                onTouchEnd={() => setShowNewPasswordConfirm(false)}
+                onTouchCancel={() => setShowNewPasswordConfirm(false)}
               >
                 {showNewPasswordConfirm ? (
                   <EyeOffIcon className="size-5" aria-hidden="true" />
@@ -242,6 +330,15 @@ export function PasswordChangeModal({
                 )}
               </button>
             </div>
+
+            {passwordConfirmError && (
+              <p
+                id="new-password-confirm-error"
+                className="mt-token-xs text-caption-01-r text-fill-danger"
+              >
+                {passwordConfirmError}
+              </p>
+            )}
           </label>
         </div>
 
