@@ -1,7 +1,8 @@
 // src/features/settings/components/PasswordChangeModal.tsx
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { Button } from '@/components/ui/Button';
 import { changePassword } from '@/features/settings/api/mockSettingsApi';
 
 interface PasswordChangeModalProps {
@@ -18,8 +19,8 @@ function validatePasswordForm({
   newPassword: string;
   newPasswordConfirm: string;
 }) {
-  if (!currentPassword) return '현재 비밀번호를 입력해 주세요.';
-  if (!newPassword) return '새 비밀번호를 입력해 주세요.';
+  if (!currentPassword.trim()) return '현재 비밀번호를 입력해 주세요.';
+  if (!newPassword.trim()) return '새 비밀번호를 입력해 주세요.';
 
   if (newPassword.length < 8) {
     return '새 비밀번호는 8자 이상이어야 해요.';
@@ -46,12 +47,29 @@ export function PasswordChangeModal({
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!open) {
+      setCurrentPassword('');
+      setNewPassword('');
+      setNewPasswordConfirm('');
+      setErrorMessage('');
+      setIsSubmitting(false);
+    }
+  }, [open]);
+
   if (!open) return null;
 
   const hasPasswordValues =
     currentPassword.trim().length > 0 &&
     newPassword.trim().length > 0 &&
     newPasswordConfirm.trim().length > 0;
+
+  const canSubmit = hasPasswordValues && !isSubmitting;
+
+  const handleClose = () => {
+    if (isSubmitting) return;
+    onOpenChange(false);
+  };
 
   const handleSubmit = async () => {
     const validationError = validatePasswordForm({
@@ -89,9 +107,7 @@ export function PasswordChangeModal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
-      onClick={() => {
-        if (!isSubmitting) onOpenChange(false);
-      }}
+      onClick={handleClose}
     >
       <section
         role="dialog"
@@ -118,7 +134,10 @@ export function PasswordChangeModal({
               disabled={isSubmitting}
               placeholder="현재 비밀번호를 입력해 주세요"
               className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
-              onChange={(event) => setCurrentPassword(event.target.value)}
+              onChange={(event) => {
+                setCurrentPassword(event.target.value);
+                setErrorMessage('');
+              }}
             />
           </label>
 
@@ -133,7 +152,10 @@ export function PasswordChangeModal({
               disabled={isSubmitting}
               placeholder="새 비밀번호를 입력해 주세요"
               className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
-              onChange={(event) => setNewPassword(event.target.value)}
+              onChange={(event) => {
+                setNewPassword(event.target.value);
+                setErrorMessage('');
+              }}
             />
           </label>
 
@@ -148,7 +170,10 @@ export function PasswordChangeModal({
               disabled={isSubmitting}
               placeholder="새 비밀번호를 다시 입력해 주세요"
               className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
-              onChange={(event) => setNewPasswordConfirm(event.target.value)}
+              onChange={(event) => {
+                setNewPasswordConfirm(event.target.value);
+                setErrorMessage('');
+              }}
             />
           </label>
         </div>
@@ -160,29 +185,30 @@ export function PasswordChangeModal({
         )}
 
         <div className="mt-token-xl grid grid-cols-2 gap-token-m">
-          <button
+          <Button
             type="button"
+            variant="secondary"
             disabled={isSubmitting}
-            className="h-11 rounded-token-s bg-btn-quaternary text-body-02-m text-text-strong disabled:cursor-not-allowed disabled:opacity-100"
-            onClick={() => onOpenChange(false)}
+            className="h-11 w-full text-text-strong disabled:cursor-not-allowed disabled:!opacity-100"
+            onClick={handleClose}
           >
             취소
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
-            disabled={isSubmitting}
-            aria-disabled={!hasPasswordValues || isSubmitting}
+            variant="primary"
+            disabled={!canSubmit}
             className={[
-              'h-11 rounded-token-s text-body-02-m disabled:cursor-not-allowed disabled:opacity-100',
-              hasPasswordValues && !isSubmitting
-                ? 'bg-btn-primary text-text-onFill'
-                : 'bg-[#737373] text-[#A3A3A3]',
+              'h-11 w-full disabled:cursor-not-allowed disabled:!opacity-100',
+              canSubmit
+                ? ''
+                : '!bg-[#737373] !text-[#A3A3A3]',
             ].join(' ')}
             onClick={handleSubmit}
           >
             {isSubmitting ? '변경 중...' : '변경하기'}
-          </button>
+          </Button>
         </div>
       </section>
     </div>
