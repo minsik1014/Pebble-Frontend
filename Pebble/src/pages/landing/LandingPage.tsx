@@ -6,6 +6,7 @@ import { FeaturePanelsSection } from '@/features/landing/components/FeaturePanel
 import { HeroSection } from '@/features/landing/components/HeroSection';
 import { LandingFigmaSection } from '@/features/landing/components/LandingFigmaSection';
 import { LandingShell } from '@/features/landing/components/LandingShell';
+import { ReportSection } from '@/features/landing/components/ReportSection';
 import { StepStructureSection } from '@/features/landing/components/StepStructureSection';
 
 export function LandingPage() {
@@ -24,10 +25,16 @@ export function LandingPage() {
           <StepStructureSection />
         </LandingFigmaSection>
 
-        <LandingFigmaSection height={1024}>
-          <BridgeSection />
         <LandingFigmaSection height={3072}>
           <FeaturePanelsSection />
+        </LandingFigmaSection>
+
+        <LandingFigmaSection height={1024}>
+          <BridgeSection />
+        </LandingFigmaSection>
+
+        <LandingFigmaSection height={1024}>
+          <ReportSection />
         </LandingFigmaSection>
       </div>
     </LandingShell>
