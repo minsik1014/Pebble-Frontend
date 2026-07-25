@@ -43,7 +43,7 @@ function BridgePebbleRow() {
         <div
           key={pebble.id}
           className={[
-            'h-[195px] w-[215px] shrink-0 rounded-token-s',
+            'h-[195px] w-[215px] shrink-0 rounded-[32px]',
             pebble.className ?? '',
           ].join(' ')}
           style={{ backgroundColor: pebble.color }}
