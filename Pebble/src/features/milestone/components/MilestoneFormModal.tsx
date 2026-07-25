@@ -1,20 +1,28 @@
-import { useState } from "react";
-import { type Category } from "@/types";
+import { useEffect, useState } from "react";
+import { type Category, type MilestoneItem } from "@/types";
 import { ScheduleDatePicker } from "@/components/ui/ScheduleDatePicker";
 import { CategorySelect } from "@/features/calendar/components/ScheduleRelationSelects";
 import { ScheduleFormModalFrame } from "@/features/calendar/components/ScheduleFormModalFrame";
 import { ScheduleNameInput } from "@/features/calendar/components/ScheduleNameInput";
 import { useScheduleDatePicker } from "@/hooks/useScheduleDatePicker";
 import type { CreateScheduleItemInput } from "@/features/calendar/types";
-import { getScheduleRangeFromSelection } from "@/utils/scheduleDate";
+import {
+  getScheduleRangeFromSelection,
+  parseIsoScheduleDate,
+} from "@/utils/scheduleDate";
 
 type MilestoneFormModalProps = {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
   mode?: "create" | "edit";
-  onSubmit?: (categoryId: string, input: CreateScheduleItemInput) => void;
-  onRequestDelete?: () => void;
+  milestone?: MilestoneItem | null;
+  defaultCategoryId?: string | null;
+  onSubmit?: (
+    categoryId: string,
+    input: CreateScheduleItemInput,
+  ) => void | Promise<void>;
+  onRequestDelete?: () => void | Promise<void>;
 };
 
 export const MilestoneFormModal = ({
@@ -22,18 +30,61 @@ export const MilestoneFormModal = ({
   onClose,
   categories,
   mode = "create",
+  milestone = null,
+  defaultCategoryId = null,
   onSubmit,
   onRequestDelete,
 }: MilestoneFormModalProps) => {
   const [milestoneName, setMilestoneName] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    defaultCategoryId,
+  );
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const datePicker = useScheduleDatePicker();
   const activeCategory = categories.find(
     (category) => category.id === selectedCategory,
   );
 
-  const handleSubmit = () => {
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    setSelectedCategory(defaultCategoryId);
+
+    if (!milestone) {
+      setMilestoneName("");
+      datePicker.reset();
+      return;
+    }
+
+    setMilestoneName(milestone.title);
+
+    if (milestone.dates && milestone.dates.length > 0) {
+      datePicker.setDateType("다중");
+      datePicker.setMultiDates(
+        milestone.dates
+          .map(parseIsoScheduleDate)
+          .filter((date): date is Date => Boolean(date)),
+      );
+      return;
+    }
+
+    if (milestone.end) {
+      datePicker.setDateType("기간");
+      datePicker.setDateRange({
+        start: parseIsoScheduleDate(milestone.start),
+        end: parseIsoScheduleDate(milestone.end),
+      });
+      return;
+    }
+
+    datePicker.setDateType("하루");
+    datePicker.setSelectedDate(parseIsoScheduleDate(milestone.start));
+  }, [defaultCategoryId, isOpen, milestone]);
+
+  const handleSubmit = async () => {
     const scheduleRange = getScheduleRangeFromSelection(datePicker);
     const trimmedName = milestoneName.trim();
 
@@ -41,15 +92,22 @@ export const MilestoneFormModal = ({
       return;
     }
 
-    onSubmit?.(selectedCategory, {
-      title: trimmedName,
-      start: scheduleRange.start,
-      end: scheduleRange.end,
-      dates: scheduleRange.dates,
-      accent: activeCategory?.accent ?? "#171717",
-    });
-    setMilestoneName("");
-    onClose();
+    try {
+      setIsSubmitting(true);
+      await onSubmit?.(selectedCategory, {
+        title: trimmedName,
+        start: scheduleRange.start,
+        end: scheduleRange.end,
+        dates: scheduleRange.dates,
+        accent: activeCategory?.accent ?? "#171717",
+      });
+      setMilestoneName("");
+      onClose();
+    } catch (error) {
+      console.error("Failed to submit milestone:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -61,7 +119,8 @@ export const MilestoneFormModal = ({
       disabled={
         !selectedCategory ||
         !milestoneName ||
-        !datePicker.isDateSelectionComplete
+        !datePicker.isDateSelectionComplete ||
+        isSubmitting
       }
       gapClassName="gap-10"
       onCancel={onClose}

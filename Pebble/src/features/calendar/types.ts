@@ -27,23 +27,34 @@ export type CalendarState = {
   standaloneTasks: TaskItem[];
   selectedCategory: Category | null;
   selectedCategoryId: string | null;
+  isCalendarLoading: boolean;
+  calendarErrorMessage: string | null;
 };
 
 export type CalendarActions = {
+  reloadCalendarData: () => Promise<void>;
   replaceCategories: (categories: Category[]) => void;
   selectCategory: (categoryId: string) => void;
   clearSelectedCategory: () => void;
-  createCategory: (input: CreateCategoryInput) => Category;
-  updateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
+  createCategory: (input: CreateCategoryInput) => Promise<Category | null>;
+  updateCategory: (
+    categoryId: string,
+    input: UpdateCategoryInput,
+  ) => Promise<void>;
   createMilestone: (
     categoryId: string,
     input: CreateScheduleItemInput,
-  ) => MilestoneItem;
+  ) => Promise<MilestoneItem[]>;
+  updateMilestone: (
+    categoryId: string,
+    milestoneId: string,
+    input: CreateScheduleItemInput,
+  ) => Promise<void>;
   createTask: (
     categoryId: string,
     milestoneId: string,
     input: CreateScheduleItemInput,
-  ) => TaskItem;
+  ) => Promise<TaskItem>;
   createCategoryTask: (
     categoryId: string,
     input: CreateScheduleItemInput,
@@ -54,19 +65,25 @@ export type CalendarActions = {
     input: CreateScheduleItemInput,
   ) => void;
   deleteCategoryTask: (categoryId: string, taskId: string) => void;
-  createStandaloneTask: (input: CreateScheduleItemInput) => TaskItem;
+  createStandaloneTask: (input: CreateScheduleItemInput) => Promise<TaskItem>;
   updateStandaloneTask: (
     taskId: string,
     input: CreateScheduleItemInput,
-  ) => void;
-  deleteStandaloneTask: (taskId: string) => void;
-  deleteCategory: (categoryId: string) => void;
-  deleteMilestone: (categoryId: string, milestoneId: string) => void;
+  ) => Promise<void>;
+  deleteStandaloneTask: (taskId: string) => Promise<void>;
+  deleteCategory: (categoryId: string) => Promise<void>;
+  deleteMilestone: (categoryId: string, milestoneId: string) => Promise<void>;
   deleteTask: (
     categoryId: string,
     milestoneId: string,
     taskId: string,
-  ) => void;
+  ) => Promise<void>;
+  updateTask: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+    input: CreateScheduleItemInput,
+  ) => Promise<void>;
 };
 
 export type CalendarStateModel = CalendarState & CalendarActions;

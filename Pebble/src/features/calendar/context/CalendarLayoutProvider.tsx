@@ -38,8 +38,13 @@ export const CalendarLayoutProvider = ({
     deleteStandaloneTask,
     updateCategory,
     deleteCategory,
+    updateMilestone,
     deleteMilestone,
+    updateTask,
     deleteTask,
+    isCalendarLoading,
+    calendarErrorMessage,
+    reloadCalendarData,
   } = useCalendarState();
   const selectedCategoryId = searchParams.get("category");
 
@@ -57,23 +62,23 @@ export const CalendarLayoutProvider = ({
     navigate(`/?category=${categoryId}`);
   };
 
-  const handleCreateCategory = (input: CreateCategoryInput) => {
-    createCategory(input);
+  const handleCreateCategory = async (input: CreateCategoryInput) => {
+    await createCategory(input);
     navigate("/");
   };
 
-  const handleDeleteCategory = (categoryId: string) => {
-    deleteCategory(categoryId);
+  const handleDeleteCategory = async (categoryId: string) => {
+    await deleteCategory(categoryId);
     navigate("/");
   };
 
-  const handleCreateTask = ({
+  const handleCreateTask = async ({
     categoryId,
     milestoneId,
     task,
   }: TaskFormSubmitInput) => {
     if (categoryId && milestoneId) {
-      createTask(categoryId, milestoneId, task);
+      await createTask(categoryId, milestoneId, task);
       return;
     }
 
@@ -82,7 +87,7 @@ export const CalendarLayoutProvider = ({
       return;
     }
 
-    createStandaloneTask(task);
+    await createStandaloneTask(task);
   };
 
   const value: CalendarLayoutContextValue = {
@@ -94,6 +99,9 @@ export const CalendarLayoutProvider = ({
     selectedCategoryId,
     categories,
     standaloneTasks,
+    isCalendarLoading,
+    calendarErrorMessage,
+    reloadCalendarData,
     replaceCategories,
     selectCategory: handleSelectCategory,
     createCategory: handleCreateCategory,
@@ -103,7 +111,9 @@ export const CalendarLayoutProvider = ({
     deleteCategoryTask,
     updateCategory,
     deleteCategory: handleDeleteCategory,
+    updateMilestone,
     deleteMilestone,
+    updateTask,
     deleteTask,
     updateStandaloneTask,
     deleteStandaloneTask,
