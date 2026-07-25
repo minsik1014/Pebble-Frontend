@@ -1,3 +1,18 @@
+// src/features/landing/components/LandingCalendarPreview.tsx
+
+import BellOutlineIcon from '@/assets/icons/bell-outline no-dot.svg?react';
+import CardViewIcon from '@/assets/icons/Card-view.svg?react';
+import CalendarOutlineIcon from '@/assets/icons/calendar-outline.svg?react';
+import ChevronDownIcon from '@/assets/icons/chevron-down.svg?react';
+import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
+import ChevronRightIcon from '@/assets/icons/chevron-right.svg?react';
+import EyeOnIcon from '@/assets/icons/eye-on.svg?react';
+import ListViewIcon from '@/assets/icons/List-view.svg?react';
+import SettingsOutlineIcon from '@/assets/icons/settings-outline.svg?react';
+import SidebarOpenIcon from '@/assets/icons/sidebar-open.svg?react';
+import SocialOutlineIcon from '@/assets/icons/social-outline.svg?react';
+import UserOutlineIcon from '@/assets/icons/user-outline.svg?react';
+
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
 const calendarDates = [
@@ -150,166 +165,86 @@ const schedules = [
   },
 ];
 
-function MiniSidebarIcon() {
-  return <span className="size-[15px] rounded-[2px] border-[1.5px] border-text-strong" />;
-}
-
-function BellIcon() {
-  return <span className="size-[15px] rounded-full border-[1.5px] border-text-strong" />;
-}
-
-function SocialIcon() {
-  return (
-    <span className="relative size-[15px]">
-      <span className="absolute left-[5px] top-0 size-[5px] rounded-full border-[1.4px] border-text-strong" />
-      <span className="absolute bottom-0 left-0 h-[6px] w-[15px] rounded-t-full border-[1.4px] border-text-strong" />
-    </span>
-  );
-}
-
-function CalendarIcon({ selected = false }: { selected?: boolean }) {
+function MenuIconArea({
+  children,
+  selected = false,
+}: {
+  children: React.ReactNode;
+  selected?: boolean;
+}) {
   return (
     <span
       className={[
-        'relative size-[15px] rounded-[2px] border-[1.5px]',
-        selected ? 'border-white' : 'border-text-strong',
+        'flex size-[27.5px] items-center justify-center rounded-token-s',
+        selected ? 'bg-btn-primary text-white' : 'text-text-strong',
       ].join(' ')}
     >
-      <span
-        className={[
-          'absolute left-[2px] right-[2px] top-[4px] h-[1.5px]',
-          selected ? 'bg-white' : 'bg-text-strong',
-        ].join(' ')}
-      />
-    </span>
-  );
-}
-
-function UserIcon() {
-  return <span className="size-[15px] rounded-full border-[1.5px] border-text-strong" />;
-}
-
-function SettingIcon() {
-  return <span className="size-[15px] rounded-full border-[1.5px] border-text-strong" />;
-}
-
-function ChevronLeftIcon() {
-  return (
-    <svg className="size-[15px]" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-      <path
-        d="M9 4L5.5 7.5L9 11"
-        stroke="#737373"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg className="size-[15px]" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-      <path
-        d="M6 4L9.5 7.5L6 11"
-        stroke="#737373"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ChevronDownIcon() {
-  return (
-    <svg className="size-[15px]" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-      <path
-        d="M4.25 6.25L7.5 9.25L10.75 6.25"
-        stroke="#737373"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function EyeIcon() {
-  return (
-    <span className="relative h-[9px] w-[15px] rounded-full border-[1.4px] border-text-secondary">
-      <span className="absolute left-1/2 top-1/2 size-[3.5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-text-secondary" />
-    </span>
-  );
-}
-
-function CardViewIcon() {
-  return (
-    <span className="flex size-[15px] flex-col justify-center gap-[2px]">
-      <span className="h-[4px] w-[15px] rounded-[2px] border border-text-strong" />
-      <span className="h-[4px] w-[15px] rounded-[2px] border border-text-strong" />
-    </span>
-  );
-}
-
-function ListViewIcon() {
-  return (
-    <span className="flex size-[15px] flex-col justify-center gap-[2px]">
-      <span className="h-[1.5px] w-[12px] rounded-full bg-text-secondary" />
-      <span className="h-[1.5px] w-[12px] rounded-full bg-text-secondary" />
-      <span className="h-[1.5px] w-[12px] rounded-full bg-text-secondary" />
+      {children}
     </span>
   );
 }
 
 function MenuBar() {
+  const iconClassName = 'size-[15px] [&_*]:stroke-current';
+  const selectedIconClassName = 'size-[15px] text-white [&_*]:stroke-current';
+
   return (
     <nav className="absolute left-0 top-0 flex h-[625px] w-[52.5px] bg-fill-inverse px-[12.5px] py-[20px]">
       <div className="flex h-[585px] w-[27.5px] flex-col items-center justify-between">
         <div className="flex h-[80px] w-[27.5px] flex-col items-center gap-[25px]">
-          <span className="flex size-[27.5px] items-center justify-center">
-            <MiniSidebarIcon />
-          </span>
-          <span className="flex size-[27.5px] items-center justify-center">
-            <BellIcon />
-          </span>
+          <MenuIconArea>
+            <SidebarOpenIcon className={iconClassName} aria-hidden="true" />
+          </MenuIconArea>
+
+          <MenuIconArea>
+            <BellOutlineIcon className={iconClassName} aria-hidden="true" />
+          </MenuIconArea>
         </div>
 
         <div className="flex h-[132.5px] w-[27.5px] flex-col items-center gap-[25px]">
-          <span className="flex size-[27.5px] items-center justify-center">
-            <SocialIcon />
-          </span>
-          <span className="flex size-[27.5px] items-center justify-center rounded-token-s bg-btn-primary">
-            <CalendarIcon selected />
-          </span>
-          <span className="flex size-[27.5px] items-center justify-center">
-            <UserIcon />
-          </span>
+          <MenuIconArea>
+            <SocialOutlineIcon className={iconClassName} aria-hidden="true" />
+          </MenuIconArea>
+
+          <MenuIconArea selected>
+            <CalendarOutlineIcon
+              className={selectedIconClassName}
+              aria-hidden="true"
+            />
+          </MenuIconArea>
+
+          <MenuIconArea>
+            <UserOutlineIcon className={iconClassName} aria-hidden="true" />
+          </MenuIconArea>
         </div>
 
-        <span className="flex size-[27.5px] items-center justify-center rounded-token-s">
-          <SettingIcon />
-        </span>
+        <MenuIconArea>
+          <SettingsOutlineIcon className={iconClassName} aria-hidden="true" />
+        </MenuIconArea>
       </div>
     </nav>
   );
 }
 
 function SegmentControl() {
+  const iconClassName = 'size-[15px] [&_*]:stroke-current';
+
   return (
     <div className="flex h-[30px] w-[67.5px] items-center gap-[2.5px] rounded-token-s bg-btn-quaternary p-token-xs">
-      <span className="flex h-[25px] w-[30px] items-center justify-center rounded-[5.63px] bg-fill-inverse shadow-[0_0_2.5px_rgba(23,23,23,0.1)]">
-        <CardViewIcon />
+      <span className="flex h-[25px] w-[30px] items-center justify-center rounded-[5.63px] bg-fill-inverse text-text-strong shadow-[0_0_2.5px_rgba(23,23,23,0.1)]">
+        <CardViewIcon className={iconClassName} aria-hidden="true" />
       </span>
 
-      <span className="flex h-[25px] w-[30px] items-center justify-center rounded-[5.63px]">
-        <ListViewIcon />
+      <span className="flex h-[25px] w-[30px] items-center justify-center rounded-[5.63px] text-text-secondary">
+        <ListViewIcon className={iconClassName} aria-hidden="true" />
       </span>
     </div>
   );
 }
 
 function CategoryCard({ name, color }: { name: string; color: string }) {
+  const iconClassName = 'size-[15px] [&_*]:stroke-current';
+
   return (
     <div className="flex h-[42.5px] w-[220px] items-center justify-between rounded-token-m bg-fill-inverse py-token-m pl-token-l pr-token-m shadow-[0_0_12px_rgba(23,23,23,0.05)]">
       <div className="flex h-[25px] w-[145px] items-center gap-[7.5px]">
@@ -322,12 +257,12 @@ function CategoryCard({ name, color }: { name: string; color: string }) {
         </span>
       </div>
 
-      <div className="flex h-[27.5px] w-[55px] items-center">
+      <div className="flex h-[27.5px] w-[55px] items-center text-text-secondary">
         <span className="flex size-[27.5px] items-center justify-center rounded-token-s">
-          <ChevronDownIcon />
+          <ChevronDownIcon className={iconClassName} aria-hidden="true" />
         </span>
         <span className="flex size-[27.5px] items-center justify-center rounded-token-s">
-          <EyeIcon />
+          <EyeOnIcon className={iconClassName} aria-hidden="true" />
         </span>
       </div>
     </div>
@@ -347,7 +282,11 @@ function SidebarContent() {
 
       <div className="absolute left-0 top-[62.5px] flex h-[562.5px] w-[245px] flex-col gap-[12.5px] px-[12.5px] pb-[7.5px] pt-[2.5px]">
         {sidebarCategories.map((category) => (
-          <CategoryCard key={category.name} name={category.name} color={category.color} />
+          <CategoryCard
+            key={category.name}
+            name={category.name}
+            color={category.color}
+          />
         ))}
 
         <button
@@ -372,6 +311,8 @@ function SidebarPreview() {
 }
 
 function CalendarHeader() {
+  const iconClassName = 'size-[15px] [&_*]:stroke-current';
+
   return (
     <div className="flex h-[27.5px] w-[212.5px] items-center gap-[17.5px]">
       <strong className="w-[92px] text-[17.5px] font-semibold leading-[130%] tracking-[-0.01em] text-text-strong">
@@ -379,8 +320,8 @@ function CalendarHeader() {
       </strong>
 
       <div className="flex h-[27.5px] w-[103px] items-center gap-[5px]">
-        <span className="flex size-[27.5px] items-center justify-center rounded-token-infinite bg-btn-quaternary">
-          <ChevronLeftIcon />
+        <span className="flex size-[27.5px] items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-secondary">
+          <ChevronLeftIcon className={iconClassName} aria-hidden="true" />
         </span>
 
         <span className="flex h-[27.5px] min-w-[33px] items-center justify-center rounded-token-infinite bg-btn-quaternary px-[7.5px]">
@@ -389,8 +330,8 @@ function CalendarHeader() {
           </span>
         </span>
 
-        <span className="flex size-[27.5px] items-center justify-center rounded-token-infinite bg-btn-quaternary">
-          <ChevronRightIcon />
+        <span className="flex size-[27.5px] items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-secondary">
+          <ChevronRightIcon className={iconClassName} aria-hidden="true" />
         </span>
       </div>
     </div>
