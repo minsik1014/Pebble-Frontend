@@ -5,6 +5,7 @@ import type { Category, TaskItem } from "@/types";
 import type { CreateScheduleItemInput } from "@/features/calendar/types";
 import {
   appendMilestoneToCategory,
+  appendMilestonesToCategory,
   appendTaskToCategory,
   appendTaskToMilestone,
   createMilestoneEntity,
@@ -12,8 +13,21 @@ import {
   removeCategoryTaskFromList,
   removeMilestoneFromCategory,
   removeTaskFromMilestone,
+  replaceStandaloneTaskInList,
   updateCategoryTaskInList,
+  updateMilestoneInCategory,
+  updateTaskInMilestone,
 } from "@/features/calendar/utils/calendarStateUtils";
+import {
+  createMilestone as requestCreateMilestone,
+  deleteMilestone as requestDeleteMilestone,
+  updateMilestone as requestUpdateMilestone,
+} from "@/features/milestone/api/milestoneApi";
+import {
+  createTask as requestCreateTask,
+  deleteTask as requestDeleteTask,
+  updateTask as requestUpdateTask,
+} from "@/features/task/api/taskApi";
 
 type UseCalendarScheduleActionsParams = {
   setCategories: Dispatch<SetStateAction<Category[]>>;
@@ -25,25 +39,60 @@ export const useCalendarScheduleActions = ({
   setStandaloneTasks,
 }: UseCalendarScheduleActionsParams) => {
   const createMilestone = useCallback(
-    (categoryId: string, input: CreateScheduleItemInput) => {
-      const milestone = createMilestoneEntity(input);
+    async (categoryId: string, input: CreateScheduleItemInput) => {
+      const milestones = await requestCreateMilestone(categoryId, input);
 
       setCategories((previousCategories) =>
-        appendMilestoneToCategory(previousCategories, categoryId, milestone),
+        milestones.length > 0
+          ? appendMilestonesToCategory(previousCategories, categoryId, milestones)
+          : appendMilestoneToCategory(
+              previousCategories,
+              categoryId,
+              createMilestoneEntity(input),
+            ),
       );
 
-      return milestone;
+      return milestones;
+    },
+    [setCategories],
+  );
+
+  const updateMilestone = useCallback(
+    async (
+      categoryId: string,
+      milestoneId: string,
+      input: CreateScheduleItemInput,
+    ) => {
+      const milestone = await requestUpdateMilestone(milestoneId, input);
+
+      setCategories((previousCategories) =>
+        milestone
+          ? updateMilestoneInCategory(
+              previousCategories,
+              categoryId,
+              milestoneId,
+              milestone,
+            )
+          : updateMilestoneInCategory(
+              previousCategories,
+              categoryId,
+              milestoneId,
+              createMilestoneEntity({ ...input, id: milestoneId }),
+            ),
+      );
     },
     [setCategories],
   );
 
   const createTask = useCallback(
-    (
+    async (
       categoryId: string,
       milestoneId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const task = createTaskEntity(input);
+      const task =
+        (await requestCreateTask({ milestoneId, input })) ??
+        createTaskEntity(input);
 
       setCategories((previousCategories) =>
         appendTaskToMilestone(
@@ -91,8 +140,8 @@ export const useCalendarScheduleActions = ({
   );
 
   const createStandaloneTask = useCallback(
-    (input: CreateScheduleItemInput) => {
-      const task = createTaskEntity(input);
+    async (input: CreateScheduleItemInput) => {
+      const task = (await requestCreateTask({ input })) ?? createTaskEntity(input);
 
       setStandaloneTasks((previousTasks) => [...previousTasks, task]);
 
@@ -102,25 +151,30 @@ export const useCalendarScheduleActions = ({
   );
 
   const updateStandaloneTask = useCallback(
-    (taskId: string, input: CreateScheduleItemInput) => {
-      const { tasks: _tasks, ...taskInput } = input;
+    async (taskId: string, input: CreateScheduleItemInput) => {
+      const task = await requestUpdateTask({
+        taskId,
+        input,
+        isChildTask: false,
+      });
 
       setStandaloneTasks((previousTasks) =>
-        previousTasks.map((task) =>
-          task.id === taskId
-            ? {
-                ...task,
-                ...taskInput,
-              }
-            : task,
-        ),
+        task
+          ? replaceStandaloneTaskInList(previousTasks, taskId, task)
+          : replaceStandaloneTaskInList(
+              previousTasks,
+              taskId,
+              createTaskEntity({ ...input, id: taskId }),
+            ),
       );
     },
     [setStandaloneTasks],
   );
 
   const deleteStandaloneTask = useCallback(
-    (taskId: string) => {
+    async (taskId: string) => {
+      await requestDeleteTask({ taskId });
+
       setStandaloneTasks((previousTasks) =>
         previousTasks.filter((task) => task.id !== taskId),
       );
@@ -129,7 +183,9 @@ export const useCalendarScheduleActions = ({
   );
 
   const deleteMilestone = useCallback(
-    (categoryId: string, milestoneId: string) => {
+    async (categoryId: string, milestoneId: string) => {
+      await requestDeleteMilestone(milestoneId);
+
       setCategories((previousCategories) =>
         removeMilestoneFromCategory(previousCategories, categoryId, milestoneId),
       );
@@ -138,7 +194,9 @@ export const useCalendarScheduleActions = ({
   );
 
   const deleteTask = useCallback(
-    (categoryId: string, milestoneId: string, taskId: string) => {
+    async (categoryId: string, milestoneId: string, taskId: string) => {
+      await requestDeleteTask({ taskId });
+
       setCategories((previousCategories) =>
         removeTaskFromMilestone(
           previousCategories,
@@ -151,8 +209,43 @@ export const useCalendarScheduleActions = ({
     [setCategories],
   );
 
+  const updateTask = useCallback(
+    async (
+      categoryId: string,
+      milestoneId: string,
+      taskId: string,
+      input: CreateScheduleItemInput,
+    ) => {
+      const task = await requestUpdateTask({
+        taskId,
+        input,
+        isChildTask: true,
+      });
+
+      setCategories((previousCategories) =>
+        task
+          ? updateTaskInMilestone(
+              previousCategories,
+              categoryId,
+              milestoneId,
+              taskId,
+              task,
+            )
+          : updateTaskInMilestone(
+              previousCategories,
+              categoryId,
+              milestoneId,
+              taskId,
+              createTaskEntity({ ...input, id: taskId }),
+            ),
+      );
+    },
+    [setCategories],
+  );
+
   return {
     createMilestone,
+    updateMilestone,
     createTask,
     createCategoryTask,
     updateCategoryTask,
@@ -161,6 +254,7 @@ export const useCalendarScheduleActions = ({
     updateStandaloneTask,
     deleteStandaloneTask,
     deleteMilestone,
+    updateTask,
     deleteTask,
   };
 };

@@ -8,8 +8,10 @@ import { CategoryMemberSelector } from "./CategoryMemberSelector";
 import { CategoryShareOption } from "./CategoryShareOption";
 import { CategoryStatusOptions } from "./CategoryStatusOptions";
 import { CategoryThemePreview } from "./CategoryThemePreview";
-import { DUMMY_FRIENDS } from "@/features/category/mock/friends";
 import type { Friend } from "@/features/category/types";
+import { getFollowingFriends } from "@/features/category/api/categoryFriendsApi";
+import { uploadImageDataUrl } from "@/features/category/api/uploadImageApi";
+import { getAccessToken } from "@/services/api";
 import {
   createCategoryColorTheme,
   DEFAULT_CATEGORY_COLOR,
@@ -22,7 +24,7 @@ type CategoryFormModalProps = {
   category?: Category;
   onClose: () => void;
   onRequestDelete?: () => void;
-  onSubmit?: (input: CreateCategoryInput) => void;
+  onSubmit?: (input: CreateCategoryInput) => void | Promise<void>;
 };
 
 const CATEGORY_IMAGE_ASPECT_RATIO = 175 / 234;
@@ -44,14 +46,16 @@ export const CategoryFormModal = ({
   const [cropSourceImageFile, setCropSourceImageFile] = useState<File | null>(
     null,
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [selectedMembers, setSelectedMembers] = useState<Friend[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const selectedTheme = createCategoryColorTheme(selectedColor);
 
-  const filteredFriends = DUMMY_FRIENDS.filter(
+  const filteredFriends = friends.filter(
     (friend) =>
       friend.name.includes(searchQuery) &&
       !selectedMembers.some((member) => member.id === friend.id),
@@ -73,9 +77,9 @@ export const CategoryFormModal = ({
       setCategoryName(category.title);
       setSelectedColor(category.accent);
       setImageUrl(category.imageUrl);
-      setIsPublic(true);
-      setIsCompleted(false);
-      setIsShared(false);
+      setIsPublic(category.isPublic ?? true);
+      setIsCompleted(category.isCompleted ?? false);
+      setIsShared(category.isShared ?? false);
       setSelectedMembers([]);
     } else {
       setCategoryName("");
@@ -90,24 +94,70 @@ export const CategoryFormModal = ({
     }
   }, [mode, category, isOpen]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadFriends = async () => {
+      if (!isOpen || !isShared || !getAccessToken()) {
+        setFriends([]);
+        return;
+      }
+
+      try {
+        const nextFriends = await getFollowingFriends();
+
+        if (isMounted) {
+          setFriends(nextFriends);
+        }
+      } catch (error) {
+        console.error("Failed to load following friends:", error);
+
+        if (isMounted) {
+          setFriends([]);
+        }
+      }
+    };
+
+    void loadFriends();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, isShared]);
+
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!categoryName.trim()) {
       return;
     }
 
-    onSubmit?.({
-      title: categoryName.trim(),
-      accent: selectedTheme.accent,
-      themeBase: selectedTheme.themeBase,
-      themeMid: selectedTheme.themeMid,
-      themeLight: selectedTheme.themeLight,
-      themeTextOnMid: selectedTheme.themeTextOnMid,
-      themeTextOnLight: selectedTheme.themeTextOnLight,
-      imageUrl,
-    });
-    onClose();
+    try {
+      setIsSubmitting(true);
+      const uploadedImageUrl =
+        imageUrl && imageUrl.startsWith("data:")
+          ? await uploadImageDataUrl(imageUrl)
+          : imageUrl;
+
+      await onSubmit?.({
+        title: categoryName.trim(),
+        accent: selectedTheme.accent,
+        themeBase: selectedTheme.themeBase,
+        themeMid: selectedTheme.themeMid,
+        themeLight: selectedTheme.themeLight,
+        themeTextOnMid: selectedTheme.themeTextOnMid,
+        themeTextOnLight: selectedTheme.themeTextOnLight,
+        imageUrl: uploadedImageUrl ?? undefined,
+        isPublic,
+        isCompleted,
+        isShared,
+      });
+      onClose();
+    } catch (error) {
+      console.error("Failed to submit category:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCloseCropModal = () => {
@@ -172,7 +222,7 @@ export const CategoryFormModal = ({
           onToggleShared={() => setIsShared(!isShared)}
         />
 
-        {isShared && (
+        {isShared && friends.length > 0 && (
           <CategoryMemberSelector
             selectedMembers={selectedMembers}
             filteredFriends={filteredFriends}
@@ -187,7 +237,7 @@ export const CategoryFormModal = ({
         <div className="flex w-full flex-col gap-5">
           <ModalActionBar
             submitLabel={mode === "create" ? "추가" : "수정"}
-            disabled={!categoryName.trim()}
+            disabled={!categoryName.trim() || isSubmitting}
             onCancel={onClose}
             onSubmit={handleSubmit}
             onDelete={mode === "edit" ? onRequestDelete : undefined}

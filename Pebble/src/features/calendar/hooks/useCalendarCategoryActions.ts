@@ -7,7 +7,11 @@ import type {
   UpdateCategoryInput,
 } from "@/features/calendar/types";
 import {
-  createCategoryEntity,
+  createCategory as requestCreateCategory,
+  deleteCategory as requestDeleteCategory,
+  updateCategory as requestUpdateCategory,
+} from "@/features/category/api/categoryApi";
+import {
   replaceCategoryList,
   updateCategoryInList,
 } from "@/features/calendar/utils/calendarStateUtils";
@@ -41,8 +45,12 @@ export const useCalendarCategoryActions = ({
   }, [setSelectedCategoryId]);
 
   const createCategory = useCallback(
-    (input: CreateCategoryInput) => {
-      const category = createCategoryEntity(input);
+    async (input: CreateCategoryInput) => {
+      const category = await requestCreateCategory(input);
+
+      if (!category) {
+        return null;
+      }
 
       setCategories((previousCategories) => [...previousCategories, category]);
       setSelectedCategoryId(null);
@@ -53,16 +61,31 @@ export const useCalendarCategoryActions = ({
   );
 
   const updateCategory = useCallback(
-    (categoryId: string, input: UpdateCategoryInput) => {
+    async (categoryId: string, input: UpdateCategoryInput) => {
+      const category = await requestUpdateCategory(categoryId, input);
+
       setCategories((previousCategories) =>
-        updateCategoryInList(previousCategories, categoryId, input),
+        category
+          ? previousCategories.map((previousCategory) =>
+              previousCategory.id === categoryId
+                ? {
+                    ...previousCategory,
+                    ...category,
+                    items: previousCategory.items,
+                    tasks: previousCategory.tasks,
+                  }
+                : previousCategory,
+            )
+          : updateCategoryInList(previousCategories, categoryId, input),
       );
     },
     [setCategories],
   );
 
   const deleteCategory = useCallback(
-    (categoryId: string) => {
+    async (categoryId: string) => {
+      await requestDeleteCategory(categoryId);
+
       setCategories((previousCategories) =>
         previousCategories.filter((category) => category.id !== categoryId),
       );

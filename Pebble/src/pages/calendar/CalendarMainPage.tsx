@@ -11,12 +11,17 @@ export const CalendarMainPage = (): JSX.Element => {
     onChangeCalendarMonth,
     categories,
     standaloneTasks,
+    isCalendarLoading,
+    calendarErrorMessage,
+    reloadCalendarData,
     createTask,
     updateCategoryTask,
     deleteCategoryTask,
     updateCategory,
     deleteCategory,
+    updateMilestone,
     deleteMilestone,
+    updateTask,
     deleteTask,
   } = useCalendarLayoutContext();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,7 +40,9 @@ export const CalendarMainPage = (): JSX.Element => {
       onUpdateCategoryTask={updateCategoryTask}
       onDeleteCategoryTask={deleteCategoryTask}
       onDeleteCategory={deleteCategory}
+      onUpdateMilestone={updateMilestone}
       onDeleteMilestone={deleteMilestone}
+      onUpdateTask={updateTask}
       onDeleteTask={deleteTask}
     />
   ) : (
@@ -46,6 +53,9 @@ export const CalendarMainPage = (): JSX.Element => {
       currentYear={currentYear}
       currentMonth={currentMonth}
       onChangeCalendarMonth={onChangeCalendarMonth}
+      isLoading={isCalendarLoading}
+      errorMessage={calendarErrorMessage}
+      onRetry={reloadCalendarData}
     />
   );
 };
