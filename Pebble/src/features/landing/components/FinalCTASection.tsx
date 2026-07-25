@@ -17,14 +17,14 @@ function FinalCTABackgroundShapes() {
       <img
         src={ellipse8}
         alt=""
-        className="absolute left-[-398px] top-[-107px] h-[1281px] w-[731px] object-contain"
+        className="absolute left-[-398px] top-[-107px] h-[1281px] w-[731px] rotate-[-90deg] object-contain opacity-[0.05] blur-[50px]"
       />
 
       {/* Ellipse 7 */}
       <img
         src={ellipse7}
         alt=""
-        className="absolute left-[606px] top-[471px] h-[1260px] w-[693px] object-contain"
+        className="absolute left-[606px] top-[471px] h-[1260px] w-[693px] rotate-[-90deg] object-contain opacity-10 blur-[50px]"
       />
     </div>
   );
