@@ -1,4 +1,5 @@
 import { PublicHeader } from '@/components/layout/PublicHeader';
+import { FinalCTASection } from '@/features/landing/components/FinalCTASection';
 import { HeroSection } from '@/features/landing/components/HeroSection';
 import { LandingFigmaSection } from '@/features/landing/components/LandingFigmaSection';
 import { LandingShell } from '@/features/landing/components/LandingShell';
@@ -18,6 +19,10 @@ export function LandingPage() {
 
         <LandingFigmaSection height={1024}>
           <StepStructureSection />
+        </LandingFigmaSection>
+
+        <LandingFigmaSection height={1024}>
+          <FinalCTASection />
         </LandingFigmaSection>
       </div>
     </LandingShell>
