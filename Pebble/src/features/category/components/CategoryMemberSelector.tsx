@@ -27,7 +27,15 @@ export const CategoryMemberSelector = ({
       {selectedMembers.map((member) => (
         <div key={member.id} className="bg-[#e5e5e5] drop-shadow-sm flex gap-3 items-center p-2 rounded-full">
           <div className="flex gap-2 items-center">
-            <div className="w-9 h-9 rounded-full bg-gray-300 border border-border-default flex-shrink-0" />
+            {member.profileImageUrl ? (
+              <img
+                src={member.profileImageUrl}
+                alt=""
+                className="h-9 w-9 flex-shrink-0 rounded-full border border-border-default object-cover"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-gray-300 border border-border-default flex-shrink-0" />
+            )}
             <span className="font-medium text-[18px] text-text-strong tracking-[-0.18px]">
               {member.name}
             </span>
@@ -65,7 +73,15 @@ export const CategoryMemberSelector = ({
             onClick={() => onToggleMember(friend)}
             className="flex gap-3 items-center px-4 py-3 hover:bg-fill-surface cursor-pointer transition-colors"
           >
-            <div className="w-9 h-9 rounded-full bg-gray-300 border border-border-default flex-shrink-0" />
+            {friend.profileImageUrl ? (
+              <img
+                src={friend.profileImageUrl}
+                alt=""
+                className="h-9 w-9 flex-shrink-0 rounded-full border border-border-default object-cover"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-gray-300 border border-border-default flex-shrink-0" />
+            )}
             <span className="font-medium text-[16px] text-text-primary">{friend.name}</span>
           </div>
         ))}

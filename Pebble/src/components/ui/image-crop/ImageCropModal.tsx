@@ -175,6 +175,8 @@ export const ImageCropModal = ({
               rotation={rotation}
               aspect={aspect}
               cropShape={cropShape}
+              objectFit="cover"
+              restrictPosition
               showGrid={false}
               minZoom={1}
               maxZoom={3}
@@ -237,7 +239,10 @@ export const ImageCropModal = ({
           type="file"
           accept={ACCEPTED_IMAGE_TYPES}
           className="hidden"
-          onChange={(event) => handleSelectImage(event.target.files?.[0])}
+          onChange={(event) => {
+            handleSelectImage(event.target.files?.[0]);
+            event.target.value = "";
+          }}
         />
 
         <footer className="flex items-center justify-between gap-3">

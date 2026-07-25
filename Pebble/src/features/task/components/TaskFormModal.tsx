@@ -20,8 +20,8 @@ type TaskFormModalProps = {
   defaultMilestoneId?: string | null;
   task?: ScheduleItem | null;
   mode?: "create" | "edit";
-  onSubmit?: (input: TaskFormSubmitInput) => void;
-  onRequestDelete?: () => void;
+  onSubmit?: (input: TaskFormSubmitInput) => void | Promise<void>;
+  onRequestDelete?: () => void | Promise<void>;
 };
 
 export type TaskFormSubmitInput = {
@@ -50,6 +50,7 @@ export const TaskFormModal = ({
   );
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isMilestoneDropdownOpen, setIsMilestoneDropdownOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const datePicker = useScheduleDatePicker();
 
   useScheduleFormDateInitializer({
@@ -73,7 +74,7 @@ export const TaskFormModal = ({
   );
   const availableMilestones = activeCategory?.items || [];
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const scheduleRange = getScheduleRangeFromSelection(datePicker);
     const trimmedName = taskName.trim();
 
@@ -81,26 +82,33 @@ export const TaskFormModal = ({
       return;
     }
 
-    onSubmit?.({
-      categoryId: selectedCategory,
-      milestoneId: selectedMilestone,
-      task: {
-        title: trimmedName,
-        start: scheduleRange.start,
-        end: scheduleRange.end,
-        dates: scheduleRange.dates,
-        accent: activeCategory?.accent ?? "#171717",
-      },
-    });
-    setTaskName("");
-    onClose();
+    try {
+      setIsSubmitting(true);
+      await onSubmit?.({
+        categoryId: selectedCategory,
+        milestoneId: selectedMilestone,
+        task: {
+          title: trimmedName,
+          start: scheduleRange.start,
+          end: scheduleRange.end,
+          dates: scheduleRange.dates,
+          accent: activeCategory?.accent ?? "#171717",
+        },
+      });
+      setTaskName("");
+      onClose();
+    } catch (error) {
+      console.error("Failed to submit task:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <ScheduleFormModalFrame
       title={mode === "edit" ? "태스크 편집" : "태스크 추가하기"}
       submitLabel={mode === "edit" ? "수정" : "추가"}
-      disabled={!taskName || !datePicker.isDateSelectionComplete}
+      disabled={!taskName || !datePicker.isDateSelectionComplete || isSubmitting}
       titleClassName="leading-[1.3]"
       onCancel={onClose}
       onSubmit={handleSubmit}

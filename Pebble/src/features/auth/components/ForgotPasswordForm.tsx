@@ -67,19 +67,19 @@ export const ForgotPasswordForm = ({
             src={pebble01}
             alt=""
             className="forgot-password-pebble hidden sm:block w-[380px] bottom-[-70px] left-[calc(50%-415px)]"
-            style={{ "--pebble-opacity": 0.07, "--pebble-delay": "0ms" } as React.CSSProperties}
+            style={{ "--pebble-opacity": 0.15, "--pebble-delay": "0ms" } as React.CSSProperties}
           />
           <img
             src={pebble02}
             alt=""
             className="forgot-password-pebble hidden sm:block w-[500px] bottom-[-80px] left-[calc(50%+55px)]"
-            style={{ "--pebble-opacity": 0.09, "--pebble-delay": "500ms" } as React.CSSProperties}
+            style={{ "--pebble-opacity": 0.17, "--pebble-delay": "500ms" } as React.CSSProperties}
           />
           <img
             src={pebble03}
             alt=""
             className="forgot-password-pebble hidden sm:block w-[480px] bottom-[165px] left-[calc(50%+400px)]"
-            style={{ "--pebble-opacity": 0.11, "--pebble-delay": "1000ms" } as React.CSSProperties}
+            style={{ "--pebble-opacity": 0.19, "--pebble-delay": "1000ms" } as React.CSSProperties}
           />
         </div>
       )}

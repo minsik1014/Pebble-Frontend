@@ -82,6 +82,43 @@ export const appendMilestoneToCategory = (
       : category,
   );
 
+export const appendMilestonesToCategory = (
+  categories: Category[],
+  categoryId: string,
+  milestones: MilestoneItem[],
+) =>
+  categories.map((category) =>
+    category.id === categoryId
+      ? {
+          ...category,
+          items: [...category.items, ...cloneScheduleItems(milestones)],
+        }
+      : category,
+  );
+
+export const updateMilestoneInCategory = (
+  categories: Category[],
+  categoryId: string,
+  milestoneId: string,
+  milestone: MilestoneItem,
+) =>
+  categories.map((category) =>
+    category.id === categoryId
+      ? {
+          ...category,
+          items: category.items.map((item) =>
+            item.id === milestoneId
+              ? {
+                  ...item,
+                  ...milestone,
+                  tasks: item.tasks,
+                }
+              : item,
+          ),
+        }
+      : category,
+  );
+
 export const appendTaskToMilestone = (
   categories: Category[],
   categoryId: string,
@@ -97,6 +134,36 @@ export const appendTaskToMilestone = (
               ? {
                   ...item,
                   tasks: [...(item.tasks ?? []), task],
+                }
+              : item,
+          ),
+        }
+      : category,
+  );
+
+export const updateTaskInMilestone = (
+  categories: Category[],
+  categoryId: string,
+  milestoneId: string,
+  taskId: string,
+  task: TaskItem,
+) =>
+  categories.map((category) =>
+    category.id === categoryId
+      ? {
+          ...category,
+          items: category.items.map((item) =>
+            item.id === milestoneId
+              ? {
+                  ...item,
+                  tasks: item.tasks?.map((previousTask) =>
+                    previousTask.id === taskId
+                      ? {
+                          ...previousTask,
+                          ...task,
+                        }
+                      : previousTask,
+                  ),
                 }
               : item,
           ),
@@ -142,6 +209,20 @@ export const updateCategoryTaskInList = (
       : category,
   );
 };
+
+export const replaceStandaloneTaskInList = (
+  tasks: TaskItem[],
+  taskId: string,
+  task: TaskItem,
+) =>
+  tasks.map((previousTask) =>
+    previousTask.id === taskId
+      ? {
+          ...previousTask,
+          ...task,
+        }
+      : previousTask,
+  );
 
 export const removeCategoryTaskFromList = (
   categories: Category[],

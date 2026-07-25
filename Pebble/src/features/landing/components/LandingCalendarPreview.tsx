@@ -1,378 +1,504 @@
-const categories = [
-  { title: '사이드 프로젝트', color: '#8B84F2' },
-  { title: '행사 준비', color: '#FFD540' },
-  { title: '자격증 시험', color: '#22D3EE' },
-];
-
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
-const weeks = [
-  [31, 1, 2, 3, 4, 5, 6],
-  [7, 8, 9, 10, 11, 12, 13],
-  [14, 15, 16, 17, 18, 19, 20],
-  [21, 22, 23, 24, 25, 26, 27],
-  [28, 29, 30, 1, 2, 3, 4],
+const calendarDates = [
+  { day: 31, currentMonth: false, type: 'sunday' },
+  { day: 1, currentMonth: true, type: 'weekday' },
+  { day: 2, currentMonth: true, type: 'weekday' },
+  { day: 3, currentMonth: true, type: 'weekday' },
+  { day: 4, currentMonth: true, type: 'today' },
+  { day: 5, currentMonth: true, type: 'weekday' },
+  { day: 6, currentMonth: true, type: 'saturday' },
+
+  { day: 7, currentMonth: true, type: 'sunday' },
+  { day: 8, currentMonth: true, type: 'weekday' },
+  { day: 9, currentMonth: true, type: 'weekday' },
+  { day: 10, currentMonth: true, type: 'weekday' },
+  { day: 11, currentMonth: true, type: 'weekday' },
+  { day: 12, currentMonth: true, type: 'weekday' },
+  { day: 13, currentMonth: true, type: 'saturday' },
+
+  { day: 14, currentMonth: true, type: 'sunday' },
+  { day: 15, currentMonth: true, type: 'weekday' },
+  { day: 16, currentMonth: true, type: 'weekday' },
+  { day: 17, currentMonth: true, type: 'weekday' },
+  { day: 18, currentMonth: true, type: 'weekday' },
+  { day: 19, currentMonth: true, type: 'weekday' },
+  { day: 20, currentMonth: true, type: 'saturday' },
+
+  { day: 21, currentMonth: true, type: 'sunday' },
+  { day: 22, currentMonth: true, type: 'weekday' },
+  { day: 23, currentMonth: true, type: 'weekday' },
+  { day: 24, currentMonth: true, type: 'weekday' },
+  { day: 25, currentMonth: true, type: 'weekday' },
+  { day: 26, currentMonth: true, type: 'weekday' },
+  { day: 27, currentMonth: true, type: 'saturday' },
+
+  { day: 28, currentMonth: true, type: 'sunday' },
+  { day: 29, currentMonth: true, type: 'weekday' },
+  { day: 30, currentMonth: true, type: 'weekday' },
+  { day: 1, currentMonth: false, type: 'weekday' },
+  { day: 2, currentMonth: false, type: 'weekday' },
+  { day: 3, currentMonth: false, type: 'weekday' },
+  { day: 4, currentMonth: false, type: 'saturday' },
+];
+
+const sidebarCategories = [
+  { name: '사이드 프로젝트', color: '#8B84F2' },
+  { name: '행사 준비', color: '#FFDD47' },
+  { name: '자격증 시험', color: '#00CEF5' },
 ];
 
 const schedules = [
   {
     title: '강의 복습',
-    row: 0,
-    startCol: 2,
-    span: 1,
-    lane: 0,
-    color: '#DAF4FF',
+    left: 156.43,
+    top: 29,
+    width: 73.13,
+    backgroundColor: '#DAF4FF',
+    barColor: '#00CEF5',
+    textColor: '#003B48',
   },
   {
     title: '1차 MVP 완성',
-    row: 1,
-    startCol: 1,
-    span: 4,
-    lane: 0,
-    color: '#B9B5F7',
+    left: 78.21,
+    top: 130.88,
+    width: 309.5,
+    backgroundColor: '#B9B5F7',
+    barColor: '#8B84F2',
+    textColor: '#302A73',
   },
   {
     title: '계획서 작성',
-    row: 1,
-    startCol: 5,
-    span: 1,
-    lane: 0,
-    color: '#B9B5F7',
+    left: 391.5,
+    top: 130.88,
+    width: 73.13,
+    backgroundColor: '#B9B5F7',
+    barColor: '#8B84F2',
+    textColor: '#302A73',
   },
   {
     title: '핵심 화면 정리',
-    row: 1,
-    startCol: 1,
-    span: 2,
-    lane: 1,
-    color: '#DAD9FB',
+    left: 78.21,
+    top: 151.88,
+    width: 151,
+    backgroundColor: '#DAD9FB',
+    barColor: '#8B84F2',
+    textColor: '#302A73',
   },
   {
     title: '캘린더 연결',
-    row: 1,
-    startCol: 3,
-    span: 1,
-    lane: 1,
-    color: '#DAD9FB',
+    left: 234,
+    top: 151.88,
+    width: 105,
+    backgroundColor: '#DAD9FB',
+    barColor: '#8B84F2',
+    textColor: '#302A73',
   },
   {
     title: '학원',
-    row: 1,
-    startCol: 1,
-    span: 1,
-    lane: 2,
-    color: '#DAF4FF',
+    left: 78.21,
+    top: 172.88,
+    width: 73.13,
+    backgroundColor: '#DAF4FF',
+    barColor: '#00CEF5',
+    textColor: '#003B48',
   },
   {
     title: '참여자 모집',
-    row: 2,
-    startCol: 0,
-    span: 3,
-    lane: 0,
-    color: '#FFEFAD',
+    left: 0,
+    top: 232.75,
+    width: 230,
+    backgroundColor: '#FFEFAD',
+    barColor: '#FFDD47',
+    textColor: '#241D00',
   },
   {
     title: '장소 예약',
-    row: 2,
-    startCol: 3,
-    span: 2,
-    lane: 0,
-    color: '#FFF6D5',
+    left: 234,
+    top: 232.75,
+    width: 151,
+    backgroundColor: '#FFF6D5',
+    barColor: '#FFDD47',
+    textColor: '#241D00',
   },
   {
     title: '참가 신청 오픈',
-    row: 2,
-    startCol: 0,
-    span: 1,
-    lane: 1,
-    color: '#FFF6D5',
+    left: 0,
+    top: 253.75,
+    width: 73.13,
+    backgroundColor: '#FFF6D5',
+    barColor: '#FFDD47',
+    textColor: '#241D00',
   },
   {
     title: '참석 인원 확인',
-    row: 2,
-    startCol: 2,
-    span: 1,
-    lane: 1,
-    color: '#FFF6D5',
+    left: 156.43,
+    top: 253.75,
+    width: 73.13,
+    backgroundColor: '#FFF6D5',
+    barColor: '#FFDD47',
+    textColor: '#241D00',
   },
   {
     title: '리허설',
-    row: 3,
-    startCol: 0,
-    span: 1,
-    lane: 0,
-    color: '#FFF6D5',
+    left: 0,
+    top: 334.63,
+    width: 73.13,
+    backgroundColor: '#FFF6D5',
+    barColor: '#FFDD47',
+    textColor: '#241D00',
   },
 ];
 
-const PREVIEW_LEFT = 200;
-const PREVIEW_TOP = 734;
-const PREVIEW_WIDTH = 1040;
-const PREVIEW_HEIGHT = 640;
+function MiniSidebarIcon() {
+  return <span className="size-[15px] rounded-[2px] border-[1.5px] border-text-strong" />;
+}
 
-const INNER_LEFT = 70;
-const INNER_TOP = 64;
-const INNER_WIDTH = 900;
-const INNER_HEIGHT = 640;
+function BellIcon() {
+  return <span className="size-[15px] rounded-full border-[1.5px] border-text-strong" />;
+}
 
-const SIDEBAR_LEFT = 7.5;
-const SIDEBAR_TOP = 7.5;
-const SIDEBAR_WIDTH = 297.5;
-const SIDEBAR_HEIGHT = 625;
+function SocialIcon() {
+  return (
+    <span className="relative size-[15px]">
+      <span className="absolute left-[5px] top-0 size-[5px] rounded-full border-[1.4px] border-text-strong" />
+      <span className="absolute bottom-0 left-0 h-[6px] w-[15px] rounded-t-full border-[1.4px] border-text-strong" />
+    </span>
+  );
+}
 
-const CALENDAR_LEFT = 315;
-const CALENDAR_TOP = 7.5;
-const CALENDAR_WIDTH = 577.5;
-const CALENDAR_HEIGHT = 625;
-
-const GRID_LEFT = 38;
-const WEEKDAY_TOP = 88;
-const GRID_TOP = 126;
-const GRID_WIDTH = 500;
-const CELL_WIDTH = GRID_WIDTH / 7;
-const CELL_HEIGHT = 102;
-
-const BAR_TOP_OFFSET = 30;
-const BAR_HEIGHT = 18;
-const BAR_LANE_GAP = 22;
-const BAR_SIDE_PADDING = 4;
-
-function NavIcon({ active = false }: { active?: boolean }) {
+function CalendarIcon({ selected = false }: { selected?: boolean }) {
   return (
     <span
       className={[
-        'flex size-8 items-center justify-center rounded-[8px]',
-        active ? 'bg-[#171717]' : '',
+        'relative size-[15px] rounded-[2px] border-[1.5px]',
+        selected ? 'border-white' : 'border-text-strong',
       ].join(' ')}
     >
       <span
         className={[
-          'block size-[14px] rounded-[3px] border',
-          active ? 'border-white' : 'border-[#171717]',
+          'absolute left-[2px] right-[2px] top-[4px] h-[1.5px]',
+          selected ? 'bg-white' : 'bg-text-strong',
         ].join(' ')}
       />
     </span>
   );
 }
 
-export function LandingCalendarPreview() {
+function UserIcon() {
+  return <span className="size-[15px] rounded-full border-[1.5px] border-text-strong" />;
+}
+
+function SettingIcon() {
+  return <span className="size-[15px] rounded-full border-[1.5px] border-text-strong" />;
+}
+
+function ChevronLeftIcon() {
   return (
-    <div
-      className="absolute overflow-hidden rounded-token-l bg-fill-inverse shadow-shadow-m"
-      style={{
-        left: PREVIEW_LEFT,
-        top: PREVIEW_TOP,
-        width: PREVIEW_WIDTH,
-        height: PREVIEW_HEIGHT,
-      }}
-    >
-      <div
-        className="absolute bg-fill-inverse"
-        style={{
-          left: INNER_LEFT,
-          top: INNER_TOP,
-          width: INNER_WIDTH,
-          height: INNER_HEIGHT,
-        }}
-      >
-        <aside
-          className="absolute overflow-hidden rounded-[12.5px] bg-fill-inverse shadow-[0_0_17.5px_rgba(23,23,23,0.05)]"
-          style={{
-            left: SIDEBAR_LEFT,
-            top: SIDEBAR_TOP,
-            width: SIDEBAR_WIDTH,
-            height: SIDEBAR_HEIGHT,
-          }}
+    <svg className="size-[15px]" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path
+        d="M9 4L5.5 7.5L9 11"
+        stroke="#737373"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg className="size-[15px]" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path
+        d="M6 4L9.5 7.5L6 11"
+        stroke="#737373"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ChevronDownIcon() {
+  return (
+    <svg className="size-[15px]" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path
+        d="M4.25 6.25L7.5 9.25L10.75 6.25"
+        stroke="#737373"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <span className="relative h-[9px] w-[15px] rounded-full border-[1.4px] border-text-secondary">
+      <span className="absolute left-1/2 top-1/2 size-[3.5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-text-secondary" />
+    </span>
+  );
+}
+
+function CardViewIcon() {
+  return (
+    <span className="flex size-[15px] flex-col justify-center gap-[2px]">
+      <span className="h-[4px] w-[15px] rounded-[2px] border border-text-strong" />
+      <span className="h-[4px] w-[15px] rounded-[2px] border border-text-strong" />
+    </span>
+  );
+}
+
+function ListViewIcon() {
+  return (
+    <span className="flex size-[15px] flex-col justify-center gap-[2px]">
+      <span className="h-[1.5px] w-[12px] rounded-full bg-text-secondary" />
+      <span className="h-[1.5px] w-[12px] rounded-full bg-text-secondary" />
+      <span className="h-[1.5px] w-[12px] rounded-full bg-text-secondary" />
+    </span>
+  );
+}
+
+function MenuBar() {
+  return (
+    <nav className="absolute left-0 top-0 flex h-[625px] w-[52.5px] bg-fill-inverse px-[12.5px] py-[20px]">
+      <div className="flex h-[585px] w-[27.5px] flex-col items-center justify-between">
+        <div className="flex h-[80px] w-[27.5px] flex-col items-center gap-[25px]">
+          <span className="flex size-[27.5px] items-center justify-center">
+            <MiniSidebarIcon />
+          </span>
+          <span className="flex size-[27.5px] items-center justify-center">
+            <BellIcon />
+          </span>
+        </div>
+
+        <div className="flex h-[132.5px] w-[27.5px] flex-col items-center gap-[25px]">
+          <span className="flex size-[27.5px] items-center justify-center">
+            <SocialIcon />
+          </span>
+          <span className="flex size-[27.5px] items-center justify-center rounded-token-s bg-btn-primary">
+            <CalendarIcon selected />
+          </span>
+          <span className="flex size-[27.5px] items-center justify-center">
+            <UserIcon />
+          </span>
+        </div>
+
+        <span className="flex size-[27.5px] items-center justify-center rounded-token-s">
+          <SettingIcon />
+        </span>
+      </div>
+    </nav>
+  );
+}
+
+function SegmentControl() {
+  return (
+    <div className="flex h-[30px] w-[67.5px] items-center gap-[2.5px] rounded-token-s bg-btn-quaternary p-token-xs">
+      <span className="flex h-[25px] w-[30px] items-center justify-center rounded-[5.63px] bg-fill-inverse shadow-[0_0_2.5px_rgba(23,23,23,0.1)]">
+        <CardViewIcon />
+      </span>
+
+      <span className="flex h-[25px] w-[30px] items-center justify-center rounded-[5.63px]">
+        <ListViewIcon />
+      </span>
+    </div>
+  );
+}
+
+function CategoryCard({ name, color }: { name: string; color: string }) {
+  return (
+    <div className="flex h-[42.5px] w-[220px] items-center justify-between rounded-token-m bg-fill-inverse py-token-m pl-token-l pr-token-m shadow-[0_0_12px_rgba(23,23,23,0.05)]">
+      <div className="flex h-[25px] w-[145px] items-center gap-[7.5px]">
+        <span
+          className="h-[25px] w-[5px] shrink-0 rounded-token-xs"
+          style={{ backgroundColor: color }}
+        />
+        <span className="max-w-[157.5px] truncate text-[12.5px] font-semibold leading-[130%] tracking-[-0.01em] text-text-strong">
+          {name}
+        </span>
+      </div>
+
+      <div className="flex h-[27.5px] w-[55px] items-center">
+        <span className="flex size-[27.5px] items-center justify-center rounded-token-s">
+          <ChevronDownIcon />
+        </span>
+        <span className="flex size-[27.5px] items-center justify-center rounded-token-s">
+          <EyeIcon />
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function SidebarContent() {
+  return (
+    <div className="absolute left-[52.5px] top-0 h-[625px] w-[245px] rounded-r-[20px] border-l-[0.63px] border-[#F5F5F5] bg-fill-inverse">
+      <div className="flex h-[62.5px] w-[245px] items-center justify-between px-[12.5px] pb-[12.5px] pt-[20px]">
+        <strong className="text-[20px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
+          6월
+        </strong>
+
+        <SegmentControl />
+      </div>
+
+      <div className="absolute left-0 top-[62.5px] flex h-[562.5px] w-[245px] flex-col gap-[12.5px] px-[12.5px] pb-[7.5px] pt-[2.5px]">
+        {sidebarCategories.map((category) => (
+          <CategoryCard key={category.name} name={category.name} color={category.color} />
+        ))}
+
+        <button
+          type="button"
+          tabIndex={-1}
+          className="flex h-[30px] w-[219.38px] items-center justify-center rounded-token-s bg-btn-primary text-[8.75px] font-medium leading-[130%] tracking-[-0.01em] text-text-onFill"
         >
-          <div className="absolute left-0 top-0 flex h-full w-[52px] flex-col items-center border-r border-[#F5F5F5]">
-            <div className="mt-[28px] size-[14px] rounded-[3px] bg-[#171717]" />
+          추가하기
+        </button>
+      </div>
+    </div>
+  );
+}
 
-            <div className="mt-[52px] flex flex-col items-center gap-[54px]">
-              <span className="size-[14px] rounded-full border border-[#171717]" />
-              <span className="size-[14px] rounded-full border border-[#171717]" />
-            </div>
+function SidebarPreview() {
+  return (
+    <aside className="absolute left-[7.5px] top-[7.5px] h-[625px] w-[297.5px] overflow-hidden rounded-[12.5px] bg-fill-inverse shadow-[0_0_17.5px_rgba(23,23,23,0.05)]">
+      <MenuBar />
+      <SidebarContent />
+    </aside>
+  );
+}
 
-            <div className="mt-[126px]">
-              <NavIcon active />
-            </div>
+function CalendarHeader() {
+  return (
+    <div className="flex h-[27.5px] w-[212.5px] items-center gap-[17.5px]">
+      <strong className="w-[92px] text-[17.5px] font-semibold leading-[130%] tracking-[-0.01em] text-text-strong">
+        2026년 6월
+      </strong>
 
-            <div className="mt-[42px]">
-              <span className="block size-[14px] rounded-full border border-[#171717]" />
-            </div>
+      <div className="flex h-[27.5px] w-[103px] items-center gap-[5px]">
+        <span className="flex size-[27.5px] items-center justify-center rounded-token-infinite bg-btn-quaternary">
+          <ChevronLeftIcon />
+        </span>
 
-            <div className="mt-auto mb-[34px] flex flex-col items-center gap-[42px]">
-              <span className="block size-[14px] rounded-full border border-[#171717]" />
-              <span className="block size-[14px] rounded-[3px] border border-[#171717]" />
-            </div>
-          </div>
+        <span className="flex h-[27.5px] min-w-[33px] items-center justify-center rounded-token-infinite bg-btn-quaternary px-[7.5px]">
+          <span className="text-[10px] font-semibold leading-[150%] tracking-[-0.01em] text-text-secondary">
+            오늘
+          </span>
+        </span>
 
-          <div className="absolute left-[68px] top-[28px] w-[218px]">
-            <div className="mb-[25px] flex h-10 items-center justify-between">
-              <h3 className="text-[22px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
-                6월
-              </h3>
+        <span className="flex size-[27.5px] items-center justify-center rounded-token-infinite bg-btn-quaternary">
+          <ChevronRightIcon />
+        </span>
+      </div>
+    </div>
+  );
+}
 
-              <div className="flex h-[40px] w-[68px] items-center justify-center gap-2 rounded-[10px] bg-[#F5F5F5]">
-                <span className="size-[14px] rounded-[3px] border border-[#171717]" />
-                <span className="h-[14px] w-[1px] bg-[#D4D4D4]" />
-                <span className="h-[14px] w-[14px] border-y border-[#A3A3A3]" />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-[14px]">
-              {categories.map((category) => (
-                <div
-                  key={category.title}
-                  className="flex h-[48px] items-center justify-between rounded-[12px] bg-fill-inverse px-[12px] shadow-[0_0_17.5px_rgba(23,23,23,0.05)]"
-                >
-                  <div className="flex items-center gap-[10px]">
-                    <span
-                      className="h-[32px] w-[5px] rounded-full"
-                      style={{ backgroundColor: category.color }}
-                    />
-                    <span className="text-[15px] font-semibold leading-[150%] tracking-[-0.01em] text-text-strong">
-                      {category.title}
-                    </span>
-                  </div>
-
-                  <span className="text-[16px] text-text-secondary">⌄</span>
-                </div>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              tabIndex={-1}
-              className="mt-[16px] h-[40px] w-full rounded-[8px] bg-[#171717] text-[13px] font-medium text-white"
-            >
-              추가하기
-            </button>
-          </div>
-        </aside>
-
-        <section
-          className="absolute overflow-hidden rounded-[12.5px] bg-fill-inverse shadow-[0_0_17.5px_rgba(23,23,23,0.05)]"
-          style={{
-            left: CALENDAR_LEFT,
-            top: CALENDAR_TOP,
-            width: CALENDAR_WIDTH,
-            height: CALENDAR_HEIGHT,
-          }}
-        >
-          <div className="absolute left-[20px] top-[27px] flex items-center gap-[10px]">
-            <h3 className="text-[22px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
-              2026년 6월
-            </h3>
-
-            <span className="flex size-[28px] items-center justify-center rounded-full bg-[#F5F5F5] text-[18px] text-text-secondary">
-              ‹
-            </span>
-            <span className="flex h-[28px] items-center rounded-full bg-[#F5F5F5] px-[12px] text-[12px] font-medium text-text-secondary">
-              오늘
-            </span>
-            <span className="flex size-[28px] items-center justify-center rounded-full bg-[#F5F5F5] text-[18px] text-text-secondary">
-              ›
-            </span>
-          </div>
-
-          <div
-            className="absolute grid text-center text-[12px] font-medium"
-            style={{
-              left: GRID_LEFT,
-              top: WEEKDAY_TOP,
-              width: GRID_WIDTH,
-              gridTemplateColumns: `repeat(7, ${CELL_WIDTH}px)`,
-            }}
+function WeekdayHeader() {
+  return (
+    <div className="absolute left-0 top-[40px] grid h-[28.125px] w-[547.5px] grid-cols-7">
+      {weekdays.map((weekday, index) => (
+        <div key={weekday} className="relative h-[28.125px]">
+          <span
+            className={[
+              'absolute left-[5px] top-[5px] text-[11.25px] font-medium leading-[150%] tracking-[-0.01em]',
+              index === 0
+                ? 'text-[#FC4C46]'
+                : index === 6
+                  ? 'text-[#3059FF]'
+                  : 'text-text-secondary',
+            ].join(' ')}
           >
-            {weekdays.map((weekday, index) => (
-              <div
-                key={weekday}
+            {weekday}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function getDateColor(date: (typeof calendarDates)[number]) {
+  if (date.type === 'today') return 'text-white';
+  if (date.type === 'sunday' && date.currentMonth) return 'text-[#FC4C46]';
+  if (date.type === 'sunday' && !date.currentMonth) return 'text-[#FEA68F]';
+  if (date.type === 'saturday') return 'text-[#3059FF]';
+  if (!date.currentMonth) return 'text-text-teritary';
+  return 'text-text-strong';
+}
+
+function MonthGrid() {
+  return (
+    <div className="absolute left-0 top-[80.625px] h-[509.375px] w-[547.5px]">
+      <div className="grid h-full w-full grid-cols-7 grid-rows-5">
+        {calendarDates.map((date, index) => (
+          <div key={`${date.day}-${index}`} className="relative">
+            {date.type === 'today' ? (
+              <span className="absolute left-[2px] top-[1px] flex size-[22px] items-center justify-center rounded-full bg-btn-primary text-[11.25px] font-semibold leading-[150%] tracking-[-0.01em] text-white">
+                {date.day}
+              </span>
+            ) : (
+              <span
                 className={[
-                  index === 0 ? 'text-[#FC4C46]' : '',
-                  index === 6 ? 'text-[#4C64FC]' : '',
-                  index !== 0 && index !== 6 ? 'text-text-secondary' : '',
+                  'absolute left-[5px] top-[5px] text-[11.25px] font-semibold leading-[150%] tracking-[-0.01em]',
+                  getDateColor(date),
                 ].join(' ')}
               >
-                {weekday}
-              </div>
-            ))}
-          </div>
-
-          <div
-            className="absolute grid text-center text-[12px] font-semibold leading-none text-text-strong"
-            style={{
-              left: GRID_LEFT,
-              top: GRID_TOP,
-              width: GRID_WIDTH,
-              gridTemplateColumns: `repeat(7, ${CELL_WIDTH}px)`,
-              gridTemplateRows: `repeat(5, ${CELL_HEIGHT}px)`,
-            }}
-          >
-            {weeks.flatMap((week, rowIndex) =>
-              week.map((day, colIndex) => {
-                const isSunday = colIndex === 0;
-                const isSaturday = colIndex === 6;
-                const isOtherMonth =
-                  (rowIndex === 0 && colIndex === 0) ||
-                  (rowIndex === 4 && colIndex >= 3);
-                const isSelectedDay = rowIndex === 0 && day === 4;
-
-                return (
-                  <div
-                    key={`${rowIndex}-${colIndex}-${day}`}
-                    className={[
-                      'relative h-[102px]',
-                      isSunday ? 'text-[#FC4C46]' : '',
-                      isSaturday ? 'text-[#4C64FC]' : '',
-                      isOtherMonth ? 'opacity-40' : '',
-                    ].join(' ')}
-                  >
-                    <span
-                      className={[
-                        'inline-flex size-[24px] items-center justify-center',
-                        isSelectedDay
-                          ? 'rounded-full bg-[#171717] text-white opacity-100'
-                          : '',
-                      ].join(' ')}
-                    >
-                      {day}
-                    </span>
-                  </div>
-                );
-              }),
+                {date.day}
+              </span>
             )}
           </div>
+        ))}
+      </div>
 
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute"
-            style={{
-              left: GRID_LEFT,
-              top: GRID_TOP,
-              width: GRID_WIDTH,
-              height: CELL_HEIGHT * 5,
-            }}
+      {schedules.map((schedule) => (
+        <div
+          key={`${schedule.title}-${schedule.left}-${schedule.top}`}
+          className="absolute h-[16px] overflow-hidden rounded-token-xs"
+          style={{
+            left: schedule.left,
+            top: schedule.top,
+            width: schedule.width,
+            backgroundColor: schedule.backgroundColor,
+          }}
+        >
+          <span
+            className="absolute left-0 top-1/2 h-[14.375px] w-[2.5px] -translate-y-1/2 rounded-token-xs"
+            style={{ backgroundColor: schedule.barColor }}
+          />
+
+          <span
+            className="absolute left-[6.25px] top-1/2 max-h-[13.13px] w-[58.125px] -translate-y-1/2 truncate text-[8.13px] font-medium leading-[130%] tracking-[-0.01em]"
+            style={{ color: schedule.textColor }}
           >
-            {schedules.map((schedule) => (
-              <div
-                key={schedule.title}
-                className="absolute truncate rounded-[3px] px-[6px] text-left text-[10px] font-medium leading-[18px] text-[#404040]"
-                style={{
-                  left: schedule.startCol * CELL_WIDTH + BAR_SIDE_PADDING,
-                  top:
-                    schedule.row * CELL_HEIGHT +
-                    BAR_TOP_OFFSET +
-                    schedule.lane * BAR_LANE_GAP,
-                  width: schedule.span * CELL_WIDTH - BAR_SIDE_PADDING * 2,
-                  height: BAR_HEIGHT,
-                  backgroundColor: schedule.color,
-                }}
-              >
-                {schedule.title}
-              </div>
-            ))}
-          </div>
-        </section>
+            {schedule.title}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CalendarBoardPreview() {
+  return (
+    <section className="absolute left-[315px] top-[7.5px] h-[625px] w-[577.5px] overflow-hidden rounded-[12.5px] bg-fill-inverse shadow-[0_0_17.5px_rgba(23,23,23,0.05)]">
+      <div className="absolute left-[15px] top-[20px] h-[585px] w-[547.5px]">
+        <CalendarHeader />
+        <WeekdayHeader />
+        <MonthGrid />
+      </div>
+    </section>
+  );
+}
+
+export function LandingCalendarPreview() {
+  return (
+    <div className="pointer-events-none absolute left-[200px] top-[734px] h-[640px] w-[1040px] overflow-hidden rounded-token-l bg-fill-inverse shadow-[0_0_28px_rgba(23,23,23,0.05)]">
+      <div className="absolute left-[70px] top-[64px] h-[640px] w-[900px] bg-fill-inverse">
+        <SidebarPreview />
+        <CalendarBoardPreview />
       </div>
     </div>
   );
