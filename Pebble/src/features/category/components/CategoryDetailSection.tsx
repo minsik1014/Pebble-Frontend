@@ -27,14 +27,19 @@ export const CategoryDetailSection = ({
   onUpdateCategoryTask,
   onDeleteCategoryTask,
   onDeleteCategory,
+  onUpdateMilestone,
   onDeleteMilestone,
+  onUpdateTask,
   onDeleteTask,
 }: {
   isSidebarOpen: boolean;
   category: Category;
   onBack: () => void;
   categories: Category[];
-  onUpdateCategory: (categoryId: string, input: UpdateCategoryInput) => void;
+  onUpdateCategory: (
+    categoryId: string,
+    input: UpdateCategoryInput,
+  ) => Promise<void>;
   onCreateTask: (input: TaskFormSubmitInput) => void;
   onUpdateCategoryTask: (
     categoryId: string,
@@ -42,9 +47,24 @@ export const CategoryDetailSection = ({
     input: CreateScheduleItemInput,
   ) => void;
   onDeleteCategoryTask: (categoryId: string, taskId: string) => void;
-  onDeleteCategory: (categoryId: string) => void;
-  onDeleteMilestone: (categoryId: string, milestoneId: string) => void;
-  onDeleteTask: (categoryId: string, milestoneId: string, taskId: string) => void;
+  onDeleteCategory: (categoryId: string) => Promise<void>;
+  onUpdateMilestone: (
+    categoryId: string,
+    milestoneId: string,
+    input: CreateScheduleItemInput,
+  ) => Promise<void>;
+  onDeleteMilestone: (categoryId: string, milestoneId: string) => Promise<void>;
+  onUpdateTask: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+    input: CreateScheduleItemInput,
+  ) => Promise<void>;
+  onDeleteTask: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => Promise<void>;
 }) => {
   const [expandedMilestones, setExpandedMilestones] = React.useState<Record<string, boolean>>({});
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
@@ -57,6 +77,12 @@ export const CategoryDetailSection = ({
   const [selectedMilestoneForTask, setSelectedMilestoneForTask] = React.useState<string | null>(null);
   const editingCategoryTask =
     category.tasks?.find((task) => task.id === editingCategoryTaskId) ?? null;
+  const editingMilestone =
+    category.items.find((item) => item.id === editingMilestoneId) ?? null;
+  const editingTask =
+    category.items
+      .find((item) => item.id === selectedMilestoneForTask)
+      ?.tasks?.find((task) => task.id === editingTaskId) ?? null;
   const milestoneTextColor =
     category.themeTextOnMid ??
     getReadableCategoryTextColor(category.themeBase, category.themeMid);
@@ -157,8 +183,8 @@ export const CategoryDetailSection = ({
         isOpen={isEditModalOpen} 
         mode="edit"
         category={category}
-        onSubmit={(input) => {
-          onUpdateCategory(category.id, input);
+        onSubmit={async (input) => {
+          await onUpdateCategory(category.id, input);
         }}
         onClose={() => setIsEditModalOpen(false)} 
         onRequestDelete={() => {
@@ -171,8 +197,8 @@ export const CategoryDetailSection = ({
         isOpen={isDeleteModalOpen}
         category={category}
         onClose={() => setIsDeleteModalOpen(false)}
-        onDelete={() => {
-          onDeleteCategory(category.id);
+        onDelete={async () => {
+          await onDeleteCategory(category.id);
           setIsDeleteModalOpen(false);
         }}
       />
@@ -182,9 +208,19 @@ export const CategoryDetailSection = ({
         onClose={() => setEditingMilestoneId(null)}
         categories={categories}
         mode="edit"
-        onRequestDelete={() => {
+        milestone={editingMilestone}
+        defaultCategoryId={category.id}
+        onSubmit={async (categoryId, input) => {
+          if (!editingMilestoneId) {
+            return;
+          }
+
+          await onUpdateMilestone(categoryId, editingMilestoneId, input);
+          setEditingMilestoneId(null);
+        }}
+        onRequestDelete={async () => {
           if (editingMilestoneId) {
-            onDeleteMilestone(category.id, editingMilestoneId);
+            await onDeleteMilestone(category.id, editingMilestoneId);
           }
           setEditingMilestoneId(null);
         }}
@@ -199,11 +235,28 @@ export const CategoryDetailSection = ({
         categories={categories}
         defaultCategoryId={category.id}
         defaultMilestoneId={selectedMilestoneForTask}
+        task={editingTask}
         mode={taskMode}
-        onSubmit={onCreateTask}
-        onRequestDelete={() => {
+        onSubmit={async (input) => {
+          if (
+            taskMode === "edit" &&
+            selectedMilestoneForTask &&
+            editingTaskId
+          ) {
+            await onUpdateTask(
+              category.id,
+              selectedMilestoneForTask,
+              editingTaskId,
+              input.task,
+            );
+            return;
+          }
+
+          await onCreateTask(input);
+        }}
+        onRequestDelete={async () => {
           if (selectedMilestoneForTask && editingTaskId) {
-            onDeleteTask(category.id, selectedMilestoneForTask, editingTaskId);
+            await onDeleteTask(category.id, selectedMilestoneForTask, editingTaskId);
           }
           setIsTaskModalOpen(false);
           setEditingTaskId(null);

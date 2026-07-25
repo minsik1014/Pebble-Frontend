@@ -1,7 +1,8 @@
 // src/features/settings/components/EmailChangeModal.tsx
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { Button } from '@/components/ui/Button';
 import { requestEmailChange } from '@/features/settings/api/mockSettingsApi';
 
 interface EmailChangeModalProps {
@@ -11,15 +12,17 @@ interface EmailChangeModalProps {
 }
 
 function validateEmail(email: string, currentEmail: string) {
-  if (!email.trim()) return '새 이메일을 입력해 주세요.';
+  const trimmedEmail = email.trim();
+
+  if (!trimmedEmail) return '새 이메일을 입력해 주세요.';
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (!emailRegex.test(email)) {
+  if (!emailRegex.test(trimmedEmail)) {
     return '올바른 이메일 형식으로 입력해 주세요.';
   }
 
-  if (email === currentEmail) {
+  if (trimmedEmail === currentEmail) {
     return '현재 이메일과 다른 이메일을 입력해 주세요.';
   }
 
@@ -36,9 +39,24 @@ export function EmailChangeModal({
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!open) {
+      setEmail('');
+      setErrorMessage('');
+      setSuccessMessage('');
+      setIsSubmitting(false);
+    }
+  }, [open]);
+
   if (!open) return null;
 
   const hasEmailValue = email.trim().length > 0;
+  const canSubmit = hasEmailValue && !isSubmitting;
+
+  const handleClose = () => {
+    if (isSubmitting) return;
+    onOpenChange(false);
+  };
 
   const handleSubmit = async () => {
     const validationError = validateEmail(email, currentEmail);
@@ -54,7 +72,7 @@ export function EmailChangeModal({
       setErrorMessage('');
       setSuccessMessage('');
 
-      const result = await requestEmailChange(email);
+      const result = await requestEmailChange(email.trim());
 
       setSuccessMessage(result.message);
     } catch (error) {
@@ -68,12 +86,16 @@ export function EmailChangeModal({
     }
   };
 
+  const submitButtonText = isSubmitting
+    ? '요청 중...'
+    : successMessage
+      ? '인증 메일 재전송'
+      : '인증 메일 보내기';
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
-      onClick={() => {
-        if (!isSubmitting) onOpenChange(false);
-      }}
+      onClick={handleClose}
     >
       <section
         role="dialog"
@@ -96,7 +118,11 @@ export function EmailChangeModal({
             disabled={isSubmitting}
             placeholder="새 이메일을 입력해 주세요"
             className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              setErrorMessage('');
+              setSuccessMessage('');
+            }}
           />
         </label>
 
@@ -113,29 +139,30 @@ export function EmailChangeModal({
         )}
 
         <div className="mt-token-xl grid grid-cols-2 gap-token-m">
-          <button
+          <Button
             type="button"
+            variant="secondary"
             disabled={isSubmitting}
-            className="h-11 rounded-token-s bg-btn-quaternary text-body-02-m text-text-strong disabled:cursor-not-allowed disabled:opacity-100"
-            onClick={() => onOpenChange(false)}
+            className="h-11 w-full text-text-strong disabled:cursor-not-allowed disabled:!opacity-100"
+            onClick={handleClose}
           >
             취소
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
-            disabled={isSubmitting}
-            aria-disabled={!hasEmailValue || isSubmitting}
+            variant="primary"
+            disabled={!canSubmit}
             className={[
-              'h-11 rounded-token-s text-body-02-m disabled:cursor-not-allowed disabled:opacity-100',
-              hasEmailValue && !isSubmitting
-                ? 'bg-btn-primary text-text-onFill'
-                : 'bg-[#737373] text-[#A3A3A3]',
+              'h-11 w-full disabled:cursor-not-allowed disabled:!opacity-100',
+              canSubmit
+                ? ''
+                : '!bg-[#737373] !text-[#A3A3A3]',
             ].join(' ')}
             onClick={handleSubmit}
           >
-            {isSubmitting ? '요청 중...' : '인증 메일 보내기'}
-          </button>
+            {submitButtonText}
+          </Button>
         </div>
       </section>
     </div>
