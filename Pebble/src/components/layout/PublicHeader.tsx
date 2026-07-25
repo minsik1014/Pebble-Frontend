@@ -1,3 +1,5 @@
+﻿// src/components/layout/PublicHeader.tsx
+
 import { Link, useNavigate } from 'react-router-dom';
 
 import pebbleLogo from '@/assets/icons/Logo_Pebble3-1.png';
@@ -11,21 +13,11 @@ interface PublicHeaderProps {
 
 export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
   const navigate = useNavigate();
-  const isLanding = variant === 'landing';
+  const showActions = variant === 'landing';
 
   return (
-    <header
-      className={[
-        'w-full bg-transparent [font-family:\'Pretendard\',sans-serif]',
-        isLanding ? 'h-[108px]' : 'h-[95px]',
-      ].join(' ')}
-    >
-      <div
-        className={[
-          'flex h-full w-full items-center justify-between',
-          isLanding ? 'px-[100px]' : 'px-[64px]',
-        ].join(' ')}
-      >
+    <header className="h-[95px] w-full bg-transparent [font-family:'Pretendard',sans-serif]">
+      <div className="flex h-full w-full items-center justify-between px-[64px]">
         <Link
           to="/"
           aria-label="Pebble 홈으로 이동"
@@ -42,7 +34,7 @@ export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
           </span>
         </Link>
 
-        {isLanding ? (
+        {showActions ? (
           <div className="flex h-[44px] w-[252px] shrink-0 items-center gap-[12px]">
             <Button
               variant="secondary"
@@ -60,25 +52,7 @@ export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
               무료로 시작하기
             </Button>
           </div>
-        ) : (
-          <div className="flex h-[47px] shrink-0 items-center gap-[12px]">
-            <Button
-              variant="secondary"
-              className="h-[47px] min-w-[91px] shrink-0 whitespace-nowrap rounded-[12px] bg-white px-[16px] py-[12px] text-[16px] font-medium leading-[145%] tracking-[-0.005em] text-[#000000] hover:bg-white [font-family:'Pretendard',sans-serif]"
-              onClick={() => navigate('/signup')}
-            >
-              회원가입
-            </Button>
-
-            <Button
-              variant="primary"
-              className="h-[47px] w-[76px] shrink-0 whitespace-nowrap rounded-[12px] px-[16px] py-[12px] text-[16px] font-medium leading-[145%] tracking-[-0.005em] text-white [font-family:'Pretendard',sans-serif]"
-              onClick={() => navigate('/login')}
-            >
-              로그인
-            </Button>
-          </div>
-        )}
+        ) : null}
       </div>
     </header>
   );
