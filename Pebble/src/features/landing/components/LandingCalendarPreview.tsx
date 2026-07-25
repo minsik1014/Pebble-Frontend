@@ -13,6 +13,11 @@ import SidebarOpenIcon from '@/assets/icons/sidebar-open.svg?react';
 import SocialOutlineIcon from '@/assets/icons/social-outline.svg?react';
 import UserOutlineIcon from '@/assets/icons/user-outline.svg?react';
 
+import calendarBgEllipse1 from '@/assets/images/landing/hero-calendar-bg-ellipse-1.svg';
+import calendarBgEllipse2 from '@/assets/images/landing/hero-calendar-bg-ellipse-2.svg';
+import calendarBgEllipse4 from '@/assets/images/landing/hero-calendar-bg-ellipse-4.svg';
+import calendarBgEllipse5 from '@/assets/images/landing/hero-calendar-bg-ellipse-5.svg';
+
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
 const calendarDates = [
@@ -164,6 +169,39 @@ const schedules = [
     textColor: '#241D00',
   },
 ];
+
+function CalendarPreviewBackground() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+    >
+      <img
+        src={calendarBgEllipse1}
+        alt=""
+        className="absolute left-[0px] top-[-156px] h-[653px] w-[486px] object-contain"
+      />
+
+      <img
+        src={calendarBgEllipse2}
+        alt=""
+        className="absolute left-[375px] top-[-156px] h-[789px] w-[788px] object-contain"
+      />
+
+      <img
+        src={calendarBgEllipse5}
+        alt=""
+        className="absolute left-[0px] top-[95px] h-[667.885px] w-[668.41px] object-contain"
+      />
+
+      <img
+        src={calendarBgEllipse4}
+        alt=""
+        className="absolute left-[375px] top-[95px] h-[667.885px] w-[668.41px] object-contain"
+      />
+    </div>
+  );
+}
 
 function MenuIconArea({
   children,
@@ -437,7 +475,9 @@ function CalendarBoardPreview() {
 export function LandingCalendarPreview() {
   return (
     <div className="pointer-events-none absolute left-[200px] top-[734px] h-[640px] w-[1040px] overflow-hidden rounded-token-l bg-fill-inverse shadow-[0_0_28px_rgba(23,23,23,0.05)]">
-      <div className="absolute left-[70px] top-[64px] h-[640px] w-[900px] bg-fill-inverse">
+      <CalendarPreviewBackground />
+
+      <div className="absolute left-[70px] top-[64px] z-10 h-[640px] w-[900px]">
         <SidebarPreview />
         <CalendarBoardPreview />
       </div>
