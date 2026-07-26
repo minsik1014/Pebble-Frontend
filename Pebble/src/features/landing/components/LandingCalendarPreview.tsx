@@ -521,6 +521,7 @@ function MonthDateCell({ date }: { date: CalendarDate }) {
 
 function ScheduleBar({ schedule }: { schedule: ScheduleItem }) {
   const left = schedule.startColumn * CELL_WIDTH;
+
   const top =
     schedule.week * WEEK_HEIGHT +
     SCHEDULE_TOP_OFFSET +

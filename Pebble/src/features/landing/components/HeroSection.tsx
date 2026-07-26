@@ -34,6 +34,7 @@ export function HeroSection() {
         오늘 할 일부터 오래 남을 성취까지 한눈에 관리하세요
       </p>
 
+      {/* 버튼은 처음부터 표시 */}
       <Button
         type="button"
         variant="primary"
@@ -43,7 +44,11 @@ export function HeroSection() {
         무료로 시작하기
       </Button>
 
-      <LandingCalendarPreview />
+      {/* Vector 2 다음 등장 */}
+      <LandingCalendarPreview
+        className="landing-hero-pop-in"
+        style={{ animationDelay: '1350ms' }}
+      />
     </div>
   );
 }
