@@ -1,0 +1,24 @@
+@keyframes landing-bridge-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    /*
+     * 징검다리 묶음 너비 1697px + 묶음 사이 간격 32px
+     */
+    transform: translate3d(-1729px, 0, 0);
+  }
+}
+
+.landing-bridge-marquee {
+  animation: landing-bridge-marquee 38s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-bridge-marquee {
+    animation: none;
+    transform: none;
+  }
+}
