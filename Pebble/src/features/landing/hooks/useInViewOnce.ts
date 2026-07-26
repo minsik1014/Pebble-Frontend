@@ -1,18 +1,27 @@
 import type { RefObject } from 'react';
 import { useEffect, useState } from 'react';
 
+interface UseInViewOnceOptions {
+  threshold?: number;
+  rootMargin?: string;
+}
+
 export function useInViewOnce<T extends Element>(
   targetRef: RefObject<T | null>,
+  {
+    threshold = 0.25,
+    rootMargin = '0px',
+  }: UseInViewOnceOptions = {},
 ) {
-  const [isInView, setIsInView] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
 
   useEffect(() => {
     const target = targetRef.current;
 
-    if (!target || isInView) return;
+    if (!target || hasEntered) return;
 
     if (!('IntersectionObserver' in window)) {
-      setIsInView(true);
+      setHasEntered(true);
       return;
     }
 
@@ -20,19 +29,19 @@ export function useInViewOnce<T extends Element>(
       ([entry]) => {
         if (!entry.isIntersecting) return;
 
-        setIsInView(true);
+        setHasEntered(true);
         observer.disconnect();
       },
       {
-        threshold: 0.28,
-        rootMargin: '0px 0px -8% 0px',
+        threshold,
+        rootMargin,
       },
     );
 
     observer.observe(target);
 
     return () => observer.disconnect();
-  }, [isInView, targetRef]);
+  }, [hasEntered, rootMargin, targetRef, threshold]);
 
-  return isInView;
+  return hasEntered;
 }

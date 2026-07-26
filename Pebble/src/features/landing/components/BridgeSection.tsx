@@ -14,7 +14,7 @@ interface BridgeBackgroundLayerProps {
   className: string;
   delay: number;
   isVisible: boolean;
-  visibleOpacityClassName: string;
+  visibleOpacity: number;
 }
 
 function BridgeBackgroundLayer({
@@ -22,7 +22,7 @@ function BridgeBackgroundLayer({
   className,
   delay,
   isVisible,
-  visibleOpacityClassName,
+  visibleOpacity,
 }: BridgeBackgroundLayerProps) {
   return (
     <img
@@ -30,19 +30,18 @@ function BridgeBackgroundLayer({
       alt=""
       className={[
         'absolute object-contain',
-        'transition-[opacity,transform] duration-[900ms]',
-        'ease-[cubic-bezier(0.22,1,0.36,1)]',
         'will-change-[opacity,transform]',
-        'motion-reduce:translate-y-0',
-        'motion-reduce:scale-100',
-        'motion-reduce:transition-none',
         className,
-        isVisible
-          ? `translate-y-0 scale-100 ${visibleOpacityClassName}`
-          : 'translate-y-8 scale-[0.96] opacity-0',
       ].join(' ')}
       style={{
-        transitionDelay: `${delay}ms`,
+        opacity: isVisible ? visibleOpacity : 0,
+        transform: isVisible
+          ? 'translate3d(0, 0, 0) scale(1)'
+          : 'translate3d(0, 40px, 0) scale(0.94)',
+        transitionProperty: 'opacity, transform',
+        transitionDuration: '1400ms',
+        transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        transitionDelay: isVisible ? `${delay}ms` : '0ms',
       }}
     />
   );
@@ -60,27 +59,30 @@ function BridgeBackgroundImages({
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0"
     >
+      {/* Pebble 1 */}
       <BridgeBackgroundLayer
         src={bridgePebble1}
         isVisible={isVisible}
         delay={0}
-        visibleOpacityClassName="opacity-70"
+        visibleOpacity={1}
         className="left-[857px] top-[-57px] h-[499px] w-[585px]"
       />
 
+      {/* Pebble 2 */}
       <BridgeBackgroundLayer
         src={bridgePebble2}
         isVisible={isVisible}
-        delay={350}
-        visibleOpacityClassName="opacity-70"
+        delay={650}
+        visibleOpacity={1}
         className="left-[422px] top-[361px] h-[534px] w-[325px]"
       />
 
+      {/* Pebble 3 */}
       <BridgeBackgroundLayer
         src={bridgePebble3}
         isVisible={isVisible}
-        delay={700}
-        visibleOpacityClassName="opacity-90"
+        delay={1300}
+        visibleOpacity={1}
         className="left-[-62px] top-[649px] h-[273px] w-[413px]"
       />
     </div>
@@ -88,15 +90,20 @@ function BridgeBackgroundImages({
 }
 
 export function BridgeSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const isVisible = useInViewOnce(sectionRef);
+  const pebbleRowTriggerRef = useRef<HTMLDivElement>(null);
+
+  /*
+   * 최근 7일 징검다리 영역의 80%가 화면에 들어왔을 때
+   * 배경 Pebble과 가로 이동 애니메이션을 실행합니다.
+   */
+  const hasPebbleRowEntered = useInViewOnce(pebbleRowTriggerRef, {
+    threshold: 0.8,
+    rootMargin: '0px 0px -2% 0px',
+  });
 
   return (
-    <div
-      ref={sectionRef}
-      className="relative h-full w-full overflow-hidden bg-fill-inverse"
-    >
-      <BridgeBackgroundImages isVisible={isVisible} />
+    <div className="relative h-full w-full overflow-hidden bg-fill-inverse">
+      <BridgeBackgroundImages isVisible={hasPebbleRowEntered} />
 
       <div className="relative z-10">
         <h2 className="absolute left-[100px] top-[240px] h-[70px] w-[845px] text-[54px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
@@ -112,7 +119,14 @@ export function BridgeSection() {
         </p>
       </div>
 
-      <BridgePebbleRow isActive={isVisible} />
+      {/* 징검다리 row 노출 시점을 감지하는 투명 영역 */}
+      <div
+        ref={pebbleRowTriggerRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-[571px] h-[195px] w-full"
+      />
+
+      <BridgePebbleRow isActive={hasPebbleRowEntered} />
     </div>
   );
 }
