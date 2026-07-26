@@ -1,4 +1,4 @@
-// src/features/landing/components/ReportSection.tsx
+import { useRef } from 'react';
 
 import CheckIcon from '@/assets/icons/Check.svg?react';
 
@@ -10,10 +10,37 @@ import {
   REPORT_SECTION_COPY,
   type ReportScheduleItem,
 } from '@/features/landing/constants/reportSectionData';
+import { useInViewOnce } from '@/features/landing/hooks/useInViewOnce';
 
-function MonthlyPebbleCountCard() {
+import '../styles/reportAnimation.css';
+
+interface ReportRevealProps {
+  isVisible: boolean;
+}
+
+function getRevealClassName(isVisible: boolean) {
+  return [
+    'landing-report-reveal',
+    isVisible ? 'is-visible' : '',
+  ].join(' ');
+}
+
+function MonthlyPebbleCountCard({
+  isVisible,
+}: ReportRevealProps) {
   return (
-    <article className="absolute left-[130px] top-[359px] flex h-[242.36px] w-[311px] items-center justify-center rounded-token-m bg-fill-surface px-[64px] py-[54px] shadow-shadow-m">
+    <article
+      className={[
+        'absolute left-[130px] top-[359px]',
+        'flex h-[242.36px] w-[311px] items-center justify-center',
+        'rounded-token-m bg-fill-surface px-[64px] py-[54px]',
+        'shadow-shadow-m',
+        getRevealClassName(isVisible),
+      ].join(' ')}
+      style={{
+        transitionDelay: isVisible ? '1000ms' : '0ms',
+      }}
+    >
       <div className="flex h-[134.36px] w-[183px] flex-col gap-[6.36px]">
         <p className="h-[68px] w-[183px] text-[28px] font-bold leading-[120%] tracking-[-0.01em] text-text-primary">
           이번 달에는
@@ -35,9 +62,22 @@ function MonthlyPebbleCountCard() {
   );
 }
 
-function BusiestCategoryCard() {
+function BusiestCategoryCard({
+  isVisible,
+}: ReportRevealProps) {
   return (
-    <article className="absolute left-[485px] top-[540px] flex h-[316px] w-[386px] flex-col gap-[24px] rounded-token-m bg-fill-surface px-[40px] py-[32px] shadow-shadow-m">
+    <article
+      className={[
+        'absolute left-[485px] top-[540px]',
+        'flex h-[316px] w-[386px] flex-col gap-[24px]',
+        'rounded-token-m bg-fill-surface px-[40px] py-[32px]',
+        'shadow-shadow-m',
+        getRevealClassName(isVisible),
+      ].join(' ')}
+      style={{
+        transitionDelay: isVisible ? '1000ms' : '0ms',
+      }}
+    >
       <div className="flex h-[69px] w-[219px] flex-col gap-[8px]">
         <p className="text-[14px] font-medium leading-[150%] tracking-[-0.01em] text-text-teritary">
           {BUSIEST_CATEGORY.label}
@@ -46,7 +86,9 @@ function BusiestCategoryCard() {
         <div className="flex h-[40px] items-center gap-[12px]">
           <span
             className="h-[40px] w-[8px] rounded-token-s"
-            style={{ backgroundColor: BUSIEST_CATEGORY.color }}
+            style={{
+              backgroundColor: BUSIEST_CATEGORY.color,
+            }}
             aria-hidden="true"
           />
 
@@ -81,7 +123,11 @@ function BusiestCategoryCard() {
   );
 }
 
-function ReportScheduleRow({ item }: { item: ReportScheduleItem }) {
+function ReportScheduleRow({
+  item,
+}: {
+  item: ReportScheduleItem;
+}) {
   return (
     <li className="flex h-[62.5px] w-[314px] flex-col gap-[2.93px] rounded-[14.64px] bg-fill-inverse px-[14.64px] py-[8.79px]">
       <p className="text-[12px] font-medium leading-[150%] tracking-[-0.01em] text-text-teritary">
@@ -92,7 +138,9 @@ function ReportScheduleRow({ item }: { item: ReportScheduleItem }) {
         <div className="flex items-center gap-[5.86px]">
           <span
             className="h-[24px] w-[5.86px] rounded-[2.93px]"
-            style={{ backgroundColor: item.barColor }}
+            style={{
+              backgroundColor: item.barColor,
+            }}
             aria-hidden="true"
           />
 
@@ -102,16 +150,32 @@ function ReportScheduleRow({ item }: { item: ReportScheduleItem }) {
         </div>
 
         <span className="flex size-5 items-center justify-center rounded-full bg-btn-primary text-text-onFill">
-          <CheckIcon className="size-[12px]" aria-hidden="true" />
+          <CheckIcon
+            className="size-[12px]"
+            aria-hidden="true"
+          />
         </span>
       </div>
     </li>
   );
 }
 
-function BusiestDayCard() {
+function BusiestDayCard({
+  isVisible,
+}: ReportRevealProps) {
   return (
-    <article className="absolute left-[916px] top-[394px] flex h-[377.5px] w-[394px] flex-col gap-[12px] rounded-token-m bg-fill-surface px-[40px] py-[32px] shadow-shadow-m">
+    <article
+      className={[
+        'absolute left-[916px] top-[394px]',
+        'flex h-[377.5px] w-[394px] flex-col gap-[12px]',
+        'rounded-token-m bg-fill-surface px-[40px] py-[32px]',
+        'shadow-shadow-m',
+        getRevealClassName(isVisible),
+      ].join(' ')}
+      style={{
+        transitionDelay: isVisible ? '1000ms' : '0ms',
+      }}
+    >
       <div className="flex h-[60px] w-[314px] flex-col gap-[6px]">
         <p className="text-[12px] font-medium leading-[150%] tracking-[-0.01em] text-text-teritary">
           {BUSIEST_DAY.label}
@@ -121,6 +185,7 @@ function BusiestDayCard() {
           <span className="text-[30px] font-bold leading-[120%] tracking-[-0.01em]">
             {BUSIEST_DAY.date}
           </span>
+
           <span className="text-[20px] font-medium leading-[130%] tracking-[-0.01em]">
             {BUSIEST_DAY.suffix}
           </span>
@@ -139,7 +204,10 @@ function BusiestDayCard() {
 
       <ul className="flex h-[203.5px] w-[314px] flex-col gap-[8px]">
         {REPORT_SCHEDULE_ITEMS.map((item) => (
-          <ReportScheduleRow key={item.id} item={item} />
+          <ReportScheduleRow
+            key={item.id}
+            item={item}
+          />
         ))}
       </ul>
     </article>
@@ -147,9 +215,31 @@ function BusiestDayCard() {
 }
 
 export function ReportSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  /*
+   * 리포트 섹션의 약 22%가 화면에 들어오면
+   * 타이틀 애니메이션을 시작합니다.
+   */
+  const hasEntered = useInViewOnce(sectionRef, {
+    threshold: 0.22,
+    rootMargin: '0px 0px -8% 0px',
+  });
+
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[linear-gradient(116.7deg,#FAFAFA_3.1%,#E5E5E5_99.9%)]">
-      <div className="absolute left-[100px] top-[160px]">
+    <div
+      ref={sectionRef}
+      className="relative h-full w-full overflow-hidden bg-[linear-gradient(116.7deg,#FAFAFA_3.1%,#E5E5E5_99.9%)]"
+    >
+      <div
+        className={[
+          'absolute left-[100px] top-[160px]',
+          getRevealClassName(hasEntered),
+        ].join(' ')}
+        style={{
+          transitionDelay: '0ms',
+        }}
+      >
         <h2 className="h-[70px] w-[662px] text-[54px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
           {REPORT_SECTION_COPY.title}
         </h2>
@@ -159,9 +249,9 @@ export function ReportSection() {
         </p>
       </div>
 
-      <MonthlyPebbleCountCard />
-      <BusiestCategoryCard />
-      <BusiestDayCard />
+      <MonthlyPebbleCountCard isVisible={hasEntered} />
+      <BusiestCategoryCard isVisible={hasEntered} />
+      <BusiestDayCard isVisible={hasEntered} />
     </div>
   );
 }
