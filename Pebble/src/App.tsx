@@ -1,5 +1,4 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
@@ -7,6 +6,13 @@ import { ProfileSetupPage } from '@/features/auth/pages/ProfileSetupPage';
 import { SignUpCompletePage } from '@/features/auth/pages/SignUpCompletePage';
 import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import { isMockAuthenticated } from '@/features/auth/utils/mockAuth';
+import { ReportLayout } from '@/features/report/ReportLayout';
+import { FIRST_STEP_PATH } from '@/features/report/constants/reportSteps';
+import { BusiestCategoryStep } from '@/features/report/steps/BusiestCategoryStep';
+import { BusiestDayStep } from '@/features/report/steps/BusiestDayStep';
+import { MonthlyPebbleStep } from '@/features/report/steps/MonthlyPebbleStep';
+import { SharedFriendsStep } from '@/features/report/steps/SharedFriendsStep';
+import { SummaryStep } from '@/features/report/steps/SummaryStep';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
 import { LandingPage } from '@/pages/landing/LandingPage';
 import MyCategoryDetailPage from '@/pages/mypage/MyCategoryDetailPage';
@@ -59,6 +65,22 @@ function App() {
               element={<MyCategoryDetailPage />}
             />
             <Route path="settings" element={<SettingsPage />} />
+          </Route>
+
+          <Route path="/report" element={<ReportLayout />}>
+            <Route
+              index
+              element={<Navigate to={FIRST_STEP_PATH} replace />}
+            />
+            <Route path="monthly" element={<MonthlyPebbleStep />} />
+            <Route path="category" element={<BusiestCategoryStep />} />
+            <Route path="day" element={<BusiestDayStep />} />
+            <Route path="friends" element={<SharedFriendsStep />} />
+            <Route path="summary" element={<SummaryStep />} />
+            <Route
+              path="*"
+              element={<Navigate to={FIRST_STEP_PATH} replace />}
+            />
           </Route>
 
           <Route path="/login" element={<LoginPage />} />
