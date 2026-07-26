@@ -1,8 +1,10 @@
 // src/features/landing/components/LandingCalendarPreview.tsx
 
+import type { CSSProperties, ReactNode } from 'react';
+
 import BellOutlineIcon from '@/assets/icons/bell-outline no-dot.svg?react';
-import CardViewIcon from '@/assets/icons/Card-view.svg?react';
 import CalendarOutlineIcon from '@/assets/icons/calendar-outline.svg?react';
+import CardViewIcon from '@/assets/icons/Card-view.svg?react';
 import ChevronDownIcon from '@/assets/icons/chevron-down.svg?react';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?react';
@@ -18,9 +20,45 @@ import calendarBgEllipse2 from '@/assets/images/landing/hero-calendar-bg-ellipse
 import calendarBgEllipse4 from '@/assets/images/landing/hero-calendar-bg-ellipse-4.svg';
 import calendarBgEllipse5 from '@/assets/images/landing/hero-calendar-bg-ellipse-5.svg';
 
+interface LandingCalendarPreviewProps {
+  className?: string;
+  style?: CSSProperties;
+}
+
+type CalendarDateType = 'sunday' | 'saturday' | 'weekday' | 'today';
+
+interface CalendarDate {
+  day: number;
+  currentMonth: boolean;
+  type: CalendarDateType;
+}
+
+interface ScheduleItem {
+  id: string;
+  title: string;
+  week: number;
+  row: number;
+  startColumn: number;
+  span: number;
+  backgroundColor: string;
+  barColor: string;
+  textColor: string;
+}
+
+interface CategoryItem {
+  id: string;
+  title: string;
+  color: string;
+}
+
+interface NavigationIconProps {
+  children: ReactNode;
+  selected?: boolean;
+}
+
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
-const calendarDates = [
+const calendarDates: CalendarDate[] = [
   { day: 31, currentMonth: false, type: 'sunday' },
   { day: 1, currentMonth: true, type: 'weekday' },
   { day: 2, currentMonth: true, type: 'weekday' },
@@ -62,335 +100,379 @@ const calendarDates = [
   { day: 4, currentMonth: false, type: 'saturday' },
 ];
 
-const sidebarCategories = [
-  { name: '사이드 프로젝트', color: '#8B84F2' },
-  { name: '행사 준비', color: '#FFDD47' },
-  { name: '자격증 시험', color: '#00CEF5' },
+const categories: CategoryItem[] = [
+  {
+    id: 'side-project',
+    title: '사이드 프로젝트',
+    color: '#8B84F2',
+  },
+  {
+    id: 'event',
+    title: '행사 준비',
+    color: '#FFDD47',
+  },
+  {
+    id: 'certificate',
+    title: '자격증 시험',
+    color: '#00CEF5',
+  },
 ];
 
-const schedules = [
+const scheduleItems: ScheduleItem[] = [
   {
+    id: 'lecture-review',
     title: '강의 복습',
-    left: 156.43,
-    top: 29,
-    width: 73.13,
+    week: 0,
+    row: 0,
+    startColumn: 2,
+    span: 1,
     backgroundColor: '#DAF4FF',
     barColor: '#00CEF5',
     textColor: '#003B48',
   },
   {
+    id: 'mvp',
     title: '1차 MVP 완성',
-    left: 78.21,
-    top: 130.88,
-    width: 309.5,
+    week: 1,
+    row: 0,
+    startColumn: 1,
+    span: 4,
     backgroundColor: '#B9B5F7',
     barColor: '#8B84F2',
-    textColor: '#302A73',
+    textColor: '#31296F',
   },
   {
+    id: 'plan',
     title: '계획서 작성',
-    left: 391.5,
-    top: 130.88,
-    width: 73.13,
+    week: 1,
+    row: 0,
+    startColumn: 5,
+    span: 1,
     backgroundColor: '#B9B5F7',
     barColor: '#8B84F2',
-    textColor: '#302A73',
+    textColor: '#31296F',
   },
   {
+    id: 'screen',
     title: '핵심 화면 정리',
-    left: 78.21,
-    top: 151.88,
-    width: 151,
+    week: 1,
+    row: 1,
+    startColumn: 1,
+    span: 2,
     backgroundColor: '#DAD9FB',
-    barColor: '#8B84F2',
-    textColor: '#302A73',
+    barColor: '#B9B5F7',
+    textColor: '#31296F',
   },
   {
+    id: 'calendar-connect',
     title: '캘린더 연결',
-    left: 234,
-    top: 151.88,
-    width: 105,
+    week: 1,
+    row: 1,
+    startColumn: 3,
+    span: 1,
     backgroundColor: '#DAD9FB',
-    barColor: '#8B84F2',
-    textColor: '#302A73',
+    barColor: '#B9B5F7',
+    textColor: '#31296F',
   },
   {
+    id: 'academy',
     title: '학원',
-    left: 78.21,
-    top: 172.88,
-    width: 73.13,
+    week: 1,
+    row: 2,
+    startColumn: 1,
+    span: 1,
     backgroundColor: '#DAF4FF',
     barColor: '#00CEF5',
     textColor: '#003B48',
   },
   {
+    id: 'recruit',
     title: '참여자 모집',
-    left: 0,
-    top: 232.75,
-    width: 230,
+    week: 2,
+    row: 0,
+    startColumn: 0,
+    span: 3,
     backgroundColor: '#FFEFAD',
     barColor: '#FFDD47',
     textColor: '#241D00',
   },
   {
+    id: 'reservation',
     title: '장소 예약',
-    left: 234,
-    top: 232.75,
-    width: 151,
+    week: 2,
+    row: 0,
+    startColumn: 3,
+    span: 2,
     backgroundColor: '#FFF6D5',
     barColor: '#FFDD47',
     textColor: '#241D00',
   },
   {
+    id: 'application',
     title: '참가 신청 오픈',
-    left: 0,
-    top: 253.75,
-    width: 73.13,
+    week: 2,
+    row: 1,
+    startColumn: 0,
+    span: 1,
     backgroundColor: '#FFF6D5',
     barColor: '#FFDD47',
     textColor: '#241D00',
   },
   {
+    id: 'attendance',
     title: '참석 인원 확인',
-    left: 156.43,
-    top: 253.75,
-    width: 73.13,
+    week: 2,
+    row: 1,
+    startColumn: 2,
+    span: 1,
     backgroundColor: '#FFF6D5',
     barColor: '#FFDD47',
     textColor: '#241D00',
   },
   {
+    id: 'rehearsal',
     title: '리허설',
-    left: 0,
-    top: 334.63,
-    width: 73.13,
+    week: 3,
+    row: 0,
+    startColumn: 0,
+    span: 1,
     backgroundColor: '#FFF6D5',
     barColor: '#FFDD47',
     textColor: '#241D00',
   },
 ];
 
-function CalendarPreviewBackground() {
+const CELL_WIDTH = 78.214;
+const WEEK_HEIGHT = 101.875;
+const SCHEDULE_TOP_OFFSET = 31;
+const SCHEDULE_ROW_GAP = 20;
+
+function NavigationIcon({
+  children,
+  selected = false,
+}: NavigationIconProps) {
+  return (
+    <div
+      className={[
+        'flex h-[27.5px] w-[27.5px] items-center justify-center rounded-token-s',
+        selected
+          ? 'bg-btn-primary text-text-onFill'
+          : 'bg-transparent text-text-strong',
+      ].join(' ')}
+    >
+      {children}
+    </div>
+  );
+}
+
+function CalendarBackgroundGraphics() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      className="pointer-events-none absolute inset-0 overflow-hidden"
     >
       <img
         src={calendarBgEllipse1}
         alt=""
-        className="absolute left-[0px] top-[-156px] h-[653px] w-[486px] object-contain"
+        className="absolute left-[-51px] top-[-21px] h-[653px] w-[486px] object-contain opacity-50"
       />
 
       <img
         src={calendarBgEllipse2}
         alt=""
-        className="absolute left-[375px] top-[-156px] h-[789px] w-[788px] object-contain"
+        className="absolute left-[325px] top-[-172px] h-[789px] w-[788px] object-contain opacity-50"
       />
 
       <img
         src={calendarBgEllipse5}
         alt=""
-        className="absolute left-[0px] top-[95px] h-[667.885px] w-[668.41px] object-contain"
+        className="absolute left-[-148px] top-[237px] h-[668px] w-[668px] object-contain opacity-50"
       />
 
       <img
         src={calendarBgEllipse4}
         alt=""
-        className="absolute left-[375px] top-[95px] h-[667.885px] w-[668.41px] object-contain"
+        className="absolute left-[240px] top-[195px] h-[668px] w-[668px] object-contain opacity-50"
       />
+
+      <div className="absolute inset-0 bg-white/40" />
     </div>
   );
 }
 
-function MenuIconArea({
-  children,
-  selected = false,
-}: {
-  children: React.ReactNode;
-  selected?: boolean;
-}) {
+function GlobalMenuBar() {
   return (
-    <span
-      className={[
-        'flex size-[27.5px] items-center justify-center rounded-token-s',
-        selected ? 'bg-btn-primary text-white' : 'text-text-strong',
-      ].join(' ')}
+    <nav
+      aria-label="캘린더 미리보기 메뉴"
+      className="flex h-[625px] w-[52.5px] flex-col justify-between border-r border-[#F5F5F5] bg-fill-inverse px-[12.5px] py-5"
     >
-      {children}
-    </span>
-  );
-}
+      <div className="flex flex-col gap-[25px]">
+        <NavigationIcon>
+          <SidebarOpenIcon className="h-[15px] w-[15px]" />
+        </NavigationIcon>
 
-function MenuBar() {
-  const iconClassName = 'size-[15px] [&_*]:stroke-current';
-  const selectedIconClassName = 'size-[15px] text-white [&_*]:stroke-current';
-
-  return (
-    <nav className="absolute left-0 top-0 flex h-[625px] w-[52.5px] bg-fill-inverse px-[12.5px] py-[20px]">
-      <div className="flex h-[585px] w-[27.5px] flex-col items-center justify-between">
-        <div className="flex h-[80px] w-[27.5px] flex-col items-center gap-[25px]">
-          <MenuIconArea>
-            <SidebarOpenIcon className={iconClassName} aria-hidden="true" />
-          </MenuIconArea>
-
-          <MenuIconArea>
-            <BellOutlineIcon className={iconClassName} aria-hidden="true" />
-          </MenuIconArea>
-        </div>
-
-        <div className="flex h-[132.5px] w-[27.5px] flex-col items-center gap-[25px]">
-          <MenuIconArea>
-            <SocialOutlineIcon className={iconClassName} aria-hidden="true" />
-          </MenuIconArea>
-
-          <MenuIconArea selected>
-            <CalendarOutlineIcon
-              className={selectedIconClassName}
-              aria-hidden="true"
-            />
-          </MenuIconArea>
-
-          <MenuIconArea>
-            <UserOutlineIcon className={iconClassName} aria-hidden="true" />
-          </MenuIconArea>
-        </div>
-
-        <MenuIconArea>
-          <SettingsOutlineIcon className={iconClassName} aria-hidden="true" />
-        </MenuIconArea>
+        <NavigationIcon>
+          <BellOutlineIcon className="h-[15px] w-[15px]" />
+        </NavigationIcon>
       </div>
+
+      <div className="flex flex-col gap-[25px]">
+        <NavigationIcon>
+          <SocialOutlineIcon className="h-[15px] w-[15px]" />
+        </NavigationIcon>
+
+        <NavigationIcon selected>
+          <CalendarOutlineIcon className="h-[15px] w-[15px]" />
+        </NavigationIcon>
+
+        <NavigationIcon>
+          <UserOutlineIcon className="h-[15px] w-[15px]" />
+        </NavigationIcon>
+      </div>
+
+      <NavigationIcon>
+        <SettingsOutlineIcon className="h-[15px] w-[15px]" />
+      </NavigationIcon>
     </nav>
   );
 }
 
-function SegmentControl() {
-  const iconClassName = 'size-[15px] [&_*]:stroke-current';
-
+function ViewSegmentControl() {
   return (
-    <div className="flex h-[30px] w-[67.5px] items-center gap-[2.5px] rounded-token-s bg-btn-quaternary p-token-xs">
-      <span className="flex h-[25px] w-[30px] items-center justify-center rounded-[5.63px] bg-fill-inverse text-text-strong shadow-[0_0_2.5px_rgba(23,23,23,0.1)]">
-        <CardViewIcon className={iconClassName} aria-hidden="true" />
-      </span>
+    <div className="flex h-[30px] w-[67.5px] items-center gap-[2.5px] rounded-token-s bg-btn-quaternary p-[2.5px]">
+      <div className="flex h-[25px] w-[30px] items-center justify-center rounded-[5.63px] bg-fill-inverse shadow-[0_0_2.5px_rgba(23,23,23,0.1)]">
+        <CardViewIcon className="h-[15px] w-[15px]" />
+      </div>
 
-      <span className="flex h-[25px] w-[30px] items-center justify-center rounded-[5.63px] text-text-secondary">
-        <ListViewIcon className={iconClassName} aria-hidden="true" />
-      </span>
+      <div className="flex h-[25px] w-[30px] items-center justify-center">
+        <ListViewIcon className="h-[15px] w-[15px]" />
+      </div>
     </div>
   );
 }
 
-function CategoryCard({ name, color }: { name: string; color: string }) {
-  const iconClassName = 'size-[15px] [&_*]:stroke-current';
-
+function CategoryCard({ title, color }: CategoryItem) {
   return (
-    <div className="flex h-[42.5px] w-[220px] items-center justify-between rounded-token-m bg-fill-inverse py-token-m pl-token-l pr-token-m shadow-[0_0_12px_rgba(23,23,23,0.05)]">
-      <div className="flex h-[25px] w-[145px] items-center gap-[7.5px]">
+    <div className="flex h-[42.5px] w-[220px] items-center justify-between rounded-token-m bg-fill-inverse py-token-m pl-token-l pr-token-m shadow-[0_0_17.5px_rgba(23,23,23,0.05)]">
+      <div className="flex min-w-0 items-center gap-[7.5px]">
         <span
+          aria-hidden="true"
           className="h-[25px] w-[5px] shrink-0 rounded-token-xs"
           style={{ backgroundColor: color }}
         />
-        <span className="max-w-[157.5px] truncate text-[12.5px] font-semibold leading-[130%] tracking-[-0.01em] text-text-strong">
-          {name}
+
+        <span className="truncate text-[12.5px] font-semibold leading-[130%] tracking-[-0.01em] text-text-strong">
+          {title}
         </span>
       </div>
 
-      <div className="flex h-[27.5px] w-[55px] items-center text-text-secondary">
-        <span className="flex size-[27.5px] items-center justify-center rounded-token-s">
-          <ChevronDownIcon className={iconClassName} aria-hidden="true" />
-        </span>
-        <span className="flex size-[27.5px] items-center justify-center rounded-token-s">
-          <EyeOnIcon className={iconClassName} aria-hidden="true" />
-        </span>
+      <div className="flex items-center">
+        <div className="flex h-[27.5px] w-[27.5px] items-center justify-center">
+          <ChevronDownIcon className="h-[15px] w-[15px] text-text-secondary" />
+        </div>
+
+        <div className="flex h-[27.5px] w-[27.5px] items-center justify-center">
+          <EyeOnIcon className="h-[15px] w-[15px] text-text-secondary" />
+        </div>
       </div>
     </div>
   );
 }
 
-function SidebarContent() {
+function CalendarSidebar() {
   return (
-    <div className="absolute left-[52.5px] top-0 h-[625px] w-[245px] rounded-r-[20px] border-l-[0.63px] border-[#F5F5F5] bg-fill-inverse">
-      <div className="flex h-[62.5px] w-[245px] items-center justify-between px-[12.5px] pb-[12.5px] pt-[20px]">
-        <strong className="text-[20px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
-          6월
-        </strong>
+    <aside className="flex h-[625px] w-[297.5px] overflow-hidden rounded-[12.5px] bg-fill-inverse shadow-[0_0_17.5px_rgba(23,23,23,0.05)]">
+      <GlobalMenuBar />
 
-        <SegmentControl />
+      <div className="h-[625px] w-[245px] bg-fill-inverse">
+        <header className="flex h-[62.5px] w-full items-center justify-between pb-[12.5px] pl-[12.5px] pr-[12.5px] pt-5">
+          <h3 className="text-[20px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
+            6월
+          </h3>
+
+          <ViewSegmentControl />
+        </header>
+
+        <div className="flex h-[562.5px] flex-col gap-[12.5px] px-[12.5px] pb-[7.5px] pt-[2.5px]">
+          {categories.map((category) => (
+            <CategoryCard key={category.id} {...category} />
+          ))}
+
+          <div className="flex h-[50px] w-full items-start justify-center pt-token-m">
+            <button
+              type="button"
+              tabIndex={-1}
+              className="h-[30px] w-[219.375px] rounded-token-s bg-btn-primary text-[10px] font-medium leading-[150%] tracking-[-0.01em] text-text-onFill"
+            >
+              추가하기
+            </button>
+          </div>
+        </div>
       </div>
-
-      <div className="absolute left-0 top-[62.5px] flex h-[562.5px] w-[245px] flex-col gap-[12.5px] px-[12.5px] pb-[7.5px] pt-[2.5px]">
-        {sidebarCategories.map((category) => (
-          <CategoryCard
-            key={category.name}
-            name={category.name}
-            color={category.color}
-          />
-        ))}
-
-        <button
-          type="button"
-          tabIndex={-1}
-          className="flex h-[30px] w-[219.38px] items-center justify-center rounded-token-s bg-btn-primary text-[8.75px] font-medium leading-[130%] tracking-[-0.01em] text-text-onFill"
-        >
-          추가하기
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function SidebarPreview() {
-  return (
-    <aside className="absolute left-[7.5px] top-[7.5px] h-[625px] w-[297.5px] overflow-hidden rounded-[12.5px] bg-fill-inverse shadow-[0_0_17.5px_rgba(23,23,23,0.05)]">
-      <MenuBar />
-      <SidebarContent />
     </aside>
   );
 }
 
-function CalendarHeader() {
-  const iconClassName = 'size-[15px] [&_*]:stroke-current';
-
+function DateNavigation() {
   return (
-    <div className="flex h-[27.5px] w-[212.5px] items-center gap-[17.5px]">
-      <strong className="w-[92px] text-[17.5px] font-semibold leading-[130%] tracking-[-0.01em] text-text-strong">
-        2026년 6월
-      </strong>
+    <div className="flex h-[27.5px] items-center gap-[5px]">
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-label="이전 달"
+        className="flex h-[27.5px] w-[27.5px] items-center justify-center rounded-full bg-btn-quaternary"
+      >
+        <ChevronLeftIcon className="h-[15px] w-[15px] text-text-secondary" />
+      </button>
 
-      <div className="flex h-[27.5px] w-[103px] items-center gap-[5px]">
-        <span className="flex size-[27.5px] items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-secondary">
-          <ChevronLeftIcon className={iconClassName} aria-hidden="true" />
-        </span>
+      <button
+        type="button"
+        tabIndex={-1}
+        className="flex h-[27.5px] min-w-[38px] items-center justify-center rounded-full bg-btn-quaternary px-[10px] text-[10px] font-semibold leading-[150%] tracking-[-0.01em] text-text-secondary"
+      >
+        오늘
+      </button>
 
-        <span className="flex h-[27.5px] min-w-[33px] items-center justify-center rounded-token-infinite bg-btn-quaternary px-[7.5px]">
-          <span className="text-[10px] font-semibold leading-[150%] tracking-[-0.01em] text-text-secondary">
-            오늘
-          </span>
-        </span>
-
-        <span className="flex size-[27.5px] items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-secondary">
-          <ChevronRightIcon className={iconClassName} aria-hidden="true" />
-        </span>
-      </div>
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-label="다음 달"
+        className="flex h-[27.5px] w-[27.5px] items-center justify-center rounded-full bg-btn-quaternary"
+      >
+        <ChevronRightIcon className="h-[15px] w-[15px] text-text-secondary" />
+      </button>
     </div>
+  );
+}
+
+function CalendarHeader() {
+  return (
+    <header className="flex h-[27.5px] items-center gap-[5px]">
+      <h3 className="text-[17.5px] font-semibold leading-[130%] tracking-[-0.01em] text-text-strong">
+        2026년 6월
+      </h3>
+
+      <DateNavigation />
+    </header>
   );
 }
 
 function WeekdayHeader() {
   return (
-    <div className="absolute left-0 top-[40px] grid h-[28.125px] w-[547.5px] grid-cols-7">
+    <div className="grid h-[28.125px] w-[547.5px] grid-cols-7">
       {weekdays.map((weekday, index) => (
-        <div key={weekday} className="relative h-[28.125px]">
-          <span
-            className={[
-              'absolute left-[5px] top-[5px] text-[11.25px] font-medium leading-[150%] tracking-[-0.01em]',
-              index === 0
-                ? 'text-[#FC4C46]'
-                : index === 6
-                  ? 'text-[#3059FF]'
-                  : 'text-text-secondary',
-            ].join(' ')}
-          >
+        <div
+          key={weekday}
+          className={[
+            'flex h-[28.125px] items-start px-[5px] pt-[5px]',
+            index === 0
+              ? 'text-fill-danger'
+              : index === 6
+                ? 'text-fill-info'
+                : 'text-text-secondary',
+          ].join(' ')}
+        >
+          <span className="text-[11.25px] font-medium leading-[150%] tracking-[-0.01em]">
             {weekday}
           </span>
         </div>
@@ -399,87 +481,142 @@ function WeekdayHeader() {
   );
 }
 
-function getDateColor(date: (typeof calendarDates)[number]) {
-  if (date.type === 'today') return 'text-white';
-  if (date.type === 'sunday' && date.currentMonth) return 'text-[#FC4C46]';
-  if (date.type === 'sunday' && !date.currentMonth) return 'text-[#FEA68F]';
-  if (date.type === 'saturday') return 'text-[#3059FF]';
-  if (!date.currentMonth) return 'text-text-teritary';
+function getDateClassName(date: CalendarDate) {
+  if (date.type === 'today') {
+    return 'bg-[#171717] text-white';
+  }
+
+  if (!date.currentMonth) {
+    if (date.type === 'sunday') return 'text-[#FEA68F]';
+    if (date.type === 'saturday') return 'text-[#8299FF]';
+
+    return 'text-text-teritary';
+  }
+
+  if (date.type === 'sunday') return 'text-fill-danger';
+  if (date.type === 'saturday') return 'text-fill-info';
+
   return 'text-text-strong';
 }
 
-function MonthGrid() {
+function MonthDateCell({ date }: { date: CalendarDate }) {
+  const isToday = date.type === 'today';
+
   return (
-    <div className="absolute left-0 top-[80.625px] h-[509.375px] w-[547.5px]">
-      <div className="grid h-full w-full grid-cols-7 grid-rows-5">
-        {calendarDates.map((date, index) => (
-          <div key={`${date.day}-${index}`} className="relative">
-            {date.type === 'today' ? (
-              <span className="absolute left-[2px] top-[1px] flex size-[22px] items-center justify-center rounded-full bg-btn-primary text-[11.25px] font-semibold leading-[150%] tracking-[-0.01em] text-white">
-                {date.day}
-              </span>
-            ) : (
-              <span
-                className={[
-                  'absolute left-[5px] top-[5px] text-[11.25px] font-semibold leading-[150%] tracking-[-0.01em]',
-                  getDateColor(date),
-                ].join(' ')}
-              >
-                {date.day}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {schedules.map((schedule) => (
-        <div
-          key={`${schedule.title}-${schedule.left}-${schedule.top}`}
-          className="absolute h-[16px] overflow-hidden rounded-token-xs"
-          style={{
-            left: schedule.left,
-            top: schedule.top,
-            width: schedule.width,
-            backgroundColor: schedule.backgroundColor,
-          }}
-        >
-          <span
-            className="absolute left-0 top-1/2 h-[14.375px] w-[2.5px] -translate-y-1/2 rounded-token-xs"
-            style={{ backgroundColor: schedule.barColor }}
-          />
-
-          <span
-            className="absolute left-[6.25px] top-1/2 max-h-[13.13px] w-[58.125px] -translate-y-1/2 truncate text-[8.13px] font-medium leading-[130%] tracking-[-0.01em]"
-            style={{ color: schedule.textColor }}
-          >
-            {schedule.title}
-          </span>
-        </div>
-      ))}
+    <div className="relative h-[101.875px] w-[78.214px]">
+      <span
+        className={[
+          'absolute left-[5px] top-[5px] text-[11.25px] font-semibold leading-[150%] tracking-[-0.01em]',
+          isToday
+            ? 'flex h-5 w-5 items-center justify-center rounded-full'
+            : '',
+          getDateClassName(date),
+        ].join(' ')}
+      >
+        {date.day}
+      </span>
     </div>
   );
 }
 
-function CalendarBoardPreview() {
+function ScheduleBar({ schedule }: { schedule: ScheduleItem }) {
+  const left = schedule.startColumn * CELL_WIDTH;
+
+  const top =
+    schedule.week * WEEK_HEIGHT +
+    SCHEDULE_TOP_OFFSET +
+    schedule.row * SCHEDULE_ROW_GAP;
+
+  const width = schedule.span * CELL_WIDTH - 4;
+
   return (
-    <section className="absolute left-[315px] top-[7.5px] h-[625px] w-[577.5px] overflow-hidden rounded-[12.5px] bg-fill-inverse shadow-[0_0_17.5px_rgba(23,23,23,0.05)]">
-      <div className="absolute left-[15px] top-[20px] h-[585px] w-[547.5px]">
+    <div
+      className="absolute z-10 flex h-4 items-center overflow-hidden rounded-token-xs"
+      style={{
+        left,
+        top,
+        width,
+        backgroundColor: schedule.backgroundColor,
+        color: schedule.textColor,
+      }}
+    >
+      <span
+        aria-hidden="true"
+        className="h-[14.375px] w-[2.5px] shrink-0 rounded-token-xs"
+        style={{ backgroundColor: schedule.barColor }}
+      />
+
+      <span className="truncate px-[6.25px] text-[8.13px] font-medium leading-[130%] tracking-[-0.01em]">
+        {schedule.title}
+      </span>
+    </div>
+  );
+}
+
+function MonthGrid() {
+  return (
+    <div className="relative h-[509.375px] w-[547.5px] overflow-hidden">
+      <div className="grid h-full w-full grid-cols-7 grid-rows-5">
+        {calendarDates.map((date, index) => (
+          <MonthDateCell
+            key={`${date.currentMonth ? 'current' : 'outside'}-${index}-${date.day}`}
+            date={date}
+          />
+        ))}
+      </div>
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+      >
+        {scheduleItems.map((schedule) => (
+          <ScheduleBar key={schedule.id} schedule={schedule} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CalendarBoard() {
+  return (
+    <section className="h-[625px] w-[577.5px] overflow-hidden rounded-[12.5px] bg-fill-inverse shadow-[0_0_17.5px_rgba(23,23,23,0.05)]">
+      <div className="absolute left-[15px] top-[20px] flex h-[585px] w-[547.5px] flex-col gap-[12.5px]">
         <CalendarHeader />
-        <WeekdayHeader />
-        <MonthGrid />
+
+        <div className="flex flex-col">
+          <WeekdayHeader />
+          <MonthGrid />
+        </div>
       </div>
     </section>
   );
 }
 
-export function LandingCalendarPreview() {
+export function LandingCalendarPreview({
+  className,
+  style,
+}: LandingCalendarPreviewProps) {
   return (
-    <div className="pointer-events-none absolute left-[200px] top-[734px] h-[640px] w-[1040px] overflow-hidden rounded-token-l bg-fill-inverse shadow-[0_0_28px_rgba(23,23,23,0.05)]">
-      <CalendarPreviewBackground />
+    <div
+      aria-hidden="true"
+      className={[
+        'pointer-events-none absolute left-[200px] top-[734px] z-10 h-[640px] w-[1040px] overflow-hidden rounded-token-l bg-white shadow-[0_0_28px_rgba(23,23,23,0.05)]',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      style={style}
+    >
+      <CalendarBackgroundGraphics />
 
-      <div className="absolute left-[70px] top-[64px] z-10 h-[640px] w-[900px]">
-        <SidebarPreview />
-        <CalendarBoardPreview />
+      <div className="absolute left-[70px] top-[64px] h-[640px] w-[900px]">
+        <div className="absolute left-[7.5px] top-[7.5px]">
+          <CalendarSidebar />
+        </div>
+
+        <div className="absolute left-[315px] top-[7.5px]">
+          <CalendarBoard />
+        </div>
       </div>
     </div>
   );

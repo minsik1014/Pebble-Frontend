@@ -11,32 +11,36 @@ export function HeroBackgroundShapes() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
-      {/* Vector 3 */}
+      {/* 1. Vector 3 */}
       <img
         src={vector3}
         alt=""
-        className="absolute left-[400px] top-[-80px] h-[498.912px] w-[585.439px] object-contain"
+        className="landing-hero-pop-in absolute left-[400px] top-[-80px] h-[498.912px] w-[585.439px] object-contain"
+        style={{ animationDelay: '700ms' }}
       />
 
-      {/* Vector 1 */}
+      {/* 2. Vector 1 */}
       <img
         src={vector1}
         alt=""
-        className="absolute left-[927px] top-[-30px] h-[680.443px] w-[550.439px] object-contain"
+        className="landing-hero-pop-in absolute left-[927px] top-[-30px] h-[680.443px] w-[550.439px] object-contain"
+        style={{ animationDelay: '900ms' }}
       />
 
-      {/* Vector 2 */}
+      {/* 3. Vector 2 */}
       <img
         src={vector2}
         alt=""
-        className="absolute left-[1036px] top-[512px] h-[273.221px] w-[512.699px] object-contain"
+        className="landing-hero-pop-in absolute left-[1036px] top-[512px] h-[273.221px] w-[512.699px] object-contain"
+        style={{ animationDelay: '1100ms' }}
       />
 
-      {/* Vector 4 */}
+      {/* 5. Vector 4: 캘린더 다음 등장 */}
       <img
         src={vector4}
         alt=""
-        className="absolute left-[0px] top-[906.62px] h-[700.443px] w-[325.439px] object-contain"
+        className="landing-hero-pop-in absolute left-0 top-[906.62px] h-[700.443px] w-[325.439px] object-contain"
+        style={{ animationDelay: '1650ms' }}
       />
     </div>
   );
