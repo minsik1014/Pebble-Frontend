@@ -48,14 +48,18 @@ const cardLayouts = [
 function createStageCards(
   stageId: StepStructureStage['id'],
   title: string,
-  mainDescription: string,
-  backgroundDescription: string,
+  description: string,
 ): StepStructureCard[] {
   return cardLayouts.map((layout, index) => ({
     id: `${stageId}-${index}`,
     ...layout,
-    title,
-    description: index === 0 ? mainDescription : backgroundDescription,
+
+    /*
+     * 맨 앞 카드에만 텍스트를 표시합니다.
+     * 뒤쪽 두 카드는 겹침 효과를 위한 빈 카드입니다.
+     */
+    title: index === 0 ? title : '',
+    description: index === 0 ? description : '',
   }));
 }
 
@@ -67,7 +71,6 @@ export const STEP_STRUCTURE_STAGES: StepStructureStage[] = [
       'category',
       '카테고리',
       '이루고 싶은 목표를 모아 보세요',
-      '이루고 싶은 목표를 한 곳에',
     ),
   },
   {
@@ -77,7 +80,6 @@ export const STEP_STRUCTURE_STAGES: StepStructureStage[] = [
       'milestone',
       '마일스톤',
       '목표를 단계 별로 나누어 보세요',
-      '큰 목표를 작은 단계로',
     ),
   },
   {
@@ -87,7 +89,6 @@ export const STEP_STRUCTURE_STAGES: StepStructureStage[] = [
       'task',
       '태스크',
       '오늘 할 일을 하나씩 놓아 보세요',
-      '오늘의 할 일을 한 칸씩',
     ),
   },
 ];

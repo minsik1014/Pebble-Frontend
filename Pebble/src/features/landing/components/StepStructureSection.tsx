@@ -9,6 +9,11 @@ interface StepStructureSectionProps {
 export function StepStructureSection({
   activeStep = 0,
 }: StepStructureSectionProps) {
+  const normalizedActiveStep = Math.min(
+    Math.max(activeStep, 0),
+    STEP_STRUCTURE_STAGES.length - 1,
+  );
+
   return (
     <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-[linear-gradient(116.82deg,#FFFFFF_0%,#FAFAFA_100%)]">
       <p className="absolute left-[510px] top-[240px] z-40 w-[421px] text-center text-[32px] font-medium leading-[130%] tracking-[-0.01em] text-text-secondary">
@@ -20,10 +25,10 @@ export function StepStructureSection({
       </h2>
 
       {STEP_STRUCTURE_STAGES.map((stage, stageIndex) => {
-        const isActive = stageIndex === activeStep;
-        const hasPassed = stageIndex < activeStep;
+        const isActive = stageIndex === normalizedActiveStep;
+        const hasPassed = stageIndex < normalizedActiveStep;
 
-        const positionClassName = isActive
+        const transitionClassName = isActive
           ? 'translate-y-0 scale-100 opacity-100'
           : hasPassed
             ? '-translate-y-8 scale-[0.98] opacity-0'
@@ -37,13 +42,13 @@ export function StepStructureSection({
               'pointer-events-none absolute inset-0',
               'transition-[opacity,transform] duration-700',
               'ease-[cubic-bezier(0.22,1,0.36,1)]',
-              positionClassName,
+              transitionClassName,
             ].join(' ')}
           >
             {stage.cards.map((card) => (
               <div
                 key={card.id}
-                className="absolute flex h-[200px] items-center rounded-token-l bg-fill-inverse shadow-[0_0_50px_rgba(23,23,23,0.1)]"
+                className="absolute flex h-[200px] items-center overflow-hidden rounded-token-l bg-fill-inverse shadow-[0_0_50px_rgba(23,23,23,0.1)]"
                 style={{
                   left: card.left,
                   top: card.top,
@@ -51,25 +56,27 @@ export function StepStructureSection({
                   zIndex: card.zIndex,
                 }}
               >
-                <div className="flex w-full items-center">
-                  <strong
-                    className={[
-                      'ml-[137px] shrink-0 font-semibold leading-[130%] tracking-[-0.01em] text-text-strong',
-                      card.titleClassName,
-                    ].join(' ')}
-                  >
-                    {card.title}
-                  </strong>
+                {card.title && card.description && (
+                  <div className="flex w-full min-w-0 items-center">
+                    <strong
+                      className={[
+                        'ml-[137px] shrink-0 font-semibold leading-[130%] tracking-[-0.01em] text-text-strong',
+                        card.titleClassName,
+                      ].join(' ')}
+                    >
+                      {card.title}
+                    </strong>
 
-                  <span
-                    className={[
-                      'ml-[140px] whitespace-nowrap font-semibold leading-[130%] tracking-[-0.01em] text-text-secondary',
-                      card.descriptionClassName,
-                    ].join(' ')}
-                  >
-                    {card.description}
-                  </span>
-                </div>
+                    <span
+                      className={[
+                        'ml-[140px] min-w-0 truncate whitespace-nowrap font-semibold leading-[130%] tracking-[-0.01em] text-text-secondary',
+                        card.descriptionClassName,
+                      ].join(' ')}
+                    >
+                      {card.description}
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
 
@@ -89,7 +96,7 @@ export function StepStructureSection({
             key={stage.id}
             className={[
               'h-2 rounded-full transition-[width,background-color] duration-500',
-              index === activeStep
+              index === normalizedActiveStep
                 ? 'w-8 bg-text-strong'
                 : 'w-2 bg-border-secondary',
             ].join(' ')}
