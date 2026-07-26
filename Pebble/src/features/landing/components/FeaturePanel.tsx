@@ -4,23 +4,41 @@ interface FeaturePanelProps {
   title: string;
   description: string;
   children: ReactNode;
-  className?: string;
+  isActive: boolean;
+  hasPassed: boolean;
 }
 
 export function FeaturePanel({
   title,
   description,
   children,
-  className = '',
+  isActive,
+  hasPassed,
 }: FeaturePanelProps) {
+  const transitionClassName = isActive
+    ? 'translate-y-0 opacity-100'
+    : hasPassed
+      ? '-translate-y-12 opacity-0'
+      : 'translate-y-12 opacity-0';
+
   return (
-    <article
+    <div
+      aria-hidden={!isActive}
       className={[
-        'relative h-[624px] w-[1240px] overflow-hidden rounded-token-l bg-fill-surface',
-        className,
+        'pointer-events-none absolute inset-0',
+        isActive ? 'z-20' : 'z-10',
       ].join(' ')}
     >
-      <div className="absolute left-[100px] top-[263px] flex w-[626px] flex-col gap-[20px]">
+      <div
+        className={[
+          'absolute left-[100px] top-[263px] flex w-[626px] flex-col gap-[20px]',
+          'transition-[opacity,transform] duration-700',
+          'ease-[cubic-bezier(0.22,1,0.36,1)]',
+          'will-change-[opacity,transform]',
+          'motion-reduce:translate-y-0 motion-reduce:transition-none',
+          transitionClassName,
+        ].join(' ')}
+      >
         <h3 className="text-[40px] font-semibold leading-[130%] tracking-[-0.01em] text-text-strong">
           {title}
         </h3>
@@ -30,7 +48,21 @@ export function FeaturePanel({
         </p>
       </div>
 
-      {children}
-    </article>
+      <div
+        className={[
+          'absolute inset-0',
+          'transition-[opacity,transform] duration-[800ms]',
+          'ease-[cubic-bezier(0.22,1,0.36,1)]',
+          'will-change-[opacity,transform]',
+          'motion-reduce:translate-y-0 motion-reduce:transition-none',
+          transitionClassName,
+        ].join(' ')}
+        style={{
+          transitionDelay: isActive ? '100ms' : '0ms',
+        }}
+      >
+        {children}
+      </div>
+    </div>
   );
 }
