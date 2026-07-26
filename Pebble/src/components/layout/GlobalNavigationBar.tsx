@@ -1,29 +1,32 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+// src/components/layout/GlobalNavigationBar.tsx
 
-import BellOutlineIcon from "@/assets/icons/bell-outline no-dot.svg?react";
-import SocialOutlineIcon from "@/assets/icons/social-outline.svg?react";
-import CalendarOutlineIcon from "@/assets/icons/calendar-nav-default.svg?react";
-import CalendarSolidIcon from "@/assets/icons/calendar-nav-selected.svg?react";
-import MyOutlineIcon from "@/assets/icons/user-outline.svg?react";
-import MySolidIcon from "@/assets/icons/user-solid.svg?react";
-import SettingsOutlineIcon from "@/assets/icons/settings-outline.svg?react";
-import SettingsSolidIcon from "@/assets/icons/settings-solid.svg?react";
-import LogOutIcon from "@/assets/icons/Logout.svg?react";
-import SidebarOpenIcon from "@/assets/icons/sidebar-open.svg?react";
-import SidebarCloseIcon from "@/assets/icons/sidebar-close.svg?react";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { AlarmPopover } from "@/features/alarm/components/AlarmPopover";
-import { useAlarms } from "@/features/alarm/hooks/useAlarm";
+import BellOutlineIcon from '@/assets/icons/bell-outline no-dot.svg?react';
+import CalendarOutlineIcon from '@/assets/icons/calendar-nav-default.svg?react';
+import CalendarSolidIcon from '@/assets/icons/calendar-nav-selected.svg?react';
+import LogOutIcon from '@/assets/icons/Logout.svg?react';
+import MyOutlineIcon from '@/assets/icons/user-outline.svg?react';
+import MySolidIcon from '@/assets/icons/user-solid.svg?react';
+import SettingsOutlineIcon from '@/assets/icons/settings-outline.svg?react';
+import SettingsSolidIcon from '@/assets/icons/settings-solid.svg?react';
+import SidebarCloseIcon from '@/assets/icons/sidebar-close.svg?react';
+import SidebarOpenIcon from '@/assets/icons/sidebar-open.svg?react';
+import SocialOutlineIcon from '@/assets/icons/social-outline.svg?react';
+
+import { AlarmPopover } from '@/features/alarm/components/AlarmPopover';
+import { useAlarms } from '@/features/alarm/hooks/useAlarm';
+import { clearMockAuthenticated } from '@/features/auth/utils/mockAuth';
 
 type GlobalNavigationBarProps = {
-  variant?: "embedded" | "collapsed";
+  variant?: 'embedded' | 'collapsed';
   isSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
 };
 
 export const GlobalNavigationBar = ({
-  variant = "embedded",
+  variant = 'embedded',
   isSidebarOpen = true,
   onToggleSidebar,
 }: GlobalNavigationBarProps) => {
@@ -72,13 +75,18 @@ export const GlobalNavigationBar = ({
     openAlarmPopover();
   };
 
+  const handleLogout = () => {
+    clearMockAuthenticated();
+    navigate('/login');
+  };
+
   useEffect(() => {
     const handleClickOutside = async (event: MouseEvent) => {
       const target = event.target as Node;
 
       const isInsideButton = alarmButtonRef.current?.contains(target);
       const isInsidePopover =
-        target instanceof Element && target.closest("[data-alarm-popover]");
+        target instanceof Element && target.closest('[data-alarm-popover]');
 
       if (!isInsideButton && !isInsidePopover) {
         await closeAlarmPopover();
@@ -86,35 +94,35 @@ export const GlobalNavigationBar = ({
     };
 
     if (isAlarmOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isAlarmOpen, closeAlarmPopover]);
 
   const getNavigationButtonClassName = (active: boolean) =>
     [
-      "size-11 relative flex items-center justify-center rounded-token-s",
-      "cursor-pointer transition-colors",
+      'size-11 relative flex items-center justify-center rounded-token-s',
+      'cursor-pointer transition-colors',
       active
-        ? "bg-fill-primary text-text-onFill shadow-sm"
-        : "text-text-secondary hover:bg-fill-surface hover:text-text-strong",
-    ].join(" ");
+        ? 'bg-fill-primary text-text-onFill shadow-sm'
+        : 'text-text-secondary hover:bg-fill-surface hover:text-text-strong',
+    ].join(' ');
 
-  const isCalendarActive = pathname === "/";
-  const isMyPageActive = pathname.startsWith("/my");
-  const isSettingsActive = pathname.startsWith("/settings");
+  const isCalendarActive = pathname === '/';
+  const isMyPageActive = pathname.startsWith('/my');
+  const isSettingsActive = pathname.startsWith('/settings');
 
   return (
     <nav
       className={[
-        "relative z-50 h-full w-[84px] shrink-0 px-5 py-8",
-        "bg-fill-inverse inline-flex flex-col justify-start items-center gap-10",
-        "overflow-visible",
-        variant === "collapsed" ? "rounded-token-m shadow-shadow-m" : "",
-      ].join(" ")}
+        'relative z-50 h-full w-[84px] shrink-0 px-5 py-8',
+        'bg-fill-inverse inline-flex flex-col justify-start items-center gap-10',
+        'overflow-visible',
+        variant === 'collapsed' ? 'rounded-token-m shadow-shadow-m' : '',
+      ].join(' ')}
     >
       <div className="flex-1 flex flex-col justify-between items-center w-full">
         {/* 상단: 알림 그룹 */}
@@ -124,7 +132,7 @@ export const GlobalNavigationBar = ({
               type="button"
               onClick={onToggleSidebar}
               className="size-11 relative flex items-center justify-center rounded-token-s cursor-pointer text-text-secondary transition-colors hover:bg-fill-surface hover:text-text-strong"
-              aria-label={isSidebarOpen ? "사이드바 닫기" : "사이드바 열기"}
+              aria-label={isSidebarOpen ? '사이드바 닫기' : '사이드바 열기'}
             >
               {isSidebarOpen ? (
                 <SidebarCloseIcon className="size-6" />
@@ -141,15 +149,14 @@ export const GlobalNavigationBar = ({
               onClick={toggleAlarmPopover}
               className={`size-11 relative flex items-center justify-center rounded-token-s cursor-pointer transition-colors duration-[450ms] ease-in-out ${
                 isAlarmOpen
-                  ? "bg-black text-white"
-                  : "text-text-secondary hover:bg-fill-surface hover:text-text-strong"
+                  ? 'bg-black text-white'
+                  : 'text-text-secondary hover:bg-fill-surface hover:text-text-strong'
               }`}
               aria-label="알림 목록 열기"
               aria-expanded={isAlarmOpen}
             >
               <BellOutlineIcon className="size-6" />
 
-              {/* 빨간 점: 알림창을 아직 확인하지 않은 알림이 있을 때만 표시 */}
               {unreadCount > 0 && (
                 <div className="size-1 absolute right-[10px] top-[10px] bg-fill-danger rounded-full" />
               )}
@@ -180,10 +187,10 @@ export const GlobalNavigationBar = ({
 
           <button
             type="button"
-            onClick={() => navigate("/")}
+            onClick={() => navigate('/')}
             className={getNavigationButtonClassName(isCalendarActive)}
             aria-label="캘린더 페이지로 이동"
-            aria-current={isCalendarActive ? "page" : undefined}
+            aria-current={isCalendarActive ? 'page' : undefined}
           >
             {isCalendarActive ? (
               <CalendarSolidIcon className="size-6" />
@@ -194,10 +201,10 @@ export const GlobalNavigationBar = ({
 
           <button
             type="button"
-            onClick={() => navigate("/my")}
+            onClick={() => navigate('/my')}
             className={getNavigationButtonClassName(isMyPageActive)}
             aria-label="마이페이지로 이동"
-            aria-current={isMyPageActive ? "page" : undefined}
+            aria-current={isMyPageActive ? 'page' : undefined}
           >
             {isMyPageActive ? (
               <MySolidIcon className="size-6" />
@@ -211,10 +218,10 @@ export const GlobalNavigationBar = ({
         <div className="flex flex-col justify-start items-center gap-10 w-full">
           <button
             type="button"
-            onClick={() => navigate("/settings")}
+            onClick={() => navigate('/settings')}
             className={getNavigationButtonClassName(isSettingsActive)}
             aria-label="설정 페이지로 이동"
-            aria-current={isSettingsActive ? "page" : undefined}
+            aria-current={isSettingsActive ? 'page' : undefined}
           >
             {isSettingsActive ? (
               <SettingsSolidIcon className="size-6" />
@@ -225,7 +232,7 @@ export const GlobalNavigationBar = ({
 
           <button
             type="button"
-            onClick={() => navigate("/login")}
+            onClick={handleLogout}
             className={getNavigationButtonClassName(false)}
             aria-label="로그아웃"
           >
