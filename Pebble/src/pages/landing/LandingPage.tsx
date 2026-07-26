@@ -1,8 +1,6 @@
-// src/pages/landing/LandingPage.tsx
-
 import { PublicHeader } from '@/components/layout/PublicHeader';
 import { BridgeSection } from '@/features/landing/components/BridgeSection';
-import { FeaturePanelsSection } from '@/features/landing/components/FeaturePanelsSection';
+import { FeaturePanelsScrollSection } from '@/features/landing/components/FeaturePanelsScrollSection';
 import { FinalCTASection } from '@/features/landing/components/FinalCTASection';
 import { HeroSection } from '@/features/landing/components/HeroSection';
 import { LandingFigmaSection } from '@/features/landing/components/LandingFigmaSection';
@@ -24,9 +22,7 @@ export function LandingPage() {
 
         <StepStructureScrollSection />
 
-        <LandingFigmaSection height={3072}>
-          <FeaturePanelsSection />
-        </LandingFigmaSection>
+        <FeaturePanelsScrollSection />
 
         <LandingFigmaSection height={1024}>
           <BridgeSection />
