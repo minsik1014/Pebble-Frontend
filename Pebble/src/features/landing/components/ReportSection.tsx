@@ -10,7 +10,7 @@ import {
   REPORT_SECTION_COPY,
   type ReportScheduleItem,
 } from '@/features/landing/constants/reportSectionData';
-import { useInViewOnce } from '@/features/landing/hooks/useInViewOnce';
+import { useInView } from '@/features/landing/hooks/useInView';
 
 import '../styles/reportAnimation.css';
 
@@ -207,7 +207,7 @@ function BusiestDayCard({
 export function ReportSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const hasEntered = useInViewOnce(sectionRef);
+  const hasEntered = useInView(sectionRef);
 
   return (
     <div

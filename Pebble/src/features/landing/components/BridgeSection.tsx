@@ -7,7 +7,7 @@ import bridgePebble2 from '@/assets/images/landing/bridge-pebble-2.svg';
 import bridgePebble3 from '@/assets/images/landing/bridge-pebble-3.svg';
 
 import { BRIDGE_SECTION_COPY } from '@/features/landing/constants/bridgeSectionData';
-import { useInViewOnce } from '@/features/landing/hooks/useInViewOnce';
+import { useInView } from '@/features/landing/hooks/useInView';
 
 import { BridgePebbleRow } from './BridgePebbleRow';
 
@@ -87,7 +87,7 @@ export function BridgeSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   // 기존 애니메이션 시작 시점 사용
-  const hasEntered = useInViewOnce(sectionRef);
+  const hasEntered = useInView(sectionRef);
 
   return (
     <div

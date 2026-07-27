@@ -5,7 +5,7 @@ import ellipse7 from '@/assets/images/landing/final-cta-ellipse-7.svg';
 import ellipse8 from '@/assets/images/landing/final-cta-ellipse-8.svg';
 
 import { Button } from '@/components/ui/Button';
-import { useInViewOnce } from '@/features/landing/hooks/useInViewOnce';
+import { useInView } from '@/features/landing/hooks/useInView';
 
 function FinalCTABackgroundShapes() {
   return (
@@ -32,7 +32,7 @@ export function FinalCTASection() {
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const hasEntered = useInViewOnce(sectionRef);
+  const hasEntered = useInView(sectionRef);
 
   const handleStartClick = () => {
     navigate('/signup');
