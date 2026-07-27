@@ -14,6 +14,7 @@ import SettingsSolidIcon from '@/assets/icons/settings-solid.svg?react';
 import SidebarCloseIcon from '@/assets/icons/sidebar-close.svg?react';
 import SidebarOpenIcon from '@/assets/icons/sidebar-open.svg?react';
 import SocialOutlineIcon from '@/assets/icons/social-outline.svg?react';
+import SocialSolidIcon from '@/assets/icons/social-solid.svg?react';
 
 import { AlarmPopover } from '@/features/alarm/components/AlarmPopover';
 import { useAlarms } from '@/features/alarm/hooks/useAlarm';
@@ -112,6 +113,7 @@ export const GlobalNavigationBar = ({
     ].join(' ');
 
   const isCalendarActive = pathname === '/';
+  const isFriendsActive = pathname.startsWith('/friends');
   const isMyPageActive = pathname.startsWith('/my');
   const isSettingsActive = pathname.startsWith('/settings');
 
@@ -179,10 +181,16 @@ export const GlobalNavigationBar = ({
         <div className="flex flex-col justify-start items-center gap-10 w-full">
           <button
             type="button"
-            className={getNavigationButtonClassName(false)}
+            onClick={() => navigate('/friends')}
+            className={getNavigationButtonClassName(isFriendsActive)}
             aria-label="소셜 페이지로 이동"
+            aria-current={isFriendsActive ? 'page' : undefined}
           >
-            <SocialOutlineIcon className="size-6" />
+            {isFriendsActive ? (
+              <SocialSolidIcon className="size-6" />
+            ) : (
+              <SocialOutlineIcon className="size-6" />
+            )}
           </button>
 
           <button

@@ -7,10 +7,15 @@ import {
   readAlarm,
   respondFollowRequest,
 } from "../api/alarmApi";
+import { useFriendStore } from "@/features/friends/store/useFriendStore";
 import type { Alarm, FollowRequestAction } from "../types/alarm";
 
 export const useAlarms = () => {
   const [alarms, setAlarms] = useState<Alarm[]>([]);
+  const friendRequests = useFriendStore((state) => state.requests);
+  const respondFriendRequest = useFriendStore(
+    (state) => state.respondRequest,
+  );
 
   useEffect(() => {
     const fetchAlarms = async () => {
@@ -21,13 +26,37 @@ export const useAlarms = () => {
     fetchAlarms();
   }, []);
 
+  const resolvedAlarms = useMemo(
+    () =>
+      alarms.map((alarm) => {
+        if (alarm.type !== "FOLLOW_REQUEST" || !alarm.friendRequestId) {
+          return alarm;
+        }
+
+        const request = friendRequests.find(
+          ({ id }) => id === alarm.friendRequestId,
+        );
+
+        if (!request) {
+          return alarm;
+        }
+
+        return {
+          ...alarm,
+          followStatus: request.status,
+          isRead: request.status === "PENDING" ? alarm.isRead : true,
+        };
+      }),
+    [alarms, friendRequests],
+  );
+
   const unreadCount = useMemo(() => {
-    return alarms.filter((alarm) => !alarm.isRead).length;
-  }, [alarms]);
+    return resolvedAlarms.filter((alarm) => !alarm.isRead).length;
+  }, [resolvedAlarms]);
 
 
   const handleReadVisibleUnreadAlarms = useCallback(async () => {
-    const alarmsToRead = alarms.filter((alarm) => {
+    const alarmsToRead = resolvedAlarms.filter((alarm) => {
       const isPendingFollowRequest =
         alarm.type === "FOLLOW_REQUEST" &&
         (alarm.followStatus ?? "PENDING") === "PENDING";
@@ -53,10 +82,10 @@ export const useAlarms = () => {
         };
       }),
     );
-  }, [alarms]);
+  }, [resolvedAlarms]);
 
   const handleDeleteAlarm = async (alarmId: number) => {
-    const alarmToDelete = alarms.find((alarm) => alarm.id === alarmId);
+    const alarmToDelete = resolvedAlarms.find((alarm) => alarm.id === alarmId);
     const isPendingFollowRequest =
       alarmToDelete?.type === "FOLLOW_REQUEST" &&
       (alarmToDelete.followStatus ?? "PENDING") === "PENDING";
@@ -73,19 +102,29 @@ export const useAlarms = () => {
   const handleDeleteAllAlarms = async () => {
     await deleteAllAlarms();
 
-    setAlarms((prev) =>
-      prev.filter(
-        (alarm) =>
-          alarm.type === "FOLLOW_REQUEST" &&
-          (alarm.followStatus ?? "PENDING") === "PENDING",
-      ),
+    const pendingAlarmIds = new Set(
+      resolvedAlarms
+        .filter(
+          (alarm) =>
+            alarm.type === "FOLLOW_REQUEST" &&
+            (alarm.followStatus ?? "PENDING") === "PENDING",
+        )
+        .map(({ id }) => id),
     );
+
+    setAlarms((prev) => prev.filter(({ id }) => pendingAlarmIds.has(id)));
   };
 
   const handleRespondFollowRequest = async (
     alarmId: number,
     action: FollowRequestAction,
   ) => {
+    const alarm = alarms.find(({ id }) => id === alarmId);
+
+    if (alarm?.friendRequestId) {
+      respondFriendRequest(alarm.friendRequestId, action);
+    }
+
     await respondFollowRequest(alarmId, action);
 
     setAlarms((prev) =>
@@ -110,7 +149,7 @@ export const useAlarms = () => {
   };
 
   return {
-    alarms,
+    alarms: resolvedAlarms,
     unreadCount,
     handleReadVisibleUnreadAlarms,
     handleDeleteAlarm,

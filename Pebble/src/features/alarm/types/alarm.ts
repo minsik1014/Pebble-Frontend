@@ -21,5 +21,6 @@ export interface Alarm {
   isRead: boolean;
   createdAt: string;
   user?: AlarmUser;
+  friendRequestId?: number;
   followStatus?: FollowRequestStatus;
 }

@@ -15,6 +15,7 @@ import { SharedFriendsStep } from '@/features/report/steps/SharedFriendsStep';
 import { SummaryStep } from '@/features/report/steps/SummaryStep';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
 import { LandingPage } from '@/pages/landing/LandingPage';
+import FriendsPage from '@/pages/freinds/FriendsPage';
 import MyCategoryDetailPage from '@/pages/mypage/MyCategoryDetailPage';
 import MyPage from '@/pages/mypage/MyPage';
 import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
@@ -58,6 +59,7 @@ function App() {
           </Route>
 
           <Route element={<ProtectedLayoutRoute />}>
+            <Route path="friends" element={<FriendsPage />} />
             <Route path="my" element={<MyPage />} />
             <Route path="my/profile" element={<ProfileEditPage />} />
             <Route
