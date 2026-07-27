@@ -1,5 +1,3 @@
-// src/features/landing/components/StepStructureSection.tsx
-
 import { STEP_STRUCTURE_STAGES } from '@/features/landing/constants/stepStructureData';
 
 interface StepStructureSectionProps {
@@ -40,8 +38,9 @@ export function StepStructureSection({
             aria-hidden={!isActive}
             className={[
               'pointer-events-none absolute inset-0',
-              'transition-[opacity,transform] duration-700',
+              'transition-[opacity,transform] duration-[1000ms]',
               'ease-[cubic-bezier(0.22,1,0.36,1)]',
+              'will-change-[opacity,transform]',
               transitionClassName,
             ].join(' ')}
           >
@@ -95,7 +94,7 @@ export function StepStructureSection({
           <span
             key={stage.id}
             className={[
-              'h-2 rounded-full transition-[width,background-color] duration-500',
+              'h-2 rounded-full transition-[width,background-color] duration-700',
               index === normalizedActiveStep
                 ? 'w-8 bg-text-strong'
                 : 'w-2 bg-border-secondary',

@@ -269,33 +269,31 @@ function CalendarBackgroundGraphics() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 overflow-hidden"
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
       <img
         src={calendarBgEllipse1}
         alt=""
-        className="absolute left-[-51px] top-[-21px] h-[653px] w-[486px] object-contain opacity-50"
+        className="absolute left-[0px] top-[-156px] h-[653px] w-[486px] max-w-none object-contain"
       />
 
       <img
         src={calendarBgEllipse2}
         alt=""
-        className="absolute left-[325px] top-[-172px] h-[789px] w-[788px] object-contain opacity-50"
+        className="absolute left-[375px] top-[-156px] h-[789px] w-[788px] max-w-none object-contain"
       />
 
       <img
         src={calendarBgEllipse5}
         alt=""
-        className="absolute left-[-148px] top-[237px] h-[668px] w-[668px] object-contain opacity-50"
+        className="absolute left-[0px] top-[95px] h-[667.885px] w-[668.41px] max-w-none object-contain"
       />
 
       <img
         src={calendarBgEllipse4}
         alt=""
-        className="absolute left-[240px] top-[195px] h-[668px] w-[668px] object-contain opacity-50"
+        className="absolute left-[375px] top-[95px] h-[667.885px] w-[668.41px] max-w-none object-contain"
       />
-
-      <div className="absolute inset-0 bg-white/40" />
     </div>
   );
 }

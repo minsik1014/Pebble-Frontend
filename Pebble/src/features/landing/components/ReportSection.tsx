@@ -38,7 +38,7 @@ function MonthlyPebbleCountCard({
         getRevealClassName(isVisible),
       ].join(' ')}
       style={{
-        transitionDelay: isVisible ? '1000ms' : '0ms',
+        transitionDelay: isVisible ? '1300ms' : '0ms',
       }}
     >
       <div className="flex h-[134.36px] w-[183px] flex-col gap-[6.36px]">
@@ -75,7 +75,7 @@ function BusiestCategoryCard({
         getRevealClassName(isVisible),
       ].join(' ')}
       style={{
-        transitionDelay: isVisible ? '1000ms' : '0ms',
+        transitionDelay: isVisible ? '1300ms' : '0ms',
       }}
     >
       <div className="flex h-[69px] w-[219px] flex-col gap-[8px]">
@@ -86,9 +86,7 @@ function BusiestCategoryCard({
         <div className="flex h-[40px] items-center gap-[12px]">
           <span
             className="h-[40px] w-[8px] rounded-token-s"
-            style={{
-              backgroundColor: BUSIEST_CATEGORY.color,
-            }}
+            style={{ backgroundColor: BUSIEST_CATEGORY.color }}
             aria-hidden="true"
           />
 
@@ -138,9 +136,7 @@ function ReportScheduleRow({
         <div className="flex items-center gap-[5.86px]">
           <span
             className="h-[24px] w-[5.86px] rounded-[2.93px]"
-            style={{
-              backgroundColor: item.barColor,
-            }}
+            style={{ backgroundColor: item.barColor }}
             aria-hidden="true"
           />
 
@@ -150,10 +146,7 @@ function ReportScheduleRow({
         </div>
 
         <span className="flex size-5 items-center justify-center rounded-full bg-btn-primary text-text-onFill">
-          <CheckIcon
-            className="size-[12px]"
-            aria-hidden="true"
-          />
+          <CheckIcon className="size-[12px]" aria-hidden="true" />
         </span>
       </div>
     </li>
@@ -173,7 +166,7 @@ function BusiestDayCard({
         getRevealClassName(isVisible),
       ].join(' ')}
       style={{
-        transitionDelay: isVisible ? '1000ms' : '0ms',
+        transitionDelay: isVisible ? '1300ms' : '0ms',
       }}
     >
       <div className="flex h-[60px] w-[314px] flex-col gap-[6px]">
@@ -204,10 +197,7 @@ function BusiestDayCard({
 
       <ul className="flex h-[203.5px] w-[314px] flex-col gap-[8px]">
         {REPORT_SCHEDULE_ITEMS.map((item) => (
-          <ReportScheduleRow
-            key={item.id}
-            item={item}
-          />
+          <ReportScheduleRow key={item.id} item={item} />
         ))}
       </ul>
     </article>
@@ -217,14 +207,7 @@ function BusiestDayCard({
 export function ReportSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  /*
-   * 리포트 섹션의 약 22%가 화면에 들어오면
-   * 타이틀 애니메이션을 시작합니다.
-   */
-  const hasEntered = useInViewOnce(sectionRef, {
-    threshold: 0.22,
-    rootMargin: '0px 0px -8% 0px',
-  });
+  const hasEntered = useInViewOnce(sectionRef);
 
   return (
     <div
@@ -236,9 +219,6 @@ export function ReportSection() {
           'absolute left-[100px] top-[160px]',
           getRevealClassName(hasEntered),
         ].join(' ')}
-        style={{
-          transitionDelay: '0ms',
-        }}
       >
         <h2 className="h-[70px] w-[662px] text-[54px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
           {REPORT_SECTION_COPY.title}

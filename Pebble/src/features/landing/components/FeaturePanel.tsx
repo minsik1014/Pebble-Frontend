@@ -32,7 +32,7 @@ export function FeaturePanel({
       <div
         className={[
           'absolute left-[100px] top-[263px] flex w-[626px] flex-col gap-[20px]',
-          'transition-[opacity,transform] duration-700',
+          'transition-[opacity,transform] duration-[1000ms]',
           'ease-[cubic-bezier(0.22,1,0.36,1)]',
           'will-change-[opacity,transform]',
           'motion-reduce:translate-y-0 motion-reduce:transition-none',
@@ -51,14 +51,14 @@ export function FeaturePanel({
       <div
         className={[
           'absolute inset-0',
-          'transition-[opacity,transform] duration-[800ms]',
+          'transition-[opacity,transform] duration-[1100ms]',
           'ease-[cubic-bezier(0.22,1,0.36,1)]',
           'will-change-[opacity,transform]',
           'motion-reduce:translate-y-0 motion-reduce:transition-none',
           transitionClassName,
         ].join(' ')}
         style={{
-          transitionDelay: isActive ? '100ms' : '0ms',
+          transitionDelay: isActive ? '180ms' : '0ms',
         }}
       >
         {children}

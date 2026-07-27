@@ -13,14 +13,12 @@ function FinalCTABackgroundShapes() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
-      {/* Ellipse 8 */}
       <img
         src={ellipse8}
         alt=""
         className="absolute left-[-108px] top-[-277px] h-[1281px] w-[1031px] rotate-[180deg] object-contain opacity-[65%] blur-[60px]"
       />
 
-      {/* Ellipse 7 */}
       <img
         src={ellipse7}
         alt=""
@@ -34,14 +32,7 @@ export function FinalCTASection() {
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  /*
-   * 마지막 섹션의 약 25%가 화면에 들어왔을 때
-   * 텍스트 등장 애니메이션을 실행합니다.
-   */
-  const hasEntered = useInViewOnce(sectionRef, {
-    threshold: 0.25,
-    rootMargin: '0px 0px -8% 0px',
-  });
+  const hasEntered = useInViewOnce(sectionRef);
 
   const handleStartClick = () => {
     navigate('/signup');
@@ -55,11 +46,10 @@ export function FinalCTASection() {
       <FinalCTABackgroundShapes />
 
       <div className="relative z-10 h-full w-full">
-        {/* 제목과 설명에만 애니메이션 적용 */}
         <div
           className={[
             'pointer-events-none absolute inset-0',
-            'transition-[opacity,transform] duration-[1000ms]',
+            'transition-[opacity,transform] duration-[1300ms]',
             'ease-[cubic-bezier(0.22,1,0.36,1)]',
             'will-change-[opacity,transform]',
             'motion-reduce:translate-y-0',
@@ -79,7 +69,6 @@ export function FinalCTASection() {
           </p>
         </div>
 
-        {/* 버튼은 애니메이션 없이 항상 표시 */}
         <Button
           type="button"
           variant="secondary"
