@@ -1,19 +1,45 @@
-.landing-report-reveal {
+/* src/features/landing/styles/reportAnimation.css */
+
+.landing-report-text-reveal {
   opacity: 0;
-  transform: translate3d(0, 48px, 0);
+  transform: translate3d(0, 36px, 0);
+
   transition-property: opacity, transform;
-  transition-duration: 1300ms;
-  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-duration: 1300ms, 1300ms;
+  transition-timing-function: linear, linear;
+  transition-delay: 0ms;
+
+  backface-visibility: hidden;
   will-change: opacity, transform;
 }
 
-.landing-report-reveal.is-visible {
+.landing-report-text-reveal.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
 }
 
+.landing-report-card-reveal {
+  opacity: 0;
+  transform: translate3d(0, 36px, 0);
+
+  transition-property: opacity, transform;
+  transition-duration: 1300ms, 1300ms;
+  transition-timing-function: ease-in-out, ease-in-out;
+  transition-delay: 0ms;
+
+  backface-visibility: hidden;
+  will-change: opacity, transform;
+}
+
+.landing-report-card-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 400ms, 400ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .landing-report-reveal {
+  .landing-report-text-reveal,
+  .landing-report-card-reveal {
     opacity: 1;
     transform: none;
     transition: none;
