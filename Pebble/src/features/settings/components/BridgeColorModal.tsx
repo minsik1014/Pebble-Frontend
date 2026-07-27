@@ -1,3 +1,5 @@
+// src/features/settings/components/BridgeColorModal.tsx
+
 import { useEffect, useId, useMemo, useState } from 'react';
 
 import CloseIcon from '@/assets/icons/Close.svg?react';
@@ -34,7 +36,7 @@ function ColorChip({ color, size = 'card' }: ColorChipProps) {
       className={[
         'shrink-0 rounded-token-s',
         size === 'preview' ? 'h-12 w-[75.43px]' : 'h-8 w-[33px]',
-        isEmptyChip ? 'border border-border-secondary' : '',
+        isEmptyChip ? 'border border-[#D4D4D4]' : '',
       ].join(' ')}
       style={{ backgroundColor: color }}
       aria-hidden="true"
@@ -161,6 +163,7 @@ export function BridgeColorModal({
                   <span className="text-body-02-m tracking-[-0.01em] text-text-strong">
                     {palette.name}
                   </span>
+
                   <span className="text-[14px] font-medium leading-[150%] tracking-[-0.01em] text-text-teritary">
                     {palette.tone}
                   </span>

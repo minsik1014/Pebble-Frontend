@@ -1,17 +1,43 @@
+// src/features/landing/components/HeroBackgroundShapes.tsx
+
+import vector1 from '@/assets/images/landing/hero-pebble-vector-1.svg';
+import vector2 from '@/assets/images/landing/hero-pebble-vector-2.svg';
+import vector3 from '@/assets/images/landing/hero-pebble-vector-3.svg';
+import vector4 from '@/assets/images/landing/hero-pebble-vector-4.svg';
+
 export function HeroBackgroundShapes() {
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
-      {/* Vector 3 - 상단 중앙/좌측으로 길게 지나가는 조약돌 */}
-      <div className="absolute left-[400px] top-[-109px] h-[450px] w-[585px] rotate-[-50.06deg] bg-fill-surface opacity-70 [border-radius:90%_20%_55%_45%/45%_48%_52%_55%]" />
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+    >
+      {/* Vector 3 */}
+      <img
+        src={vector3}
+        alt=""
+        className="absolute left-[400px] top-[-80px] h-[498.912px] w-[585.439px] object-contain"
+      />
 
-      {/* Vector 1 - 우측 상단 큰 조약돌 */}
-      <div className="absolute left-[987px] top-[20px] h-[520px] w-[325px] rotate-[66.63deg] bg-fill-surface [border-radius:55%_45%_34%_86%/44%_42%_78%_76%]" />
+      {/* Vector 1 */}
+      <img
+        src={vector1}
+        alt=""
+        className="absolute left-[927px] top-[-30px] h-[680.443px] w-[550.439px] object-contain"
+      />
 
-      {/* Vector 2 - 우측 중단 조약돌 */}
-      <div className="absolute left-[1136px] top-[502px] h-[273px] w-[413px] rotate-[-10.68deg] bg-fill-surface opacity-90 [border-radius:62%_38%_50%_50%/45%_50%_58%_42%]" />
+      {/* Vector 2 */}
+      <img
+        src={vector2}
+        alt=""
+        className="absolute left-[1036px] top-[512px] h-[273.221px] w-[512.699px] object-contain"
+      />
 
-      {/* Vector 4 - 좌측 하단에서 삐져나오는 조약돌 */}
-      <div className="absolute left-[-204px] top-[946.62px] h-[680px] w-[325px] rotate-[-82.25deg] bg-fill-surface [border-radius:48%_52%_38%_62%/58%_42%_54%_46%]" />
+      {/* Vector 4 */}
+      <img
+        src={vector4}
+        alt=""
+        className="absolute left-[0px] top-[906.62px] h-[700.443px] w-[325.439px] object-contain"
+      />
     </div>
   );
 }

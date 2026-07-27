@@ -16,12 +16,30 @@ export type ScheduleStyleFields = {
 export type TaskItem = ScheduleEntityBase &
   ScheduleStyleFields & {
     itemType?: "task";
+    milestoneId?: string;
+    dateType?: "SINGLE" | "RANGE" | "MULTI";
+    isCompleted?: boolean;
+    completedAt?: string;
+    displayOrder?: number;
+    taskDates?: {
+      taskDateId: number;
+      date: string;
+      isCompleted?: boolean;
+      completedAt?: string | null;
+      name?: string;
+      color?: string | null;
+    }[];
     tasks?: never;
   };
 
 export type MilestoneItem = ScheduleEntityBase &
   ScheduleStyleFields & {
     itemType?: "milestone";
+    seriesId?: number;
+    dateType?: "SINGLE" | "RANGE" | "REPEAT";
+    repeatDays?: string;
+    isCompleted?: boolean;
+    displayOrder?: number;
     tasks?: TaskItem[];
   };
 
@@ -37,6 +55,11 @@ export type Category = {
   themeTextOnMid?: string;
   themeTextOnLight?: string;
   imageUrl?: string;
+  isHidden?: boolean;
+  isPublic?: boolean;
+  isCompleted?: boolean;
+  isShared?: boolean;
+  displayOrder?: number;
   items: MilestoneItem[];
   tasks?: TaskItem[];
 };

@@ -1,17 +1,44 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+
 import { MainLayout } from '@/components/layout/MainLayout';
-import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
-import { LoginPage } from '@/features/auth/pages/LoginPage';
-import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
+import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { ProfileSetupPage } from '@/features/auth/pages/ProfileSetupPage';
 import { SignUpCompletePage } from '@/features/auth/pages/SignUpCompletePage';
-import SettingsPage from './pages/settings/SettingsPage';
-import MyPage from "@/pages/mypage/MyPage";
-import ProfileEditPage from "@/pages/mypage/ProfileEditPage";
-import MyCategoryDetailPage from "@/pages/mypage/MyCategoryDetailPage";
-import FriendsPage from "@/pages/freinds/FriendsPage";
+import { SignUpPage } from '@/features/auth/pages/SignUpPage';
+import { isMockAuthenticated } from '@/features/auth/utils/mockAuth';
+import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
 import { LandingPage } from '@/pages/landing/LandingPage';
+import FriendsPage from '@/pages/freinds/FriendsPage';
+import MyCategoryDetailPage from '@/pages/mypage/MyCategoryDetailPage';
+import MyPage from '@/pages/mypage/MyPage';
+import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
+
+import SettingsPage from './pages/settings/SettingsPage';
+
+function RootRoute() {
+  if (!isMockAuthenticated()) {
+    return <Navigate to="/landing" replace />;
+  }
+
+  return <CalendarMainPage />;
+}
+
+function LandingRoute() {
+  if (isMockAuthenticated()) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <LandingPage />;
+}
+
+function ProtectedLayoutRoute() {
+  if (!isMockAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <MainLayout />;
+}
 
 function App() {
   return (
@@ -19,10 +46,13 @@ function App() {
       {/* 테마 스위칭을 테스트하려면 아래 div에 className="theme-popart" 등을 추가하세요 */}
       <div className="min-h-screen font-sans">
         <Routes>
-          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/landing" element={<LandingRoute />} />
 
           <Route element={<MainLayout />}>
-            <Route index element={<CalendarMainPage />} />
+            <Route index element={<RootRoute />} />
+          </Route>
+
+          <Route element={<ProtectedLayoutRoute />}>
             <Route path="friends" element={<FriendsPage />} />
             <Route path="my" element={<MyPage />} />
             <Route path="my/profile" element={<ProfileEditPage />} />
@@ -41,7 +71,7 @@ function App() {
         </Routes>
       </div>
     </BrowserRouter>
-  )
+  );
 }
 
 export default App;

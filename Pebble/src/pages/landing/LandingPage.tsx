@@ -1,7 +1,13 @@
+// src/pages/landing/LandingPage.tsx
+
 import { PublicHeader } from '@/components/layout/PublicHeader';
+import { BridgeSection } from '@/features/landing/components/BridgeSection';
+import { FeaturePanelsSection } from '@/features/landing/components/FeaturePanelsSection';
+import { FinalCTASection } from '@/features/landing/components/FinalCTASection';
 import { HeroSection } from '@/features/landing/components/HeroSection';
 import { LandingFigmaSection } from '@/features/landing/components/LandingFigmaSection';
 import { LandingShell } from '@/features/landing/components/LandingShell';
+import { ReportSection } from '@/features/landing/components/ReportSection';
 import { StepStructureSection } from '@/features/landing/components/StepStructureSection';
 
 export function LandingPage() {
@@ -18,6 +24,22 @@ export function LandingPage() {
 
         <LandingFigmaSection height={1024}>
           <StepStructureSection />
+        </LandingFigmaSection>
+
+        <LandingFigmaSection height={3072}>
+          <FeaturePanelsSection />
+        </LandingFigmaSection>
+
+        <LandingFigmaSection height={1024}>
+          <BridgeSection />
+        </LandingFigmaSection>
+
+        <LandingFigmaSection height={1024}>
+          <ReportSection />
+        </LandingFigmaSection>
+
+        <LandingFigmaSection height={1024}>
+          <FinalCTASection />
         </LandingFigmaSection>
       </div>
     </LandingShell>

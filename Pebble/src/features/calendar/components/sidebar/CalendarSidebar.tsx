@@ -1,4 +1,4 @@
-import { type Category, type TaskItem } from "@/types";
+import { type Category, type MilestoneItem, type TaskItem } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
 import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
@@ -40,17 +40,17 @@ export const CalendarSidebar = ({
   currentMonth: number;
   onSelectCategory?: (categoryId: string) => void;
   selectedCategoryId?: string | null;
-  onCreateCategory?: (input: CreateCategoryInput) => void;
+  onCreateCategory?: (input: CreateCategoryInput) => void | Promise<void>;
   onCreateMilestone?: (
     categoryId: string,
     input: CreateScheduleItemInput,
-  ) => void;
-  onCreateTask?: (input: TaskFormSubmitInput) => void;
+  ) => void | Promise<MilestoneItem[]>;
+  onCreateTask?: (input: TaskFormSubmitInput) => void | Promise<void>;
   onUpdateStandaloneTask?: (
     taskId: string,
     input: CreateScheduleItemInput,
-  ) => void;
-  onDeleteStandaloneTask?: (taskId: string) => void;
+  ) => void | Promise<void>;
+  onDeleteStandaloneTask?: (taskId: string) => void | Promise<void>;
 }): JSX.Element => {
   const {
     viewMode,
@@ -179,7 +179,9 @@ export const CalendarSidebar = ({
         isOpen={isMilestoneModalOpen}
         onClose={closeCreateModal}
         categories={categories}
-        onSubmit={onCreateMilestone}
+        onSubmit={async (categoryId, input) => {
+          await onCreateMilestone?.(categoryId, input);
+        }}
       />
 
       <TaskFormModal
@@ -195,20 +197,20 @@ export const CalendarSidebar = ({
         categories={categories}
         task={editingStandaloneTask}
         mode="edit"
-        onSubmit={({ task }) => {
+        onSubmit={async ({ task }) => {
           if (!editingStandaloneTaskId) {
             return;
           }
 
-          onUpdateStandaloneTask?.(editingStandaloneTaskId, task);
+          await onUpdateStandaloneTask?.(editingStandaloneTaskId, task);
           closeStandaloneTaskEditor();
         }}
-        onRequestDelete={() => {
+        onRequestDelete={async () => {
           if (!editingStandaloneTaskId) {
             return;
           }
 
-          onDeleteStandaloneTask?.(editingStandaloneTaskId);
+          await onDeleteStandaloneTask?.(editingStandaloneTaskId);
           closeStandaloneTaskEditor();
         }}
       />

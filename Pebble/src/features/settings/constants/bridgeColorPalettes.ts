@@ -1,3 +1,5 @@
+// src/features/settings/constants/bridgeColorPalettes.ts
+
 export interface BridgeColorPalette {
   id: string;
   name: string;
@@ -30,9 +32,9 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     tone: '파랑',
     colors: {
       empty: '#FAFAFA',
-      level1: '#D7E4FF',
-      level2: '#7C9CFF',
-      level3: '#2F49D8',
+      level1: '#D5E1FF',
+      level2: '#82A0FF',
+      level3: '#2343DB',
     },
   },
   {
@@ -41,9 +43,9 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     tone: '초록',
     colors: {
       empty: '#FAFAFA',
-      level1: '#CFF2C3',
-      level2: '#9BDF83',
-      level3: '#6FD34F',
+      level1: '#D2F2C4',
+      level2: '#ABE692',
+      level3: '#7ED957',
     },
   },
   {
@@ -52,9 +54,9 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     tone: '노랑',
     colors: {
       empty: '#FAFAFA',
-      level1: '#FFF0B8',
-      level2: '#FFE07A',
-      level3: '#FFCF42',
+      level1: '#FFF1C1',
+      level2: '#FFE48B',
+      level3: '#FFD64D',
     },
   },
   {
@@ -63,9 +65,9 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     tone: '주황',
     colors: {
       empty: '#FAFAFA',
-      level1: '#FFD0AD',
-      level2: '#FFA766',
-      level3: '#FF7F2A',
+      level1: '#FFD7B8',
+      level2: '#FFB67A',
+      level3: '#FF8E33',
     },
   },
   {
@@ -74,9 +76,9 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     tone: '분홍',
     colors: {
       empty: '#FAFAFA',
-      level1: '#FFD1D1',
-      level2: '#FFA3A7',
-      level3: '#FF7C82',
+      level1: '#FFD6D6',
+      level2: '#FFB4B4',
+      level3: '#FF8B8B',
     },
   },
 ];
