@@ -26,6 +26,14 @@ type ImageCropModalProps = {
   onChangeImage: (imageUrl: string) => void;
 };
 
+const getRequiredZoomForRotation = (rotation: number) => {
+  const rotationRadians = (Math.abs(rotation) * Math.PI) / 180;
+  const sin = Math.abs(Math.sin(rotationRadians));
+  const cos = Math.abs(Math.cos(rotationRadians));
+
+  return Math.max(1, sin + cos);
+};
+
 export const ImageCropModal = ({
   isOpen,
   imageUrl,
@@ -48,6 +56,7 @@ export const ImageCropModal = ({
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const minZoom = getRequiredZoomForRotation(rotation);
 
   const revokeCreatedObjectUrl = useCallback(() => {
     if (createdObjectUrlRef.current) {
@@ -115,6 +124,13 @@ export const ImageCropModal = ({
     setErrorMessage("");
   };
 
+  const handleRotationChange = (nextRotation: number) => {
+    setRotation(nextRotation);
+    setZoom((previousZoom) =>
+      Math.max(previousZoom, getRequiredZoomForRotation(nextRotation)),
+    );
+  };
+
   const handleApply = async () => {
     if (!sourceImageUrl || !croppedAreaPixels) {
       return;
@@ -178,12 +194,12 @@ export const ImageCropModal = ({
               objectFit="cover"
               restrictPosition
               showGrid={false}
-              minZoom={1}
+              minZoom={minZoom}
               maxZoom={3}
               onCropChange={setCrop}
               onCropComplete={handleCropComplete}
               onZoomChange={setZoom}
-              onRotationChange={setRotation}
+              onRotationChange={handleRotationChange}
             />
           ) : (
             <button
@@ -210,7 +226,9 @@ export const ImageCropModal = ({
               max={3}
               step={0.01}
               value={zoom}
-              onChange={(event) => setZoom(Number(event.target.value))}
+              onChange={(event) =>
+                setZoom(Math.max(Number(event.target.value), minZoom))
+              }
               className="h-2 flex-1 cursor-pointer accent-fill-primary"
               disabled={!sourceImageUrl}
             />
@@ -223,7 +241,9 @@ export const ImageCropModal = ({
               max={45}
               step={1}
               value={rotation}
-              onChange={(event) => setRotation(Number(event.target.value))}
+              onChange={(event) =>
+                handleRotationChange(Number(event.target.value))
+              }
               className="h-2 flex-1 cursor-pointer accent-fill-primary"
               disabled={!sourceImageUrl}
             />

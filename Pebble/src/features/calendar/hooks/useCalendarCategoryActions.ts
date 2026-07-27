@@ -7,11 +7,7 @@ import type {
   UpdateCategoryInput,
 } from "@/features/calendar/types";
 import {
-  createCategory as requestCreateCategory,
-  deleteCategory as requestDeleteCategory,
-  updateCategory as requestUpdateCategory,
-} from "@/features/category/api/categoryApi";
-import {
+  createCategoryEntity,
   replaceCategoryList,
   updateCategoryInList,
 } from "@/features/calendar/utils/calendarStateUtils";
@@ -46,11 +42,7 @@ export const useCalendarCategoryActions = ({
 
   const createCategory = useCallback(
     async (input: CreateCategoryInput) => {
-      const category = await requestCreateCategory(input);
-
-      if (!category) {
-        return null;
-      }
+      const category = createCategoryEntity(input);
 
       setCategories((previousCategories) => [...previousCategories, category]);
       setSelectedCategoryId(null);
@@ -62,21 +54,8 @@ export const useCalendarCategoryActions = ({
 
   const updateCategory = useCallback(
     async (categoryId: string, input: UpdateCategoryInput) => {
-      const category = await requestUpdateCategory(categoryId, input);
-
       setCategories((previousCategories) =>
-        category
-          ? previousCategories.map((previousCategory) =>
-              previousCategory.id === categoryId
-                ? {
-                    ...previousCategory,
-                    ...category,
-                    items: previousCategory.items,
-                    tasks: previousCategory.tasks,
-                  }
-                : previousCategory,
-            )
-          : updateCategoryInList(previousCategories, categoryId, input),
+        updateCategoryInList(previousCategories, categoryId, input),
       );
     },
     [setCategories],
@@ -84,8 +63,6 @@ export const useCalendarCategoryActions = ({
 
   const deleteCategory = useCallback(
     async (categoryId: string) => {
-      await requestDeleteCategory(categoryId);
-
       setCategories((previousCategories) =>
         previousCategories.filter((category) => category.id !== categoryId),
       );

@@ -23,10 +23,6 @@ import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
 import SettingsPage from './pages/settings/SettingsPage';
 
 function RootRoute() {
-  if (!isMockAuthenticated()) {
-    return <Navigate to="/landing" replace />;
-  }
-
   return <CalendarMainPage />;
 }
 
@@ -39,10 +35,6 @@ function LandingRoute() {
 }
 
 function ProtectedLayoutRoute() {
-  if (!isMockAuthenticated()) {
-    return <Navigate to="/login" replace />;
-  }
-
   return <MainLayout />;
 }
 

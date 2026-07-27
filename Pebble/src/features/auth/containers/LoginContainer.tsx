@@ -1,9 +1,6 @@
 // src/features/auth/containers/LoginContainer.tsx
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { setMockAuthenticated } from '@/features/auth/utils/mockAuth';
 
 import { LoginForm } from '../components/LoginForm';
 
@@ -14,7 +11,6 @@ const MOCK_LOGIN_ACCOUNT = {
 };
 
 export const LoginContainer = (): JSX.Element => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -115,15 +111,13 @@ export const LoginContainer = (): JSX.Element => {
       return;
     }
 
-    // 인증 성공 시 mock 로그인 상태를 저장하고 메인 캘린더로 이동합니다.
+    // TODO: 실제 로그인/API 연동 전까지 랜딩에서 메인 캘린더로 진입하는 흐름을 임시 비활성화합니다.
     if (
       email === MOCK_LOGIN_ACCOUNT.email &&
       password === MOCK_LOGIN_ACCOUNT.password
     ) {
-      setMockAuthenticated();
       setErrors({});
-      setErrorMessage(null);
-      navigate('/', { replace: true });
+      setErrorMessage('현재 로그인 진입은 임시로 비활성화되어 있어요.');
       return;
     }
 
