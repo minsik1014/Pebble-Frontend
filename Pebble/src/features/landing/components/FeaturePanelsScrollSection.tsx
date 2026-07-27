@@ -18,11 +18,14 @@ export function FeaturePanelsScrollSection() {
   const scale = useLandingScale();
 
   const stepCount = FEATURE_PANEL_DATA.length;
-  const scaledStageHeight = FIGMA_HEIGHT * scale;
   const scaledStepScrollDistance = STEP_SCROLL_DISTANCE * scale;
 
-  const scrollSectionHeight =
-    scaledStageHeight + scaledStepScrollDistance * stepCount;
+  /*
+   * 화면 한 개 높이와 패널 전환용 스크롤 공간을 확보합니다.
+   */
+  const scrollSectionHeight = `calc(
+    100vh + ${scaledStepScrollDistance * stepCount}px
+  )`;
 
   const activeStep = useFeaturePanelsScroll({
     sectionRef,
@@ -40,18 +43,14 @@ export function FeaturePanelsScrollSection() {
         height: scrollSectionHeight,
       }}
     >
-      <div
-        className="sticky top-0 w-full overflow-hidden"
-        style={{
-          height: scaledStageHeight,
-        }}
-      >
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
         <div
-          className="absolute left-1/2 top-0 origin-top"
+          className="absolute left-1/2 top-1/2"
           style={{
             width: FIGMA_WIDTH,
             height: FIGMA_HEIGHT,
-            transform: `translateX(-50%) scale(${scale})`,
+            transform: `translate(-50%, -50%) scale(${scale})`,
+            transformOrigin: 'center',
           }}
         >
           <FeaturePanelsSection

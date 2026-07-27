@@ -18,11 +18,15 @@ export function StepStructureScrollSection() {
   const scale = useLandingScale();
 
   const stepCount = STEP_STRUCTURE_STAGES.length;
-  const scaledStageHeight = FIGMA_HEIGHT * scale;
   const stepScrollDistance = (CARD_TOP / stepCount) * scale;
 
-  const scrollSectionHeight =
-    scaledStageHeight + stepScrollDistance * stepCount;
+  /*
+   * 화면 한 개 높이와 단계 전환에 필요한 스크롤 거리를 더합니다.
+   * 콘텐츠는 sticky 화면 안에서 중앙 정렬됩니다.
+   */
+  const scrollSectionHeight = `calc(
+    100vh + ${stepScrollDistance * stepCount}px
+  )`;
 
   const activeStep = useStepStructureScroll({
     sectionRef,
@@ -40,18 +44,14 @@ export function StepStructureScrollSection() {
         height: scrollSectionHeight,
       }}
     >
-      <div
-        className="sticky top-0 w-full overflow-hidden"
-        style={{
-          height: scaledStageHeight,
-        }}
-      >
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
         <div
-          className="absolute left-1/2 top-0 origin-top"
+          className="absolute left-1/2 top-1/2"
           style={{
             width: FIGMA_WIDTH,
             height: FIGMA_HEIGHT,
-            transform: `translateX(-50%) scale(${scale})`,
+            transform: `translate(-50%, -50%) scale(${scale})`,
+            transformOrigin: 'center',
           }}
         >
           <StepStructureSection
