@@ -1,3 +1,7 @@
+// src/pages/landing/LandingPage.tsx
+
+import { useLayoutEffect } from 'react';
+
 import { PublicHeader } from '@/components/layout/PublicHeader';
 import { BridgeSection } from '@/features/landing/components/BridgeSection';
 import { FeaturePanelsScrollSection } from '@/features/landing/components/FeaturePanelsScrollSection';
@@ -9,6 +13,32 @@ import { ReportSection } from '@/features/landing/components/ReportSection';
 import { StepStructureScrollSection } from '@/features/landing/components/StepStructureScrollSection';
 
 export function LandingPage() {
+  useLayoutEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration;
+
+    window.history.scrollRestoration = 'manual';
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'auto',
+    });
+
+    const handlePageShow = () => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'auto',
+      });
+    };
+
+    window.addEventListener('pageshow', handlePageShow);
+
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow);
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
   return (
     <LandingShell>
       <div className="relative overflow-x-clip bg-fill-inverse">
