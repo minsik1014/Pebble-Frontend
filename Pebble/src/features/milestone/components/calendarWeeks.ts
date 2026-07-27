@@ -4,8 +4,8 @@ import { type CalendarDay, type CalendarEvent, type CalendarWeek } from "./types
 import { parseScheduleDate } from "./scheduleDateUtils";
 
 const DAY_COUNT_IN_WEEK = 7;
-const EVENT_START_TOP_OFFSET = 43;
-const EVENT_ROW_HEIGHT = 33;
+export const EVENT_START_TOP_OFFSET = 43;
+export const EVENT_ROW_HEIGHT = 33;
 
 type DatedScheduleItem = {
   item: ScheduleItem;

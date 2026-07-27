@@ -9,9 +9,6 @@ import { CategoryShareOption } from "./CategoryShareOption";
 import { CategoryStatusOptions } from "./CategoryStatusOptions";
 import { CategoryThemePreview } from "./CategoryThemePreview";
 import type { Friend } from "@/features/category/types";
-import { getFollowingFriends } from "@/features/category/api/categoryFriendsApi";
-import { uploadImageDataUrl } from "@/features/category/api/uploadImageApi";
-import { getAccessToken } from "@/services/api";
 import {
   createCategoryColorTheme,
   DEFAULT_CATEGORY_COLOR,
@@ -28,6 +25,13 @@ type CategoryFormModalProps = {
 };
 
 const CATEGORY_IMAGE_ASPECT_RATIO = 175 / 234;
+const MOCK_CATEGORY_FRIENDS: Friend[] = [
+  { id: 1, name: "기본" },
+  { id: 2, name: "담검이" },
+  { id: 3, name: "돼병" },
+  { id: 4, name: "산테" },
+  { id: 5, name: "조료" },
+];
 
 export const CategoryFormModal = ({ 
   isOpen, 
@@ -95,34 +99,7 @@ export const CategoryFormModal = ({
   }, [mode, category, isOpen]);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadFriends = async () => {
-      if (!isOpen || !isShared || !getAccessToken()) {
-        setFriends([]);
-        return;
-      }
-
-      try {
-        const nextFriends = await getFollowingFriends();
-
-        if (isMounted) {
-          setFriends(nextFriends);
-        }
-      } catch (error) {
-        console.error("Failed to load following friends:", error);
-
-        if (isMounted) {
-          setFriends([]);
-        }
-      }
-    };
-
-    void loadFriends();
-
-    return () => {
-      isMounted = false;
-    };
+    setFriends(isOpen && isShared ? MOCK_CATEGORY_FRIENDS : []);
   }, [isOpen, isShared]);
 
   if (!isOpen) return null;
@@ -134,10 +111,6 @@ export const CategoryFormModal = ({
 
     try {
       setIsSubmitting(true);
-      const uploadedImageUrl =
-        imageUrl && imageUrl.startsWith("data:")
-          ? await uploadImageDataUrl(imageUrl)
-          : imageUrl;
 
       await onSubmit?.({
         title: categoryName.trim(),
@@ -147,7 +120,7 @@ export const CategoryFormModal = ({
         themeLight: selectedTheme.themeLight,
         themeTextOnMid: selectedTheme.themeTextOnMid,
         themeTextOnLight: selectedTheme.themeTextOnLight,
-        imageUrl: uploadedImageUrl ?? undefined,
+        imageUrl: imageUrl ?? undefined,
         isPublic,
         isCompleted,
         isShared,

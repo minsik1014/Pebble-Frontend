@@ -5,7 +5,6 @@ import type { Category, TaskItem } from "@/types";
 import type { CreateScheduleItemInput } from "@/features/calendar/types";
 import {
   appendMilestoneToCategory,
-  appendMilestonesToCategory,
   appendTaskToCategory,
   appendTaskToMilestone,
   createMilestoneEntity,
@@ -18,16 +17,6 @@ import {
   updateMilestoneInCategory,
   updateTaskInMilestone,
 } from "@/features/calendar/utils/calendarStateUtils";
-import {
-  createMilestone as requestCreateMilestone,
-  deleteMilestone as requestDeleteMilestone,
-  updateMilestone as requestUpdateMilestone,
-} from "@/features/milestone/api/milestoneApi";
-import {
-  createTask as requestCreateTask,
-  deleteTask as requestDeleteTask,
-  updateTask as requestUpdateTask,
-} from "@/features/task/api/taskApi";
 
 type UseCalendarScheduleActionsParams = {
   setCategories: Dispatch<SetStateAction<Category[]>>;
@@ -40,19 +29,13 @@ export const useCalendarScheduleActions = ({
 }: UseCalendarScheduleActionsParams) => {
   const createMilestone = useCallback(
     async (categoryId: string, input: CreateScheduleItemInput) => {
-      const milestones = await requestCreateMilestone(categoryId, input);
+      const milestone = createMilestoneEntity(input);
 
       setCategories((previousCategories) =>
-        milestones.length > 0
-          ? appendMilestonesToCategory(previousCategories, categoryId, milestones)
-          : appendMilestoneToCategory(
-              previousCategories,
-              categoryId,
-              createMilestoneEntity(input),
-            ),
+        appendMilestoneToCategory(previousCategories, categoryId, milestone),
       );
 
-      return milestones;
+      return [milestone];
     },
     [setCategories],
   );
@@ -63,22 +46,15 @@ export const useCalendarScheduleActions = ({
       milestoneId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const milestone = await requestUpdateMilestone(milestoneId, input);
+      const milestone = createMilestoneEntity({ ...input, id: milestoneId });
 
       setCategories((previousCategories) =>
-        milestone
-          ? updateMilestoneInCategory(
-              previousCategories,
-              categoryId,
-              milestoneId,
-              milestone,
-            )
-          : updateMilestoneInCategory(
-              previousCategories,
-              categoryId,
-              milestoneId,
-              createMilestoneEntity({ ...input, id: milestoneId }),
-            ),
+        updateMilestoneInCategory(
+          previousCategories,
+          categoryId,
+          milestoneId,
+          milestone,
+        ),
       );
     },
     [setCategories],
@@ -90,9 +66,7 @@ export const useCalendarScheduleActions = ({
       milestoneId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const task =
-        (await requestCreateTask({ milestoneId, input })) ??
-        createTaskEntity(input);
+      const task = createTaskEntity(input);
 
       setCategories((previousCategories) =>
         appendTaskToMilestone(
@@ -141,7 +115,7 @@ export const useCalendarScheduleActions = ({
 
   const createStandaloneTask = useCallback(
     async (input: CreateScheduleItemInput) => {
-      const task = (await requestCreateTask({ input })) ?? createTaskEntity(input);
+      const task = createTaskEntity(input);
 
       setStandaloneTasks((previousTasks) => [...previousTasks, task]);
 
@@ -152,20 +126,10 @@ export const useCalendarScheduleActions = ({
 
   const updateStandaloneTask = useCallback(
     async (taskId: string, input: CreateScheduleItemInput) => {
-      const task = await requestUpdateTask({
-        taskId,
-        input,
-        isChildTask: false,
-      });
+      const task = createTaskEntity({ ...input, id: taskId });
 
       setStandaloneTasks((previousTasks) =>
-        task
-          ? replaceStandaloneTaskInList(previousTasks, taskId, task)
-          : replaceStandaloneTaskInList(
-              previousTasks,
-              taskId,
-              createTaskEntity({ ...input, id: taskId }),
-            ),
+        replaceStandaloneTaskInList(previousTasks, taskId, task),
       );
     },
     [setStandaloneTasks],
@@ -173,8 +137,6 @@ export const useCalendarScheduleActions = ({
 
   const deleteStandaloneTask = useCallback(
     async (taskId: string) => {
-      await requestDeleteTask({ taskId });
-
       setStandaloneTasks((previousTasks) =>
         previousTasks.filter((task) => task.id !== taskId),
       );
@@ -184,8 +146,6 @@ export const useCalendarScheduleActions = ({
 
   const deleteMilestone = useCallback(
     async (categoryId: string, milestoneId: string) => {
-      await requestDeleteMilestone(milestoneId);
-
       setCategories((previousCategories) =>
         removeMilestoneFromCategory(previousCategories, categoryId, milestoneId),
       );
@@ -195,8 +155,6 @@ export const useCalendarScheduleActions = ({
 
   const deleteTask = useCallback(
     async (categoryId: string, milestoneId: string, taskId: string) => {
-      await requestDeleteTask({ taskId });
-
       setCategories((previousCategories) =>
         removeTaskFromMilestone(
           previousCategories,
@@ -216,28 +174,16 @@ export const useCalendarScheduleActions = ({
       taskId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const task = await requestUpdateTask({
-        taskId,
-        input,
-        isChildTask: true,
-      });
+      const task = createTaskEntity({ ...input, id: taskId });
 
       setCategories((previousCategories) =>
-        task
-          ? updateTaskInMilestone(
-              previousCategories,
-              categoryId,
-              milestoneId,
-              taskId,
-              task,
-            )
-          : updateTaskInMilestone(
-              previousCategories,
-              categoryId,
-              milestoneId,
-              taskId,
-              createTaskEntity({ ...input, id: taskId }),
-            ),
+        updateTaskInMilestone(
+          previousCategories,
+          categoryId,
+          milestoneId,
+          taskId,
+          task,
+        ),
       );
     },
     [setCategories],

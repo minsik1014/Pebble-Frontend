@@ -11,6 +11,7 @@ import { AddMenuModal } from "./AddMenuModal";
 import { MilestoneAccordion } from "@/features/milestone/components/MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
+import { CalendarSidebarListView } from "./CalendarSidebarListView";
 import { useCalendarSidebarModals } from "@/features/calendar/hooks/useCalendarSidebarModals";
 import { useCalendarSidebarState } from "@/features/calendar/hooks/useCalendarSidebarState";
 import { useSidebarButtonShadow } from "@/features/calendar/hooks/useSidebarButtonShadow";
@@ -74,6 +75,7 @@ export const CalendarSidebar = ({
       displayedCategories,
       displayedStandaloneTasks,
       expandedCategories,
+      viewMode,
     });
   const {
     isAddMenuOpen,
@@ -116,27 +118,40 @@ export const CalendarSidebar = ({
               ref={scrollContainerRef}
               className="-mx-3 flex max-h-[calc(100%-56px)] w-[calc(100%+24px)] flex-col items-start gap-5 overflow-y-auto overflow-x-hidden px-3 py-3 custom-scrollbar"
             >
-              {displayedStandaloneTasks.length > 0 && (
-                <StandaloneTaskSection
-                  tasks={displayedStandaloneTasks}
+              {viewMode === "list" ? (
+                <CalendarSidebarListView
+                  categories={displayedCategories}
+                  standaloneTasks={displayedStandaloneTasks}
+                  currentYear={currentYear}
+                  currentMonth={currentMonth}
                   checkedItems={checkedItems}
                   onToggleChecked={toggleCheckedItem}
-                  onEditTask={openStandaloneTaskEditor}
                 />
-              )}
+              ) : (
+                <>
+                  {displayedStandaloneTasks.length > 0 && (
+                    <StandaloneTaskSection
+                      tasks={displayedStandaloneTasks}
+                      checkedItems={checkedItems}
+                      onToggleChecked={toggleCheckedItem}
+                      onEditTask={openStandaloneTaskEditor}
+                    />
+                  )}
 
-              {displayedCategories.map((category) => (
-                <MilestoneAccordion
-                  key={category.id}
-                  category={category}
-                  expanded={Boolean(expandedCategories[category.id])}
-                  onToggleExpanded={() => toggleCategory(category.id)}
-                  checkedItems={checkedItems}
-                  onToggleChecked={toggleCheckedItem}
-                  onSelectCategory={onSelectCategory}
-                  isSelected={selectedCategoryId === category.id}
-                />
-              ))}
+                  {displayedCategories.map((category) => (
+                    <MilestoneAccordion
+                      key={category.id}
+                      category={category}
+                      expanded={Boolean(expandedCategories[category.id])}
+                      onToggleExpanded={() => toggleCategory(category.id)}
+                      checkedItems={checkedItems}
+                      onToggleChecked={toggleCheckedItem}
+                      onSelectCategory={onSelectCategory}
+                      isSelected={selectedCategoryId === category.id}
+                    />
+                  ))}
+                </>
+              )}
             </div>
 
             <div

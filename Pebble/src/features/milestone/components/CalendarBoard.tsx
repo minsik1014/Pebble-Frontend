@@ -86,7 +86,7 @@ export const CalendarBoard = ({
           />
         </header>
 
-        <div className="relative flex w-full flex-1 self-stretch">
+        <div className="relative flex min-h-0 w-full flex-1 self-stretch">
           <CalendarGrid
             weeks={weeks}
             currentYear={currentYear}

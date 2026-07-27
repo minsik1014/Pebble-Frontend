@@ -6,12 +6,14 @@ type UseSidebarButtonShadowParams = {
   displayedCategories: Category[];
   displayedStandaloneTasks: TaskItem[];
   expandedCategories: Record<string, boolean>;
+  viewMode: "card" | "list";
 };
 
 export const useSidebarButtonShadow = ({
   displayedCategories,
   displayedStandaloneTasks,
   expandedCategories,
+  viewMode,
 }: UseSidebarButtonShadowParams) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [hasHiddenContentUnderButton, setHasHiddenContentUnderButton] =
@@ -44,7 +46,7 @@ export const useSidebarButtonShadow = ({
       scrollContainer.removeEventListener("scroll", updateButtonShadow);
       resizeObserver.disconnect();
     };
-  }, [displayedCategories, displayedStandaloneTasks, expandedCategories]);
+  }, [displayedCategories, displayedStandaloneTasks, expandedCategories, viewMode]);
 
   return {
     scrollContainerRef,

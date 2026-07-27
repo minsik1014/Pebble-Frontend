@@ -15,38 +15,50 @@ export const getCroppedImageUrl = async (
   rotation = 0,
 ) => {
   const image = await createImage(imageUrl);
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
+  const rotatedCanvas = document.createElement("canvas");
+  const rotatedContext = rotatedCanvas.getContext("2d");
 
-  if (!context) {
+  if (!rotatedContext) {
     return null;
   }
 
   const rotationRadians = (rotation * Math.PI) / 180;
-  const safeArea = Math.max(image.width, image.height) * 2;
+  const sin = Math.abs(Math.sin(rotationRadians));
+  const cos = Math.abs(Math.cos(rotationRadians));
+  const rotatedWidth = image.width * cos + image.height * sin;
+  const rotatedHeight = image.width * sin + image.height * cos;
 
-  canvas.width = safeArea;
-  canvas.height = safeArea;
+  rotatedCanvas.width = rotatedWidth;
+  rotatedCanvas.height = rotatedHeight;
 
-  context.translate(safeArea / 2, safeArea / 2);
-  context.rotate(rotationRadians);
-  context.translate(-safeArea / 2, -safeArea / 2);
-  context.drawImage(
+  rotatedContext.translate(rotatedWidth / 2, rotatedHeight / 2);
+  rotatedContext.rotate(rotationRadians);
+  rotatedContext.drawImage(
     image,
-    safeArea / 2 - image.width / 2,
-    safeArea / 2 - image.height / 2,
+    -image.width / 2,
+    -image.height / 2,
   );
 
-  const imageData = context.getImageData(
-    safeArea / 2 - image.width / 2 + croppedAreaPixels.x,
-    safeArea / 2 - image.height / 2 + croppedAreaPixels.y,
+  const croppedCanvas = document.createElement("canvas");
+  const croppedContext = croppedCanvas.getContext("2d");
+
+  if (!croppedContext) {
+    return null;
+  }
+
+  croppedCanvas.width = croppedAreaPixels.width;
+  croppedCanvas.height = croppedAreaPixels.height;
+  croppedContext.drawImage(
+    rotatedCanvas,
+    croppedAreaPixels.x,
+    croppedAreaPixels.y,
+    croppedAreaPixels.width,
+    croppedAreaPixels.height,
+    0,
+    0,
     croppedAreaPixels.width,
     croppedAreaPixels.height,
   );
 
-  canvas.width = croppedAreaPixels.width;
-  canvas.height = croppedAreaPixels.height;
-  context.putImageData(imageData, 0, 0);
-
-  return canvas.toDataURL("image/png");
+  return croppedCanvas.toDataURL("image/png");
 };

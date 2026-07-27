@@ -1,6 +1,7 @@
 import { type CalendarWeek } from "./types";
 import { DateCell } from "./DateCell";
 import { ScheduleBar } from "./ScheduleBar";
+import { EVENT_ROW_HEIGHT, EVENT_START_TOP_OFFSET } from "./calendarWeeks";
 
 type CalendarGridProps = {
   weeks: CalendarWeek[];
@@ -19,9 +20,18 @@ const dayLabels = [
   { label: "토", textClass: "text-fill-info" },
 ];
 
+const DEFAULT_WEEK_ROW_MIN_HEIGHT = 132;
+const EVENT_BOTTOM_PADDING = 12;
+
+const getWeekRowMinHeight = (eventCount: number) =>
+  Math.max(
+    DEFAULT_WEEK_ROW_MIN_HEIGHT,
+    EVENT_START_TOP_OFFSET + eventCount * EVENT_ROW_HEIGHT + EVENT_BOTTOM_PADDING,
+  );
+
 export const CalendarGrid = ({ weeks, currentYear, currentMonth, todayDate }: CalendarGridProps) => {
   return (
-    <div className="relative flex w-full flex-1 grow flex-col items-start gap-3 self-stretch">
+    <div className="relative flex min-h-0 w-full flex-1 grow flex-col items-start gap-3 self-stretch">
       {/* 요일 헤더 */}
       <div
         aria-hidden="true"
@@ -37,11 +47,12 @@ export const CalendarGrid = ({ weeks, currentYear, currentMonth, todayDate }: Ca
       </div>
 
       {/* 달력 그리드 */}
-      <div className="relative flex w-full flex-1 grow flex-col items-start self-stretch">
+      <div className="custom-scrollbar relative flex w-full flex-1 grow flex-col items-start self-stretch overflow-y-auto overflow-x-hidden pr-1">
         {weeks.map((week, weekIndex) => (
           <div
             key={`week-${weekIndex}`}
             className="relative flex w-full flex-1 grow items-center self-stretch"
+            style={{ minHeight: getWeekRowMinHeight(week.events?.length ?? 0) }}
             role="row"
           >
             {/* 각 일(Day) 셀 */}
