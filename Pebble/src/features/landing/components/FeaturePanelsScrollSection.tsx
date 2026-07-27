@@ -1,21 +1,16 @@
+// src/features/landing/components/FeaturePanelsScrollSection.tsx
+
 import { useRef } from 'react';
 
 import { FEATURE_PANEL_DATA } from '@/features/landing/constants/featurePanelData';
 import { useFeaturePanelsScroll } from '@/features/landing/hooks/useFeaturePanelsScroll';
+import { useInView } from '@/features/landing/hooks/useInView';
 import { useLandingScale } from '@/features/landing/hooks/useLandingScale';
 
 import { FeaturePanelsSection } from './FeaturePanelsSection';
 
 const FIGMA_WIDTH = 1440;
 const FIGMA_HEIGHT = 1024;
-
-/*
- * 한 단계 전환에 필요한 Figma 기준 스크롤 거리입니다.
- *
- * CATEGORY : 0 ~ 279px
- * TASK     : 280 ~ 559px
- * CALENDAR : 560px 이상
- */
 const STEP_SCROLL_DISTANCE = 280;
 
 export function FeaturePanelsScrollSection() {
@@ -26,10 +21,6 @@ export function FeaturePanelsScrollSection() {
   const scaledStageHeight = FIGMA_HEIGHT * scale;
   const scaledStepScrollDistance = STEP_SCROLL_DISTANCE * scale;
 
-  /*
-   * 마지막 CALENDAR 상태도 일정 거리 동안 볼 수 있도록
-   * stepCount만큼 스크롤 공간을 확보합니다.
-   */
   const scrollSectionHeight =
     scaledStageHeight + scaledStepScrollDistance * stepCount;
 
@@ -38,6 +29,8 @@ export function FeaturePanelsScrollSection() {
     stepCount,
     stepScrollDistance: scaledStepScrollDistance,
   });
+
+  const isSectionVisible = useInView(sectionRef);
 
   return (
     <section
@@ -61,7 +54,10 @@ export function FeaturePanelsScrollSection() {
             transform: `translateX(-50%) scale(${scale})`,
           }}
         >
-          <FeaturePanelsSection activeStep={activeStep} />
+          <FeaturePanelsSection
+            activeStep={activeStep}
+            isSectionVisible={isSectionVisible}
+          />
         </div>
       </div>
     </section>
