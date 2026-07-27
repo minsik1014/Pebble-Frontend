@@ -38,7 +38,7 @@ function MonthlyPebbleCountCard({
         getRevealClassName(isVisible),
       ].join(' ')}
       style={{
-        transitionDelay: isVisible ? '1300ms' : '0ms',
+        transitionDelay: isVisible ? '900ms' : '0ms',
       }}
     >
       <div className="flex h-[134.36px] w-[183px] flex-col gap-[6.36px]">
@@ -75,7 +75,7 @@ function BusiestCategoryCard({
         getRevealClassName(isVisible),
       ].join(' ')}
       style={{
-        transitionDelay: isVisible ? '1300ms' : '0ms',
+        transitionDelay: isVisible ? '900ms' : '0ms',
       }}
     >
       <div className="flex h-[69px] w-[219px] flex-col gap-[8px]">
@@ -166,7 +166,7 @@ function BusiestDayCard({
         getRevealClassName(isVisible),
       ].join(' ')}
       style={{
-        transitionDelay: isVisible ? '1300ms' : '0ms',
+        transitionDelay: isVisible ? '900ms' : '0ms',
       }}
     >
       <div className="flex h-[60px] w-[314px] flex-col gap-[6px]">
@@ -207,7 +207,10 @@ function BusiestDayCard({
 export function ReportSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const hasEntered = useInView(sectionRef);
+  const hasEntered = useInView(sectionRef, {
+    threshold: 0.12,
+    rootMargin: '0px 0px 8% 0px',
+  });
 
   return (
     <div
