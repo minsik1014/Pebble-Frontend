@@ -10,6 +10,7 @@ import { CategoryStatusOptions } from "./CategoryStatusOptions";
 import { CategoryThemePreview } from "./CategoryThemePreview";
 import type { Friend } from "@/features/category/types";
 import { getFollowingFriends } from "@/features/category/api/categoryFriendsApi";
+import { uploadImageDataUrl } from "@/features/category/api/uploadImageApi";
 import {
   createCategoryColorTheme,
   DEFAULT_CATEGORY_COLOR,
@@ -127,6 +128,10 @@ export const CategoryFormModal = ({
 
     try {
       setIsSubmitting(true);
+      const uploadedImageUrl =
+        imageUrl?.startsWith("data:")
+          ? await uploadImageDataUrl(imageUrl)
+          : imageUrl;
 
       await onSubmit?.({
         title: categoryName.trim(),
@@ -136,7 +141,7 @@ export const CategoryFormModal = ({
         themeLight: selectedTheme.themeLight,
         themeTextOnMid: selectedTheme.themeTextOnMid,
         themeTextOnLight: selectedTheme.themeTextOnLight,
-        imageUrl: imageUrl ?? undefined,
+        imageUrl: uploadedImageUrl ?? undefined,
         isPublic,
         isCompleted,
         isShared,
