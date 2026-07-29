@@ -50,6 +50,7 @@ export const CategoryFormModal = ({
   const [selectedMembers, setSelectedMembers] = useState<Friend[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [hasLoadedFriends, setHasLoadedFriends] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const selectedTheme = createCategoryColorTheme(selectedColor);
@@ -90,34 +91,41 @@ export const CategoryFormModal = ({
       setSelectedMembers([]);
       setSearchQuery("");
       setIsDropdownOpen(false);
+      setHasLoadedFriends(false);
     }
   }, [mode, category, isOpen]);
 
   useEffect(() => {
     if (!isOpen || !isShared) {
       setFriends([]);
+      setHasLoadedFriends(false);
+      return;
+    }
+  }, [isOpen, isShared]);
+
+  const loadFriends = async () => {
+    if (hasLoadedFriends) {
       return;
     }
 
-    let isActive = true;
+    try {
+      const loadedFriends = await getFollowingFriends();
+      setFriends(loadedFriends);
+      setHasLoadedFriends(true);
+    } catch (error) {
+      console.error("Failed to load category friends:", error);
+      setFriends([]);
+      setHasLoadedFriends(true);
+    }
+  };
 
-    getFollowingFriends()
-      .then((loadedFriends) => {
-        if (isActive) {
-          setFriends(loadedFriends);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to load category friends:", error);
-        if (isActive) {
-          setFriends([]);
-        }
-      });
+  const handleMemberDropdownOpenChange = (isOpen: boolean) => {
+    setIsDropdownOpen(isOpen);
 
-    return () => {
-      isActive = false;
-    };
-  }, [isOpen, isShared]);
+    if (isOpen) {
+      void loadFriends();
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -219,14 +227,14 @@ export const CategoryFormModal = ({
           onToggleShared={() => setIsShared(!isShared)}
         />
 
-        {isShared && friends.length > 0 && (
+        {isShared && (
           <CategoryMemberSelector
             selectedMembers={selectedMembers}
             filteredFriends={filteredFriends}
             searchQuery={searchQuery}
             isDropdownOpen={isDropdownOpen}
             onSearchChange={setSearchQuery}
-            onDropdownOpenChange={setIsDropdownOpen}
+            onDropdownOpenChange={handleMemberDropdownOpenChange}
             onToggleMember={toggleMember}
           />
         )}
