@@ -19,17 +19,21 @@ const getDateTypeFromInput = (input: CreateScheduleItemInput): TaskDateType => {
   return "SINGLE";
 };
 
+const normalizeApiDate = (date?: string | null) => date?.slice(0, 10) ?? null;
+
 export function mapTaskResponseToTask(task: TaskResponse): TaskItem {
   const dates =
-    task.taskDates?.map((taskDate) => taskDate.date) ??
-    task.dates ??
+    task.taskDates?.map((taskDate) => normalizeApiDate(taskDate.date) ?? taskDate.date) ??
+    task.dates?.map((date) => normalizeApiDate(date) ?? date) ??
     undefined;
+  const startDate = normalizeApiDate(task.startDate);
+  const endDate = normalizeApiDate(task.endDate);
 
   return {
     id: String(task.id),
     title: task.name,
-    start: task.startDate ?? dates?.[0] ?? "",
-    end: task.endDate ?? undefined,
+    start: startDate ?? dates?.[0] ?? "",
+    end: endDate ?? undefined,
     dates,
     accent: task.color ?? undefined,
     itemType: "task",

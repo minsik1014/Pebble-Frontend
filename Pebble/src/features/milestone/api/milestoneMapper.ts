@@ -21,17 +21,21 @@ const getDateTypeFromInput = (
   return "SINGLE";
 };
 
+const normalizeApiDate = (date?: string | null) => date?.slice(0, 10) ?? null;
+
 export function mapMilestoneResponseToMilestone(
   milestone: MilestoneResponse,
   fallbackInput?: CreateScheduleItemInput,
 ): MilestoneItem {
   const fallbackStart = fallbackInput?.dates?.[0] ?? fallbackInput?.start ?? "";
+  const startDate = normalizeApiDate(milestone.startDate);
+  const endDate = normalizeApiDate(milestone.endDate);
 
   return {
     id: String(milestone.id),
     title: milestone.name || fallbackInput?.title || "",
-    start: milestone.startDate ?? fallbackStart,
-    end: milestone.endDate ?? fallbackInput?.end ?? undefined,
+    start: startDate ?? fallbackStart,
+    end: endDate ?? fallbackInput?.end ?? undefined,
     itemType: "milestone",
     seriesId: milestone.seriesId ?? undefined,
     dateType: milestone.dateType,
