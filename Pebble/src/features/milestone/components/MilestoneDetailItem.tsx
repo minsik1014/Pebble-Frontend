@@ -1,6 +1,7 @@
 import ChevronDownIcon from "@/assets/icons/chevron-down.svg?react";
 import EditIcon from "@/assets/icons/newedit.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
+import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { TaskDetailRow } from "@/features/task/components/TaskDetailRow";
 import { type MilestoneItem } from "@/types";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
@@ -49,7 +50,12 @@ export const MilestoneDetailItem = ({
               {dateLabel}
             </span>
           </div>
-          <div className="w-6 h-6 rounded-token-xs border border-border-default flex-shrink-0" />
+          <SidebarScheduleCheckbox
+            checked={Boolean(item.isCompleted)}
+            ariaLabel={`${item.title} 일정 완료`}
+            onChange={() => undefined}
+            stopPropagation
+          />
           <button 
             className="w-11 h-11 flex items-center justify-center rounded-token-s hover:bg-fill-surface transition-colors"
             onClick={(e) => {

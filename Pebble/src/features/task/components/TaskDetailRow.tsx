@@ -1,5 +1,6 @@
 import { type ScheduleItem } from "@/types";
 import EditIcon from "@/assets/icons/newedit.svg?react";
+import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 // The task definition inside a category detail item seems to be just a standard ScheduleItem
@@ -33,7 +34,12 @@ export const TaskDetailRow = ({
             {dateLabel}
           </span>
         </div>
-        <div className="w-6 h-6 rounded-token-xs border border-border-default flex-shrink-0" />
+        <SidebarScheduleCheckbox
+          checked={Boolean(task.isCompleted)}
+          ariaLabel={`${task.title} 일정 완료`}
+          onChange={() => undefined}
+          stopPropagation
+        />
         <button 
           className="w-11 h-11 flex items-center justify-center rounded-token-s hover:bg-fill-surface transition-colors"
           onClick={(e) => {
