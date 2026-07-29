@@ -4,6 +4,10 @@ import type { Category, TaskItem } from "@/types";
 import type { CalendarStateModel } from "@/features/calendar/types";
 import { useCalendarCategoryActions } from "@/features/calendar/hooks/useCalendarCategoryActions";
 import { useCalendarScheduleActions } from "@/features/calendar/hooks/useCalendarScheduleActions";
+import {
+  calendarMockCategories,
+  calendarMockStandaloneTasks,
+} from "@/features/calendar/mocks/calendarMockData";
 
 export type {
   CalendarState,
@@ -15,8 +19,12 @@ export type {
 } from "@/features/calendar/types";
 
 export const useCalendarState = (): CalendarStateModel => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [standaloneTasks, setStandaloneTasks] = useState<TaskItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>(
+    calendarMockCategories,
+  );
+  const [standaloneTasks, setStandaloneTasks] = useState<TaskItem[]>(
+    calendarMockStandaloneTasks,
+  );
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
   );
