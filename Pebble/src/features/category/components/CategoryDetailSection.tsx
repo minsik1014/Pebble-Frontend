@@ -15,7 +15,6 @@ import type {
   CreateScheduleItemInput,
   UpdateCategoryInput,
 } from "@/features/calendar/types";
-import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
@@ -31,6 +30,9 @@ export const CategoryDetailSection = ({
   onDeleteMilestone,
   onUpdateTask,
   onDeleteTask,
+  onToggleMilestoneCompleted,
+  onToggleCategoryTaskCompleted,
+  onToggleTaskCompleted,
 }: {
   isSidebarOpen: boolean;
   category: Category;
@@ -65,6 +67,19 @@ export const CategoryDetailSection = ({
     milestoneId: string,
     taskId: string,
   ) => Promise<void>;
+  onToggleMilestoneCompleted: (
+    categoryId: string,
+    milestoneId: string,
+  ) => Promise<void>;
+  onToggleCategoryTaskCompleted: (
+    categoryId: string,
+    taskId: string,
+  ) => Promise<void>;
+  onToggleTaskCompleted: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => Promise<void>;
 }) => {
   const [expandedMilestones, setExpandedMilestones] = React.useState<Record<string, boolean>>({});
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
@@ -83,12 +98,6 @@ export const CategoryDetailSection = ({
     category.items
       .find((item) => item.id === selectedMilestoneForTask)
       ?.tasks?.find((task) => task.id === editingTaskId) ?? null;
-  const milestoneTextColor =
-    category.themeTextOnMid ??
-    getReadableCategoryTextColor(category.themeBase, category.themeMid);
-  const taskTextColor =
-    category.themeTextOnLight ??
-    getReadableCategoryTextColor(category.themeBase, category.themeLight);
 
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
@@ -145,7 +154,9 @@ export const CategoryDetailSection = ({
                   key={task.id}
                   task={task}
                   themeLightColor={category.themeLight}
-                  themeTextColor={taskTextColor}
+                  onToggleCompleted={() =>
+                    onToggleCategoryTaskCompleted(category.id, task.id)
+                  }
                   onEdit={() => setEditingCategoryTaskId(task.id)}
                 />
               ))}
@@ -159,10 +170,11 @@ export const CategoryDetailSection = ({
             item={item}
             themeMidColor={category.themeMid}
             themeLightColor={category.themeLight}
-            themeTextOnMidColor={milestoneTextColor}
-            themeTextOnLightColor={taskTextColor}
             isExpanded={Boolean(expandedMilestones[item.id])}
             onToggle={() => toggleMilestone(item.id)}
+            onToggleCompleted={() =>
+              onToggleMilestoneCompleted(category.id, item.id)
+            }
             onEdit={() => setEditingMilestoneId(item.id)}
             onAddTask={() => {
               setTaskMode("create");
@@ -175,6 +187,9 @@ export const CategoryDetailSection = ({
               setSelectedMilestoneForTask(item.id);
               setIsTaskModalOpen(true);
             }}
+            onToggleTaskCompleted={(taskId) =>
+              onToggleTaskCompleted(category.id, item.id, taskId)
+            }
           />
         ))}
       </div>

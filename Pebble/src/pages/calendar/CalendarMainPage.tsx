@@ -23,6 +23,9 @@ export const CalendarMainPage = (): JSX.Element => {
     deleteMilestone,
     updateTask,
     deleteTask,
+    toggleMilestoneCompleted,
+    toggleCategoryTaskCompleted,
+    toggleTaskCompleted,
   } = useCalendarLayoutContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategoryId = searchParams.get("category");
@@ -44,6 +47,9 @@ export const CalendarMainPage = (): JSX.Element => {
       onDeleteMilestone={deleteMilestone}
       onUpdateTask={updateTask}
       onDeleteTask={deleteTask}
+      onToggleMilestoneCompleted={toggleMilestoneCompleted}
+      onToggleCategoryTaskCompleted={toggleCategoryTaskCompleted}
+      onToggleTaskCompleted={toggleTaskCompleted}
     />
   ) : (
     <CalendarBoard

@@ -9,6 +9,8 @@ import { CategoryShareOption } from "./CategoryShareOption";
 import { CategoryStatusOptions } from "./CategoryStatusOptions";
 import { CategoryThemePreview } from "./CategoryThemePreview";
 import type { Friend } from "@/features/category/types";
+import { getFollowingFriends } from "@/features/category/api/categoryFriendsApi";
+import { uploadImageDataUrl } from "@/features/category/api/uploadImageApi";
 import {
   createCategoryColorTheme,
   DEFAULT_CATEGORY_COLOR,
@@ -25,13 +27,6 @@ type CategoryFormModalProps = {
 };
 
 const CATEGORY_IMAGE_ASPECT_RATIO = 175 / 234;
-const MOCK_CATEGORY_FRIENDS: Friend[] = [
-  { id: 1, name: "기본" },
-  { id: 2, name: "담검이" },
-  { id: 3, name: "돼병" },
-  { id: 4, name: "산테" },
-  { id: 5, name: "조료" },
-];
 
 export const CategoryFormModal = ({ 
   isOpen, 
@@ -55,6 +50,7 @@ export const CategoryFormModal = ({
   const [selectedMembers, setSelectedMembers] = useState<Friend[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [hasLoadedFriends, setHasLoadedFriends] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const selectedTheme = createCategoryColorTheme(selectedColor);
@@ -95,12 +91,41 @@ export const CategoryFormModal = ({
       setSelectedMembers([]);
       setSearchQuery("");
       setIsDropdownOpen(false);
+      setHasLoadedFriends(false);
     }
   }, [mode, category, isOpen]);
 
   useEffect(() => {
-    setFriends(isOpen && isShared ? MOCK_CATEGORY_FRIENDS : []);
+    if (!isOpen || !isShared) {
+      setFriends([]);
+      setHasLoadedFriends(false);
+      return;
+    }
   }, [isOpen, isShared]);
+
+  const loadFriends = async () => {
+    if (hasLoadedFriends) {
+      return;
+    }
+
+    try {
+      const loadedFriends = await getFollowingFriends();
+      setFriends(loadedFriends);
+      setHasLoadedFriends(true);
+    } catch (error) {
+      console.error("Failed to load category friends:", error);
+      setFriends([]);
+      setHasLoadedFriends(true);
+    }
+  };
+
+  const handleMemberDropdownOpenChange = (isOpen: boolean) => {
+    setIsDropdownOpen(isOpen);
+
+    if (isOpen) {
+      void loadFriends();
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -111,6 +136,10 @@ export const CategoryFormModal = ({
 
     try {
       setIsSubmitting(true);
+      const uploadedImageUrl =
+        imageUrl?.startsWith("data:")
+          ? await uploadImageDataUrl(imageUrl)
+          : imageUrl;
 
       await onSubmit?.({
         title: categoryName.trim(),
@@ -120,10 +149,13 @@ export const CategoryFormModal = ({
         themeLight: selectedTheme.themeLight,
         themeTextOnMid: selectedTheme.themeTextOnMid,
         themeTextOnLight: selectedTheme.themeTextOnLight,
-        imageUrl: imageUrl ?? undefined,
+        imageUrl: uploadedImageUrl ?? undefined,
         isPublic,
         isCompleted,
         isShared,
+        inviteUserIds: isShared
+          ? selectedMembers.map((member) => member.id)
+          : undefined,
       });
       onClose();
     } catch (error) {
@@ -195,14 +227,14 @@ export const CategoryFormModal = ({
           onToggleShared={() => setIsShared(!isShared)}
         />
 
-        {isShared && friends.length > 0 && (
+        {isShared && (
           <CategoryMemberSelector
             selectedMembers={selectedMembers}
             filteredFriends={filteredFriends}
             searchQuery={searchQuery}
             isDropdownOpen={isDropdownOpen}
             onSearchChange={setSearchQuery}
-            onDropdownOpenChange={setIsDropdownOpen}
+            onDropdownOpenChange={handleMemberDropdownOpenChange}
             onToggleMember={toggleMember}
           />
         )}

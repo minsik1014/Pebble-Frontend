@@ -1,17 +1,16 @@
 import { type TaskItem } from "@/types";
+import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type StandaloneTaskSectionProps = {
   tasks: TaskItem[];
-  checkedItems: Record<string, boolean>;
-  onToggleChecked: (itemId: string) => void;
+  onToggleTaskCompleted?: (taskId: string) => void | Promise<void>;
   onEditTask: (taskId: string) => void;
 };
 
 export const StandaloneTaskSection = ({
   tasks,
-  checkedItems,
-  onToggleChecked,
+  onToggleTaskCompleted,
   onEditTask,
 }: StandaloneTaskSectionProps): JSX.Element => (
   <>
@@ -43,20 +42,12 @@ export const StandaloneTaskSection = ({
               <span className="whitespace-nowrap text-body-02-m text-text-teritary">
                 {dateLabel}
               </span>
-              <span className="relative inline-flex h-6 w-6 items-center justify-center">
-                <input
-                  type="checkbox"
-                  aria-label={`${task.title} 일정 완료`}
-                  checked={Boolean(checkedItems[task.id])}
-                  onClick={(event) => event.stopPropagation()}
-                  onChange={(event) => {
-                    event.stopPropagation();
-                    onToggleChecked(task.id);
-                  }}
-                  className="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                />
-                <span className="relative h-6 w-6 rounded border border-border-default bg-fill-inverse peer-checked:border-fill-primary peer-checked:bg-fill-primary" />
-              </span>
+              <SidebarScheduleCheckbox
+                checked={Boolean(task.isCompleted)}
+                ariaLabel={`${task.title} 일정 완료`}
+                onChange={() => onToggleTaskCompleted?.(task.id)}
+                stopPropagation
+              />
             </div>
           </button>
         </section>

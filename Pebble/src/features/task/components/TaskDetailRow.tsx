@@ -1,19 +1,20 @@
 import { type ScheduleItem } from "@/types";
 import EditIcon from "@/assets/icons/newedit.svg?react";
+import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 // The task definition inside a category detail item seems to be just a standard ScheduleItem
 type TaskDetailRowProps = {
   task: ScheduleItem;
   themeLightColor: string;
-  themeTextColor: string;
+  onToggleCompleted?: () => void | Promise<void>;
   onEdit?: () => void;
 };
 
 export const TaskDetailRow = ({
   task,
   themeLightColor,
-  themeTextColor,
+  onToggleCompleted,
   onEdit,
 }: TaskDetailRowProps) => {
   const dateLabel = formatScheduleDisplayLabel(task);
@@ -25,20 +26,24 @@ export const TaskDetailRow = ({
           className="w-2 h-8 rounded-sm"
           style={{ backgroundColor: themeLightColor }}
         />
-        <span
-          className="max-w-64 text-body-02-m truncate"
-          style={{ color: themeTextColor }}
-        >
+        <span className="max-w-64 text-body-02-m truncate text-text-strong">
           {task.title}
         </span>
       </div>
       <div className="flex justify-end items-center gap-3">
         <div className="flex justify-end items-center">
-          <span className="text-body-02-m" style={{ color: themeTextColor }}>
+          <span className="text-body-02-m text-text-teritary">
             {dateLabel}
           </span>
         </div>
-        <div className="w-6 h-6 rounded-token-xs border border-border-default flex-shrink-0" />
+        <SidebarScheduleCheckbox
+          checked={Boolean(task.isCompleted)}
+          ariaLabel={`${task.title} 일정 완료`}
+          onChange={() => {
+            void onToggleCompleted?.();
+          }}
+          stopPropagation
+        />
         <button 
           className="w-11 h-11 flex items-center justify-center rounded-token-s hover:bg-fill-surface transition-colors"
           onClick={(e) => {

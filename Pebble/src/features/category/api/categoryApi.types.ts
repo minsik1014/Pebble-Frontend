@@ -21,6 +21,9 @@ export type CreateCategoryRequest = {
   name: string;
   color: string;
   imageUrl?: string | null;
+  isPublic?: boolean;
+  isCompleted?: boolean;
+  inviteUserIds?: number[];
 };
 
 export type UpdateCategoryRequest = {

@@ -10,6 +10,7 @@ export type CreateCategoryInput = Omit<Category, "id" | "items"> & {
   id?: string;
   items?: MilestoneItem[];
   tasks?: TaskItem[];
+  inviteUserIds?: number[];
 };
 
 export type UpdateCategoryInput = Partial<Omit<Category, "id" | "items">> & {
@@ -18,9 +19,11 @@ export type UpdateCategoryInput = Partial<Omit<Category, "id" | "items">> & {
 
 export type CreateScheduleItemInput = Omit<ScheduleEntityBase, "id"> &
   ScheduleStyleFields & {
-  id?: string;
-  tasks?: TaskItem[];
-};
+    id?: string;
+    categoryId?: string;
+    milestoneId?: string;
+    tasks?: TaskItem[];
+  };
 
 export type CalendarState = {
   categories: Category[];
@@ -58,13 +61,13 @@ export type CalendarActions = {
   createCategoryTask: (
     categoryId: string,
     input: CreateScheduleItemInput,
-  ) => TaskItem;
+  ) => Promise<TaskItem>;
   updateCategoryTask: (
     categoryId: string,
     taskId: string,
     input: CreateScheduleItemInput,
-  ) => void;
-  deleteCategoryTask: (categoryId: string, taskId: string) => void;
+  ) => Promise<void>;
+  deleteCategoryTask: (categoryId: string, taskId: string) => Promise<void>;
   createStandaloneTask: (input: CreateScheduleItemInput) => Promise<TaskItem>;
   updateStandaloneTask: (
     taskId: string,
@@ -84,6 +87,20 @@ export type CalendarActions = {
     taskId: string,
     input: CreateScheduleItemInput,
   ) => Promise<void>;
+  toggleMilestoneCompleted: (
+    categoryId: string,
+    milestoneId: string,
+  ) => Promise<void>;
+  toggleCategoryTaskCompleted: (
+    categoryId: string,
+    taskId: string,
+  ) => Promise<void>;
+  toggleTaskCompleted: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => Promise<void>;
+  toggleStandaloneTaskCompleted: (taskId: string) => Promise<void>;
 };
 
 export type CalendarStateModel = CalendarState & CalendarActions;

@@ -14,6 +14,28 @@ import type {
   GetCategoriesResponse,
 } from "./categoryApi.types";
 
+type CategoryMutationResponse =
+  | CategoryResponse
+  | {
+      category?: CategoryResponse;
+    };
+
+const mapCategoryMutationResponse = (data: CategoryMutationResponse | null) => {
+  if (!data) {
+    return null;
+  }
+
+  if ("category" in data && data.category) {
+    return mapCategoryResponseToCategory(data.category);
+  }
+
+  if ("id" in data) {
+    return mapCategoryResponseToCategory(data);
+  }
+
+  return null;
+};
+
 export async function getCategories(): Promise<Category[]> {
   const data = await apiRequest<GetCategoriesResponse>({
     method: "GET",
@@ -26,13 +48,13 @@ export async function getCategories(): Promise<Category[]> {
 export async function createCategory(
   input: CreateCategoryInput,
 ): Promise<Category | null> {
-  const data = await apiRequest<CategoryResponse>({
+  const data = await apiRequest<CategoryMutationResponse>({
     method: "POST",
     url: "/categories",
     data: mapCreateCategoryInputToRequest(input),
   });
 
-  return data ? mapCategoryResponseToCategory(data) : null;
+  return mapCategoryMutationResponse(data);
 }
 
 export async function updateCategory(
@@ -45,7 +67,7 @@ export async function updateCategory(
     data: mapUpdateCategoryInputToRequest(input),
   });
 
-  return data ? mapCategoryResponseToCategory(data) : null;
+  return mapCategoryMutationResponse(data);
 }
 
 export async function deleteCategory(categoryId: string): Promise<void> {

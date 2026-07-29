@@ -9,7 +9,7 @@ import type {
 
 const getDateTypeFromInput = (input: CreateScheduleItemInput): TaskDateType => {
   if (input.dates && input.dates.length > 0) {
-    return "MULTI";
+    return "MULTIPLE";
   }
 
   if (input.end) {
@@ -19,20 +19,25 @@ const getDateTypeFromInput = (input: CreateScheduleItemInput): TaskDateType => {
   return "SINGLE";
 };
 
+const normalizeApiDate = (date?: string | null) => date?.slice(0, 10) ?? null;
+
 export function mapTaskResponseToTask(task: TaskResponse): TaskItem {
   const dates =
-    task.taskDates?.map((taskDate) => taskDate.date) ??
-    task.dates ??
+    task.taskDates?.map((taskDate) => normalizeApiDate(taskDate.date) ?? taskDate.date) ??
+    task.dates?.map((date) => normalizeApiDate(date) ?? date) ??
     undefined;
+  const startDate = normalizeApiDate(task.startDate);
+  const endDate = normalizeApiDate(task.endDate);
 
   return {
     id: String(task.id),
     title: task.name,
-    start: task.startDate ?? dates?.[0] ?? "",
-    end: task.endDate ?? undefined,
+    start: startDate ?? dates?.[0] ?? "",
+    end: endDate ?? undefined,
     dates,
     accent: task.color ?? undefined,
     itemType: "task",
+    categoryId: task.categoryId ? String(task.categoryId) : undefined,
     milestoneId: task.milestoneId ? String(task.milestoneId) : undefined,
     dateType: task.dateType,
     isCompleted: task.isCompleted,
@@ -43,22 +48,25 @@ export function mapTaskResponseToTask(task: TaskResponse): TaskItem {
 }
 
 export function mapScheduleInputToCreateTaskRequest({
+  categoryId,
   milestoneId,
   input,
 }: {
+  categoryId?: string | null;
   milestoneId?: string | null;
   input: CreateScheduleItemInput;
 }): CreateTaskRequest {
   const dateType = getDateTypeFromInput(input);
-  const isChildTask = Boolean(milestoneId);
+  const isChildTask = Boolean(categoryId || milestoneId);
 
   return {
+    categoryId: categoryId ? Number(categoryId) : null,
     milestoneId: milestoneId ? Number(milestoneId) : null,
     name: input.title,
     dateType,
-    startDate: dateType === "MULTI" ? null : input.start,
+    startDate: dateType === "MULTIPLE" ? null : input.start,
     endDate: dateType === "RANGE" ? input.end ?? null : null,
-    dates: dateType === "MULTI" ? input.dates ?? [] : null,
+    dates: dateType === "MULTIPLE" ? input.dates ?? [] : null,
     color: isChildTask ? undefined : input.accent ?? "#171717",
   };
 }
@@ -74,10 +82,10 @@ export function mapScheduleInputToUpdateTaskRequest({
 
   return {
     name: input.title,
-    startDate: dateType === "MULTI" ? null : input.start,
+    startDate: dateType === "MULTIPLE" ? null : input.start,
     endDate: dateType === "RANGE" ? input.end ?? null : null,
-    dates: dateType === "MULTI" ? input.dates ?? [] : null,
+    dates: dateType === "MULTIPLE" ? input.dates ?? [] : null,
     color: isChildTask ? undefined : input.accent ?? "#171717",
-    editScope: dateType === "MULTI" ? "ALL" : undefined,
+    editScope: dateType === "MULTIPLE" ? "ALL" : undefined,
   };
 }

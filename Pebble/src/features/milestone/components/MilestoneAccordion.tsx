@@ -4,15 +4,26 @@ import ChevronUpIcon from "@/assets/icons/chevron-up.svg?react";
 import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
-import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
+import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type MilestoneAccordionProps = {
   category: Category;
   expanded: boolean;
   onToggleExpanded: () => void;
-  checkedItems: Record<string, boolean>;
-  onToggleChecked: (itemId: string) => void;
+  onToggleMilestoneCompleted?: (
+    categoryId: string,
+    milestoneId: string,
+  ) => void | Promise<void>;
+  onToggleCategoryTaskCompleted?: (
+    categoryId: string,
+    taskId: string,
+  ) => void | Promise<void>;
+  onToggleTaskCompleted?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void | Promise<void>;
   onSelectCategory?: (categoryId: string) => void;
   isSelected?: boolean;
 };
@@ -22,7 +33,6 @@ type SidebarScheduleRowProps = {
   checked: boolean;
   onToggle: () => void;
   barColor: string;
-  textColor: string;
   widthClassName: string;
 };
 
@@ -31,7 +41,6 @@ const SidebarScheduleRow = ({
   checked,
   onToggle,
   barColor,
-  textColor,
   widthClassName,
 }: SidebarScheduleRowProps) => {
   const dateLabel = formatScheduleDisplayLabel(item);
@@ -45,31 +54,20 @@ const SidebarScheduleRow = ({
           className="h-8 w-2 shrink-0 rounded"
           style={{ backgroundColor: barColor }}
         />
-        <span
-          className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m"
-          style={{ color: textColor }}
-        >
+        <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
           {item.title}
         </span>
       </div>
 
       <div className="flex shrink-0 items-center justify-end gap-3">
-        <span
-          className="whitespace-nowrap text-body-02-m"
-          style={{ color: textColor }}
-        >
+        <span className="whitespace-nowrap text-body-02-m text-text-teritary">
           {dateLabel}
         </span>
-        <span className="relative inline-flex h-6 w-6 items-center justify-center">
-          <input
-            type="checkbox"
-            aria-label={`${item.title} 일정 완료`}
-            checked={checked}
-            onChange={onToggle}
-            className="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
-          />
-          <span className="relative h-6 w-6 rounded border border-border-default bg-fill-inverse peer-checked:border-fill-primary peer-checked:bg-fill-primary" />
-        </span>
+        <SidebarScheduleCheckbox
+          checked={checked}
+          ariaLabel={`${item.title} 일정 완료`}
+          onChange={onToggle}
+        />
       </div>
     </label>
   );
@@ -79,18 +77,13 @@ export const MilestoneAccordion = ({
   category,
   expanded,
   onToggleExpanded,
-  checkedItems,
-  onToggleChecked,
+  onToggleMilestoneCompleted,
+  onToggleCategoryTaskCompleted,
+  onToggleTaskCompleted,
   onSelectCategory,
   isSelected = false,
 }: MilestoneAccordionProps) => {
   const [visible, setVisible] = useState(true);
-  const milestoneTextColor =
-    category.themeTextOnMid ??
-    getReadableCategoryTextColor(category.themeBase, category.themeMid);
-  const taskTextColor =
-    category.themeTextOnLight ??
-    getReadableCategoryTextColor(category.themeBase, category.themeLight);
 
   return (
     <section className="w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[20px] shadow-shadow-s overflow-hidden">
@@ -150,10 +143,9 @@ export const MilestoneAccordion = ({
               <SidebarScheduleRow
                 key={task.id}
                 item={task}
-                checked={Boolean(checkedItems[task.id])}
-                onToggle={() => onToggleChecked(task.id)}
+                checked={Boolean(task.isCompleted)}
+                onToggle={() => onToggleCategoryTaskCompleted?.(category.id, task.id)}
                 barColor={category.themeLight}
-                textColor={taskTextColor}
                 widthClassName="w-80"
               />
             ))}
@@ -162,20 +154,22 @@ export const MilestoneAccordion = ({
               <div key={item.id} className="flex w-full flex-col items-end gap-2">
                 <SidebarScheduleRow
                   item={item}
-                  checked={Boolean(checkedItems[item.id])}
-                  onToggle={() => onToggleChecked(item.id)}
+                  checked={Boolean(item.isCompleted)}
+                  onToggle={() =>
+                    onToggleMilestoneCompleted?.(category.id, item.id)
+                  }
                   barColor={category.themeMid}
-                  textColor={milestoneTextColor}
                   widthClassName="w-80"
                 />
                 {item.tasks?.map((task) => (
                   <SidebarScheduleRow
                     key={task.id}
                     item={task}
-                    checked={Boolean(checkedItems[task.id])}
-                    onToggle={() => onToggleChecked(task.id)}
+                    checked={Boolean(task.isCompleted)}
+                    onToggle={() =>
+                      onToggleTaskCompleted?.(category.id, item.id, task.id)
+                    }
                     barColor={category.themeLight}
-                    textColor={taskTextColor}
                     widthClassName="w-[308px]"
                   />
                 ))}

@@ -5,7 +5,6 @@ import {
   filterCategoriesByMonth,
   isScheduleItemInMonth,
 } from "@/features/milestone/components/scheduleDateUtils";
-import { MOCK_EXPANDED_CATEGORY_IDS } from "@/features/calendar/mocks/calendarMockData";
 
 type UseCalendarSidebarStateParams = {
   categories: Category[];
@@ -23,12 +22,7 @@ export const useCalendarSidebarState = ({
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
-  >(() =>
-    Object.fromEntries(
-      MOCK_EXPANDED_CATEGORY_IDS.map((categoryId) => [categoryId, true]),
-    ),
-  );
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  >({});
 
   const monthLabel = useMemo(() => `${currentMonth}월`, [currentMonth]);
   const displayedCategories = useMemo(
@@ -56,23 +50,14 @@ export const useCalendarSidebarState = ({
     }));
   };
 
-  const toggleCheckedItem = (itemId: string) => {
-    setCheckedItems((previousCheckedItems) => ({
-      ...previousCheckedItems,
-      [itemId]: !previousCheckedItems[itemId],
-    }));
-  };
-
   return {
     viewMode,
     setViewMode,
     expandedCategories,
-    checkedItems,
     monthLabel,
     displayedCategories,
     displayedStandaloneTasks,
     hasDisplayedSchedules,
     toggleCategory,
-    toggleCheckedItem,
   };
 };

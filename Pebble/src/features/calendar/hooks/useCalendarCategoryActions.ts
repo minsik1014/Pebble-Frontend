@@ -7,7 +7,11 @@ import type {
   UpdateCategoryInput,
 } from "@/features/calendar/types";
 import {
-  createCategoryEntity,
+  createCategory as createCategoryApi,
+  deleteCategory as deleteCategoryApi,
+  updateCategory as updateCategoryApi,
+} from "@/features/category/api/categoryApi";
+import {
   replaceCategoryList,
   updateCategoryInList,
 } from "@/features/calendar/utils/calendarStateUtils";
@@ -42,7 +46,11 @@ export const useCalendarCategoryActions = ({
 
   const createCategory = useCallback(
     async (input: CreateCategoryInput) => {
-      const category = createCategoryEntity(input);
+      const category = await createCategoryApi(input);
+
+      if (!category) {
+        throw new Error("카테고리 생성 응답을 확인하지 못했어요.");
+      }
 
       setCategories((previousCategories) => [...previousCategories, category]);
       setSelectedCategoryId(null);
@@ -54,8 +62,20 @@ export const useCalendarCategoryActions = ({
 
   const updateCategory = useCallback(
     async (categoryId: string, input: UpdateCategoryInput) => {
+      const category = await updateCategoryApi(categoryId, input);
+
       setCategories((previousCategories) =>
-        updateCategoryInList(previousCategories, categoryId, input),
+        category
+          ? previousCategories.map((previousCategory) =>
+              previousCategory.id === categoryId
+                ? {
+                    ...category,
+                    items: previousCategory.items,
+                    tasks: previousCategory.tasks,
+                  }
+                : previousCategory,
+            )
+          : updateCategoryInList(previousCategories, categoryId, input),
       );
     },
     [setCategories],
@@ -63,6 +83,8 @@ export const useCalendarCategoryActions = ({
 
   const deleteCategory = useCallback(
     async (categoryId: string) => {
+      await deleteCategoryApi(categoryId);
+
       setCategories((previousCategories) =>
         previousCategories.filter((category) => category.id !== categoryId),
       );

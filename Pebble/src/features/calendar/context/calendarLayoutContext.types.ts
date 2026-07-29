@@ -44,4 +44,8 @@ export type CalendarLayoutContextValue = {
   ) => Promise<void>;
   updateStandaloneTask: CalendarStateModel["updateStandaloneTask"];
   deleteStandaloneTask: CalendarStateModel["deleteStandaloneTask"];
+  toggleMilestoneCompleted: CalendarStateModel["toggleMilestoneCompleted"];
+  toggleCategoryTaskCompleted: CalendarStateModel["toggleCategoryTaskCompleted"];
+  toggleTaskCompleted: CalendarStateModel["toggleTaskCompleted"];
+  toggleStandaloneTaskCompleted: CalendarStateModel["toggleStandaloneTaskCompleted"];
 };

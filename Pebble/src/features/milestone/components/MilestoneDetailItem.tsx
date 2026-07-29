@@ -1,6 +1,7 @@
 import ChevronDownIcon from "@/assets/icons/chevron-down.svg?react";
 import EditIcon from "@/assets/icons/newedit.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
+import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { TaskDetailRow } from "@/features/task/components/TaskDetailRow";
 import { type MilestoneItem } from "@/types";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
@@ -9,26 +10,26 @@ type MilestoneDetailItemProps = {
   item: MilestoneItem;
   themeMidColor: string;
   themeLightColor: string;
-  themeTextOnMidColor: string;
-  themeTextOnLightColor: string;
   isExpanded: boolean;
   onToggle: () => void;
+  onToggleCompleted?: () => void | Promise<void>;
   onEdit?: () => void;
   onAddTask?: () => void;
   onEditTask?: (taskId: string) => void;
+  onToggleTaskCompleted?: (taskId: string) => void | Promise<void>;
 };
 
 export const MilestoneDetailItem = ({
   item,
   themeMidColor,
   themeLightColor,
-  themeTextOnMidColor,
-  themeTextOnLightColor,
   isExpanded,
   onToggle,
+  onToggleCompleted,
   onEdit,
   onAddTask,
   onEditTask,
+  onToggleTaskCompleted,
 }: MilestoneDetailItemProps) => {
   const dateLabel = formatScheduleDisplayLabel(item);
 
@@ -43,23 +44,24 @@ export const MilestoneDetailItem = ({
             className="w-2 h-10 rounded-sm"
             style={{ backgroundColor: themeMidColor }}
           />
-          <span
-            className="text-title-03-sb truncate"
-            style={{ color: themeTextOnMidColor }}
-          >
+          <span className="text-title-03-sb truncate text-text-strong">
             {item.title}
           </span>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center">
-            <span
-              className="text-body-02-m"
-              style={{ color: themeTextOnMidColor }}
-            >
+            <span className="text-body-02-m text-text-teritary">
               {dateLabel}
             </span>
           </div>
-          <div className="w-6 h-6 rounded-token-xs border border-border-default flex-shrink-0" />
+          <SidebarScheduleCheckbox
+            checked={Boolean(item.isCompleted)}
+            ariaLabel={`${item.title} 일정 완료`}
+            onChange={() => {
+              void onToggleCompleted?.();
+            }}
+            stopPropagation
+          />
           <button 
             className="w-11 h-11 flex items-center justify-center rounded-token-s hover:bg-fill-surface transition-colors"
             onClick={(e) => {
@@ -90,7 +92,7 @@ export const MilestoneDetailItem = ({
                   key={task.id} 
                   task={task} 
                   themeLightColor={themeLightColor} 
-                  themeTextColor={themeTextOnLightColor}
+                  onToggleCompleted={() => onToggleTaskCompleted?.(task.id)}
                   onEdit={() => onEditTask?.(task.id)}
                 />
               ))}
