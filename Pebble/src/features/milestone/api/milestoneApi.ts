@@ -13,6 +13,31 @@ import type {
   MilestoneResponse,
 } from "./milestoneApi.types";
 
+const mapCreatedMilestones = (
+  data: CreateMilestoneResponse | MilestoneResponse | null,
+  input: CreateScheduleItemInput,
+) => {
+  if (!data) {
+    return [];
+  }
+
+  if ("milestones" in data && data.milestones?.length) {
+    return data.milestones.map((milestone) =>
+      mapMilestoneResponseToMilestone(milestone, input),
+    );
+  }
+
+  if ("milestone" in data && data.milestone) {
+    return [mapMilestoneResponseToMilestone(data.milestone, input)];
+  }
+
+  if ("id" in data) {
+    return [mapMilestoneResponseToMilestone(data, input)];
+  }
+
+  return [];
+};
+
 export async function getMilestones(categoryId: string): Promise<MilestoneItem[]> {
   const data = await apiRequest<GetMilestonesResponse>({
     method: "GET",
@@ -26,13 +51,13 @@ export async function createMilestone(
   categoryId: string,
   input: CreateScheduleItemInput,
 ): Promise<MilestoneItem[]> {
-  const data = await apiRequest<CreateMilestoneResponse>({
+  const data = await apiRequest<CreateMilestoneResponse | MilestoneResponse>({
     method: "POST",
     url: `/categories/${categoryId}/milestones`,
     data: mapScheduleInputToCreateMilestoneRequest(input),
   });
 
-  return data?.milestones.map(mapMilestoneResponseToMilestone) ?? [];
+  return mapCreatedMilestones(data, input);
 }
 
 export async function updateMilestone(

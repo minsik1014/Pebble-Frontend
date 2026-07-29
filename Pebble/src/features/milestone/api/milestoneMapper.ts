@@ -23,16 +23,20 @@ const getDateTypeFromInput = (
 
 export function mapMilestoneResponseToMilestone(
   milestone: MilestoneResponse,
+  fallbackInput?: CreateScheduleItemInput,
 ): MilestoneItem {
+  const fallbackStart = fallbackInput?.dates?.[0] ?? fallbackInput?.start ?? "";
+
   return {
     id: String(milestone.id),
-    title: milestone.name,
-    start: milestone.startDate ?? "",
-    end: milestone.endDate ?? undefined,
+    title: milestone.name || fallbackInput?.title || "",
+    start: milestone.startDate ?? fallbackStart,
+    end: milestone.endDate ?? fallbackInput?.end ?? undefined,
     itemType: "milestone",
     seriesId: milestone.seriesId ?? undefined,
     dateType: milestone.dateType,
-    isCompleted: milestone.isCompleted,
+    dates: milestone.dateType === "MULTIPLE" ? undefined : fallbackInput?.dates,
+    isCompleted: milestone.isCompleted ?? false,
     displayOrder: milestone.displayOrder,
     tasks: [],
   };

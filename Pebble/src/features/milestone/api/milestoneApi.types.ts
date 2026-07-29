@@ -21,7 +21,8 @@ export type GetMilestonesResponse = {
 };
 
 export type CreateMilestoneResponse = {
-  milestones: MilestoneResponse[];
+  milestone?: MilestoneResponse;
+  milestones?: MilestoneResponse[];
 };
 
 export type CreateMilestoneRequest = {
