@@ -23,7 +23,6 @@ export const useCalendarSidebarState = ({
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
   >({});
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
   const monthLabel = useMemo(() => `${currentMonth}월`, [currentMonth]);
   const displayedCategories = useMemo(
@@ -51,23 +50,14 @@ export const useCalendarSidebarState = ({
     }));
   };
 
-  const toggleCheckedItem = (itemId: string) => {
-    setCheckedItems((previousCheckedItems) => ({
-      ...previousCheckedItems,
-      [itemId]: !previousCheckedItems[itemId],
-    }));
-  };
-
   return {
     viewMode,
     setViewMode,
     expandedCategories,
-    checkedItems,
     monthLabel,
     displayedCategories,
     displayedStandaloneTasks,
     hasDisplayedSchedules,
     toggleCategory,
-    toggleCheckedItem,
   };
 };

@@ -7,12 +7,14 @@ import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 type TaskDetailRowProps = {
   task: ScheduleItem;
   themeLightColor: string;
+  onToggleCompleted?: () => void | Promise<void>;
   onEdit?: () => void;
 };
 
 export const TaskDetailRow = ({
   task,
   themeLightColor,
+  onToggleCompleted,
   onEdit,
 }: TaskDetailRowProps) => {
   const dateLabel = formatScheduleDisplayLabel(task);
@@ -37,7 +39,9 @@ export const TaskDetailRow = ({
         <SidebarScheduleCheckbox
           checked={Boolean(task.isCompleted)}
           ariaLabel={`${task.title} 일정 완료`}
-          onChange={() => undefined}
+          onChange={() => {
+            void onToggleCompleted?.();
+          }}
           stopPropagation
         />
         <button 

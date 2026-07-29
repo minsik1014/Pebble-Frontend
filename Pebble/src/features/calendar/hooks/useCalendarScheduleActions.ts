@@ -6,11 +6,13 @@ import type { CreateScheduleItemInput } from "@/features/calendar/types";
 import {
   createMilestone as createMilestoneApi,
   deleteMilestone as deleteMilestoneApi,
+  toggleMilestoneComplete as toggleMilestoneCompleteApi,
   updateMilestone as updateMilestoneApi,
 } from "@/features/milestone/api/milestoneApi";
 import {
   createTask as createTaskApi,
   deleteTask as deleteTaskApi,
+  toggleTaskComplete as toggleTaskCompleteApi,
   updateTask as updateTaskApi,
 } from "@/features/task/api/taskApi";
 import {
@@ -24,6 +26,10 @@ import {
   removeMilestoneFromCategory,
   removeTaskFromMilestone,
   replaceStandaloneTaskInList,
+  toggleCategoryTaskCompletedInList,
+  toggleMilestoneCompletedInCategory,
+  toggleStandaloneTaskCompletedInList,
+  toggleTaskCompletedInMilestone,
   updateCategoryTaskInList,
   updateMilestoneInCategory,
   updateTaskInMilestone,
@@ -288,6 +294,106 @@ export const useCalendarScheduleActions = ({
     [setCategories],
   );
 
+  const toggleMilestoneCompleted = useCallback(
+    async (categoryId: string, milestoneId: string) => {
+      const milestone =
+        categories
+          .find((category) => category.id === categoryId)
+          ?.items.find((item) => item.id === milestoneId) ?? null;
+      const nextIsCompleted = !milestone?.isCompleted;
+
+      setCategories((previousCategories) =>
+        toggleMilestoneCompletedInCategory(
+          previousCategories,
+          categoryId,
+          milestoneId,
+        ),
+      );
+
+      try {
+        await toggleMilestoneCompleteApi(milestoneId, nextIsCompleted);
+      } catch (error) {
+        setCategories((previousCategories) =>
+          toggleMilestoneCompletedInCategory(
+            previousCategories,
+            categoryId,
+            milestoneId,
+          ),
+        );
+        throw error;
+      }
+    },
+    [categories, setCategories],
+  );
+
+  const toggleCategoryTaskCompleted = useCallback(
+    async (categoryId: string, taskId: string) => {
+      setCategories((previousCategories) =>
+        toggleCategoryTaskCompletedInList(previousCategories, categoryId, taskId),
+      );
+
+      try {
+        await toggleTaskCompleteApi(taskId);
+      } catch (error) {
+        setCategories((previousCategories) =>
+          toggleCategoryTaskCompletedInList(
+            previousCategories,
+            categoryId,
+            taskId,
+          ),
+        );
+        throw error;
+      }
+    },
+    [setCategories],
+  );
+
+  const toggleTaskCompleted = useCallback(
+    async (categoryId: string, milestoneId: string, taskId: string) => {
+      setCategories((previousCategories) =>
+        toggleTaskCompletedInMilestone(
+          previousCategories,
+          categoryId,
+          milestoneId,
+          taskId,
+        ),
+      );
+
+      try {
+        await toggleTaskCompleteApi(taskId);
+      } catch (error) {
+        setCategories((previousCategories) =>
+          toggleTaskCompletedInMilestone(
+            previousCategories,
+            categoryId,
+            milestoneId,
+            taskId,
+          ),
+        );
+        throw error;
+      }
+    },
+    [setCategories],
+  );
+
+  const toggleStandaloneTaskCompleted = useCallback(
+    async (taskId: string) => {
+      setStandaloneTasks((previousTasks) =>
+        toggleStandaloneTaskCompletedInList(previousTasks, taskId),
+      );
+
+      try {
+        await toggleTaskCompleteApi(taskId);
+      } catch (error) {
+        setStandaloneTasks((previousTasks) =>
+          toggleStandaloneTaskCompletedInList(previousTasks, taskId),
+        );
+        throw error;
+      }
+    },
+    [setStandaloneTasks],
+  );
+
   return {
     createMilestone,
     updateMilestone,
@@ -301,5 +407,9 @@ export const useCalendarScheduleActions = ({
     deleteMilestone,
     updateTask,
     deleteTask,
+    toggleMilestoneCompleted,
+    toggleCategoryTaskCompleted,
+    toggleTaskCompleted,
+    toggleStandaloneTaskCompleted,
   };
 };

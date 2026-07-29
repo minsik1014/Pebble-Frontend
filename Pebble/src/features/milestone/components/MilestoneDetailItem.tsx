@@ -12,9 +12,11 @@ type MilestoneDetailItemProps = {
   themeLightColor: string;
   isExpanded: boolean;
   onToggle: () => void;
+  onToggleCompleted?: () => void | Promise<void>;
   onEdit?: () => void;
   onAddTask?: () => void;
   onEditTask?: (taskId: string) => void;
+  onToggleTaskCompleted?: (taskId: string) => void | Promise<void>;
 };
 
 export const MilestoneDetailItem = ({
@@ -23,9 +25,11 @@ export const MilestoneDetailItem = ({
   themeLightColor,
   isExpanded,
   onToggle,
+  onToggleCompleted,
   onEdit,
   onAddTask,
   onEditTask,
+  onToggleTaskCompleted,
 }: MilestoneDetailItemProps) => {
   const dateLabel = formatScheduleDisplayLabel(item);
 
@@ -53,7 +57,9 @@ export const MilestoneDetailItem = ({
           <SidebarScheduleCheckbox
             checked={Boolean(item.isCompleted)}
             ariaLabel={`${item.title} 일정 완료`}
-            onChange={() => undefined}
+            onChange={() => {
+              void onToggleCompleted?.();
+            }}
             stopPropagation
           />
           <button 
@@ -86,6 +92,7 @@ export const MilestoneDetailItem = ({
                   key={task.id} 
                   task={task} 
                   themeLightColor={themeLightColor} 
+                  onToggleCompleted={() => onToggleTaskCompleted?.(task.id)}
                   onEdit={() => onEditTask?.(task.id)}
                 />
               ))}

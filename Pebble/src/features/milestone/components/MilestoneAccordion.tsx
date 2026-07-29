@@ -11,8 +11,19 @@ type MilestoneAccordionProps = {
   category: Category;
   expanded: boolean;
   onToggleExpanded: () => void;
-  checkedItems: Record<string, boolean>;
-  onToggleChecked: (itemId: string) => void;
+  onToggleMilestoneCompleted?: (
+    categoryId: string,
+    milestoneId: string,
+  ) => void | Promise<void>;
+  onToggleCategoryTaskCompleted?: (
+    categoryId: string,
+    taskId: string,
+  ) => void | Promise<void>;
+  onToggleTaskCompleted?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void | Promise<void>;
   onSelectCategory?: (categoryId: string) => void;
   isSelected?: boolean;
 };
@@ -66,8 +77,9 @@ export const MilestoneAccordion = ({
   category,
   expanded,
   onToggleExpanded,
-  checkedItems,
-  onToggleChecked,
+  onToggleMilestoneCompleted,
+  onToggleCategoryTaskCompleted,
+  onToggleTaskCompleted,
   onSelectCategory,
   isSelected = false,
 }: MilestoneAccordionProps) => {
@@ -131,8 +143,8 @@ export const MilestoneAccordion = ({
               <SidebarScheduleRow
                 key={task.id}
                 item={task}
-                checked={Boolean(checkedItems[task.id])}
-                onToggle={() => onToggleChecked(task.id)}
+                checked={Boolean(task.isCompleted)}
+                onToggle={() => onToggleCategoryTaskCompleted?.(category.id, task.id)}
                 barColor={category.themeLight}
                 widthClassName="w-80"
               />
@@ -142,8 +154,10 @@ export const MilestoneAccordion = ({
               <div key={item.id} className="flex w-full flex-col items-end gap-2">
                 <SidebarScheduleRow
                   item={item}
-                  checked={Boolean(checkedItems[item.id])}
-                  onToggle={() => onToggleChecked(item.id)}
+                  checked={Boolean(item.isCompleted)}
+                  onToggle={() =>
+                    onToggleMilestoneCompleted?.(category.id, item.id)
+                  }
                   barColor={category.themeMid}
                   widthClassName="w-80"
                 />
@@ -151,8 +165,10 @@ export const MilestoneAccordion = ({
                   <SidebarScheduleRow
                     key={task.id}
                     item={task}
-                    checked={Boolean(checkedItems[task.id])}
-                    onToggle={() => onToggleChecked(task.id)}
+                    checked={Boolean(task.isCompleted)}
+                    onToggle={() =>
+                      onToggleTaskCompleted?.(category.id, item.id, task.id)
+                    }
                     barColor={category.themeLight}
                     widthClassName="w-[308px]"
                   />

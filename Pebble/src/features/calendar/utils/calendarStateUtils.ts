@@ -273,3 +273,73 @@ export const removeTaskFromMilestone = (
         }
       : category,
   );
+
+export const toggleMilestoneCompletedInCategory = (
+  categories: Category[],
+  categoryId: string,
+  milestoneId: string,
+) =>
+  categories.map((category) =>
+    category.id === categoryId
+      ? {
+          ...category,
+          items: category.items.map((item) =>
+            item.id === milestoneId
+              ? { ...item, isCompleted: !item.isCompleted }
+              : item,
+          ),
+        }
+      : category,
+  );
+
+export const toggleCategoryTaskCompletedInList = (
+  categories: Category[],
+  categoryId: string,
+  taskId: string,
+) =>
+  categories.map((category) =>
+    category.id === categoryId
+      ? {
+          ...category,
+          tasks: category.tasks?.map((task) =>
+            task.id === taskId
+              ? { ...task, isCompleted: !task.isCompleted }
+              : task,
+          ),
+        }
+      : category,
+  );
+
+export const toggleTaskCompletedInMilestone = (
+  categories: Category[],
+  categoryId: string,
+  milestoneId: string,
+  taskId: string,
+) =>
+  categories.map((category) =>
+    category.id === categoryId
+      ? {
+          ...category,
+          items: category.items.map((item) =>
+            item.id === milestoneId
+              ? {
+                  ...item,
+                  tasks: item.tasks?.map((task) =>
+                    task.id === taskId
+                      ? { ...task, isCompleted: !task.isCompleted }
+                      : task,
+                  ),
+                }
+              : item,
+          ),
+        }
+      : category,
+  );
+
+export const toggleStandaloneTaskCompletedInList = (
+  tasks: TaskItem[],
+  taskId: string,
+) =>
+  tasks.map((task) =>
+    task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task,
+  );

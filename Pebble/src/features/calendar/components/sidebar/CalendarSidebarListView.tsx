@@ -8,15 +8,37 @@ type CalendarSidebarListViewProps = {
   standaloneTasks: TaskItem[];
   currentYear: number;
   currentMonth: number;
-  checkedItems: Record<string, boolean>;
-  onToggleChecked: (itemId: string) => void;
+  onToggleMilestoneCompleted?: (
+    categoryId: string,
+    milestoneId: string,
+  ) => void | Promise<void>;
+  onToggleCategoryTaskCompleted?: (
+    categoryId: string,
+    taskId: string,
+  ) => void | Promise<void>;
+  onToggleTaskCompleted?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void | Promise<void>;
+  onToggleStandaloneTaskCompleted?: (taskId: string) => void | Promise<void>;
 };
 
 type DatedSidebarItem = {
   item: ScheduleItem;
   date: Date;
   barColor: string;
-};
+} & (
+  | { type: "standaloneTask"; taskId: string }
+  | { type: "categoryTask"; categoryId: string; taskId: string }
+  | { type: "milestone"; categoryId: string; milestoneId: string }
+  | {
+      type: "milestoneTask";
+      categoryId: string;
+      milestoneId: string;
+      taskId: string;
+    }
+);
 
 const getDatesInRange = (startDate: Date, endDate: Date) => {
   const dates: Date[] = [];
@@ -77,6 +99,8 @@ const collectSidebarItemsByDate = ({
           item: task,
           date,
           barColor,
+          type: "standaloneTask",
+          taskId: task.id,
         });
       });
   });
@@ -90,6 +114,9 @@ const collectSidebarItemsByDate = ({
             item: task,
             date,
             barColor: category.themeLight,
+            type: "categoryTask",
+            categoryId: category.id,
+            taskId: task.id,
           });
         });
     });
@@ -102,6 +129,9 @@ const collectSidebarItemsByDate = ({
             item: milestone,
             date,
             barColor: category.themeMid,
+            type: "milestone",
+            categoryId: category.id,
+            milestoneId: milestone.id,
           });
         });
 
@@ -113,6 +143,10 @@ const collectSidebarItemsByDate = ({
               item: task,
               date,
               barColor: category.themeLight,
+              type: "milestoneTask",
+              categoryId: category.id,
+              milestoneId: milestone.id,
+              taskId: task.id,
             });
           });
       });
@@ -160,8 +194,10 @@ export const CalendarSidebarListView = ({
   standaloneTasks,
   currentYear,
   currentMonth,
-  checkedItems,
-  onToggleChecked,
+  onToggleMilestoneCompleted,
+  onToggleCategoryTaskCompleted,
+  onToggleTaskCompleted,
+  onToggleStandaloneTaskCompleted,
 }: CalendarSidebarListViewProps): JSX.Element => {
   const groupedItems = collectSidebarItemsByDate({
     categories,
@@ -170,39 +206,74 @@ export const CalendarSidebarListView = ({
     currentMonth,
   });
 
+  const handleToggleCompleted = (datedItem: DatedSidebarItem) => {
+    if (datedItem.type === "standaloneTask") {
+      void onToggleStandaloneTaskCompleted?.(datedItem.taskId);
+      return;
+    }
+
+    if (datedItem.type === "categoryTask") {
+      void onToggleCategoryTaskCompleted?.(
+        datedItem.categoryId,
+        datedItem.taskId,
+      );
+      return;
+    }
+
+    if (datedItem.type === "milestone") {
+      void onToggleMilestoneCompleted?.(
+        datedItem.categoryId,
+        datedItem.milestoneId,
+      );
+      return;
+    }
+
+    void onToggleTaskCompleted?.(
+      datedItem.categoryId,
+      datedItem.milestoneId,
+      datedItem.taskId,
+    );
+  };
+
   return (
     <div className="flex w-[352px] flex-col gap-5">
       {groupedItems.map((group) => (
         <section key={group.key} className="flex w-full flex-col gap-3">
           <h2 className="text-body-01-sb text-text-primary">{group.title}</h2>
           <div className="flex w-full flex-col gap-2">
-            {group.items.map(({ item, date, barColor }) => (
-              <label
-                key={`${group.key}-${item.id}-${date.toISOString()}`}
-                className="flex h-12 w-full shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 shadow-shadow-s transition-colors hover:bg-fill-surface"
-              >
-                <div className="flex min-w-0 flex-1 items-center gap-2">
-                  <div
-                    className="h-8 w-2 shrink-0 rounded"
-                    style={{ backgroundColor: barColor }}
-                  />
-                  <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
-                    {item.title}
-                  </span>
-                </div>
+            {group.items.map((datedItem) => {
+              const { item, date, barColor } = datedItem;
 
-                <div className="flex shrink-0 items-center justify-end gap-3">
-                  <span className="whitespace-nowrap text-body-02-m text-text-teritary">
-                    {formatScheduleDisplayLabel(item)}
-                  </span>
-                  <SidebarScheduleCheckbox
-                    checked={Boolean(checkedItems[item.id])}
-                    ariaLabel={`${item.title} 일정 완료`}
-                    onChange={() => onToggleChecked(item.id)}
-                  />
-                </div>
-              </label>
-            ))}
+              return (
+                <label
+                  key={`${group.key}-${item.id}-${date.toISOString()}`}
+                  className="flex h-12 w-full shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 shadow-shadow-s transition-colors hover:bg-fill-surface"
+                >
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <div
+                      className="h-8 w-2 shrink-0 rounded"
+                      style={{ backgroundColor: barColor }}
+                    />
+                    <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
+                      {item.title}
+                    </span>
+                  </div>
+
+                  <div className="flex shrink-0 items-center justify-end gap-3">
+                    <span className="whitespace-nowrap text-body-02-m text-text-teritary">
+                      {formatScheduleDisplayLabel(item)}
+                    </span>
+                    <SidebarScheduleCheckbox
+                      checked={Boolean(item.isCompleted)}
+                      ariaLabel={`${item.title} 일정 완료`}
+                      onChange={() => {
+                        handleToggleCompleted(datedItem);
+                      }}
+                    />
+                  </div>
+                </label>
+              );
+            })}
           </div>
         </section>
       ))}

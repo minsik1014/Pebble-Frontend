@@ -33,6 +33,10 @@ export const CalendarSidebar = ({
   onCreateTask,
   onUpdateStandaloneTask,
   onDeleteStandaloneTask,
+  onToggleMilestoneCompleted,
+  onToggleCategoryTaskCompleted,
+  onToggleTaskCompleted,
+  onToggleStandaloneTaskCompleted,
 }: {
   isSidebarOpen?: boolean;
   categories: Category[];
@@ -52,18 +56,30 @@ export const CalendarSidebar = ({
     input: CreateScheduleItemInput,
   ) => void | Promise<void>;
   onDeleteStandaloneTask?: (taskId: string) => void | Promise<void>;
+  onToggleMilestoneCompleted?: (
+    categoryId: string,
+    milestoneId: string,
+  ) => void | Promise<void>;
+  onToggleCategoryTaskCompleted?: (
+    categoryId: string,
+    taskId: string,
+  ) => void | Promise<void>;
+  onToggleTaskCompleted?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void | Promise<void>;
+  onToggleStandaloneTaskCompleted?: (taskId: string) => void | Promise<void>;
 }): JSX.Element => {
   const {
     viewMode,
     setViewMode,
     expandedCategories,
-    checkedItems,
     monthLabel,
     displayedCategories,
     displayedStandaloneTasks,
     hasDisplayedSchedules,
     toggleCategory,
-    toggleCheckedItem,
   } = useCalendarSidebarState({
     categories,
     standaloneTasks,
@@ -124,16 +140,17 @@ export const CalendarSidebar = ({
                   standaloneTasks={displayedStandaloneTasks}
                   currentYear={currentYear}
                   currentMonth={currentMonth}
-                  checkedItems={checkedItems}
-                  onToggleChecked={toggleCheckedItem}
+                  onToggleMilestoneCompleted={onToggleMilestoneCompleted}
+                  onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
+                  onToggleTaskCompleted={onToggleTaskCompleted}
+                  onToggleStandaloneTaskCompleted={onToggleStandaloneTaskCompleted}
                 />
               ) : (
                 <>
                   {displayedStandaloneTasks.length > 0 && (
                     <StandaloneTaskSection
                       tasks={displayedStandaloneTasks}
-                      checkedItems={checkedItems}
-                      onToggleChecked={toggleCheckedItem}
+                      onToggleTaskCompleted={onToggleStandaloneTaskCompleted}
                       onEditTask={openStandaloneTaskEditor}
                     />
                   )}
@@ -144,8 +161,9 @@ export const CalendarSidebar = ({
                       category={category}
                       expanded={Boolean(expandedCategories[category.id])}
                       onToggleExpanded={() => toggleCategory(category.id)}
-                      checkedItems={checkedItems}
-                      onToggleChecked={toggleCheckedItem}
+                      onToggleMilestoneCompleted={onToggleMilestoneCompleted}
+                      onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
+                      onToggleTaskCompleted={onToggleTaskCompleted}
                       onSelectCategory={onSelectCategory}
                       isSelected={selectedCategoryId === category.id}
                     />

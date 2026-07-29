@@ -352,6 +352,10 @@ const MainLayoutFrame = (): JSX.Element => {
     createTask,
     updateStandaloneTask,
     deleteStandaloneTask,
+    toggleMilestoneCompleted,
+    toggleCategoryTaskCompleted,
+    toggleTaskCompleted,
+    toggleStandaloneTaskCompleted,
   } = useCalendarLayoutContext();
   const [scale, setScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
@@ -423,6 +427,10 @@ const MainLayoutFrame = (): JSX.Element => {
               onCreateTask={createTask}
               onUpdateStandaloneTask={updateStandaloneTask}
               onDeleteStandaloneTask={deleteStandaloneTask}
+              onToggleMilestoneCompleted={toggleMilestoneCompleted}
+              onToggleCategoryTaskCompleted={toggleCategoryTaskCompleted}
+              onToggleTaskCompleted={toggleTaskCompleted}
+              onToggleStandaloneTaskCompleted={toggleStandaloneTaskCompleted}
             />
           </div>
 

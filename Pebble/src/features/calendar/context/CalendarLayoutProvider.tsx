@@ -44,6 +44,10 @@ export const CalendarLayoutProvider = ({
     deleteMilestone,
     updateTask,
     deleteTask,
+    toggleMilestoneCompleted,
+    toggleCategoryTaskCompleted,
+    toggleTaskCompleted,
+    toggleStandaloneTaskCompleted,
     isCalendarLoading,
     calendarErrorMessage,
     reloadCalendarData,
@@ -119,6 +123,10 @@ export const CalendarLayoutProvider = ({
     deleteTask,
     updateStandaloneTask,
     deleteStandaloneTask,
+    toggleMilestoneCompleted,
+    toggleCategoryTaskCompleted,
+    toggleTaskCompleted,
+    toggleStandaloneTaskCompleted,
   };
 
   return (

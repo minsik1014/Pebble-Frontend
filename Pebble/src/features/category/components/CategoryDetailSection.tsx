@@ -30,6 +30,9 @@ export const CategoryDetailSection = ({
   onDeleteMilestone,
   onUpdateTask,
   onDeleteTask,
+  onToggleMilestoneCompleted,
+  onToggleCategoryTaskCompleted,
+  onToggleTaskCompleted,
 }: {
   isSidebarOpen: boolean;
   category: Category;
@@ -60,6 +63,19 @@ export const CategoryDetailSection = ({
     input: CreateScheduleItemInput,
   ) => Promise<void>;
   onDeleteTask: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => Promise<void>;
+  onToggleMilestoneCompleted: (
+    categoryId: string,
+    milestoneId: string,
+  ) => Promise<void>;
+  onToggleCategoryTaskCompleted: (
+    categoryId: string,
+    taskId: string,
+  ) => Promise<void>;
+  onToggleTaskCompleted: (
     categoryId: string,
     milestoneId: string,
     taskId: string,
@@ -138,6 +154,9 @@ export const CategoryDetailSection = ({
                   key={task.id}
                   task={task}
                   themeLightColor={category.themeLight}
+                  onToggleCompleted={() =>
+                    onToggleCategoryTaskCompleted(category.id, task.id)
+                  }
                   onEdit={() => setEditingCategoryTaskId(task.id)}
                 />
               ))}
@@ -153,6 +172,9 @@ export const CategoryDetailSection = ({
             themeLightColor={category.themeLight}
             isExpanded={Boolean(expandedMilestones[item.id])}
             onToggle={() => toggleMilestone(item.id)}
+            onToggleCompleted={() =>
+              onToggleMilestoneCompleted(category.id, item.id)
+            }
             onEdit={() => setEditingMilestoneId(item.id)}
             onAddTask={() => {
               setTaskMode("create");
@@ -165,6 +187,9 @@ export const CategoryDetailSection = ({
               setSelectedMilestoneForTask(item.id);
               setIsTaskModalOpen(true);
             }}
+            onToggleTaskCompleted={(taskId) =>
+              onToggleTaskCompleted(category.id, item.id, taskId)
+            }
           />
         ))}
       </div>

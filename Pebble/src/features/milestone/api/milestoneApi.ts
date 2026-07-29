@@ -84,3 +84,16 @@ export async function deleteMilestone(
     params: deleteScope ? { deleteScope } : undefined,
   });
 }
+
+export async function toggleMilestoneComplete(
+  milestoneId: string,
+  isCompleted: boolean,
+): Promise<MilestoneItem | null> {
+  const data = await apiRequest<MilestoneResponse>({
+    method: "PATCH",
+    url: `/milestones/${milestoneId}`,
+    data: { isCompleted },
+  });
+
+  return data ? mapMilestoneResponseToMilestone(data) : null;
+}

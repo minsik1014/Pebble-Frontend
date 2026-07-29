@@ -4,15 +4,13 @@ import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type StandaloneTaskSectionProps = {
   tasks: TaskItem[];
-  checkedItems: Record<string, boolean>;
-  onToggleChecked: (itemId: string) => void;
+  onToggleTaskCompleted?: (taskId: string) => void | Promise<void>;
   onEditTask: (taskId: string) => void;
 };
 
 export const StandaloneTaskSection = ({
   tasks,
-  checkedItems,
-  onToggleChecked,
+  onToggleTaskCompleted,
   onEditTask,
 }: StandaloneTaskSectionProps): JSX.Element => (
   <>
@@ -45,9 +43,9 @@ export const StandaloneTaskSection = ({
                 {dateLabel}
               </span>
               <SidebarScheduleCheckbox
-                checked={Boolean(checkedItems[task.id])}
+                checked={Boolean(task.isCompleted)}
                 ariaLabel={`${task.title} 일정 완료`}
-                onChange={() => onToggleChecked(task.id)}
+                onChange={() => onToggleTaskCompleted?.(task.id)}
                 stopPropagation
               />
             </div>
