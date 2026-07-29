@@ -6,14 +6,12 @@ import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 type TaskDetailRowProps = {
   task: ScheduleItem;
   themeLightColor: string;
-  themeTextColor: string;
   onEdit?: () => void;
 };
 
 export const TaskDetailRow = ({
   task,
   themeLightColor,
-  themeTextColor,
   onEdit,
 }: TaskDetailRowProps) => {
   const dateLabel = formatScheduleDisplayLabel(task);
@@ -25,16 +23,13 @@ export const TaskDetailRow = ({
           className="w-2 h-8 rounded-sm"
           style={{ backgroundColor: themeLightColor }}
         />
-        <span
-          className="max-w-64 text-body-02-m truncate"
-          style={{ color: themeTextColor }}
-        >
+        <span className="max-w-64 text-body-02-m truncate text-text-strong">
           {task.title}
         </span>
       </div>
       <div className="flex justify-end items-center gap-3">
         <div className="flex justify-end items-center">
-          <span className="text-body-02-m" style={{ color: themeTextColor }}>
+          <span className="text-body-02-m text-text-teritary">
             {dateLabel}
           </span>
         </div>

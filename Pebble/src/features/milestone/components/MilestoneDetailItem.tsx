@@ -9,8 +9,6 @@ type MilestoneDetailItemProps = {
   item: MilestoneItem;
   themeMidColor: string;
   themeLightColor: string;
-  themeTextOnMidColor: string;
-  themeTextOnLightColor: string;
   isExpanded: boolean;
   onToggle: () => void;
   onEdit?: () => void;
@@ -22,8 +20,6 @@ export const MilestoneDetailItem = ({
   item,
   themeMidColor,
   themeLightColor,
-  themeTextOnMidColor,
-  themeTextOnLightColor,
   isExpanded,
   onToggle,
   onEdit,
@@ -43,19 +39,13 @@ export const MilestoneDetailItem = ({
             className="w-2 h-10 rounded-sm"
             style={{ backgroundColor: themeMidColor }}
           />
-          <span
-            className="text-title-03-sb truncate"
-            style={{ color: themeTextOnMidColor }}
-          >
+          <span className="text-title-03-sb truncate text-text-strong">
             {item.title}
           </span>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center">
-            <span
-              className="text-body-02-m"
-              style={{ color: themeTextOnMidColor }}
-            >
+            <span className="text-body-02-m text-text-teritary">
               {dateLabel}
             </span>
           </div>
@@ -90,7 +80,6 @@ export const MilestoneDetailItem = ({
                   key={task.id} 
                   task={task} 
                   themeLightColor={themeLightColor} 
-                  themeTextColor={themeTextOnLightColor}
                   onEdit={() => onEditTask?.(task.id)}
                 />
               ))}

@@ -30,7 +30,7 @@ export const TaskListItem = ({
       </div>
       <div className="inline-flex items-center justify-end gap-3 shrink-0">
         <div className="inline-flex items-center justify-end">
-          <div className="text-body-02-m text-text-quaternary whitespace-nowrap">
+          <div className="text-body-02-m text-text-teritary whitespace-nowrap">
             {dateLabel}
           </div>
         </div>

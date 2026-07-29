@@ -1,7 +1,6 @@
 import type { Category, ScheduleItem, TaskItem } from "@/types";
 import { parseScheduleDate } from "@/features/milestone/components/scheduleDateUtils";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
-import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 
 type CalendarSidebarListViewProps = {
   categories: Category[];
@@ -16,7 +15,6 @@ type DatedSidebarItem = {
   item: ScheduleItem;
   date: Date;
   barColor: string;
-  textColor: string;
 };
 
 const getDatesInRange = (startDate: Date, endDate: Date) => {
@@ -78,19 +76,11 @@ const collectSidebarItemsByDate = ({
           item: task,
           date,
           barColor,
-          textColor: "#171717",
         });
       });
   });
 
   categories.forEach((category) => {
-    const milestoneTextColor =
-      category.themeTextOnMid ??
-      getReadableCategoryTextColor(category.themeBase, category.themeMid);
-    const taskTextColor =
-      category.themeTextOnLight ??
-      getReadableCategoryTextColor(category.themeBase, category.themeLight);
-
     category.tasks?.forEach((task) => {
       getItemDates(task, currentYear)
         .filter((date) => isSameMonth(date, currentYear, currentMonth))
@@ -99,7 +89,6 @@ const collectSidebarItemsByDate = ({
             item: task,
             date,
             barColor: category.themeLight,
-            textColor: taskTextColor,
           });
         });
     });
@@ -112,7 +101,6 @@ const collectSidebarItemsByDate = ({
             item: milestone,
             date,
             barColor: category.themeMid,
-            textColor: milestoneTextColor,
           });
         });
 
@@ -124,7 +112,6 @@ const collectSidebarItemsByDate = ({
               item: task,
               date,
               barColor: category.themeLight,
-              textColor: taskTextColor,
             });
           });
       });
@@ -188,7 +175,7 @@ export const CalendarSidebarListView = ({
         <section key={group.key} className="flex w-full flex-col gap-3">
           <h2 className="text-body-01-sb text-text-primary">{group.title}</h2>
           <div className="flex w-full flex-col gap-2">
-            {group.items.map(({ item, date, barColor, textColor }) => (
+            {group.items.map(({ item, date, barColor }) => (
               <label
                 key={`${group.key}-${item.id}-${date.toISOString()}`}
                 className="flex h-12 w-full shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 shadow-shadow-s transition-colors hover:bg-fill-surface"
@@ -198,10 +185,7 @@ export const CalendarSidebarListView = ({
                     className="h-8 w-2 shrink-0 rounded"
                     style={{ backgroundColor: barColor }}
                   />
-                  <span
-                    className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m"
-                    style={{ color: textColor }}
-                  >
+                  <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
                     {item.title}
                   </span>
                 </div>

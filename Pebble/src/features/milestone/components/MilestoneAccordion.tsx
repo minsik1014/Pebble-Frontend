@@ -4,7 +4,6 @@ import ChevronUpIcon from "@/assets/icons/chevron-up.svg?react";
 import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
-import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type MilestoneAccordionProps = {
@@ -22,7 +21,6 @@ type SidebarScheduleRowProps = {
   checked: boolean;
   onToggle: () => void;
   barColor: string;
-  textColor: string;
   widthClassName: string;
 };
 
@@ -31,7 +29,6 @@ const SidebarScheduleRow = ({
   checked,
   onToggle,
   barColor,
-  textColor,
   widthClassName,
 }: SidebarScheduleRowProps) => {
   const dateLabel = formatScheduleDisplayLabel(item);
@@ -45,19 +42,13 @@ const SidebarScheduleRow = ({
           className="h-8 w-2 shrink-0 rounded"
           style={{ backgroundColor: barColor }}
         />
-        <span
-          className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m"
-          style={{ color: textColor }}
-        >
+        <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
           {item.title}
         </span>
       </div>
 
       <div className="flex shrink-0 items-center justify-end gap-3">
-        <span
-          className="whitespace-nowrap text-body-02-m"
-          style={{ color: textColor }}
-        >
+        <span className="whitespace-nowrap text-body-02-m text-text-teritary">
           {dateLabel}
         </span>
         <span className="relative inline-flex h-6 w-6 items-center justify-center">
@@ -85,12 +76,6 @@ export const MilestoneAccordion = ({
   isSelected = false,
 }: MilestoneAccordionProps) => {
   const [visible, setVisible] = useState(true);
-  const milestoneTextColor =
-    category.themeTextOnMid ??
-    getReadableCategoryTextColor(category.themeBase, category.themeMid);
-  const taskTextColor =
-    category.themeTextOnLight ??
-    getReadableCategoryTextColor(category.themeBase, category.themeLight);
 
   return (
     <section className="w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[20px] shadow-shadow-s overflow-hidden">
@@ -153,7 +138,6 @@ export const MilestoneAccordion = ({
                 checked={Boolean(checkedItems[task.id])}
                 onToggle={() => onToggleChecked(task.id)}
                 barColor={category.themeLight}
-                textColor={taskTextColor}
                 widthClassName="w-80"
               />
             ))}
@@ -165,7 +149,6 @@ export const MilestoneAccordion = ({
                   checked={Boolean(checkedItems[item.id])}
                   onToggle={() => onToggleChecked(item.id)}
                   barColor={category.themeMid}
-                  textColor={milestoneTextColor}
                   widthClassName="w-80"
                 />
                 {item.tasks?.map((task) => (
@@ -175,7 +158,6 @@ export const MilestoneAccordion = ({
                     checked={Boolean(checkedItems[task.id])}
                     onToggle={() => onToggleChecked(task.id)}
                     barColor={category.themeLight}
-                    textColor={taskTextColor}
                     widthClassName="w-[308px]"
                   />
                 ))}
