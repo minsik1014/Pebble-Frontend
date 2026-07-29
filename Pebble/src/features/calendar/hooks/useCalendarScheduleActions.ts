@@ -30,11 +30,25 @@ import {
 } from "@/features/calendar/utils/calendarStateUtils";
 
 type UseCalendarScheduleActionsParams = {
+  categories: Category[];
   setCategories: Dispatch<SetStateAction<Category[]>>;
   setStandaloneTasks: Dispatch<SetStateAction<TaskItem[]>>;
 };
 
+const getScheduleDateType = (input: CreateScheduleItemInput) => {
+  if (input.dates && input.dates.length > 0) {
+    return "MULTIPLE";
+  }
+
+  if (input.end) {
+    return "RANGE";
+  }
+
+  return "SINGLE";
+};
+
 export const useCalendarScheduleActions = ({
+  categories,
   setCategories,
   setStandaloneTasks,
 }: UseCalendarScheduleActionsParams) => {
@@ -63,7 +77,41 @@ export const useCalendarScheduleActions = ({
       milestoneId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const milestone = await updateMilestoneApi(milestoneId, input);
+      const previousMilestone =
+        categories
+          .find((category) => category.id === categoryId)
+          ?.items.find((item) => item.id === milestoneId) ?? null;
+      const nextDateType = getScheduleDateType(input);
+
+      if (
+        previousMilestone?.dateType &&
+        previousMilestone.dateType !== nextDateType
+      ) {
+        const milestones = await createMilestoneApi(categoryId, input);
+        await deleteMilestoneApi(milestoneId);
+
+        setCategories((previousCategories) =>
+          appendMilestonesToCategory(
+            removeMilestoneFromCategory(
+              previousCategories,
+              categoryId,
+              milestoneId,
+            ),
+            categoryId,
+            milestones.length > 0
+              ? milestones
+              : [createMilestoneEntity(input)],
+          ),
+        );
+
+        return;
+      }
+
+      const milestone = await updateMilestoneApi(
+        milestoneId,
+        input,
+        previousMilestone,
+      );
 
       setCategories((previousCategories) =>
         updateMilestoneInCategory(
@@ -74,7 +122,7 @@ export const useCalendarScheduleActions = ({
         ),
       );
     },
-    [setCategories],
+    [categories, setCategories],
   );
 
   const createTask = useCallback(

@@ -63,11 +63,12 @@ export async function createMilestone(
 export async function updateMilestone(
   milestoneId: string,
   input: CreateScheduleItemInput,
+  previousMilestone?: MilestoneItem | null,
 ): Promise<MilestoneItem | null> {
   const data = await apiRequest<MilestoneResponse>({
     method: "PATCH",
     url: `/milestones/${milestoneId}`,
-    data: mapScheduleInputToUpdateMilestoneRequest(input),
+    data: mapScheduleInputToUpdateMilestoneRequest(input, previousMilestone),
   });
 
   return data ? mapMilestoneResponseToMilestone(data) : null;

@@ -163,6 +163,7 @@ export const useCalendarState = ({
     setSelectedCategoryId,
   });
   const scheduleActions = useCalendarScheduleActions({
+    categories,
     setCategories,
     setStandaloneTasks,
   });

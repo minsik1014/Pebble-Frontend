@@ -62,11 +62,16 @@ export function mapScheduleInputToCreateMilestoneRequest(
 
 export function mapScheduleInputToUpdateMilestoneRequest(
   input: CreateScheduleItemInput,
+  previousMilestone?: MilestoneItem | null,
 ): UpdateMilestoneRequest {
+  const isMultipleMilestone = previousMilestone?.dateType === "MULTIPLE";
+  const isNameChanged =
+    Boolean(input.title) && input.title !== previousMilestone?.title;
+
   return {
     name: input.title,
     startDate: input.dates?.[0] ?? input.start,
     endDate: input.end ?? null,
-    editScope: input.dates && input.dates.length > 0 ? "THIS_ONLY" : undefined,
+    editScope: isMultipleMilestone && isNameChanged ? "THIS_ONLY" : undefined,
   };
 }
