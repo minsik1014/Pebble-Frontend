@@ -18,9 +18,11 @@ export type UpdateCategoryInput = Partial<Omit<Category, "id" | "items">> & {
 
 export type CreateScheduleItemInput = Omit<ScheduleEntityBase, "id"> &
   ScheduleStyleFields & {
-  id?: string;
-  tasks?: TaskItem[];
-};
+    id?: string;
+    categoryId?: string;
+    milestoneId?: string;
+    tasks?: TaskItem[];
+  };
 
 export type CalendarState = {
   categories: Category[];
@@ -58,13 +60,13 @@ export type CalendarActions = {
   createCategoryTask: (
     categoryId: string,
     input: CreateScheduleItemInput,
-  ) => TaskItem;
+  ) => Promise<TaskItem>;
   updateCategoryTask: (
     categoryId: string,
     taskId: string,
     input: CreateScheduleItemInput,
-  ) => void;
-  deleteCategoryTask: (categoryId: string, taskId: string) => void;
+  ) => Promise<void>;
+  deleteCategoryTask: (categoryId: string, taskId: string) => Promise<void>;
   createStandaloneTask: (input: CreateScheduleItemInput) => Promise<TaskItem>;
   updateStandaloneTask: (
     taskId: string,

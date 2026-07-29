@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { CalendarLayoutContext } from "@/features/calendar/context/calendarLayoutContext";
 import type { CalendarLayoutContextValue } from "@/features/calendar/context/calendarLayoutContext.types";
 import { useCalendarState } from "@/features/calendar/hooks/useCalendarState";
-import { MOCK_CALENDAR_VIEW } from "@/features/calendar/mocks/calendarMockData";
 import type { CreateCategoryInput } from "@/features/calendar/types";
 import type { TaskFormSubmitInput } from "@/features/task/components/TaskFormModal";
 
@@ -20,10 +19,10 @@ export const CalendarLayoutProvider = ({
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [currentYear, setCurrentYear] = useState<number>(
-    MOCK_CALENDAR_VIEW.year,
+    () => new Date().getFullYear(),
   );
   const [currentMonth, setCurrentMonth] = useState<number>(
-    MOCK_CALENDAR_VIEW.month,
+    () => new Date().getMonth() + 1,
   );
   const {
     categories,
@@ -48,7 +47,7 @@ export const CalendarLayoutProvider = ({
     isCalendarLoading,
     calendarErrorMessage,
     reloadCalendarData,
-  } = useCalendarState();
+  } = useCalendarState({ currentYear, currentMonth });
   const selectedCategoryId = searchParams.get("category");
 
   const handleToggleSidebar = () => {
@@ -86,7 +85,7 @@ export const CalendarLayoutProvider = ({
     }
 
     if (categoryId) {
-      createCategoryTask(categoryId, task);
+      await createCategoryTask(categoryId, task);
       return;
     }
 

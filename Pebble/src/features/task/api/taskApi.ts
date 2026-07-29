@@ -18,31 +18,56 @@ export async function getStandaloneTasks(baseDate?: string): Promise<TaskItem[]>
   return data?.tasks.map(mapTaskResponseToTask) ?? [];
 }
 
-export async function getMilestoneTasks(
-  milestoneId: string,
-): Promise<TaskItem[]> {
-  const data = await apiRequest<GetTasksResponse>({
-    method: "GET",
-    url: `/milestones/${milestoneId}/tasks`,
-  });
+type TaskMutationResponse =
+  | TaskResponse
+  | {
+      task?: TaskResponse;
+      tasks?: TaskResponse[];
+    };
 
-  return data?.tasks.map(mapTaskResponseToTask) ?? [];
-}
+const mapTaskMutationResponse = (data: TaskMutationResponse | null) => {
+  if (!data) {
+    return null;
+  }
+
+  if ("task" in data && data.task) {
+    return mapTaskResponseToTask(data.task);
+  }
+
+  if ("tasks" in data && data.tasks?.[0]) {
+    const dates = data.tasks
+      .map((task) => task.startDate)
+      .filter((date): date is string => Boolean(date));
+
+    return mapTaskResponseToTask({
+      ...data.tasks[0],
+      dates,
+    });
+  }
+
+  if ("id" in data) {
+    return mapTaskResponseToTask(data);
+  }
+
+  return null;
+};
 
 export async function createTask({
+  categoryId,
   milestoneId,
   input,
 }: {
+  categoryId?: string | null;
   milestoneId?: string | null;
   input: CreateScheduleItemInput;
 }): Promise<TaskItem | null> {
-  const data = await apiRequest<TaskResponse>({
+  const data = await apiRequest<TaskMutationResponse>({
     method: "POST",
     url: "/tasks",
-    data: mapScheduleInputToCreateTaskRequest({ milestoneId, input }),
+    data: mapScheduleInputToCreateTaskRequest({ categoryId, milestoneId, input }),
   });
 
-  return data ? mapTaskResponseToTask(data) : null;
+  return mapTaskMutationResponse(data);
 }
 
 export async function updateTask({
@@ -54,13 +79,13 @@ export async function updateTask({
   input: CreateScheduleItemInput;
   isChildTask: boolean;
 }): Promise<TaskItem | null> {
-  const data = await apiRequest<TaskResponse>({
+  const data = await apiRequest<TaskMutationResponse>({
     method: "PATCH",
     url: `/tasks/${taskId}`,
     data: mapScheduleInputToUpdateTaskRequest({ input, isChildTask }),
   });
 
-  return data ? mapTaskResponseToTask(data) : null;
+  return mapTaskMutationResponse(data);
 }
 
 export async function deleteTask({

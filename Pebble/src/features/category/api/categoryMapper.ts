@@ -47,6 +47,8 @@ export function mapCreateCategoryInputToRequest(
     name: input.title,
     color: input.accent,
     imageUrl: mapImageUrlToRequest(input.imageUrl),
+    isPublic: input.isPublic,
+    isCompleted: input.isCompleted,
   };
 }
 

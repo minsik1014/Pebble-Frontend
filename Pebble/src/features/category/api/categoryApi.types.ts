@@ -21,6 +21,8 @@ export type CreateCategoryRequest = {
   name: string;
   color: string;
   imageUrl?: string | null;
+  isPublic?: boolean;
+  isCompleted?: boolean;
 };
 
 export type UpdateCategoryRequest = {
