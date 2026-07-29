@@ -5,17 +5,47 @@ type UploadImageResponse = {
   imageUrl: string;
 };
 
-function dataUrlToFile(dataUrl: string, fileName: string) {
-  const [meta, base64] = dataUrl.split(",");
-  const mimeType = meta.match(/data:(.*);base64/)?.[1] ?? "image/png";
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
+const MAX_UPLOAD_IMAGE_SIZE = 1024;
+const UPLOAD_IMAGE_QUALITY = 0.9;
 
-  for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index);
+const loadImage = (imageUrl: string) =>
+  new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+
+    image.addEventListener("load", () => resolve(image));
+    image.addEventListener("error", reject);
+    image.src = imageUrl;
+  });
+
+const canvasToBlob = (canvas: HTMLCanvasElement) =>
+  new Promise<Blob | null>((resolve) => {
+    canvas.toBlob(resolve, "image/jpeg", UPLOAD_IMAGE_QUALITY);
+  });
+
+async function dataUrlToUploadFile(dataUrl: string, fileName: string) {
+  const image = await loadImage(dataUrl);
+  const scale = Math.min(
+    1,
+    MAX_UPLOAD_IMAGE_SIZE / Math.max(image.width, image.height),
+  );
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("이미지 업로드 파일을 생성하지 못했습니다.");
   }
 
-  return new File([bytes], fileName, { type: mimeType });
+  canvas.width = Math.max(1, Math.round(image.width * scale));
+  canvas.height = Math.max(1, Math.round(image.height * scale));
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+  const blob = await canvasToBlob(canvas);
+
+  if (!blob) {
+    throw new Error("이미지 업로드 파일을 생성하지 못했습니다.");
+  }
+
+  return new File([blob], fileName, { type: "image/jpeg" });
 }
 
 export async function uploadImageFile(file: File): Promise<string | null> {
@@ -32,5 +62,7 @@ export async function uploadImageFile(file: File): Promise<string | null> {
 }
 
 export async function uploadImageDataUrl(dataUrl: string) {
-  return uploadImageFile(dataUrlToFile(dataUrl, "category-image.png"));
+  return uploadImageFile(
+    await dataUrlToUploadFile(dataUrl, "category-image.jpg"),
+  );
 }
