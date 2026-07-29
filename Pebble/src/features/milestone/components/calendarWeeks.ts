@@ -136,6 +136,49 @@ const createCalendarEvent = (
   };
 };
 
+const getVisibleDayRangeInWeek = (
+  scheduleItem: DatedScheduleItem,
+  weekStartDate: Date,
+  weekEndDate: Date,
+) => {
+  const eventStartDate =
+    scheduleItem.startDate.getTime() > weekStartDate.getTime()
+      ? scheduleItem.startDate
+      : weekStartDate;
+  const eventEndDate =
+    scheduleItem.endDate.getTime() < weekEndDate.getTime()
+      ? scheduleItem.endDate
+      : weekEndDate;
+
+  return {
+    startColumn: eventStartDate.getDay(),
+    endColumn: eventEndDate.getDay(),
+  };
+};
+
+const rangesOverlap = (
+  firstRange: { startColumn: number; endColumn: number },
+  secondRange: { startColumn: number; endColumn: number },
+) =>
+  firstRange.startColumn <= secondRange.endColumn &&
+  secondRange.startColumn <= firstRange.endColumn;
+
+const getAvailableLaneIndex = (
+  occupiedLanes: { startColumn: number; endColumn: number }[][],
+  range: { startColumn: number; endColumn: number },
+) => {
+  const availableLaneIndex = occupiedLanes.findIndex((lane) =>
+    lane.every((occupiedRange) => !rangesOverlap(occupiedRange, range)),
+  );
+
+  if (availableLaneIndex !== -1) {
+    return availableLaneIndex;
+  }
+
+  occupiedLanes.push([]);
+  return occupiedLanes.length - 1;
+};
+
 export const generateWeeks = (
   year: number,
   month: number,
@@ -188,15 +231,43 @@ export const generateWeeks = (
       month - 1 + lastVisibleDay.monthOffset,
       lastVisibleDay.day,
     );
-    const events = scheduleItems
+    const occupiedLanes: { startColumn: number; endColumn: number }[][] = [];
+    const visibleScheduleItems = scheduleItems
       .filter(
         (scheduleItem) =>
           scheduleItem.startDate.getTime() <= weekEndDate.getTime() &&
           scheduleItem.endDate.getTime() >= weekStartDate.getTime(),
       )
-      .map((scheduleItem, laneIndex) =>
-        createCalendarEvent(scheduleItem, weekStartDate, weekEndDate, laneIndex),
-      )
+      .sort((a, b) => {
+        const aRange = getVisibleDayRangeInWeek(a, weekStartDate, weekEndDate);
+        const bRange = getVisibleDayRangeInWeek(b, weekStartDate, weekEndDate);
+        const startColumnDiff = aRange.startColumn - bRange.startColumn;
+
+        if (startColumnDiff !== 0) {
+          return startColumnDiff;
+        }
+
+        return bRange.endColumn - bRange.startColumn - (aRange.endColumn - aRange.startColumn);
+      });
+
+    const events = visibleScheduleItems
+      .map((scheduleItem) => {
+        const range = getVisibleDayRangeInWeek(
+          scheduleItem,
+          weekStartDate,
+          weekEndDate,
+        );
+        const laneIndex = getAvailableLaneIndex(occupiedLanes, range);
+
+        occupiedLanes[laneIndex].push(range);
+
+        return createCalendarEvent(
+          scheduleItem,
+          weekStartDate,
+          weekEndDate,
+          laneIndex,
+        );
+      })
       .filter((event): event is CalendarEvent => Boolean(event));
 
     weeks.push({ days, events });

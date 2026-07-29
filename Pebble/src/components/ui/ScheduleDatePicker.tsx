@@ -1,4 +1,5 @@
 import { type DateType, type DayStatus } from "@/hooks/useScheduleDatePicker";
+import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 
 type ScheduleDatePickerVariant = "milestone" | "task";
 
@@ -41,7 +42,7 @@ export const ScheduleDatePicker = ({
   onDateClick,
   getDayStatus,
   themeBaseColor = "#171717",
-  themeMidColor = "#9CE7FF",
+  themeMidColor = "#171717",
   themeLightColor = "rgba(23, 23, 23, 0.05)",
 }: ScheduleDatePickerProps) => {
   const isTaskVariant = variant === "task";
@@ -49,8 +50,10 @@ export const ScheduleDatePicker = ({
   const wrapperHeightClass = isTaskVariant ? "h-10" : "h-12";
   const getSelectedColor = (type: DateType) =>
     type === "다중" ? themeMidColor : themeBaseColor;
-  const getSelectedTextClass = (type: DateType) =>
-    type === "다중" ? "text-text-strong" : "text-fill-inverse";
+  const getSelectedTextColor = (type: DateType) =>
+    type === "다중"
+      ? getReadableCategoryTextColor(themeBaseColor, getSelectedColor(type))
+      : "#ffffff";
 
   const getTypeButtonClass = (type: DateType) => {
     const baseClass = isTaskVariant
@@ -70,7 +73,7 @@ export const ScheduleDatePicker = ({
     const baseClass = `${daySizeClass} rounded-[12px] flex items-center justify-center text-[16px] font-medium transition-colors z-10 relative`;
 
     if (status === "selected" || status === "range-start" || status === "range-end") {
-      return `${baseClass} ${getSelectedTextClass(dateType)}`;
+      return baseClass;
     }
 
     if (status === "today") {
@@ -115,14 +118,19 @@ export const ScheduleDatePicker = ({
                 isTaskVariant
                   ? `text-[16px] font-medium tracking-[-0.16px] leading-[1.5] ${
                       dateType === type
-                        ? getSelectedTextClass(type)
+                        ? ""
                         : "text-text-strong"
                     }`
                   : `text-[16px] font-semibold ${
                       dateType === type
-                        ? getSelectedTextClass(type)
+                        ? ""
                         : "text-text-strong"
                     }`
+              }
+              style={
+                dateType === type
+                  ? { color: getSelectedTextColor(type) }
+                  : undefined
               }
             >
               {type}
@@ -132,14 +140,19 @@ export const ScheduleDatePicker = ({
                 isTaskVariant
                   ? `text-[14px] tracking-[-0.14px] leading-[1.5] ${
                       dateType === type
-                        ? getSelectedTextClass(type)
+                        ? ""
                         : "text-text-secondary"
                     }`
                   : `text-[13px] ${
                       dateType === type
-                        ? getSelectedTextClass(type)
+                        ? ""
                         : "text-text-secondary"
                     }`
+              }
+              style={
+                dateType === type
+                  ? { color: getSelectedTextColor(type) }
+                  : undefined
               }
             >
               {DATE_TYPE_DESCRIPTIONS[type]}
@@ -213,7 +226,10 @@ export const ScheduleDatePicker = ({
                     status === "selected" ||
                     status === "range-start" ||
                     status === "range-end"
-                      ? { backgroundColor: getSelectedColor(dateType) }
+                      ? {
+                          backgroundColor: getSelectedColor(dateType),
+                          color: getSelectedTextColor(dateType),
+                        }
                       : undefined
                   }
                 >
