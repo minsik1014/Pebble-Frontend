@@ -20,7 +20,7 @@ function dataUrlToFile(dataUrl: string, fileName: string) {
 
 export async function uploadImageFile(file: File): Promise<string | null> {
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("file", file);
 
   const response = await apiClient.request<ApiResponse<UploadImageResponse>>({
     method: "POST",

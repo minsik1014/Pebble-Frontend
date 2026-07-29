@@ -18,7 +18,8 @@ import SocialSolidIcon from '@/assets/icons/social-solid.svg?react';
 
 import { AlarmPopover } from '@/features/alarm/components/AlarmPopover';
 import { useAlarms } from '@/features/alarm/hooks/useAlarm';
-import { clearMockAuthenticated } from '@/features/auth/utils/mockAuth';
+import { logout } from '@/features/auth/api/authApi';
+import { clearAuthTokens } from '@/services/api';
 
 type GlobalNavigationBarProps = {
   variant?: 'embedded' | 'collapsed';
@@ -76,9 +77,14 @@ export const GlobalNavigationBar = ({
     openAlarmPopover();
   };
 
-  const handleLogout = () => {
-    clearMockAuthenticated();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      // 서버 요청이 실패해도 기기에 남은 토큰은 제거해 로그아웃을 보장합니다.
+      clearAuthTokens();
+      navigate('/login');
+    }
   };
 
   useEffect(() => {

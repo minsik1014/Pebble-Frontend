@@ -16,6 +16,7 @@ interface LoginFormProps {
     password?: string;
   };
   shakeTarget: { email?: boolean; password?: boolean };
+  isSubmitting: boolean;
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
   onFieldBlur: (field: "email" | "password") => void; 
@@ -31,6 +32,7 @@ export const LoginForm = ({
   errorMessage, 
   errors, 
   shakeTarget,
+  isSubmitting,
   onEmailChange,
   onPasswordChange,
   onFieldBlur, 
@@ -109,9 +111,10 @@ export const LoginForm = ({
 
             <button
               type="submit"
-              className="h-[44px] w-full rounded-[12px] bg-[#171717] px-[20px] text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-white transition-colors hover:bg-[#262626]"
+              disabled={isSubmitting}
+              className="h-[44px] w-full rounded-[12px] bg-[#171717] px-[20px] text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-white transition-colors hover:bg-[#262626] disabled:cursor-not-allowed disabled:bg-[#737373]"
             >
-              로그인
+              {isSubmitting ? '로그인 중...' : '로그인'}
             </button>
           </form>
 
