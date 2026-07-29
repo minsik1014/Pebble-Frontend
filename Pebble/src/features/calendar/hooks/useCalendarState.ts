@@ -30,13 +30,15 @@ const attachTasksToCategories = (
   categories: Category[],
   tasks: TaskItem[],
 ) => {
-  const categoryMap = new Map(
+  const categoryMap = new Map<string, Category>(
     categories.map((category) => [
       category.id,
       {
         ...category,
-        items: category.items.map((item) => ({ ...item, tasks: [] })),
-        tasks: [],
+        items: category.items.map(
+          (item): MilestoneItem => ({ ...item, tasks: item.tasks ?? [] }),
+        ),
+        tasks: category.tasks ?? [],
       },
     ]),
   );

@@ -44,7 +44,11 @@ export async function getMilestones(categoryId: string): Promise<MilestoneItem[]
     url: `/categories/${categoryId}/milestones`,
   });
 
-  return data?.milestones.map(mapMilestoneResponseToMilestone) ?? [];
+  return (
+    data?.milestones.map((milestone) =>
+      mapMilestoneResponseToMilestone(milestone),
+    ) ?? []
+  );
 }
 
 export async function createMilestone(
