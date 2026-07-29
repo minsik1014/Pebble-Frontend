@@ -4,6 +4,7 @@ import ChevronUpIcon from "@/assets/icons/chevron-up.svg?react";
 import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
+import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type MilestoneAccordionProps = {
@@ -51,16 +52,11 @@ const SidebarScheduleRow = ({
         <span className="whitespace-nowrap text-body-02-m text-text-teritary">
           {dateLabel}
         </span>
-        <span className="relative inline-flex h-6 w-6 items-center justify-center">
-          <input
-            type="checkbox"
-            aria-label={`${item.title} 일정 완료`}
-            checked={checked}
-            onChange={onToggle}
-            className="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
-          />
-          <span className="relative h-6 w-6 rounded border border-border-default bg-fill-inverse peer-checked:border-fill-primary peer-checked:bg-fill-primary" />
-        </span>
+        <SidebarScheduleCheckbox
+          checked={checked}
+          ariaLabel={`${item.title} 일정 완료`}
+          onChange={onToggle}
+        />
       </div>
     </label>
   );

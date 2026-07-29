@@ -1,4 +1,5 @@
 import { type ScheduleItem } from "@/types";
+import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type TaskListItemProps = {
@@ -34,16 +35,11 @@ export const TaskListItem = ({
             {dateLabel}
           </div>
         </div>
-        <span className="relative inline-flex h-6 w-6 items-center justify-center">
-          <input
-            type="checkbox"
-            aria-label={`${item.title} 일정 완료`}
-            checked={checked}
-            onChange={onToggle}
-            className="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
-          />
-          <span className="relative w-6 h-6 rounded border border-border-default bg-fill-inverse peer-checked:border-fill-primary peer-checked:bg-fill-primary" />
-        </span>
+        <SidebarScheduleCheckbox
+          checked={checked}
+          ariaLabel={`${item.title} 일정 완료`}
+          onChange={onToggle}
+        />
       </div>
       <span className="sr-only">{dateLabel}</span>
     </label>

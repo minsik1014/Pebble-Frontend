@@ -1,4 +1,5 @@
 import type { Category, ScheduleItem, TaskItem } from "@/types";
+import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { parseScheduleDate } from "@/features/milestone/components/scheduleDateUtils";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
@@ -194,16 +195,11 @@ export const CalendarSidebarListView = ({
                   <span className="whitespace-nowrap text-body-02-m text-text-teritary">
                     {formatScheduleDisplayLabel(item)}
                   </span>
-                  <span className="relative inline-flex h-6 w-6 items-center justify-center">
-                    <input
-                      type="checkbox"
-                      aria-label={`${item.title} 일정 완료`}
-                      checked={Boolean(checkedItems[item.id])}
-                      onChange={() => onToggleChecked(item.id)}
-                      className="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                    />
-                    <span className="relative h-6 w-6 rounded border border-border-default bg-fill-inverse peer-checked:border-fill-primary peer-checked:bg-fill-primary" />
-                  </span>
+                  <SidebarScheduleCheckbox
+                    checked={Boolean(checkedItems[item.id])}
+                    ariaLabel={`${item.title} 일정 완료`}
+                    onChange={() => onToggleChecked(item.id)}
+                  />
                 </div>
               </label>
             ))}
