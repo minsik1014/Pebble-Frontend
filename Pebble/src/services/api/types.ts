@@ -18,6 +18,8 @@ export type ApiResponseBody<TData = unknown> =
 
 export type ApiRequestConfig = {
   skipAuth?: boolean;
+  skipAuthRefresh?: boolean;
+  _retry?: boolean;
 };
 
 export class ApiRequestError extends Error {

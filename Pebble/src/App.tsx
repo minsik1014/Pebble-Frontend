@@ -5,7 +5,7 @@ import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { ProfileSetupPage } from '@/features/auth/pages/ProfileSetupPage';
 import { SignUpCompletePage } from '@/features/auth/pages/SignUpCompletePage';
 import { SignUpPage } from '@/features/auth/pages/SignUpPage';
-import { isMockAuthenticated } from '@/features/auth/utils/mockAuth';
+import { SocialOAuthCallbackPage } from '@/features/auth/pages/SocialOAuthCallbackPage';
 import { ReportLayout } from '@/features/report/ReportLayout';
 import { FIRST_STEP_PATH } from '@/features/report/constants/reportSteps';
 import { BusiestCategoryStep } from '@/features/report/steps/BusiestCategoryStep';
@@ -19,15 +19,20 @@ import FriendsPage from '@/pages/freinds/FriendsPage';
 import MyCategoryDetailPage from '@/pages/mypage/MyCategoryDetailPage';
 import MyPage from '@/pages/mypage/MyPage';
 import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
+import { getAccessToken } from '@/services/api';
 
 import SettingsPage from './pages/settings/SettingsPage';
 
 function RootRoute() {
+  if (!getAccessToken()) {
+    return <Navigate to="/landing" replace />;
+  }
+
   return <CalendarMainPage />;
 }
 
 function LandingRoute() {
-  if (isMockAuthenticated()) {
+  if (getAccessToken()) {
     return <Navigate to="/" replace />;
   }
 
@@ -35,6 +40,10 @@ function LandingRoute() {
 }
 
 function ProtectedLayoutRoute() {
+  if (!getAccessToken()) {
+    return <Navigate to="/login" replace />;
+  }
+
   return <MainLayout />;
 }
 
@@ -82,6 +91,10 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/profile-setup" element={<ProfileSetupPage />} />
           <Route path="/signup-complete" element={<SignUpCompletePage />} />
+          <Route
+            path="/oauth/callback/:provider"
+            element={<SocialOAuthCallbackPage />}
+          />
         </Routes>
       </div>
     </BrowserRouter>

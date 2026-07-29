@@ -31,6 +31,8 @@ interface ForgotPasswordFormProps {
   errors: { email?: string; newPassword?: string; passwordConfirm?: string };
   shakeTarget: { email?: boolean; newPassword?: boolean; passwordConfirm?: boolean };
   isFormValid: boolean;
+  isSubmitting: boolean;
+  errorMessage: string | null;
   onChange: (field: string, value: string) => void;
   onFieldBlur: (field: "email" | "newPassword" | "passwordConfirm") => void;
   onTogglePw: () => void;
@@ -49,6 +51,8 @@ export const ForgotPasswordForm = ({
   errors,
   shakeTarget,
   isFormValid,
+  isSubmitting,
+  errorMessage,
   onChange,
   onFieldBlur,
   onTogglePw,
@@ -199,16 +203,23 @@ export const ForgotPasswordForm = ({
               </>
             )}
 
+            {errorMessage && (
+              <AuthErrorMessage className="mb-[12px]">
+                {errorMessage}
+              </AuthErrorMessage>
+            )}
+
             {/* 하단 공통 제출 버튼 */}
             <button
               type="submit"
-              disabled={step !== 2 && !isFormValid}
+              disabled={isSubmitting || (step !== 2 && !isFormValid)}
               className={`w-full auth-body text-white transition-colors ${step === 2 ? "h-[56px] rounded-[12px]" : "h-[52px] rounded-[12px]"}
                 ${(step === 2 || isFormValid) ? "bg-[#111111] hover:bg-[#222222] cursor-pointer" : "bg-[#737373] cursor-not-allowed"}`}
             >
-              {step === 1 && "임시 비밀번호 발급받기"}
-              {step === 2 && "로그인하러 가기"}
-              {step === 3 && "비밀번호 변경"}
+              {isSubmitting && "처리 중..."}
+              {!isSubmitting && step === 1 && "임시 비밀번호 발급받기"}
+              {!isSubmitting && step === 2 && "로그인하러 가기"}
+              {!isSubmitting && step === 3 && "비밀번호 변경"}
             </button>
           </form>
 

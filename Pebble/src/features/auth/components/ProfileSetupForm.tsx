@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { AuthErrorMessage } from "./AuthErrorMessage";
 
 interface ProfileOption {
   id: string;
@@ -13,6 +14,8 @@ interface ProfileSetupFormProps {
   nickname: string;
   introduction: string;
   isFormValid: boolean;
+  isSubmitting: boolean;
+  errorMessage: string | null;
   onSelectProfile: (profileId: string) => void;
   onUploadProfile: (file: File) => void;
   onNicknameChange: (value: string) => void;
@@ -28,6 +31,8 @@ export const ProfileSetupForm = ({
   nickname,
   introduction,
   isFormValid,
+  isSubmitting,
+  errorMessage,
   onSelectProfile,
   onUploadProfile,
   onNicknameChange,
@@ -144,13 +149,19 @@ export const ProfileSetupForm = ({
 
       <button
         type="submit"
-        disabled={!isFormValid}
+        disabled={!isFormValid || isSubmitting}
         className={`mt-[40px] w-full h-[52px] rounded-[8px] text-[16px] text-white transition-colors [@media(max-height:850px)]:mt-[20px] ${
-          isFormValid ? "bg-[#171717] hover:bg-[#262626] cursor-pointer" : "bg-[#858585] cursor-not-allowed"
+          isFormValid && !isSubmitting ? "bg-[#171717] hover:bg-[#262626] cursor-pointer" : "bg-[#858585] cursor-not-allowed"
         }`}
       >
-        시작하기
+        {isSubmitting ? "저장 중..." : "시작하기"}
       </button>
+
+      {errorMessage && (
+        <AuthErrorMessage className="mt-[12px] justify-center">
+          {errorMessage}
+        </AuthErrorMessage>
+      )}
 
       <p className="mt-[24px] text-center text-[13px] leading-[20px] text-[#A3A3A3] [@media(max-height:850px)]:mt-[12px]">
         프로필 이미지와 닉네임, 소개는 마이페이지에서 언제든 수정할 수 있어요

@@ -1,7 +1,8 @@
 // @/features/auth/containers/SignUpContainer.tsx
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SignUpForm } from "../components/SignUpForm";
+import type { SignUpLocationState } from "../types/authNavigation";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]{3,}\.[^\s@]{2,}$/;
 // 새 비밀번호 화면과 동일하게 특수문자는 허용하고 영문·숫자 포함 여부만 검사합니다.
@@ -9,16 +10,20 @@ const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
 export const SignUpContainer = (): JSX.Element => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state as SignUpLocationState | null;
   const [form, setForm] = useState({
-    email: "",
-    password: "",
-    passwordConfirm: "",
+    email: locationState?.draft?.email ?? "",
+    password: locationState?.draft?.password ?? "",
+    passwordConfirm: locationState?.draft?.password ?? "",
     agreeTerms: false,
   });
 
   const [showPw, setShowPw] = useState(false);
   const [showPwConfirm, setShowPwConfirm] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; passwordConfirm?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; passwordConfirm?: string }>({
+    email: locationState?.serverError,
+  });
   const [isFormValid, setIsFormValid] = useState(false);
   
   // 개별 컴포넌트의 흔들림 애니메이션 상태 관리
@@ -60,9 +65,6 @@ export const SignUpContainer = (): JSX.Element => {
       if (!EMAIL_REGEX.test(form.email)) {
         setErrors((prev) => ({ ...prev, email: "올바른 이메일 형식이 아니에요" }));
         triggerShake("email");
-      } else if (form.email === "example123@sample.com") {
-        setErrors((prev) => ({ ...prev, email: "이미 가입된 이메일이에요" }));
-        triggerShake("email");
       }
     }
 
@@ -84,12 +86,6 @@ export const SignUpContainer = (): JSX.Element => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (form.email === "example123@sample.com") {
-      setErrors((prev) => ({ ...prev, email: "이미 가입된 이메일이에요" }));
-      triggerShake("email");
-      return;
-    }
-
     if (!PASSWORD_REGEX.test(form.password)) {
       setErrors((prev) => ({ ...prev, password: "8자 이상, 영문·숫자 포함" }));
       triggerShake("password");
@@ -102,8 +98,16 @@ export const SignUpContainer = (): JSX.Element => {
       return;
     }
 
-    console.log("다음 단계 진입 성공 데이터:", form);
-    navigate("/profile-setup");
+    // 닉네임까지 입력한 다음 화면에서 Swagger의 회원가입 API를 한 번에 호출합니다.
+    navigate("/profile-setup", {
+      state: {
+        mode: "email",
+        signUpDraft: {
+          email: form.email.trim(),
+          password: form.password,
+        },
+      },
+    });
   };
 
   return (

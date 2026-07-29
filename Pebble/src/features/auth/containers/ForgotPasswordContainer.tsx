@@ -1,7 +1,13 @@
 // @/features/auth/containers/ForgotPasswordContainer.tsx
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  changePassword,
+  requestTemporaryPassword,
+} from "@/features/auth/api/authApi";
+import { ApiRequestError, setAuthTokens } from "@/services/api";
 import { ForgotPasswordForm } from "../components/ForgotPasswordForm";
+import type { PasswordChangeLocationState } from "../types/authNavigation";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]{3,}\.[^\s@]{2,}$/;
 // 특수문자는 허용하고, 8자 이상이면서 영문과 숫자를 모두 포함하는지만 확인합니다.
@@ -9,9 +15,14 @@ const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
 export const ForgotPasswordContainer = (): JSX.Element => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const passwordChangeState =
+    location.state as PasswordChangeLocationState | null;
+  const initialStep =
+    passwordChangeState?.initialStep === 3 ? 3 : 1;
   
   // 흐름 제어 상태 (1: 이메일 입력, 2: 발송 완료, 3: 패스워드 재설정)
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(initialStep);
   
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -23,6 +34,8 @@ export const ForgotPasswordContainer = (): JSX.Element => {
   const [errors, setErrors] = useState<{ email?: string; newPassword?: string; passwordConfirm?: string }>({});
   const [shakeTarget, setShakeTarget] = useState<{ email?: boolean; newPassword?: boolean; passwordConfirm?: boolean }>({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // 셰이크 모션 트리거
   const triggerShake = (field: "email" | "newPassword" | "passwordConfirm") => {
@@ -42,6 +55,8 @@ export const ForgotPasswordContainer = (): JSX.Element => {
   }, [email, newPassword, passwordConfirm, errors, step]);
 
   const handleChange = (field: string, value: string) => {
+    setErrorMessage(null);
+
     if (field === "email") {
       setEmail(value);
       if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
@@ -80,8 +95,9 @@ export const ForgotPasswordContainer = (): JSX.Element => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     if (step === 1) {
       if (!email.trim() || !EMAIL_REGEX.test(email)) {
@@ -89,13 +105,26 @@ export const ForgotPasswordContainer = (): JSX.Element => {
         triggerShake("email");
         return;
       }
-      // 이메일 발송 완료 단계로 전환
-      setStep(2);
+      setIsSubmitting(true);
+      setErrorMessage(null);
+
+      try {
+        await requestTemporaryPassword(email.trim());
+        setStep(2);
+      } catch (error) {
+        setErrorMessage(
+          error instanceof ApiRequestError
+            ? error.message
+            : "임시 비밀번호를 발급하지 못했어요. 잠시 후 다시 시도해 주세요.",
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
     } 
     
     else if (step === 2) {
-      // '로그인하러 가기' 버튼 클릭 시 3단계(새 비밀번호 변경) 화면으로 안내
-      setStep(3);
+      // 발급받은 임시 비밀번호로 로그인해야 서버가 변경 권한을 부여합니다.
+      navigate("/login");
     } 
     
     else if (step === 3) {
@@ -111,9 +140,30 @@ export const ForgotPasswordContainer = (): JSX.Element => {
         return;
       }
 
-      console.log("비밀번호 변경 완료 서버 전송:", { email, newPassword });
-      // 변경 성공 후 로그인 메인 페이지로 이동
-      navigate("/login");
+      if (!passwordChangeState?.currentPassword) {
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      setIsSubmitting(true);
+      setErrorMessage(null);
+
+      try {
+        const tokens = await changePassword(
+          passwordChangeState.currentPassword,
+          newPassword,
+        );
+        setAuthTokens(tokens.accessToken, tokens.refreshToken);
+        navigate("/", { replace: true });
+      } catch (error) {
+        setErrorMessage(
+          error instanceof ApiRequestError
+            ? error.message
+            : "비밀번호를 변경하지 못했어요. 잠시 후 다시 시도해 주세요.",
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -123,7 +173,7 @@ export const ForgotPasswordContainer = (): JSX.Element => {
     } else if (step === 2) {
       setStep(1);
     } else if (step === 3) {
-      setStep(2);
+      navigate("/login");
     }
   };
 
@@ -138,6 +188,8 @@ export const ForgotPasswordContainer = (): JSX.Element => {
       errors={errors}
       shakeTarget={shakeTarget}
       isFormValid={isFormValid}
+      isSubmitting={isSubmitting}
+      errorMessage={errorMessage}
       onChange={handleChange}
       onFieldBlur={handleFieldBlur}
       onTogglePw={() => setShowPw((p) => !p)}

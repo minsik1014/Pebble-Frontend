@@ -1,20 +1,21 @@
 // src/features/auth/containers/LoginContainer.tsx
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { login } from '@/features/auth/api/authApi';
+import { startSocialLogin } from '@/features/auth/utils/socialOAuth';
+import { ApiRequestError, setAuthTokens } from '@/services/api';
 
 import { LoginForm } from '../components/LoginForm';
 
-// 실제 로그인 API 연결 전 화면 흐름 확인에 사용하는 임시 계정입니다.
-const MOCK_LOGIN_ACCOUNT = {
-  email: 'example123@sample.com',
-  password: 'abcd1234!',
-};
-
 export const LoginContainer = (): JSX.Element => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 개별 필드 에러 및 흔들림(shake) 상태 관리
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
@@ -84,8 +85,10 @@ export const LoginContainer = (): JSX.Element => {
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
   // 로그인 시도(제출) 시점에 빈 값 필터링 및 셰이크 처리
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (isSubmitting) return;
 
     let hasError = false;
     const nextErrors: { email?: string; password?: string } = {};
@@ -111,23 +114,59 @@ export const LoginContainer = (): JSX.Element => {
       return;
     }
 
-    // TODO: 실제 로그인/API 연동 전까지 랜딩에서 메인 캘린더로 진입하는 흐름을 임시 비활성화합니다.
-    if (
-      email === MOCK_LOGIN_ACCOUNT.email &&
-      password === MOCK_LOGIN_ACCOUNT.password
-    ) {
-      setErrors({});
-      setErrorMessage('현재 로그인 진입은 임시로 비활성화되어 있어요.');
-      return;
-    }
+    setIsSubmitting(true);
 
-    setErrorMessage(
-      '로그인하지 못했어요.\n이메일 또는 비밀번호를 다시 확인해 주세요.',
-    );
+    try {
+      const response = await login({
+        email: email.trim(),
+        password,
+      });
+
+      // 발급받은 토큰은 공통 API 클라이언트가 이후 요청에 자동으로 사용합니다.
+      setAuthTokens(response.accessToken, response.refreshToken);
+      setErrors({});
+      setErrorMessage(null);
+
+      if (response.mustChangePassword) {
+        navigate('/forgot-password', {
+          replace: true,
+          state: {
+            initialStep: 3,
+            currentPassword: password,
+          },
+        });
+        return;
+      }
+
+      navigate('/', { replace: true });
+    } catch (error) {
+      if (
+        error instanceof ApiRequestError &&
+        (error.status === 401 || error.code === 'AUTH_INVALID_CREDENTIAL')
+      ) {
+        setErrorMessage(
+          '로그인하지 못했어요.\n이메일 또는 비밀번호를 다시 확인해 주세요.',
+        );
+        return;
+      }
+
+      setErrorMessage(
+        '로그인하지 못했어요.\n잠시 후 다시 시도해 주세요.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSocialLogin = (provider: 'google' | 'naver') => {
-    console.log(`${provider} 로그인 진행`);
+    try {
+      setErrorMessage(null);
+      startSocialLogin(provider);
+    } catch {
+      setErrorMessage(
+        '소셜 로그인을 시작하지 못했어요.\nOAuth 설정을 확인해 주세요.',
+      );
+    }
   };
 
   return (
@@ -138,6 +177,7 @@ export const LoginContainer = (): JSX.Element => {
       errorMessage={errorMessage}
       errors={errors}
       shakeTarget={shakeTarget}
+      isSubmitting={isSubmitting}
       onEmailChange={handleEmailChange}
       onPasswordChange={handlePasswordChange}
       onFieldBlur={handleFieldBlur}
