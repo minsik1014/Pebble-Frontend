@@ -49,6 +49,7 @@ export function mapCreateCategoryInputToRequest(
     imageUrl: mapImageUrlToRequest(input.imageUrl),
     isPublic: input.isPublic,
     isCompleted: input.isCompleted,
+    inviteUserIds: input.inviteUserIds,
   };
 }
 

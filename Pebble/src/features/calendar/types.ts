@@ -10,6 +10,7 @@ export type CreateCategoryInput = Omit<Category, "id" | "items"> & {
   id?: string;
   items?: MilestoneItem[];
   tasks?: TaskItem[];
+  inviteUserIds?: number[];
 };
 
 export type UpdateCategoryInput = Partial<Omit<Category, "id" | "items">> & {
