@@ -2,8 +2,7 @@
  *  월말 리포트 — 서버 응답 명세  (R003 ~ R007)
  *  이 파일 하나만 백엔드 개발자에게 전달하면 됩니다.
  * --------------------------------------------------------------------------
- *  Endpoint : GET /api/v1/reports/monthly
- *  Query    : year=2026&month=6
+ *  Endpoint : GET /api/v1/reports
  *
  *  리포트 5단계 전체가 이 응답 하나로 그려집니다.
  *  단계를 넘길 때마다 다시 요청하지 않습니다. (진입 시 1회만 호출)
@@ -219,6 +218,10 @@ export interface SharedFriends {
 
 /** GET /api/v1/reports/monthly 응답 본문 */
 export interface MonthlyReportResponse {
+  /** 서버 리포트 ID — 합본 이미지 URL 저장 시 사용 */
+  reportId: number | null;
+  /** 서버에 이미 저장된 합본 이미지 URL */
+  reportImageUrl: string | null;
   /** 리포트 대상 연도 */
   reportYear: number;
   /** 리포트 대상 월 (1~12 정수) */

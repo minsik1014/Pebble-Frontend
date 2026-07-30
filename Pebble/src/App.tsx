@@ -6,6 +6,7 @@ import { ProfileSetupPage } from '@/features/auth/pages/ProfileSetupPage';
 import { SignUpCompletePage } from '@/features/auth/pages/SignUpCompletePage';
 import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import { SocialOAuthCallbackPage } from '@/features/auth/pages/SocialOAuthCallbackPage';
+import { RequireAuth } from '@/features/auth/components/RequireAuth';
 import { ReportLayout } from '@/features/report/ReportLayout';
 import { FIRST_STEP_PATH } from '@/features/report/constants/reportSteps';
 import { BusiestCategoryStep } from '@/features/report/steps/BusiestCategoryStep';
@@ -70,7 +71,14 @@ function App() {
             <Route path="settings" element={<SettingsPage />} />
           </Route>
 
-          <Route path="/report" element={<ReportLayout />}>
+          <Route
+            path="/report"
+            element={
+              <RequireAuth>
+                <ReportLayout />
+              </RequireAuth>
+            }
+          >
             <Route
               index
               element={<Navigate to={FIRST_STEP_PATH} replace />}

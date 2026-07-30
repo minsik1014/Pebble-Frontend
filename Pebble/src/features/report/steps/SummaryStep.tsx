@@ -1,5 +1,9 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 
+import {
+  updateReportImage,
+  uploadReportImage,
+} from '../api/reportApi';
 import { useReport } from '../context/ReportContext';
 import { useReportNavigation } from '../hooks/useReportNavigation';
 import { useSaveAsImage } from '../hooks/useSaveAsImage';
@@ -76,7 +80,18 @@ export function SummaryStep() {
   const previewScale = useSummaryPreviewScale();
 
   const fileName = `pebble-report-${report.reportYear}-${pad2(report.reportMonth)}.png`;
-  const { targetRef, save, status, errorMessage } = useSaveAsImage(fileName);
+  const persistReportImage = useCallback(
+    async (file: File) => {
+      if (!report.reportId) return;
+
+      const reportImageUrl = await uploadReportImage(file);
+      await updateReportImage(report.reportId, reportImageUrl);
+    },
+    [report.reportId],
+  );
+  const { targetRef, save, status, errorMessage } = useSaveAsImage(fileName, {
+    onImageCreated: persistReportImage,
+  });
   const isSaving = status === 'saving';
 
   return (
