@@ -1,3 +1,5 @@
+// src/features/settings/components/PasswordChangeModal.tsx
+
 import { useEffect, useState } from 'react';
 
 import EyeOffIcon from '@/assets/icons/eye-off.svg?react';
@@ -25,6 +27,13 @@ function getNewPasswordError(password: string) {
     return '비밀번호는 8자 이상 입력해 주세요.';
   }
 
+  const hasEnglish = /[A-Za-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+
+  if (!hasEnglish || !hasNumber) {
+    return '영문과 숫자를 모두 포함해 주세요.';
+  }
+
   return '';
 }
 
@@ -47,7 +56,9 @@ function VisibilityButton({
   label,
   onVisibleChange,
 }: VisibilityButtonProps) {
-  const hidePassword = () => onVisibleChange(false);
+  const hidePassword = () => {
+    onVisibleChange(false);
+  };
 
   return (
     <button
@@ -103,10 +114,13 @@ export function PasswordChangeModal({
       setCurrentPassword('');
       setNewPassword('');
       setNewPasswordConfirm('');
+
       setCurrentPasswordError('');
       setNewPasswordServerError('');
       setErrorMessage('');
+
       setIsSubmitting(false);
+
       setShowCurrentPassword(false);
       setShowNewPassword(false);
       setShowConfirmPassword(false);
@@ -146,8 +160,15 @@ export function PasswordChangeModal({
   const inputBaseClassName =
     'h-12 w-full rounded-token-s border px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary disabled:cursor-not-allowed disabled:bg-btn-quaternary';
 
-  const normalInputClassName = `${inputBaseClassName} border-border-teritory focus:border-border-primary`;
-  const errorInputClassName = `${inputBaseClassName} border-fill-danger focus:border-fill-danger`;
+  const normalInputClassName = [
+    inputBaseClassName,
+    'border-border-teritory focus:border-border-primary',
+  ].join(' ');
+
+  const errorInputClassName = [
+    inputBaseClassName,
+    'border-fill-danger focus:border-fill-danger',
+  ].join(' ');
 
   const handleClose = () => {
     if (!isSubmitting) {
@@ -181,6 +202,8 @@ export function PasswordChangeModal({
         setCurrentPasswordError(message);
       } else if (
         message.includes('8자') ||
+        message.includes('영문') ||
+        message.includes('숫자') ||
         message.includes('새 비밀번호')
       ) {
         setNewPasswordServerError(message);
