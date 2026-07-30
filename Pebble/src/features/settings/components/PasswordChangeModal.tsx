@@ -1,12 +1,11 @@
-// src/features/settings/components/PasswordChangeModal.tsx
-
 import { useEffect, useState } from 'react';
 
 import EyeOffIcon from '@/assets/icons/eye-off.svg?react';
 import EyeOnIcon from '@/assets/icons/eye-on.svg?react';
 
 import { Button } from '@/components/ui/Button';
-import { changePassword } from '@/features/settings/api/settingsApi';
+import { changePassword } from '@/features/auth/api/authApi';
+import { setAuthTokens } from '@/services/api';
 
 interface PasswordChangeModalProps {
   open: boolean;
@@ -14,67 +13,23 @@ interface PasswordChangeModalProps {
 }
 
 function getNewPasswordError(password: string) {
-  if (!password.trim()) return '';
+  if (!password) return '';
 
   if (password.length < 8) {
     return '8자 이상 입력해 주세요.';
   }
 
-  const hasEnglish = /[A-Za-z]/.test(password);
-  const hasNumber = /\d/.test(password);
-
-  if (!hasEnglish || !hasNumber) {
+  if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
     return '영문과 숫자를 모두 포함해 주세요.';
   }
 
   return '';
 }
 
-function getPasswordConfirmError({
-  newPassword,
-  newPasswordConfirm,
-}: {
-  newPassword: string;
-  newPasswordConfirm: string;
-}) {
-  if (!newPasswordConfirm.trim()) return '';
+function getConfirmError(password: string, confirm: string) {
+  if (!confirm) return '';
 
-  if (newPassword !== newPasswordConfirm) {
-    return '새 비밀번호가 일치하지 않아요.';
-  }
-
-  return '';
-}
-
-function validatePasswordForm({
-  currentPassword,
-  newPassword,
-  newPasswordConfirm,
-}: {
-  currentPassword: string;
-  newPassword: string;
-  newPasswordConfirm: string;
-}) {
-  if (!currentPassword.trim()) return '현재 비밀번호를 입력해 주세요.';
-  if (!newPassword.trim()) return '새 비밀번호를 입력해 주세요.';
-  if (!newPasswordConfirm.trim()) return '새 비밀번호 확인을 입력해 주세요.';
-
-  const newPasswordError = getNewPasswordError(newPassword);
-
-  if (newPasswordError) return newPasswordError;
-
-  const confirmError = getPasswordConfirmError({
-    newPassword,
-    newPasswordConfirm,
-  });
-
-  if (confirmError) return confirmError;
-
-  if (currentPassword === newPassword) {
-    return '현재 비밀번호와 다른 비밀번호를 입력해 주세요.';
-  }
-
-  return '';
+  return password === confirm ? '' : '새 비밀번호가 일치하지 않아요.';
 }
 
 export function PasswordChangeModal({
@@ -84,93 +39,121 @@ export function PasswordChangeModal({
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+
+  const [currentPasswordError, setCurrentPasswordError] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showNewPasswordConfirm, setShowNewPasswordConfirm] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     if (!open) {
       setCurrentPassword('');
       setNewPassword('');
       setNewPasswordConfirm('');
+      setCurrentPasswordError('');
       setErrorMessage('');
       setIsSubmitting(false);
       setShowCurrentPassword(false);
       setShowNewPassword(false);
-      setShowNewPasswordConfirm(false);
+      setShowConfirm(false);
     }
   }, [open]);
 
   if (!open) return null;
 
   const newPasswordError = getNewPasswordError(newPassword);
-  const passwordConfirmError = getPasswordConfirmError({
-    newPassword,
-    newPasswordConfirm,
-  });
-
-  const hasPasswordValues =
-    currentPassword.trim().length > 0 &&
-    newPassword.trim().length > 0 &&
-    newPasswordConfirm.trim().length > 0;
+  const confirmError = getConfirmError(newPassword, newPasswordConfirm);
 
   const canSubmit =
-    hasPasswordValues &&
+    currentPassword.length > 0 &&
+    newPassword.length > 0 &&
+    newPasswordConfirm.length > 0 &&
     !newPasswordError &&
-    !passwordConfirmError &&
+    !confirmError &&
+    currentPassword !== newPassword &&
     !isSubmitting;
 
+  const inputBase =
+    'h-12 w-full rounded-token-s border px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary disabled:bg-btn-quaternary';
+
+  const normalInput = `${inputBase} border-border-teritory focus:border-border-primary`;
+  const errorInput = `${inputBase} border-fill-danger focus:border-fill-danger`;
+
   const handleClose = () => {
-    if (isSubmitting) return;
-    onOpenChange(false);
+    if (!isSubmitting) {
+      onOpenChange(false);
+    }
   };
 
   const handleSubmit = async () => {
-    const validationError = validatePasswordForm({
-      currentPassword,
-      newPassword,
-      newPasswordConfirm,
-    });
-
-    if (validationError) {
-      setErrorMessage(validationError);
+    if (!currentPassword) {
+      setCurrentPasswordError('현재 비밀번호를 입력해 주세요.');
       return;
     }
 
+    if (!canSubmit) return;
+
+    setIsSubmitting(true);
+    setCurrentPasswordError('');
+    setErrorMessage('');
+
     try {
-      setIsSubmitting(true);
-      setErrorMessage('');
+      const tokens = await changePassword(currentPassword, newPassword);
 
-      await changePassword({
-        currentPassword,
-        newPassword,
-      });
-
+      setAuthTokens(tokens.accessToken, tokens.refreshToken);
       onOpenChange(false);
     } catch (error) {
-      setErrorMessage(
+      const message =
         error instanceof Error
           ? error.message
-          : '비밀번호 변경에 실패했어요.',
-      );
+          : '비밀번호 변경에 실패했어요.';
+
+      if (message.includes('현재 비밀번호')) {
+        setCurrentPasswordError(message);
+      } else {
+        setErrorMessage(message);
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const inputBaseClassName =
-    'h-12 w-full rounded-token-s border px-token-m pr-12 text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary';
-
-  const normalInputClassName = `${inputBaseClassName} border-border-teritory`;
-
-  const errorInputClassName = `${inputBaseClassName} border-fill-danger focus:border-fill-danger`;
+  const visibilityButton = ({
+    visible,
+    setVisible,
+    label,
+  }: {
+    visible: boolean;
+    setVisible: (visible: boolean) => void;
+    label: string;
+  }) => (
+    <button
+      type="button"
+      disabled={isSubmitting}
+      aria-label={label}
+      className="absolute right-token-m top-1/2 flex size-6 -translate-y-1/2 items-center justify-center text-text-secondary"
+      onMouseDown={() => setVisible(true)}
+      onMouseUp={() => setVisible(false)}
+      onMouseLeave={() => setVisible(false)}
+      onBlur={() => setVisible(false)}
+      onTouchStart={() => setVisible(true)}
+      onTouchEnd={() => setVisible(false)}
+      onTouchCancel={() => setVisible(false)}
+    >
+      {visible ? (
+        <EyeOffIcon className="size-5" aria-hidden="true" />
+      ) : (
+        <EyeOnIcon className="size-5" aria-hidden="true" />
+      )}
+    </button>
+  );
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(23,23,23,0.45)]"
       onClick={handleClose}
     >
       <section
@@ -198,33 +181,28 @@ export function PasswordChangeModal({
                 value={currentPassword}
                 disabled={isSubmitting}
                 placeholder="현재 비밀번호를 입력해 주세요"
-                className={normalInputClassName}
+                className={
+                  currentPasswordError ? errorInput : normalInput
+                }
                 onChange={(event) => {
                   setCurrentPassword(event.target.value);
+                  setCurrentPasswordError('');
                   setErrorMessage('');
                 }}
               />
 
-              <button
-                type="button"
-                disabled={isSubmitting}
-                aria-label="현재 비밀번호 누르는 동안 보기"
-                className="absolute right-token-m top-1/2 flex size-6 -translate-y-1/2 items-center justify-center text-text-secondary disabled:cursor-not-allowed"
-                onMouseDown={() => setShowCurrentPassword(true)}
-                onMouseUp={() => setShowCurrentPassword(false)}
-                onMouseLeave={() => setShowCurrentPassword(false)}
-                onBlur={() => setShowCurrentPassword(false)}
-                onTouchStart={() => setShowCurrentPassword(true)}
-                onTouchEnd={() => setShowCurrentPassword(false)}
-                onTouchCancel={() => setShowCurrentPassword(false)}
-              >
-                {showCurrentPassword ? (
-                  <EyeOffIcon className="size-5" aria-hidden="true" />
-                ) : (
-                  <EyeOnIcon className="size-5" aria-hidden="true" />
-                )}
-              </button>
+              {visibilityButton({
+                visible: showCurrentPassword,
+                setVisible: setShowCurrentPassword,
+                label: '현재 비밀번호 누르는 동안 보기',
+              })}
             </div>
+
+            {currentPasswordError ? (
+              <p className="mt-token-xs text-caption-01 text-fill-danger">
+                {currentPasswordError}
+              </p>
+            ) : null}
           </label>
 
           <label>
@@ -238,48 +216,25 @@ export function PasswordChangeModal({
                 value={newPassword}
                 disabled={isSubmitting}
                 placeholder="새 비밀번호를 입력해 주세요"
-                className={
-                  newPasswordError ? errorInputClassName : normalInputClassName
-                }
-                aria-invalid={!!newPasswordError}
-                aria-describedby={
-                  newPasswordError ? 'new-password-error' : undefined
-                }
+                className={newPasswordError ? errorInput : normalInput}
                 onChange={(event) => {
                   setNewPassword(event.target.value);
                   setErrorMessage('');
                 }}
               />
 
-              <button
-                type="button"
-                disabled={isSubmitting}
-                aria-label="새 비밀번호 누르는 동안 보기"
-                className="absolute right-token-m top-1/2 flex size-6 -translate-y-1/2 items-center justify-center text-text-secondary disabled:cursor-not-allowed"
-                onMouseDown={() => setShowNewPassword(true)}
-                onMouseUp={() => setShowNewPassword(false)}
-                onMouseLeave={() => setShowNewPassword(false)}
-                onBlur={() => setShowNewPassword(false)}
-                onTouchStart={() => setShowNewPassword(true)}
-                onTouchEnd={() => setShowNewPassword(false)}
-                onTouchCancel={() => setShowNewPassword(false)}
-              >
-                {showNewPassword ? (
-                  <EyeOffIcon className="size-5" aria-hidden="true" />
-                ) : (
-                  <EyeOnIcon className="size-5" aria-hidden="true" />
-                )}
-              </button>
+              {visibilityButton({
+                visible: showNewPassword,
+                setVisible: setShowNewPassword,
+                label: '새 비밀번호 누르는 동안 보기',
+              })}
             </div>
 
-            {newPasswordError && (
-              <p
-                id="new-password-error"
-                className="mt-token-xs text-caption-01-r text-fill-danger"
-              >
+            {newPasswordError ? (
+              <p className="mt-token-xs text-caption-01 text-fill-danger">
                 {newPasswordError}
               </p>
-            )}
+            ) : null}
           </label>
 
           <label>
@@ -289,85 +244,56 @@ export function PasswordChangeModal({
 
             <div className="relative mt-token-s">
               <input
-                type={showNewPasswordConfirm ? 'text' : 'password'}
+                type={showConfirm ? 'text' : 'password'}
                 value={newPasswordConfirm}
                 disabled={isSubmitting}
                 placeholder="새 비밀번호를 다시 입력해 주세요"
-                className={
-                  passwordConfirmError
-                    ? errorInputClassName
-                    : normalInputClassName
-                }
-                aria-invalid={!!passwordConfirmError}
-                aria-describedby={
-                  passwordConfirmError
-                    ? 'new-password-confirm-error'
-                    : undefined
-                }
+                className={confirmError ? errorInput : normalInput}
                 onChange={(event) => {
                   setNewPasswordConfirm(event.target.value);
                   setErrorMessage('');
                 }}
               />
 
-              <button
-                type="button"
-                disabled={isSubmitting}
-                aria-label="새 비밀번호 확인 누르는 동안 보기"
-                className="absolute right-token-m top-1/2 flex size-6 -translate-y-1/2 items-center justify-center text-text-secondary disabled:cursor-not-allowed"
-                onMouseDown={() => setShowNewPasswordConfirm(true)}
-                onMouseUp={() => setShowNewPasswordConfirm(false)}
-                onMouseLeave={() => setShowNewPasswordConfirm(false)}
-                onBlur={() => setShowNewPasswordConfirm(false)}
-                onTouchStart={() => setShowNewPasswordConfirm(true)}
-                onTouchEnd={() => setShowNewPasswordConfirm(false)}
-                onTouchCancel={() => setShowNewPasswordConfirm(false)}
-              >
-                {showNewPasswordConfirm ? (
-                  <EyeOffIcon className="size-5" aria-hidden="true" />
-                ) : (
-                  <EyeOnIcon className="size-5" aria-hidden="true" />
-                )}
-              </button>
+              {visibilityButton({
+                visible: showConfirm,
+                setVisible: setShowConfirm,
+                label: '새 비밀번호 확인 누르는 동안 보기',
+              })}
             </div>
 
-            {passwordConfirmError && (
-              <p
-                id="new-password-confirm-error"
-                className="mt-token-xs text-caption-01-r text-fill-danger"
-              >
-                {passwordConfirmError}
+            {confirmError ? (
+              <p className="mt-token-xs text-caption-01 text-fill-danger">
+                {confirmError}
               </p>
-            )}
+            ) : null}
           </label>
         </div>
 
-        {errorMessage && (
-          <p className="mt-token-s text-caption-01-r text-fill-danger">
+        {errorMessage ? (
+          <p className="mt-token-s text-caption-01 text-fill-danger">
             {errorMessage}
           </p>
-        )}
+        ) : null}
 
         <div className="mt-token-xl grid grid-cols-2 gap-token-m">
           <Button
-            type="button"
             variant="secondary"
             disabled={isSubmitting}
-            className="h-11 w-full text-text-strong disabled:cursor-not-allowed disabled:!opacity-100"
+            className="h-11 w-full text-text-strong"
             onClick={handleClose}
           >
             취소
           </Button>
 
           <Button
-            type="button"
             variant="primary"
             disabled={!canSubmit}
             className={[
-              'h-11 w-full disabled:cursor-not-allowed disabled:!opacity-100',
+              'h-11 w-full disabled:opacity-100',
               canSubmit ? '' : '!bg-[#737373] !text-[#A3A3A3]',
             ].join(' ')}
-            onClick={handleSubmit}
+            onClick={() => void handleSubmit()}
           >
             {isSubmitting ? '변경 중...' : '변경하기'}
           </Button>
