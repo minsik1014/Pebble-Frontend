@@ -3,6 +3,7 @@ import { CompletedCategoryGrid } from "@/features/mypage/components/CompletedCat
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import { MyPageStats } from "@/features/mypage/components/MyPageStats";
 import { MyProfileSection } from "@/features/mypage/components/MyProfileSection";
+import { MonthlyReportBanner } from "@/features/mypage/components/MonthlyReportBanner";
 import { useNavigate } from "react-router-dom";
 
 const PROFILE_SCROLL_START = 80;
@@ -104,6 +105,7 @@ export default function MyPage() {
             scrollOffset={Math.max(0, scrollTop - PROFILE_SCROLL_START)}
             onEditProfile={() => navigate("/my/profile")}
           />
+          <MonthlyReportBanner onOpenReport={() => navigate("/report/monthly")} />
           <MyPageStats isCompact={isCompact} />
           <CompletedCategoryGrid
             isCompact={isCompact}
