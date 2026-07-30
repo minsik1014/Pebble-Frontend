@@ -6,7 +6,7 @@ import EyeOffIcon from '@/assets/icons/eye-off.svg?react';
 import EyeOnIcon from '@/assets/icons/eye-on.svg?react';
 
 import { Button } from '@/components/ui/Button';
-import { changePassword } from '@/features/settings/api/mockSettingsApi';
+import { changePassword } from '@/features/settings/api/settingsApi';
 
 interface PasswordChangeModalProps {
   open: boolean;

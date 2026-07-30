@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
-import { requestEmailChange } from '@/features/settings/api/mockSettingsApi';
+import { requestEmailChange } from '@/features/settings/api/settingsApi';
 
 interface EmailChangeModalProps {
   open: boolean;
