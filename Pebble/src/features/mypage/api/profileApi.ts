@@ -1,0 +1,44 @@
+import { apiRequest } from "@/services/api";
+import type { EditableProfile, Profile } from "@/features/mypage/types/profile";
+
+type MyProfileResponse = {
+  id: number;
+  email: string;
+  nickname: string;
+  uniqueTag: string;
+  bio?: string | null;
+  profileImageUrl?: string | null;
+  lastNicknameChangedAt?: string | null;
+  nicknameChangeableAfter?: string | null;
+  createdAt: string;
+};
+
+export async function getMyProfile(): Promise<Profile> {
+  const data = await apiRequest<MyProfileResponse>({
+    method: "GET",
+    url: "/users/me",
+  });
+
+  if (!data) {
+    throw new Error("프로필 정보를 불러오지 못했어요.");
+  }
+
+  return {
+    email: data.email,
+    nickname: data.nickname,
+    bio: data.bio ?? "",
+    imageUrl: data.profileImageUrl ?? null,
+    lastNicknameChangedAt: data.lastNicknameChangedAt ?? null,
+    nicknameChangeableAfter: data.nicknameChangeableAfter ?? null,
+  };
+}
+
+export async function updateMyProfile(
+  profile: Partial<EditableProfile>,
+): Promise<void> {
+  await apiRequest({
+    method: "PATCH",
+    url: "/users/me",
+    data: profile,
+  });
+}

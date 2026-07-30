@@ -1,9 +1,10 @@
-import { useRef, useState, type UIEvent, type WheelEvent } from "react";
+import { useEffect, useRef, useState, type UIEvent, type WheelEvent } from "react";
 import { CompletedCategoryGrid } from "@/features/mypage/components/CompletedCategoryGrid";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import { MyPageStats } from "@/features/mypage/components/MyPageStats";
 import { MyProfileSection } from "@/features/mypage/components/MyProfileSection";
 import { useNavigate } from "react-router-dom";
+import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
 const PROFILE_SCROLL_START = 80;
 const COMPACT_PROFILE_SCROLL_TOP = 64;
@@ -13,10 +14,18 @@ const WHEEL_GESTURE_LOCK_MS = 650;
 export default function MyPage() {
   const navigate = useNavigate();
   const { isSidebarOpen } = useCalendarLayoutContext();
+  const loadProfile = useProfileStore((state) => state.loadProfile);
+  const isLoaded = useProfileStore((state) => state.isLoaded);
   const [isCompact, setIsCompact] = useState(false);
   const [scrollTop, setScrollTop] = useState(0);
   const isWheelGestureLockedRef = useRef(false);
   const wheelUnlockTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded) {
+      void loadProfile();
+    }
+  }, [isLoaded, loadProfile]);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const currentScrollTop = event.currentTarget.scrollTop;

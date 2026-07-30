@@ -5,4 +5,6 @@ export const mockProfile: Profile = {
   nickname: "페블이",
   bio: "일상이없는게제일상입니다.",
   imageUrl: null,
+  lastNicknameChangedAt: null,
+  nicknameChangeableAfter: null,
 };

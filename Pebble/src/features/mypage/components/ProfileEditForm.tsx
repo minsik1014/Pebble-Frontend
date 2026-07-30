@@ -1,26 +1,21 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
-const NICKNAME_COOLDOWN_DAYS = 15;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 export const ProfileEditForm = (): JSX.Element => {
   const profile = useProfileStore((state) => state.profile);
-  const lastNicknameChangedAt = useProfileStore(
-    (state) => state.lastNicknameChangedAt,
-  );
-  const hasPendingImage = useProfileStore(
-    (state) => state.pendingImageUrl !== null,
-  );
   const updateProfile = useProfileStore((state) => state.updateProfile);
+  const isSaving = useProfileStore((state) => state.isSaving);
+  const error = useProfileStore((state) => state.error);
   const [nickname, setNickname] = useState(profile.nickname);
   const [bio, setBio] = useState(profile.bio);
   const [isToastMounted, setIsToastMounted] = useState(false);
   const [isToastVisible, setIsToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  const nicknameAvailableAt = lastNicknameChangedAt
-    ? lastNicknameChangedAt + NICKNAME_COOLDOWN_DAYS * DAY_IN_MS
+  const nicknameAvailableAt = profile.nicknameChangeableAfter
+    ? new Date(profile.nicknameChangeableAfter).getTime()
     : 0;
   const remainingDays = Math.max(
     0,
@@ -32,9 +27,13 @@ export const ProfileEditForm = (): JSX.Element => {
   const normalizedBio = bio.trim();
   const hasChanges =
     normalizedNickname !== profile.nickname ||
-    normalizedBio !== profile.bio ||
-    hasPendingImage;
-  const canSave = normalizedNickname.length > 0 && hasChanges;
+    normalizedBio !== profile.bio;
+  const canSave = normalizedNickname.length > 0 && hasChanges && !isSaving;
+
+  useEffect(() => {
+    setNickname(profile.nickname);
+    setBio(profile.bio);
+  }, [profile.nickname, profile.bio]);
 
   useEffect(() => {
     if (!isToastMounted) {
@@ -58,7 +57,7 @@ export const ProfileEditForm = (): JSX.Element => {
     };
   }, [isToastMounted]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!canSave) {
@@ -68,19 +67,21 @@ export const ProfileEditForm = (): JSX.Element => {
     const nicknameChanged = normalizedNickname !== profile.nickname;
     const bioChanged = normalizedBio !== profile.bio;
 
-    updateProfile({
-      nickname: normalizedNickname,
-      bio: normalizedBio,
-    });
-    setNickname(normalizedNickname);
-    setBio(normalizedBio);
+    try {
+      await updateProfile({
+        nickname: normalizedNickname,
+        bio: normalizedBio,
+      });
+      setNickname(normalizedNickname);
+      setBio(normalizedBio);
+    } catch {
+      return;
+    }
 
     if (nicknameChanged) {
       setToastMessage(
         "닉네임이 변경되었어요. 15일 후에 다시 변경할 수 있어요.",
       );
-    } else if (hasPendingImage) {
-      setToastMessage("프로필 이미지가 변경되었어요.");
     } else if (bioChanged) {
       setToastMessage("한 줄 소개가 변경되었어요.");
     }
@@ -139,8 +140,14 @@ export const ProfileEditForm = (): JSX.Element => {
         disabled={!canSave}
         className="mt-3 h-12 rounded-token-s bg-btn-secondary text-body-02-m text-text-onFill transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
       >
-        저장
+        {isSaving ? "저장 중..." : "저장"}
       </button>
+
+      {error && (
+        <p role="alert" className="-mt-4 text-body-03-r text-fill-danger">
+          {error}
+        </p>
+      )}
 
       {isToastMounted && (
         <div
