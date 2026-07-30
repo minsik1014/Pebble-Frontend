@@ -1,103 +1,63 @@
-import { useState } from 'react';
+import MoonIcon from '@/assets/icons/Moon.svg?react';
+import SunIcon from '@/assets/icons/Sun.svg?react';
 
-import DesktopIcon from '@/assets/icons/Desktop.svg?react';
+export type ThemeMode = 'light' | 'dark';
 
-import { Button } from '@/components/ui/Button';
-import { Divider } from '@/components/ui/Divider';
-
-import type { SettingsTheme } from '../types/settings';
-import type { DailyBridgeActivity } from '../utils/bridgeActivity';
-import { BridgeColorModal } from './BridgeColorModal';
-import { SettingsRow } from './SettingsRow';
-import { SettingsSection } from './SettingsSection';
-import { SettingsSectionHeader } from './SettingsSectionHeader';
-import { ThemeSegmentControl, type ThemeMode } from './ThemeSegmentControl';
-
-interface DisplaySettingsSectionProps {
-  theme: SettingsTheme;
-  selectedBridgePaletteId: string;
-  activities: DailyBridgeActivity[];
-  isUpdating: boolean;
-  onThemeChange: (theme: SettingsTheme) => Promise<void>;
-  onBridgePaletteChange: (paletteId: string) => Promise<void>;
+interface ThemeSegmentControlProps {
+  value: ThemeMode;
+  disabled?: boolean;
+  onChange: (value: ThemeMode) => void;
 }
 
-export function DisplaySettingsSection({
-  theme,
-  selectedBridgePaletteId,
-  activities,
-  isUpdating,
-  onThemeChange,
-  onBridgePaletteChange,
-}: DisplaySettingsSectionProps) {
-  const [isBridgeColorModalOpen, setIsBridgeColorModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+const themeOptions = [
+  {
+    value: 'light',
+    label: '라이트',
+    icon: SunIcon,
+  },
+  {
+    value: 'dark',
+    label: '다크',
+    icon: MoonIcon,
+  },
+] as const;
 
-  const themeMode: ThemeMode = theme === 'DARK' ? 'dark' : 'light';
-
-  const handleThemeChange = async (nextTheme: ThemeMode) => {
-    setErrorMessage('');
-
-    try {
-      await onThemeChange(nextTheme === 'dark' ? 'DARK' : 'LIGHT');
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : '테마 설정을 변경하지 못했어요.',
-      );
-    }
-  };
-
+export function ThemeSegmentControl({
+  value,
+  disabled = false,
+  onChange,
+}: ThemeSegmentControlProps) {
   return (
-    <>
-      <SettingsSection className="min-h-[284px]">
-        <SettingsSectionHeader icon={DesktopIcon} title="화면" />
+    <div
+      role="group"
+      aria-label="앱 테마 선택"
+      className="flex h-12 w-[194px] items-center gap-token-xs rounded-token-s bg-btn-quaternary p-token-xs"
+    >
+      {themeOptions.map(({ value: optionValue, label, icon: Icon }) => {
+        const isSelected = value === optionValue;
 
-        <div className="mt-token-l flex flex-col gap-token-l">
-          <SettingsRow
-            title="앱 테마"
-            description="라이트 또는 다크 모드를 선택해요"
-            actions={
-              <ThemeSegmentControl
-                value={themeMode}
-                disabled={isUpdating}
-                onChange={(value) => void handleThemeChange(value)}
-              />
-            }
-          />
-
-          <Divider />
-
-          <SettingsRow
-            title="징검다리 색상"
-            description="언제든 다시 바꿀 수 있어요"
-            actions={
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={isUpdating}
-                aria-label="징검다리 색상 변경"
-                onClick={() => setIsBridgeColorModalOpen(true)}
-              >
-                변경
-              </Button>
-            }
-          />
-
-          {errorMessage ? (
-            <p className="text-caption-01 text-fill-danger">{errorMessage}</p>
-          ) : null}
-        </div>
-      </SettingsSection>
-
-      <BridgeColorModal
-        open={isBridgeColorModalOpen}
-        selectedPaletteId={selectedBridgePaletteId}
-        activities={activities}
-        onOpenChange={setIsBridgeColorModalOpen}
-        onConfirm={onBridgePaletteChange}
-      />
-    </>
+        return (
+          <button
+            key={optionValue}
+            type="button"
+            disabled={disabled}
+            aria-pressed={isSelected}
+            onClick={() => onChange(optionValue)}
+            className={[
+              'flex h-10 flex-1 items-center justify-center gap-token-s rounded-[10px]',
+              'text-body-02-m transition-colors',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary',
+              'disabled:cursor-not-allowed disabled:opacity-60',
+              isSelected
+                ? 'bg-fill-inverse text-text-strong shadow-shadow-s'
+                : 'text-text-teritary hover:text-text-primary',
+            ].join(' ')}
+          >
+            <Icon className="size-5" aria-hidden="true" />
+            {label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
