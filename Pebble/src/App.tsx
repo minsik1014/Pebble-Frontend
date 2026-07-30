@@ -22,6 +22,7 @@ import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
 import { getAccessToken } from '@/services/api';
 
 import SettingsPage from './pages/settings/SettingsPage';
+import { EmailVerifyPage } from './pages/settings/EmailVerifyPage';
 
 function RootRoute() {
   if (!getAccessToken()) {
@@ -85,6 +86,12 @@ function App() {
               element={<Navigate to={FIRST_STEP_PATH} replace />}
             />
           </Route>
+          
+          {/* 로그인 여부와 관계없이 접근 가능한 이메일 인증 경로 */}
+          <Route
+            path="/email/verify"
+            element={<EmailVerifyPage />}
+          />
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />

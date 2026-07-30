@@ -62,6 +62,7 @@ export async function confirmEmailChange(token: string) {
     data: {
       token,
     },
+    skipAuth: true,
   });
 
   return requireData(data, '이메일 변경을 완료하지 못했어요.');
