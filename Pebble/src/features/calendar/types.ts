@@ -94,13 +94,18 @@ export type CalendarActions = {
   toggleCategoryTaskCompleted: (
     categoryId: string,
     taskId: string,
+    taskDateId?: number,
   ) => Promise<void>;
   toggleTaskCompleted: (
     categoryId: string,
     milestoneId: string,
     taskId: string,
+    taskDateId?: number,
   ) => Promise<void>;
-  toggleStandaloneTaskCompleted: (taskId: string) => Promise<void>;
+  toggleStandaloneTaskCompleted: (
+    taskId: string,
+    taskDateId?: number,
+  ) => Promise<void>;
 };
 
 export type CalendarStateModel = CalendarState & CalendarActions;

@@ -5,6 +5,7 @@ import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type MilestoneAccordionProps = {
@@ -143,7 +144,7 @@ export const MilestoneAccordion = ({
               <SidebarScheduleRow
                 key={task.id}
                 item={task}
-                checked={Boolean(task.isCompleted)}
+                checked={isTaskCompleted(task)}
                 onToggle={() => onToggleCategoryTaskCompleted?.(category.id, task.id)}
                 barColor={category.themeLight}
                 widthClassName="w-80"
@@ -165,7 +166,7 @@ export const MilestoneAccordion = ({
                   <SidebarScheduleRow
                     key={task.id}
                     item={task}
-                    checked={Boolean(task.isCompleted)}
+                    checked={isTaskCompleted(task)}
                     onToggle={() =>
                       onToggleTaskCompleted?.(category.id, item.id, task.id)
                     }
