@@ -32,7 +32,9 @@ export function FinalCTASection() {
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const hasEntered = useInView(sectionRef);
+  const hasEntered = useInView(sectionRef, {
+    threshold: 0.45,
+  });
 
   const handleStartClick = () => {
     navigate('/signup');
@@ -49,15 +51,15 @@ export function FinalCTASection() {
         <div
           className={[
             'pointer-events-none absolute inset-0',
-            'transition-[opacity,transform] duration-[1300ms]',
-            'ease-[cubic-bezier(0.22,1,0.36,1)]',
+            'transition-[opacity,transform] duration-[1100ms]',
+            'ease-in-out',
             'will-change-[opacity,transform]',
             'motion-reduce:translate-y-0',
             'motion-reduce:opacity-100',
             'motion-reduce:transition-none',
             hasEntered
               ? 'translate-y-0 opacity-100'
-              : 'translate-y-12 opacity-0',
+              : 'translate-y-[80px] opacity-0',
           ].join(' ')}
         >
           <h2 className="absolute left-[346px] top-[376px] h-[83px] w-[749px] text-center text-[64px] font-bold leading-[130%] tracking-[-0.01em] text-text-onFill">
