@@ -79,8 +79,8 @@ export const AlarmItem = ({
     <div
       className={`mt-3 rounded-token-m px-4 py-3.5 transition-colors duration-150 ${
         shouldShowActiveBackground
-          ? "bg-[rgba(48,89,255,0.05)] hover:bg-[rgba(23,23,23,0.05)]"
-          : "hover:bg-[rgba(23,23,23,0.05)]"
+          ? "bg-fill-info/10 hover:bg-btn-quaternary"
+          : "hover:bg-btn-quaternary"
       }`}
     >
       <div className="flex items-start gap-3">
@@ -114,7 +114,7 @@ export const AlarmItem = ({
             </p>
           )}
 
-          <p className="mt-0.5 text-[13px] font-normal leading-[18px] text-gray-400">
+          <p className="mt-0.5 text-[13px] font-normal leading-[18px] text-text-teritary">
             {alarm.createdAt}
           </p>
 
@@ -123,14 +123,14 @@ export const AlarmItem = ({
               <button
                 type="button"
                 onClick={handleAccept}
-                className="h-[29px] min-w-[49px] rounded-[6px] bg-[rgba(23,23,23,1)] px-3 text-[14px] font-medium leading-[20px] text-white"
+                className="h-[29px] min-w-[49px] rounded-[6px] bg-btn-primary px-3 text-[14px] font-medium leading-[20px] text-text-onFill transition-[filter] hover:brightness-95"
               >
                 수락
               </button>
               <button
                 type="button"
                 onClick={handleReject}
-                className="h-[29px] min-w-[49px] rounded-[6px] bg-[rgba(23,23,23,0.05)] px-3 text-[14px] font-medium leading-[20px] text-text-strong"
+                className="h-[29px] min-w-[49px] rounded-[6px] bg-btn-quaternary px-3 text-[14px] font-medium leading-[20px] text-text-strong transition-colors hover:bg-btn-pressed"
               >
                 거절
               </button>
@@ -142,7 +142,7 @@ export const AlarmItem = ({
           <button
             type="button"
             onClick={handleDelete}
-            className="shrink-0 text-[22px] leading-none text-gray-400 hover:text-text-strong"
+            className="shrink-0 text-[22px] leading-none text-text-teritary hover:text-text-strong"
             aria-label="알림 삭제"
           >
             ×

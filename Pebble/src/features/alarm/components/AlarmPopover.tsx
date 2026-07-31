@@ -66,7 +66,7 @@ export const AlarmPopover = ({
   return createPortal(
     <div
       data-alarm-popover
-      className="relative z-[9999] flex h-[600px] w-[400px] flex-col rounded-[24px] bg-white px-3 py-4 shadow-[4px_5px_20px_rgba(23,23,23,0.1)] animate-[popover-in_450ms_ease-in-out]"
+      className="relative z-[9999] flex h-[600px] w-[400px] flex-col rounded-[24px] bg-fill-inverse px-3 py-4 shadow-shadow-m animate-[popover-in_450ms_ease-in-out]"
       style={{
         position: "fixed",
         top,
@@ -82,7 +82,7 @@ export const AlarmPopover = ({
           <button
             type="button"
             onClick={() => void onDeleteAll()}
-            className="text-[14px] font-normal text-gray-500 hover:text-text-strong"
+            className="text-[14px] font-normal text-text-secondary hover:text-text-strong"
           >
             전체 삭제
           </button>
@@ -100,14 +100,14 @@ export const AlarmPopover = ({
             />
           ))
         ) : (
-          <div className="flex h-full items-center justify-center text-body-s text-text-tertiary">
+          <div className="flex h-full items-center justify-center text-body-s text-text-teritary">
             알림이 없습니다.
           </div>
         )}
       </div>
 
       <div
-        className={`pointer-events-none absolute bottom-4 left-5 right-5 rounded-[16px] bg-black px-5 py-3 text-[14px] font-medium leading-[20px] text-white shadow-lg transition-all duration-[450ms] ease-in-out ${
+        className={`pointer-events-none absolute bottom-4 left-5 right-5 rounded-[16px] bg-btn-primary px-5 py-3 text-[14px] font-medium leading-[20px] text-text-onFill shadow-shadow-m transition-all duration-[450ms] ease-in-out ${
           isToastVisible
             ? "translate-y-0 opacity-100"
             : "translate-y-3 opacity-0"
