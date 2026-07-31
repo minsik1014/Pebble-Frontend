@@ -1,5 +1,3 @@
-// src/features/landing/components/FeaturePanelsScrollSection.tsx
-
 import { useRef } from 'react';
 
 import { FEATURE_PANEL_DATA } from '@/features/landing/constants/featurePanelData';
@@ -11,26 +9,32 @@ import { FeaturePanelsSection } from './FeaturePanelsSection';
 
 const FIGMA_WIDTH = 1440;
 const FIGMA_HEIGHT = 1024;
-const STEP_SCROLL_DISTANCE = 280;
+
+/*
+ * 화면 너비에 따라 줄어드는 scale을 스크롤 거리에 적용하지 않습니다.
+ * 모든 화면에서 단계별 전환 거리를 동일하게 유지합니다.
+ */
+const STEP_SCROLL_DISTANCE = 360;
 
 export function FeaturePanelsScrollSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const scale = useLandingScale();
 
   const stepCount = FEATURE_PANEL_DATA.length;
-  const scaledStepScrollDistance = STEP_SCROLL_DISTANCE * scale;
+  const stepScrollDistance = STEP_SCROLL_DISTANCE;
 
   /*
-   * 화면 한 개 높이와 패널 전환용 스크롤 공간을 확보합니다.
+   * sticky 화면 한 개 높이와 패널 전환용 스크롤 공간을 확보합니다.
+   * 마지막 패널도 바로 다음 섹션으로 넘어가지 않고 일정 거리 동안 유지됩니다.
    */
   const scrollSectionHeight = `calc(
-    100vh + ${scaledStepScrollDistance * stepCount}px
+    100vh + ${stepScrollDistance * stepCount}px
   )`;
 
   const activeStep = useFeaturePanelsScroll({
     sectionRef,
     stepCount,
-    stepScrollDistance: scaledStepScrollDistance,
+    stepScrollDistance,
   });
 
   const isSectionVisible = useInView(sectionRef);

@@ -1,4 +1,3 @@
-// src/features/landing/components/StepStructureSection.tsx
 
 import { STEP_STRUCTURE_STAGES } from '@/features/landing/constants/stepStructureData';
 
@@ -59,9 +58,17 @@ export function StepStructureSection({
             aria-hidden={!isActive}
             className={[
               'pointer-events-none absolute inset-0',
-              'transition-[opacity,transform] duration-[1000ms]',
+              /*
+               * 단계 간 스크롤 거리는 늘리고 전환 시간은 줄여
+               * 이전 단계와 다음 단계의 애니메이션이 겹치는 현상을 줄입니다.
+               */
+              'transition-[opacity,transform] duration-[800ms]',
               'ease-[cubic-bezier(0.22,1,0.36,1)]',
               'will-change-[opacity,transform]',
+              'motion-reduce:translate-y-0',
+              'motion-reduce:scale-100',
+              'motion-reduce:opacity-100',
+              'motion-reduce:transition-none',
               transitionClassName,
             ].join(' ')}
           >
@@ -76,7 +83,7 @@ export function StepStructureSection({
                   zIndex: card.zIndex,
                 }}
               >
-                {card.title && card.description && (
+                {card.title && card.description ? (
                   <div className="flex w-full min-w-0 items-center">
                     <strong
                       className={[
@@ -96,7 +103,7 @@ export function StepStructureSection({
                       {card.description}
                     </span>
                   </div>
-                )}
+                ) : null}
               </div>
             ))}
 
@@ -115,7 +122,7 @@ export function StepStructureSection({
           <span
             key={stage.id}
             className={[
-              'h-2 rounded-full transition-[width,background-color] duration-700',
+              'h-2 rounded-full transition-[width,background-color] duration-[600ms]',
               index === normalizedActiveStep
                 ? 'w-8 bg-text-strong'
                 : 'w-2 bg-border-secondary',

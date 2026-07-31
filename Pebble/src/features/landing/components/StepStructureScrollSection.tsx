@@ -1,5 +1,3 @@
-// src/features/landing/components/StepStructureScrollSection.tsx
-
 import { useRef } from 'react';
 
 import { STEP_STRUCTURE_STAGES } from '@/features/landing/constants/stepStructureData';
@@ -11,18 +9,29 @@ import { StepStructureSection } from './StepStructureSection';
 
 const FIGMA_WIDTH = 1440;
 const FIGMA_HEIGHT = 1024;
-const CARD_TOP = 460;
+
+/*
+ * 화면 축소 비율과 관계없이 동일한 스크롤 거리를 사용합니다.
+ * scale은 Figma UI의 시각적 크기 조절에만 사용합니다.
+ */
+const STEP_SCROLL_DISTANCE = 360;
 
 export function StepStructureScrollSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const scale = useLandingScale();
 
   const stepCount = STEP_STRUCTURE_STAGES.length;
-  const stepScrollDistance = (CARD_TOP / stepCount) * scale;
+  const stepScrollDistance = STEP_SCROLL_DISTANCE;
 
   /*
-   * 화면 한 개 높이와 단계 전환에 필요한 스크롤 거리를 더합니다.
-   * 콘텐츠는 sticky 화면 안에서 중앙 정렬됩니다.
+   * sticky 화면 한 개 높이와 각 단계가 유지될 스크롤 공간을 더합니다.
+   *
+   * 0 ~ 359px: CATEGORY
+   * 360 ~ 719px: MILESTONE
+   * 720px 이상: TASK
+   *
+   * 마지막 단계도 일정 거리 동안 화면에 유지되도록
+   * stepCount 전체를 높이에 반영합니다.
    */
   const scrollSectionHeight = `calc(
     100vh + ${stepScrollDistance * stepCount}px
