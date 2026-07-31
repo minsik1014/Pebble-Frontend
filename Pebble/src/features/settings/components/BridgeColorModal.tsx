@@ -35,7 +35,7 @@ function ColorChip({ color, size = 'card' }: ColorChipProps) {
       className={[
         'shrink-0 rounded-token-s',
         size === 'preview' ? 'h-12 w-[75.43px]' : 'h-8 w-[33px]',
-        isEmptyChip ? 'border border-[#D4D4D4]' : '',
+        isEmptyChip ? 'border border-border-secondary' : '',
       ].join(' ')}
       style={{ backgroundColor: color }}
       aria-hidden="true"
@@ -227,7 +227,7 @@ export function BridgeColorModal({
               'h-11 w-[282px] disabled:opacity-100',
               hasChanged && !isSubmitting
                 ? '!bg-btn-primary !text-text-onFill'
-                : '!bg-text-secondary !text-text-teritary',
+                : '!bg-btn-teritary !text-text-teritary',
             ].join(' ')}
             onClick={() => void handleConfirm()}
           >

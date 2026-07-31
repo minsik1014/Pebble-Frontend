@@ -43,7 +43,7 @@ export function AccountSettingsSection({
         <SettingsSectionHeader icon={UserIcon} title="계정 관리" />
 
         {isTempPassword && !isSocialAccount ? (
-          <p className="mt-token-m rounded-token-s bg-[#FEE7DA] p-token-m text-body-02-m text-fill-danger">
+          <p className="mt-token-m rounded-token-s bg-fill-danger-bg p-token-m text-body-02-m text-fill-danger">
             임시 비밀번호를 사용 중이에요. 새 비밀번호로 변경해 주세요.
           </p>
         ) : null}

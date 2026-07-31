@@ -378,7 +378,7 @@ export function PasswordChangeModal({
               'h-11 w-full disabled:opacity-100',
               canSubmit
                 ? ''
-                : '!bg-[#737373] !text-[#A3A3A3]',
+                : '!bg-btn-teritary !text-text-teritary',
             ].join(' ')}
             onClick={() => void handleSubmit()}
           >
