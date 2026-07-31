@@ -4,19 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import CautionIcon from '@/assets/icons/Caution.svg?react';
 
 import { Button } from '@/components/ui/Button';
+import { clearAuthTokens } from '@/services/api';
 
+import { deleteMyAccount } from '../api/settingsApi';
 import { SettingsRow } from './SettingsRow';
 import { SettingsSection } from './SettingsSection';
 import { SettingsSectionHeader } from './SettingsSectionHeader';
 import { WithdrawalConfirmModal } from './WithdrawalConfirmModal';
 
-const mockWithdrawAccount = async () => {
-  // TODO: 회원탈퇴 API 연동
-  await Promise.resolve();
-};
-
 export function WithdrawalSection() {
   const navigate = useNavigate();
+
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -28,13 +26,17 @@ export function WithdrawalSection() {
     setIsSubmitting(true);
 
     try {
-      await mockWithdrawAccount();
+      await deleteMyAccount();
+      clearAuthTokens();
 
-      // TODO: 인증 토큰/세션 정보 정리
       setIsConfirmModalOpen(false);
-      navigate('/login');
-    } catch {
-      setErrorMessage('회원탈퇴 요청에 실패했어요. 다시 시도해 주세요.');
+      navigate('/landing', { replace: true });
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : '회원탈퇴 요청에 실패했어요. 다시 시도해 주세요.',
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -72,7 +74,7 @@ export function WithdrawalSection() {
         open={isConfirmModalOpen}
         isSubmitting={isSubmitting}
         onOpenChange={setIsConfirmModalOpen}
-        onConfirm={handleWithdraw}
+        onConfirm={() => void handleWithdraw()}
       />
     </>
   );

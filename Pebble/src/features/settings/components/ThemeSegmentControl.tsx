@@ -5,6 +5,7 @@ export type ThemeMode = 'light' | 'dark';
 
 interface ThemeSegmentControlProps {
   value: ThemeMode;
+  disabled?: boolean;
   onChange: (value: ThemeMode) => void;
 }
 
@@ -23,6 +24,7 @@ const themeOptions = [
 
 export function ThemeSegmentControl({
   value,
+  disabled = false,
   onChange,
 }: ThemeSegmentControlProps) {
   return (
@@ -38,12 +40,14 @@ export function ThemeSegmentControl({
           <button
             key={optionValue}
             type="button"
+            disabled={disabled}
             aria-pressed={isSelected}
             onClick={() => onChange(optionValue)}
             className={[
               'flex h-10 flex-1 items-center justify-center gap-token-s rounded-[10px]',
               'text-body-02-m transition-colors',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary',
+              'disabled:cursor-not-allowed disabled:opacity-60',
               isSelected
                 ? 'bg-fill-inverse text-text-strong shadow-shadow-s'
                 : 'text-text-teritary hover:text-text-primary',

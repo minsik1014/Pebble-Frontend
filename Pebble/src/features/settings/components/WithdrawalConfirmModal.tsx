@@ -86,7 +86,7 @@ export function WithdrawalConfirmModal({
           </button>
         </div>
 
-        <div className="flex h-[100px] w-full flex-col justify-center gap-token-m rounded-token-s bg-[#FEE7DA] p-token-l">
+        <div className="flex h-[100px] w-full flex-col justify-center gap-token-m rounded-token-s bg-fill-danger-bg p-token-l">
           <p className="flex h-6 w-full items-center gap-token-m">
             <DeleteIcon
               className="size-6 shrink-0 text-fill-danger"

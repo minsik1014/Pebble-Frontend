@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import UserIcon from '@/assets/icons/user-outline.svg?react';
 
@@ -14,14 +14,22 @@ import { SettingsSectionHeader } from './SettingsSectionHeader';
 interface AccountSettingsSectionProps {
   currentEmail: string;
   isSocialAccount?: boolean;
+  isTempPassword?: boolean;
 }
 
 export function AccountSettingsSection({
   currentEmail,
   isSocialAccount = false,
+  isTempPassword = false,
 }: AccountSettingsSectionProps) {
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isTempPassword && !isSocialAccount) {
+      setIsPasswordModalOpen(true);
+    }
+  }, [isSocialAccount, isTempPassword]);
 
   const handleOpenPasswordModal = () => {
     if (isSocialAccount) return;
@@ -33,6 +41,12 @@ export function AccountSettingsSection({
     <>
       <SettingsSection className="min-h-[284px]">
         <SettingsSectionHeader icon={UserIcon} title="계정 관리" />
+
+        {isTempPassword && !isSocialAccount ? (
+          <p className="mt-token-m rounded-token-s bg-fill-danger-bg p-token-m text-body-02-m text-fill-danger">
+            임시 비밀번호를 사용 중이에요. 새 비밀번호로 변경해 주세요.
+          </p>
+        ) : null}
 
         <div className="mt-token-l flex flex-col gap-token-l">
           <EmailChangeItem

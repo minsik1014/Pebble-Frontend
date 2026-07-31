@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { AxiosError, AxiosRequestConfig } from "axios";
+
 import {
   clearAuthTokens,
   getAccessToken,
@@ -14,6 +15,10 @@ import {
 } from "./types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_TIMEOUT = 10_000;
+
+const TEMPORARY_ERROR_MESSAGE =
+  "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
 
 type AuthTokens = {
   accessToken: string;
@@ -22,6 +27,7 @@ type AuthTokens = {
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  timeout: API_TIMEOUT,
 });
 
 let refreshPromise: Promise<string> | null = null;
@@ -35,9 +41,15 @@ async function refreshAccessToken() {
 
   if (!refreshPromise) {
     refreshPromise = axios
-      .post<ApiResponse<AuthTokens>>(`${API_BASE_URL}/auth/refresh`, {
-        refreshToken,
-      })
+      .post<ApiResponse<AuthTokens>>(
+        `${API_BASE_URL}/auth/refresh`,
+        {
+          refreshToken,
+        },
+        {
+          timeout: API_TIMEOUT,
+        },
+      )
       .then((response) => {
         const tokens = response.data.data;
 
@@ -46,6 +58,7 @@ async function refreshAccessToken() {
         }
 
         setAuthTokens(tokens.accessToken, tokens.refreshToken);
+
         return tokens.accessToken;
       })
       .finally(() => {
@@ -104,14 +117,31 @@ apiClient.interceptors.response.use(
 
       try {
         const accessToken = await refreshAccessToken();
+
         requestConfig.headers = {
           ...requestConfig.headers,
           Authorization: `Bearer ${accessToken}`,
         };
+
         return await apiClient.request(requestConfig);
       } catch {
         redirectToLoginAfterAuthExpired();
       }
+    }
+
+    const isTimeoutError =
+      error.code === "ECONNABORTED" ||
+      error.code === "ETIMEDOUT";
+
+    const isNetworkError = !error.response;
+    const isServerError =
+      typeof status === "number" && status >= 500;
+
+    if (isTimeoutError || isNetworkError || isServerError) {
+      throw new ApiRequestError({
+        message: TEMPORARY_ERROR_MESSAGE,
+        status,
+      });
     }
 
     if (isApiErrorResponse(responseData)) {
@@ -124,7 +154,7 @@ apiClient.interceptors.response.use(
     }
 
     throw new ApiRequestError({
-      message: error.message || "API 요청에 실패했어요.",
+      message: error.message || TEMPORARY_ERROR_MESSAGE,
       status,
     });
   },
@@ -134,5 +164,6 @@ export async function apiRequest<TData>(
   config: AxiosRequestConfig & ApiRequestConfig,
 ): Promise<TData | null> {
   const response = await apiClient.request<ApiResponse<TData>>(config);
+
   return response.data.data ?? null;
 }

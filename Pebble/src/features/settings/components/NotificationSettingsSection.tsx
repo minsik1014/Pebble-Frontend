@@ -1,45 +1,37 @@
 import { useState } from 'react';
 
-import BellIcon from '@/assets/icons/bell-outline.svg?react';
+import BellIcon from '@/assets/icons/bell-outline no-dot.svg?react';
+
+import { ToggleSwitch } from '@/components/ui/ToggleSwitch';
 
 import { SettingsRow } from './SettingsRow';
 import { SettingsSection } from './SettingsSection';
 import { SettingsSectionHeader } from './SettingsSectionHeader';
-import { ToggleSwitch } from '@/components/ui/ToggleSwitch';
 
-const DEFAULT_NOTIFICATION_ENABLED = true;
+interface NotificationSettingsSectionProps {
+  enabled: boolean;
+  isUpdating: boolean;
+  onChange: (enabled: boolean) => Promise<void>;
+}
 
-/**
- * API 연동 전 Mock 서버 값입니다.
- * undefined면 신규 계정으로 보고 기본값 true를 사용합니다.
- * boolean 값이 들어오면 서버 상태를 우선합니다.
- */
-const mockServerNotificationEnabled: boolean | undefined = undefined;
+export function NotificationSettingsSection({
+  enabled,
+  isUpdating,
+  onChange,
+}: NotificationSettingsSectionProps) {
+  const [errorMessage, setErrorMessage] = useState('');
 
-export function NotificationSettingsSection() {
-  const initialNotificationEnabled =
-    mockServerNotificationEnabled ?? DEFAULT_NOTIFICATION_ENABLED;
-
-  const [notificationEnabled, setNotificationEnabled] = useState(
-    initialNotificationEnabled,
-  );
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  const handleNotificationChange = async (nextChecked: boolean) => {
-    if (isUpdating) return;
-
-    const previousChecked = notificationEnabled;
-
-    setNotificationEnabled(nextChecked);
-    setIsUpdating(true);
+  const handleChange = async (nextEnabled: boolean) => {
+    setErrorMessage('');
 
     try {
-      // TODO: 알림 설정 변경 API 연동
-      await Promise.resolve();
-    } catch {
-      setNotificationEnabled(previousChecked);
-    } finally {
-      setIsUpdating(false);
+      await onChange(nextEnabled);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : '알림 설정을 변경하지 못했어요.',
+      );
     }
   };
 
@@ -53,14 +45,18 @@ export function NotificationSettingsSection() {
           description="오늘 예정된 일정을 아침에 알려드려요"
           actions={
             <ToggleSwitch
-              checked={notificationEnabled}
+              checked={enabled}
               disabled={isUpdating}
               aria-label="당일 일정 알림"
               uncheckedClassName="bg-text-quaternary"
-              onCheckedChange={handleNotificationChange}
+              onCheckedChange={(checked) => void handleChange(checked)}
             />
           }
         />
+
+        {errorMessage ? (
+          <p className="text-caption-01 text-fill-danger">{errorMessage}</p>
+        ) : null}
       </div>
     </SettingsSection>
   );
