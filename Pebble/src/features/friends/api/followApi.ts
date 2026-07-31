@@ -26,7 +26,7 @@ export type PageInfo = {
 };
 
 type PagedApiResponse<T> = ApiResponse<T[]> & {
-  page: PageInfo;
+  page?: PageInfo;
 };
 
 type FollowMutationResponse = {
@@ -54,18 +54,46 @@ export async function searchUsers(
 
 export async function getFollows(
   type: FollowListType,
+  offset = 0,
+  limit = 50,
 ): Promise<{ follows: FollowListItem[]; page: PageInfo }> {
   const response = await apiClient.get<PagedApiResponse<FollowListItem>>(
     "/follows",
     {
-      params: { type, offset: 0, limit: 50 },
+      params: { type, offset, limit },
     },
   );
+  const follows = response.data.data ?? [];
 
   return {
-    follows: response.data.data ?? [],
-    page: response.data.page,
+    follows,
+    page: response.data.page ?? {
+      offset,
+      limit,
+      total: follows.length,
+    },
   };
+}
+
+export async function getAllFollows(
+  type: FollowListType,
+): Promise<FollowListItem[]> {
+  const firstPage = await getFollows(type);
+  const follows = [...firstPage.follows];
+  let nextOffset = firstPage.page.offset + firstPage.page.limit;
+
+  while (nextOffset < firstPage.page.total) {
+    const nextPage = await getFollows(type, nextOffset);
+    follows.push(...nextPage.follows);
+
+    if (!nextPage.follows.length) {
+      break;
+    }
+
+    nextOffset += nextPage.page.limit;
+  }
+
+  return follows;
 }
 
 export async function sendFollowRequest(

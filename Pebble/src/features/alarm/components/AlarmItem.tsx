@@ -9,13 +9,13 @@ interface AlarmItemProps {
   onFollowRequestResponse?: (
     alarm: Alarm,
     action: FollowRequestAction,
-  ) => void;
+  ) => Promise<void>;
 }
 
 const getAlarmIcon = (type: Alarm["type"]) => {
   switch (type) {
-    case "TASK":
-    case "MILESTONE":
+    case "TASK_DUE":
+    case "MILESTONE_DUE":
       return <CalendarIcon className="size-5" />;
     case "REPORT":
       return <ReportIcon className="size-5" />;
@@ -37,7 +37,7 @@ const getFollowMessageSuffix = (alarm: Alarm) => {
     return "님이 팔로우를 요청했어요";
   }
 
-  if (alarm.type === "FOLLOW_ACCEPT") {
+  if (alarm.type === "FOLLOW_ACCEPTED") {
     return "님이 팔로우를 수락했어요";
   }
 
@@ -58,7 +58,7 @@ export const AlarmItem = ({
     alarm.type === "FOLLOW_REQUEST" ? isPendingFollowRequest : !alarm.isRead;
 
   const hasUserImage =
-    alarm.type === "FOLLOW_REQUEST" || alarm.type === "FOLLOW_ACCEPT";
+    alarm.type === "FOLLOW_REQUEST" || alarm.type === "FOLLOW_ACCEPTED";
 
   const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -67,12 +67,12 @@ export const AlarmItem = ({
 
   const handleAccept = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    onFollowRequestResponse?.(alarm, "ACCEPT");
+    void onFollowRequestResponse?.(alarm, "ACCEPT");
   };
 
   const handleReject = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    onFollowRequestResponse?.(alarm, "REJECT");
+    void onFollowRequestResponse?.(alarm, "REJECT");
   };
 
   return (

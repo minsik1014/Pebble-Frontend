@@ -9,18 +9,23 @@ import { Trash2 } from "lucide-react";
 
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
 import SearchIcon from "@/assets/icons/Search.svg?react";
+import ClearIcon from "@/assets/icons/Close.svg?react";
 import MySolidIcon from "@/assets/icons/user-solid.svg?react";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import {
   acceptFollowRequest,
   deleteFollow,
-  getFollows,
+  getAllFollows,
   searchUsers,
   sendFollowRequest,
   type FollowListItem,
   type FollowUser,
   type SearchedUser,
 } from "@/features/friends/api/followApi";
+import {
+  FOLLOW_SYNC_INTERVAL_MS,
+  FOLLOW_UPDATED_EVENT,
+} from "@/features/friends/utils/followSync";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -54,21 +59,23 @@ export default function FriendsPage(): JSX.Element {
     }, 2000);
   };
 
-  const loadFollowLists = useCallback(async () => {
-    setIsListLoading(true);
+  const loadFollowLists = useCallback(async (showLoading = false) => {
+    if (showLoading) {
+      setIsListLoading(true);
+    }
     setErrorMessage("");
 
     try {
       const [friendsResponse, pendingResponse, sentResponse] =
         await Promise.all([
-          getFollows("friends"),
-          getFollows("pending"),
-          getFollows("sent"),
+          getAllFollows("friends"),
+          getAllFollows("pending"),
+          getAllFollows("sent"),
         ]);
 
-      setFriends(friendsResponse.follows);
-      setPendingRequests(pendingResponse.follows);
-      setSentRequests(sentResponse.follows);
+      setFriends(friendsResponse);
+      setPendingRequests(pendingResponse);
+      setSentRequests(sentResponse);
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -79,10 +86,63 @@ export default function FriendsPage(): JSX.Element {
       setIsListLoading(false);
     }
   }, []);
+  const refreshCurrentSearch = useCallback(async () => {
+    if (!normalizedSearchQuery) {
+      return;
+    }
+
+    const response = await searchUsers(normalizedSearchQuery);
+    setSearchResults(response.users);
+  }, [normalizedSearchQuery]);
 
   useEffect(() => {
-    void loadFollowLists();
+    void loadFollowLists(true);
   }, [loadFollowLists]);
+
+  useEffect(() => {
+    const refreshAllFollowData = () => {
+      if (document.visibilityState === "visible") {
+        void Promise.all([
+          loadFollowLists(),
+          refreshCurrentSearch(),
+        ]).catch(() => undefined);
+      }
+    };
+    const refreshAfterFollowUpdate = () => {
+      void Promise.all([
+        loadFollowLists(),
+        refreshCurrentSearch(),
+      ]).catch(() => undefined);
+    };
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        void Promise.all([
+          loadFollowLists(),
+          refreshCurrentSearch(),
+        ]).catch(() => undefined);
+      }
+    }, FOLLOW_SYNC_INTERVAL_MS);
+
+    window.addEventListener("focus", refreshAllFollowData);
+    document.addEventListener("visibilitychange", refreshAllFollowData);
+    window.addEventListener(
+      FOLLOW_UPDATED_EVENT,
+      refreshAfterFollowUpdate,
+    );
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refreshAllFollowData);
+      document.removeEventListener(
+        "visibilitychange",
+        refreshAllFollowData,
+      );
+      window.removeEventListener(
+        FOLLOW_UPDATED_EVENT,
+        refreshAfterFollowUpdate,
+      );
+    };
+  }, [loadFollowLists, refreshCurrentSearch]);
 
   useEffect(
     () => () => {
@@ -341,14 +401,24 @@ export default function FriendsPage(): JSX.Element {
               </h2>
               <div className="relative">
                 <input
-                  type="search"
+                  type="text"
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
                   placeholder="닉네임 또는 이메일로 찾을 수 있어요"
-                  className="h-14 w-full rounded-token-s border border-border-default bg-fill-inverse px-4 pr-14 text-body-02-m text-text-strong outline-none transition-colors placeholder:text-text-teritary focus:border-text-secondary"
+                  className="h-14 w-full rounded-token-s border border-border-default bg-fill-inverse pl-12 pr-12 text-body-02-m text-text-strong outline-none transition-colors placeholder:text-text-teritary focus:border-text-secondary"
                   aria-label="친구 닉네임 또는 이메일 검색"
                 />
-                <SearchIcon className="pointer-events-none absolute right-4 top-1/2 size-6 -translate-y-1/2 text-text-teritary" />
+                <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-6 -translate-y-1/2 text-text-teritary" />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-4 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-full bg-text-teritary text-text-onFill hover:bg-text-secondary"
+                    aria-label="검색어 지우기"
+                  >
+                    <ClearIcon className="size-3" />
+                  </button>
+                )}
               </div>
 
               {!normalizedSearchQuery ? (

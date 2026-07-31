@@ -44,13 +44,19 @@ export const GlobalNavigationBar = ({
   const {
     alarms,
     unreadCount,
+    refreshAlarms,
     handleReadVisibleUnreadAlarms,
     handleDeleteAlarm,
     handleDeleteAllAlarms,
     handleRespondFollowRequest,
   } = useAlarms();
 
-  const openAlarmPopover = () => {
+  const openAlarmPopover = async () => {
+    try {
+      await refreshAlarms();
+    } catch {
+      // 이전에 불러온 알림이 있다면 팝오버는 그대로 열어 접근 가능하게 둡니다.
+    }
     const rect = alarmButtonRef.current?.getBoundingClientRect();
 
     if (rect) {
@@ -64,8 +70,11 @@ export const GlobalNavigationBar = ({
   };
 
   const closeAlarmPopover = useCallback(async () => {
-    await handleReadVisibleUnreadAlarms();
-    setIsAlarmOpen(false);
+    try {
+      await handleReadVisibleUnreadAlarms();
+    } finally {
+      setIsAlarmOpen(false);
+    }
   }, [handleReadVisibleUnreadAlarms]);
 
   const toggleAlarmPopover = async () => {
@@ -74,7 +83,7 @@ export const GlobalNavigationBar = ({
       return;
     }
 
-    openAlarmPopover();
+    await openAlarmPopover();
   };
 
   const handleLogout = async () => {
