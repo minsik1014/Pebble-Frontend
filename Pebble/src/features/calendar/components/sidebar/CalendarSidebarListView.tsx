@@ -124,6 +124,29 @@ const isSameMonth = (date: Date, year: number, month: number) =>
 const formatGroupTitle = (date: Date) =>
   `${date.getMonth() + 1}월 ${date.getDate()}일`;
 
+const getDatedItemKey = (groupKey: string, datedItem: DatedSidebarItem) => {
+  const baseKey = [
+    groupKey,
+    datedItem.type,
+    datedItem.item.id,
+    datedItem.date.toISOString(),
+  ];
+
+  if ("categoryId" in datedItem) {
+    baseKey.push(datedItem.categoryId);
+  }
+
+  if ("milestoneId" in datedItem) {
+    baseKey.push(datedItem.milestoneId);
+  }
+
+  if ("taskDateId" in datedItem && datedItem.taskDateId) {
+    baseKey.push(String(datedItem.taskDateId));
+  }
+
+  return baseKey.join("-");
+};
+
 const collectSidebarItemsByDate = ({
   categories,
   standaloneTasks,
@@ -299,11 +322,11 @@ export const CalendarSidebarListView = ({
           <h2 className="text-body-01-sb text-text-primary">{group.title}</h2>
           <div className="flex w-full flex-col gap-2">
             {group.items.map((datedItem) => {
-              const { item, date, barColor } = datedItem;
+              const { item, barColor } = datedItem;
 
               return (
                 <label
-                  key={`${group.key}-${item.id}-${date.toISOString()}`}
+                  key={getDatedItemKey(group.key, datedItem)}
                   className="flex h-12 w-full shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 shadow-shadow-s transition-colors hover:bg-fill-surface"
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-2">
