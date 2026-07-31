@@ -1,11 +1,9 @@
-/* src/features/landing/styles/reportAnimation.css */
-
 .landing-report-text-reveal {
   opacity: 0;
-  transform: translate3d(0, 36px, 0);
+  transform: translate3d(0, 64px, 0);
 
   transition-property: opacity, transform;
-  transition-duration: 1300ms, 1300ms;
+  transition-duration: 900ms, 900ms;
   transition-timing-function: linear, linear;
   transition-delay: 0ms;
 
@@ -20,10 +18,10 @@
 
 .landing-report-card-reveal {
   opacity: 0;
-  transform: translate3d(0, 36px, 0);
+  transform: translate3d(0, 64px, 0);
 
   transition-property: opacity, transform;
-  transition-duration: 1300ms, 1300ms;
+  transition-duration: 850ms, 850ms;
   transition-timing-function: ease-in-out, ease-in-out;
   transition-delay: 0ms;
 

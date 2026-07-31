@@ -21,9 +21,9 @@ interface ReportRevealProps {
 }
 
 const CARD_REVEAL_DELAY = {
-  left: 400,
-  right: 600,
-  center: 800,
+  left: 250,
+  right: 400,
+  center: 550,
 } as const;
 
 function getTextRevealClassName(isVisible: boolean) {
