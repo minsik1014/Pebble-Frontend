@@ -74,7 +74,7 @@ export function SharedFriendsSection({
       {friends.length === 0 ? (
         <EmptyState
           className="flex-1"
-          message="이번 달에는 함께한 친구가 없어요."
+          message="저번 달에는 함께한 친구가 없어요."
         />
       ) : (
         <ul className="flex flex-col gap-[12px]">
