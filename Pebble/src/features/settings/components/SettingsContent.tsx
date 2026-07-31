@@ -11,11 +11,13 @@ export function SettingsContent({
 }: SettingsContentProps) {
   return (
     <main
-      className={`flex h-[1000px] shrink-0 flex-col gap-token-m overflow-y-auto bg-transparent transition-all duration-300 custom-scrollbar ${
+      className={`relative z-10 h-[1000px] shrink-0 overflow-visible bg-transparent transition-all duration-300 ${
         isSidebarOpen ? "w-[924px]" : "w-[1316px]"
       }`}
     >
-      {children}
+      <div className="-ml-[28px] flex h-full w-[calc(100%+56px)] flex-col gap-token-m overflow-y-auto px-[28px] custom-scrollbar">
+        {children}
+      </div>
     </main>
   );
 }
