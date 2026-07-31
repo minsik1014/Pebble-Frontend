@@ -11,7 +11,7 @@
 }
 
 .landing-bridge-marquee {
-  animation: landing-bridge-marquee 44s linear infinite;
+  animation: landing-bridge-marquee 28s linear infinite;
   will-change: transform;
 }
 
