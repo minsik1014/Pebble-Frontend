@@ -38,7 +38,7 @@ export function HeroSection() {
       <Button
         type="button"
         variant="primary"
-        className="absolute left-[624px] top-[548px] z-20 h-[66px] w-[189px] rounded-token-s px-token-xl py-token-l text-[20px] font-semibold leading-[130%] tracking-[-0.01em] shadow-[0_2px_10px_rgba(23,23,23,0.1)]"
+        className="absolute left-[624px] top-[548px] z-20 h-[66px] w-[189px] rounded-token-s px-token-xl py-token-l font-sans !text-[20px] !font-semibold !leading-[130%] tracking-[-0.01em] shadow-[0_2px_10px_rgba(23,23,23,0.1)]"
         onClick={() => navigate('/signup')}
       >
         무료로 시작하기
