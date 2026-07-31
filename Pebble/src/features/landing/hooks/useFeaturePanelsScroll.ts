@@ -14,7 +14,7 @@ interface UseFeaturePanelsScrollParams {
  * 끝나기 약 180ms 전부터 다음 스크롤 입력을 허용합니다.
  */
 const FEATURE_PANEL_TRANSITION_LOCK_DURATION =
-  1_200;
+  800;
 
 export function useFeaturePanelsScroll({
   sectionRef,

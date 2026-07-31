@@ -1,4 +1,3 @@
-// src/features/landing/components/FeaturePanel.tsx
 
 import type { ReactNode } from 'react';
 
@@ -41,7 +40,7 @@ export function FeaturePanel({
       <div
         className={[
           'absolute left-[100px] top-[263px] flex w-[626px] flex-col gap-[20px]',
-          'transition-[opacity,transform] duration-[1100ms]',
+          'transition-[opacity,transform] duration-[800ms]',
           'ease-[cubic-bezier(0.22,1,0.36,1)]',
           'will-change-[opacity,transform]',
           'motion-reduce:translate-y-0',
@@ -63,7 +62,7 @@ export function FeaturePanel({
       <div
         className={[
           'absolute inset-0',
-          'transition-[opacity,transform] duration-[1200ms]',
+          'transition-[opacity,transform] duration-[800ms]',
           'ease-[cubic-bezier(0.22,1,0.36,1)]',
           'will-change-[opacity,transform]',
           'motion-reduce:translate-y-0',
@@ -71,9 +70,6 @@ export function FeaturePanel({
           'motion-reduce:transition-none',
           transitionClassName,
         ].join(' ')}
-        style={{
-          transitionDelay: isVisible ? '180ms' : '0ms',
-        }}
       >
         {children}
       </div>
