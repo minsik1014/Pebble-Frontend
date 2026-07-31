@@ -1,5 +1,6 @@
 import { type TaskItem } from "@/types";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type StandaloneTaskSectionProps = {
@@ -43,7 +44,7 @@ export const StandaloneTaskSection = ({
                 {dateLabel}
               </span>
               <SidebarScheduleCheckbox
-                checked={Boolean(task.isCompleted)}
+                checked={isTaskCompleted(task)}
                 ariaLabel={`${task.title} 일정 완료`}
                 onChange={() => onToggleTaskCompleted?.(task.id)}
                 stopPropagation

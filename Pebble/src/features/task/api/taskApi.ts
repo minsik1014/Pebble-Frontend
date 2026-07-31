@@ -102,9 +102,13 @@ export async function deleteTask({
   });
 }
 
-export async function toggleTaskComplete(taskId: string): Promise<void> {
+export async function toggleTaskComplete(
+  taskId: string,
+  taskDateId?: number,
+): Promise<void> {
   await apiRequest({
     method: "PATCH",
     url: `/tasks/${taskId}/complete`,
+    params: taskDateId ? { taskDateId } : undefined,
   });
 }

@@ -15,30 +15,48 @@ type CalendarSidebarListViewProps = {
   onToggleCategoryTaskCompleted?: (
     categoryId: string,
     taskId: string,
+    taskDateId?: number,
   ) => void | Promise<void>;
   onToggleTaskCompleted?: (
     categoryId: string,
     milestoneId: string,
     taskId: string,
+    taskDateId?: number,
   ) => void | Promise<void>;
-  onToggleStandaloneTaskCompleted?: (taskId: string) => void | Promise<void>;
+  onToggleStandaloneTaskCompleted?: (
+    taskId: string,
+    taskDateId?: number,
+  ) => void | Promise<void>;
 };
 
 type DatedSidebarItem = {
   item: ScheduleItem;
   date: Date;
   barColor: string;
+  isCompleted?: boolean;
 } & (
-  | { type: "standaloneTask"; taskId: string }
-  | { type: "categoryTask"; categoryId: string; taskId: string }
+  | { type: "standaloneTask"; taskId: string; taskDateId?: number }
+  | {
+      type: "categoryTask";
+      categoryId: string;
+      taskId: string;
+      taskDateId?: number;
+    }
   | { type: "milestone"; categoryId: string; milestoneId: string }
   | {
       type: "milestoneTask";
       categoryId: string;
       milestoneId: string;
       taskId: string;
+      taskDateId?: number;
     }
 );
+
+type TaskDateOccurrence = {
+  date: Date;
+  taskDateId?: number;
+  isCompleted?: boolean;
+};
 
 const getDatesInRange = (startDate: Date, endDate: Date) => {
   const dates: Date[] = [];
@@ -72,11 +90,62 @@ const getItemDates = (item: ScheduleItem, fallbackYear: number) => {
   return getDatesInRange(startDate, endDate);
 };
 
+const getTaskDateOccurrences = (
+  task: TaskItem,
+  fallbackYear: number,
+): TaskDateOccurrence[] => {
+  if (task.taskDates?.length) {
+    const occurrences: TaskDateOccurrence[] = [];
+
+    task.taskDates.forEach((taskDate) => {
+      const date = parseScheduleDate(taskDate.date, fallbackYear);
+
+      if (date) {
+        occurrences.push({
+          date,
+          taskDateId: taskDate.taskDateId,
+          isCompleted: taskDate.isCompleted,
+        });
+      }
+    });
+
+    return occurrences;
+  }
+
+  return getItemDates(task, fallbackYear).map((date) => ({
+    date,
+    isCompleted: task.isCompleted,
+  }));
+};
+
 const isSameMonth = (date: Date, year: number, month: number) =>
   date.getFullYear() === year && date.getMonth() + 1 === month;
 
 const formatGroupTitle = (date: Date) =>
   `${date.getMonth() + 1}월 ${date.getDate()}일`;
+
+const getDatedItemKey = (groupKey: string, datedItem: DatedSidebarItem) => {
+  const baseKey = [
+    groupKey,
+    datedItem.type,
+    datedItem.item.id,
+    datedItem.date.toISOString(),
+  ];
+
+  if ("categoryId" in datedItem) {
+    baseKey.push(datedItem.categoryId);
+  }
+
+  if ("milestoneId" in datedItem) {
+    baseKey.push(datedItem.milestoneId);
+  }
+
+  if ("taskDateId" in datedItem && datedItem.taskDateId) {
+    baseKey.push(String(datedItem.taskDateId));
+  }
+
+  return baseKey.join("-");
+};
 
 const collectSidebarItemsByDate = ({
   categories,
@@ -92,31 +161,35 @@ const collectSidebarItemsByDate = ({
   standaloneTasks.forEach((task) => {
     const barColor = task.accent ?? "#171717";
 
-    getItemDates(task, currentYear)
-      .filter((date) => isSameMonth(date, currentYear, currentMonth))
-      .forEach((date) => {
+    getTaskDateOccurrences(task, currentYear)
+      .filter(({ date }) => isSameMonth(date, currentYear, currentMonth))
+      .forEach(({ date, taskDateId, isCompleted }) => {
         datedItems.push({
           item: task,
           date,
           barColor,
+          isCompleted,
           type: "standaloneTask",
           taskId: task.id,
+          taskDateId,
         });
       });
   });
 
   categories.forEach((category) => {
     category.tasks?.forEach((task) => {
-      getItemDates(task, currentYear)
-        .filter((date) => isSameMonth(date, currentYear, currentMonth))
-        .forEach((date) => {
+      getTaskDateOccurrences(task, currentYear)
+        .filter(({ date }) => isSameMonth(date, currentYear, currentMonth))
+        .forEach(({ date, taskDateId, isCompleted }) => {
           datedItems.push({
             item: task,
             date,
             barColor: category.themeLight,
+            isCompleted,
             type: "categoryTask",
             categoryId: category.id,
             taskId: task.id,
+            taskDateId,
           });
         });
     });
@@ -133,20 +206,22 @@ const collectSidebarItemsByDate = ({
             categoryId: category.id,
             milestoneId: milestone.id,
           });
-        });
+      });
 
       milestone.tasks?.forEach((task) => {
-        getItemDates(task, currentYear)
-          .filter((date) => isSameMonth(date, currentYear, currentMonth))
-          .forEach((date) => {
+        getTaskDateOccurrences(task, currentYear)
+          .filter(({ date }) => isSameMonth(date, currentYear, currentMonth))
+          .forEach(({ date, taskDateId, isCompleted }) => {
             datedItems.push({
               item: task,
               date,
               barColor: category.themeLight,
+              isCompleted,
               type: "milestoneTask",
               categoryId: category.id,
               milestoneId: milestone.id,
               taskId: task.id,
+              taskDateId,
             });
           });
       });
@@ -208,7 +283,10 @@ export const CalendarSidebarListView = ({
 
   const handleToggleCompleted = (datedItem: DatedSidebarItem) => {
     if (datedItem.type === "standaloneTask") {
-      void onToggleStandaloneTaskCompleted?.(datedItem.taskId);
+      void onToggleStandaloneTaskCompleted?.(
+        datedItem.taskId,
+        datedItem.taskDateId,
+      );
       return;
     }
 
@@ -216,6 +294,7 @@ export const CalendarSidebarListView = ({
       void onToggleCategoryTaskCompleted?.(
         datedItem.categoryId,
         datedItem.taskId,
+        datedItem.taskDateId,
       );
       return;
     }
@@ -232,6 +311,7 @@ export const CalendarSidebarListView = ({
       datedItem.categoryId,
       datedItem.milestoneId,
       datedItem.taskId,
+      datedItem.taskDateId,
     );
   };
 
@@ -242,11 +322,11 @@ export const CalendarSidebarListView = ({
           <h2 className="text-body-01-sb text-text-primary">{group.title}</h2>
           <div className="flex w-full flex-col gap-2">
             {group.items.map((datedItem) => {
-              const { item, date, barColor } = datedItem;
+              const { item, barColor } = datedItem;
 
               return (
                 <label
-                  key={`${group.key}-${item.id}-${date.toISOString()}`}
+                  key={getDatedItemKey(group.key, datedItem)}
                   className="flex h-12 w-full shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 shadow-shadow-s transition-colors hover:bg-fill-surface"
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -264,7 +344,7 @@ export const CalendarSidebarListView = ({
                       {formatScheduleDisplayLabel(item)}
                     </span>
                     <SidebarScheduleCheckbox
-                      checked={Boolean(item.isCompleted)}
+                      checked={Boolean(datedItem.isCompleted)}
                       ariaLabel={`${item.title} 일정 완료`}
                       onChange={() => {
                         handleToggleCompleted(datedItem);
