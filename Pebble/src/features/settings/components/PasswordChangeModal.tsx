@@ -1,4 +1,3 @@
-// src/features/settings/components/PasswordChangeModal.tsx
 
 import { useEffect, useState } from 'react';
 
@@ -11,6 +10,7 @@ import { setAuthTokens } from '@/services/api';
 interface PasswordChangeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
 }
 
 interface VisibilityButtonProps {
@@ -77,6 +77,7 @@ function VisibilityButton({
 export function PasswordChangeModal({
   open,
   onOpenChange,
+  onSuccess,
 }: PasswordChangeModalProps) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -179,6 +180,7 @@ export function PasswordChangeModal({
       );
 
       setAuthTokens(tokens.accessToken, tokens.refreshToken);
+      onSuccess();
       onOpenChange(false);
     } catch (error) {
       const message =
@@ -377,3 +379,4 @@ export function PasswordChangeModal({
     </div>
   );
 }
+
