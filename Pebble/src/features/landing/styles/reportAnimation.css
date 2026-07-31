@@ -34,7 +34,6 @@
 .landing-report-card-reveal.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
-  transition-delay: 400ms, 400ms;
 }
 
 @media (prefers-reduced-motion: reduce) {

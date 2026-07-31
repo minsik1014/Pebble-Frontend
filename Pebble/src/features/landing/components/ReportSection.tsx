@@ -1,4 +1,3 @@
-// src/features/landing/components/ReportSection.tsx
 
 import { useRef } from 'react';
 
@@ -18,7 +17,14 @@ import '../styles/reportAnimation.css';
 
 interface ReportRevealProps {
   isVisible: boolean;
+  revealDelay: number;
 }
+
+const CARD_REVEAL_DELAY = {
+  left: 400,
+  right: 600,
+  center: 800,
+} as const;
 
 function getTextRevealClassName(isVisible: boolean) {
   return [
@@ -34,8 +40,18 @@ function getCardRevealClassName(isVisible: boolean) {
   ].join(' ');
 }
 
+function getCardRevealStyle(
+  isVisible: boolean,
+  revealDelay: number,
+) {
+  return {
+    transitionDelay: isVisible ? `${revealDelay}ms` : '0ms',
+  };
+}
+
 function MonthlyPebbleCountCard({
   isVisible,
+  revealDelay,
 }: ReportRevealProps) {
   return (
     <article
@@ -46,6 +62,7 @@ function MonthlyPebbleCountCard({
         'shadow-shadow-m',
         getCardRevealClassName(isVisible),
       ].join(' ')}
+      style={getCardRevealStyle(isVisible, revealDelay)}
     >
       <div className="flex h-[134.36px] w-[183px] flex-col gap-[6.36px]">
         <p className="h-[68px] w-[183px] text-[28px] font-bold leading-[120%] tracking-[-0.01em] text-text-primary">
@@ -70,6 +87,7 @@ function MonthlyPebbleCountCard({
 
 function BusiestCategoryCard({
   isVisible,
+  revealDelay,
 }: ReportRevealProps) {
   return (
     <article
@@ -80,6 +98,7 @@ function BusiestCategoryCard({
         'shadow-shadow-m',
         getCardRevealClassName(isVisible),
       ].join(' ')}
+      style={getCardRevealStyle(isVisible, revealDelay)}
     >
       <div className="flex h-[69px] w-[219px] flex-col gap-[8px]">
         <p className="text-[14px] font-medium leading-[150%] tracking-[-0.01em] text-text-teritary">
@@ -165,6 +184,7 @@ function ReportScheduleRow({
 
 function BusiestDayCard({
   isVisible,
+  revealDelay,
 }: ReportRevealProps) {
   return (
     <article
@@ -175,6 +195,7 @@ function BusiestDayCard({
         'shadow-shadow-m',
         getCardRevealClassName(isVisible),
       ].join(' ')}
+      style={getCardRevealStyle(isVisible, revealDelay)}
     >
       <div className="flex h-[60px] w-[314px] flex-col gap-[6px]">
         <p className="text-[12px] font-medium leading-[150%] tracking-[-0.01em] text-text-teritary">
@@ -224,7 +245,7 @@ export function ReportSection() {
       ref={sectionRef}
       className="relative h-full w-full overflow-hidden bg-[linear-gradient(116.7deg,#FAFAFA_3.1%,#E5E5E5_99.9%)]"
     >
-      {/* 텍스트 애니메이션이 먼저 시작됩니다. */}
+      {/* 타이틀과 설명이 먼저 등장합니다. */}
       <div
         className={[
           'absolute left-[100px] top-[160px]',
@@ -240,10 +261,21 @@ export function ReportSection() {
         </p>
       </div>
 
-      {/* 텍스트 등장 시작 후 400ms 뒤 카드 3개가 동시에 등장합니다. */}
-      <MonthlyPebbleCountCard isVisible={hasEntered} />
-      <BusiestCategoryCard isVisible={hasEntered} />
-      <BusiestDayCard isVisible={hasEntered} />
+      {/* 왼쪽 → 오른쪽 → 가운데 순서로 등장합니다. */}
+      <MonthlyPebbleCountCard
+        isVisible={hasEntered}
+        revealDelay={CARD_REVEAL_DELAY.left}
+      />
+
+      <BusiestCategoryCard
+        isVisible={hasEntered}
+        revealDelay={CARD_REVEAL_DELAY.center}
+      />
+
+      <BusiestDayCard
+        isVisible={hasEntered}
+        revealDelay={CARD_REVEAL_DELAY.right}
+      />
     </div>
   );
 }
