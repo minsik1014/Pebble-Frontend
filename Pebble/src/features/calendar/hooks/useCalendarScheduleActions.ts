@@ -288,13 +288,14 @@ export const useCalendarScheduleActions = ({
   );
 
   const toggleCategoryTaskCompleted = useCallback(
-    async (categoryId: string, taskId: string) => {
+    async (categoryId: string, taskId: string, taskDateId?: number) => {
       setCategories((previousCategories) =>
         toggleCategoryTaskCompletedInList(previousCategories, categoryId, taskId),
       );
 
       try {
-        await toggleTaskCompleteApi(taskId);
+        await toggleTaskCompleteApi(taskId, taskDateId);
+        await reloadCalendarData();
       } catch (error) {
         setCategories((previousCategories) =>
           toggleCategoryTaskCompletedInList(
@@ -306,11 +307,16 @@ export const useCalendarScheduleActions = ({
         throw error;
       }
     },
-    [setCategories],
+    [reloadCalendarData, setCategories],
   );
 
   const toggleTaskCompleted = useCallback(
-    async (categoryId: string, milestoneId: string, taskId: string) => {
+    async (
+      categoryId: string,
+      milestoneId: string,
+      taskId: string,
+      taskDateId?: number,
+    ) => {
       setCategories((previousCategories) =>
         toggleTaskCompletedInMilestone(
           previousCategories,
@@ -321,7 +327,8 @@ export const useCalendarScheduleActions = ({
       );
 
       try {
-        await toggleTaskCompleteApi(taskId);
+        await toggleTaskCompleteApi(taskId, taskDateId);
+        await reloadCalendarData();
       } catch (error) {
         setCategories((previousCategories) =>
           toggleTaskCompletedInMilestone(
@@ -334,17 +341,18 @@ export const useCalendarScheduleActions = ({
         throw error;
       }
     },
-    [setCategories],
+    [reloadCalendarData, setCategories],
   );
 
   const toggleStandaloneTaskCompleted = useCallback(
-    async (taskId: string) => {
+    async (taskId: string, taskDateId?: number) => {
       setStandaloneTasks((previousTasks) =>
         toggleStandaloneTaskCompletedInList(previousTasks, taskId),
       );
 
       try {
-        await toggleTaskCompleteApi(taskId);
+        await toggleTaskCompleteApi(taskId, taskDateId);
+        await reloadCalendarData();
       } catch (error) {
         setStandaloneTasks((previousTasks) =>
           toggleStandaloneTaskCompletedInList(previousTasks, taskId),
@@ -352,7 +360,7 @@ export const useCalendarScheduleActions = ({
         throw error;
       }
     },
-    [setStandaloneTasks],
+    [reloadCalendarData, setStandaloneTasks],
   );
 
   return {
