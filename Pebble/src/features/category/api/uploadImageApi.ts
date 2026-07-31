@@ -61,8 +61,11 @@ export async function uploadImageFile(file: File): Promise<string | null> {
   return response.data.data?.imageUrl ?? null;
 }
 
-export async function uploadImageDataUrl(dataUrl: string) {
+export async function uploadImageDataUrl(
+  dataUrl: string,
+  fileName = "category-image.jpg",
+) {
   return uploadImageFile(
-    await dataUrlToUploadFile(dataUrl, "category-image.jpg"),
+    await dataUrlToUploadFile(dataUrl, fileName),
   );
 }

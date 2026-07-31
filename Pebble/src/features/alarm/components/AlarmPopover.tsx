@@ -8,12 +8,12 @@ interface AlarmPopoverProps {
   top: number;
   left: number;
   alarms: Alarm[];
-  onDelete: (alarmId: number) => void;
-  onDeleteAll: () => void;
+  onDelete: (alarmId: number) => Promise<void>;
+  onDeleteAll: () => Promise<void>;
   onRespondFollowRequest: (
     alarmId: number,
     action: FollowRequestAction,
-  ) => void;
+  ) => Promise<void>;
 }
 
 export const AlarmPopover = ({
@@ -41,11 +41,18 @@ export const AlarmPopover = ({
     }, 2000);
   };
 
-  const handleFollowRequestResponse = (
+  const handleFollowRequestResponse = async (
     alarm: Alarm,
     action: FollowRequestAction,
   ) => {
-    onRespondFollowRequest(alarm.id, action);
+    try {
+      await onRespondFollowRequest(alarm.id, action);
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : "요청을 처리하지 못했어요.",
+      );
+      return;
+    }
 
     const nickname = alarm.user?.nickname ?? "상대";
 
@@ -74,7 +81,7 @@ export const AlarmPopover = ({
         {alarms.length > 0 && (
           <button
             type="button"
-            onClick={onDeleteAll}
+            onClick={() => void onDeleteAll()}
             className="text-[14px] font-normal text-gray-500 hover:text-text-strong"
           >
             전체 삭제
@@ -88,7 +95,7 @@ export const AlarmPopover = ({
             <AlarmItem
               key={alarm.id}
               alarm={alarm}
-              onDelete={onDelete}
+              onDelete={(alarmId) => void onDelete(alarmId)}
               onFollowRequestResponse={handleFollowRequestResponse}
             />
           ))

@@ -4,11 +4,20 @@ import { ProfileEditForm } from "@/features/mypage/components/ProfileEditForm";
 import { ProfileImageEditor } from "@/features/mypage/components/ProfileImageEditor";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function ProfileEditPage() {
   const navigate = useNavigate();
   const { isSidebarOpen } = useCalendarLayoutContext();
   const profile = useProfileStore((state) => state.profile);
+  const isLoaded = useProfileStore((state) => state.isLoaded);
+  const loadProfile = useProfileStore((state) => state.loadProfile);
+
+  useEffect(() => {
+    if (!isLoaded) {
+      void loadProfile();
+    }
+  }, [isLoaded, loadProfile]);
 
   return (
     <section

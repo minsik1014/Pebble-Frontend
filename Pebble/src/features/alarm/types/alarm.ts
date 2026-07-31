@@ -1,9 +1,12 @@
 export type AlarmType =
-  | "TASK"
-  | "MILESTONE"
+  | "TASK_DUE"
+  | "MILESTONE_DUE"
   | "REPORT"
   | "FOLLOW_REQUEST"
-  | "FOLLOW_ACCEPT";
+  | "FOLLOW_ACCEPTED"
+  | "CATEGORY_INVITE"
+  | "CATEGORY_DELETED"
+  | "CATEGORY_ACCEPTED";
 export type FollowRequestStatus = "PENDING" | "ACCEPTED" | "REJECTED";
 
 export type FollowRequestAction = "ACCEPT" | "REJECT";
@@ -20,6 +23,8 @@ export interface Alarm {
   content: string;
   isRead: boolean;
   createdAt: string;
+  relatedId: number | null;
+  expiresAt: string | null;
   user?: AlarmUser;
   friendRequestId?: number;
   followStatus?: FollowRequestStatus;
