@@ -353,7 +353,7 @@ export function PasswordChangeModal({
 
         <div className="mt-token-xl grid grid-cols-2 gap-token-m">
           <Button
-            variant="secondary"
+            variant="cancel"
             disabled={isSubmitting}
             className="h-11 w-full text-text-strong"
             onClick={handleClose}

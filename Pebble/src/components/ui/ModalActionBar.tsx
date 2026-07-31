@@ -1,4 +1,5 @@
 import DeleteIcon from "@/assets/icons/Delete.svg?react";
+import { Button } from "@/components/ui/Button";
 
 type ModalActionBarProps = {
   submitLabel: string;
@@ -28,13 +29,14 @@ export const ModalActionBar = ({
         <DeleteIcon className="h-6 w-6 text-fill-inverse" />
       </button>
     )}
-    <button
+    <Button
       type="button"
+      variant="cancel"
       onClick={onCancel}
-      className="h-11 flex-1 rounded-token-s bg-btn-quaternary font-medium text-text-strong transition-colors hover:bg-btn-pressed"
+      className="h-11 flex-1"
     >
       취소
-    </button>
+    </Button>
     <button
       type="button"
       onClick={onSubmit}

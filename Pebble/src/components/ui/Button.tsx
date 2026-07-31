@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'cancel' | 'danger';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -10,6 +10,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const variantClassNames: Record<ButtonVariant, string> = {
   primary: 'bg-btn-primary text-text-onFill hover:brightness-95',
   secondary: 'bg-btn-quaternary text-text-secondary hover:bg-btn-pressed',
+  cancel: 'bg-btn-pressed text-text-strong hover:brightness-95',
   danger: 'bg-fill-danger text-text-onFill hover:brightness-95',
 };
 
