@@ -1,5 +1,5 @@
 
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import CheckIcon from '@/assets/icons/Check.svg?react';
 
@@ -21,9 +21,9 @@ interface ReportRevealProps {
 }
 
 const CARD_REVEAL_DELAY = {
-  left: 250,
+  left: 150,
   right: 400,
-  center: 550,
+  center: 650,
 } as const;
 
 function getTextRevealClassName(isVisible: boolean) {
@@ -45,7 +45,9 @@ function getCardRevealStyle(
   revealDelay: number,
 ) {
   return {
-    transitionDelay: isVisible ? `${revealDelay}ms` : '0ms',
+    transitionDelay: isVisible
+      ? `${revealDelay}ms`
+      : '0ms',
   };
 }
 
@@ -238,14 +240,68 @@ function BusiestDayCard({
 export function ReportSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const hasEntered = useInView(sectionRef);
+  const isInView = useInView(sectionRef, {
+    threshold: 0.45,
+  });
+  const [hasEntered, setHasEntered] = useState(false);
+
+  const lastScrollYRef = useRef(0);
+  const scrollDirectionRef = useRef<'up' | 'down'>('down');
+
+  useEffect(() => {
+    lastScrollYRef.current = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollYRef.current) {
+        scrollDirectionRef.current = 'down';
+      } else if (currentScrollY < lastScrollYRef.current) {
+        scrollDirectionRef.current = 'up';
+      }
+
+      lastScrollYRef.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isInView) {
+      /*
+       * 아래로 처음 진입하면 false → true로 변경되어
+       * 등장 애니메이션이 실행됩니다.
+       *
+       * 아래쪽에서 위로 재진입할 때는 이미 true 상태이므로
+       * 애니메이션 없이 기존 콘텐츠가 그대로 표시됩니다.
+       */
+      setHasEntered(true);
+      return;
+    }
+
+    /*
+     * 위로 스크롤하며 섹션의 위쪽으로 완전히 벗어났을 때만
+     * 다음 하향 진입을 위해 애니메이션 상태를 초기화합니다.
+     *
+     * 아래로 섹션을 벗어날 때는 true 상태를 유지하므로
+     * 다시 위로 올라와도 퇴장·재등장 애니메이션이 없습니다.
+     */
+    if (scrollDirectionRef.current === 'up') {
+      setHasEntered(false);
+    }
+  }, [isInView]);
 
   return (
     <div
       ref={sectionRef}
       className="relative h-full w-full overflow-hidden bg-[linear-gradient(116.7deg,#FAFAFA_3.1%,#E5E5E5_99.9%)]"
     >
-      {/* 타이틀과 설명이 먼저 등장합니다. */}
       <div
         className={[
           'absolute left-[100px] top-[160px]',
