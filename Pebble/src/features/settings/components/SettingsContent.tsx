@@ -11,7 +11,7 @@ export function SettingsContent({
 }: SettingsContentProps) {
   return (
     <main
-      className={`relative z-10 h-[1000px] shrink-0 overflow-visible bg-transparent transition-all duration-300 ${
+      className={`relative h-[1000px] shrink-0 overflow-visible bg-transparent transition-all duration-300 ${
         isSidebarOpen ? "w-[924px]" : "w-[1316px]"
       }`}
     >
