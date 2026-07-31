@@ -85,15 +85,30 @@ export const ScheduleDatePicker = ({
 
   const renderRangeBackground = (status: DayStatus) => {
     if (status === "range-start") {
-      return <div className="absolute right-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
+      return (
+        <div
+          className="absolute -right-px top-0 h-full w-[calc(50%+1px)] dark:opacity-40"
+          style={{ backgroundColor: themeLightColor }}
+        />
+      );
     }
 
     if (status === "range-end") {
-      return <div className="absolute left-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
+      return (
+        <div
+          className="absolute -left-px top-0 h-full w-[calc(50%+1px)] dark:opacity-40"
+          style={{ backgroundColor: themeLightColor }}
+        />
+      );
     }
 
     if (status === "in-range") {
-      return <div className="absolute inset-0" style={{ backgroundColor: themeLightColor }} />;
+      return (
+        <div
+          className="absolute -inset-x-px inset-y-0 dark:opacity-40"
+          style={{ backgroundColor: themeLightColor }}
+        />
+      );
     }
 
     return null;
@@ -175,13 +190,14 @@ export const ScheduleDatePicker = ({
             </span>
           )}
           <button
+            type="button"
             onClick={onPrevMonth}
             className={`${
               isTaskVariant ? "absolute left-[35%]" : ""
-            } w-8 h-8 flex items-center justify-center rounded-full bg-fill-surface hover:bg-black/5 transition-colors`}
+            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 dark:bg-btn-primary dark:text-text-onFill dark:hover:brightness-90`}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15.41 7.41L14 6L8 12L14 18L15.41 16.59L10.83 12L15.41 7.41Z" fill="#171717" />
+              <path d="M15.41 7.41L14 6L8 12L14 18L15.41 16.59L10.83 12L15.41 7.41Z" fill="currentColor" />
             </svg>
           </button>
           {isTaskVariant && (
@@ -190,13 +206,14 @@ export const ScheduleDatePicker = ({
             </span>
           )}
           <button
+            type="button"
             onClick={onNextMonth}
             className={`${
               isTaskVariant ? "absolute right-[35%]" : ""
-            } w-8 h-8 flex items-center justify-center rounded-full bg-fill-surface hover:bg-black/5 transition-colors`}
+            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 dark:bg-btn-primary dark:text-text-onFill dark:hover:brightness-90`}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 6L8.59 7.41L13.17 12L8.59 16.59L10 18L16 12L10 6Z" fill="#171717" />
+              <path d="M10 6L8.59 7.41L13.17 12L8.59 16.59L10 18L16 12L10 6Z" fill="currentColor" />
             </svg>
           </button>
         </div>
@@ -217,7 +234,7 @@ export const ScheduleDatePicker = ({
             const status = getDayStatus(day);
 
             return (
-              <div key={day} className={`w-full ${wrapperHeightClass} flex items-center justify-center relative overflow-hidden`}>
+              <div key={day} className={`relative flex w-full ${wrapperHeightClass} items-center justify-center overflow-visible`}>
                 {renderRangeBackground(status)}
                 <button
                   onClick={() => onDateClick(day)}
