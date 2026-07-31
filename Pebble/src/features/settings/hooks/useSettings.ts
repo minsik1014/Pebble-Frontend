@@ -1,4 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
 import {
   getCurrentUser,
@@ -11,22 +15,21 @@ import type {
   SettingsTheme,
   UserSettings,
 } from '../types/settings';
+import { applyTheme } from '../utils/theme';
 import type { DailyBridgeActivity } from '../utils/bridgeActivity';
 
-function applyTheme(theme: SettingsTheme) {
-  if (typeof document === 'undefined') return;
-
-  document.documentElement.dataset.theme = theme.toLowerCase();
-  document.documentElement.classList.toggle('dark', theme === 'DARK');
-}
-
 export function useSettings() {
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const [settings, setSettings] = useState<UserSettings | null>(null);
-  const [activities, setActivities] = useState<DailyBridgeActivity[]>([]);
+  const [currentUser, setCurrentUser] =
+    useState<CurrentUser | null>(null);
+  const [settings, setSettings] =
+    useState<UserSettings | null>(null);
+  const [activities, setActivities] = useState<
+    DailyBridgeActivity[]
+  >([]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+
   const [updatingField, setUpdatingField] = useState<
     'theme' | 'notification' | 'activityColor' | null
   >(null);
@@ -46,18 +49,23 @@ export function useSettings() {
       applyTheme(loadedSettings.theme);
 
       try {
-        const activityData = await getUserActivityLogs({
-          userId: user.id,
-        });
+        const activityData =
+          await getUserActivityLogs({
+            userId: user.id,
+          });
 
         setActivities(
           activityData.logs.map((log) => ({
             date: log.date,
-            completedTaskCount: log.completedTaskCount,
+            completedTaskCount:
+              log.completedTaskCount,
           })),
         );
       } catch {
-        // 미리보기 조회 실패가 설정 페이지 전체를 막지 않도록 처리합니다.
+        /*
+         * 징검다리 미리보기 실패가 설정 페이지 전체를
+         * 막지 않도록 빈 배열로 처리합니다.
+         */
         setActivities([]);
       }
     } catch (error) {
@@ -79,17 +87,21 @@ export function useSettings() {
     void loadSettings();
   }, [loadSettings]);
 
-  const changeTheme = async (nextTheme: SettingsTheme) => {
+  const changeTheme = async (
+    nextTheme: SettingsTheme,
+  ) => {
     if (!settings || updatingField) return;
     if (settings.theme === nextTheme) return;
 
     const previousSettings = settings;
 
     setUpdatingField('theme');
+
     setSettings({
       ...settings,
       theme: nextTheme,
     });
+
     applyTheme(nextTheme);
 
     try {
@@ -105,22 +117,27 @@ export function useSettings() {
             }
           : current,
       );
+
       applyTheme(result.theme);
     } catch (error) {
       setSettings(previousSettings);
       applyTheme(previousSettings.theme);
+
       throw error;
     } finally {
       setUpdatingField(null);
     }
   };
 
-  const changeNotification = async (notifyTaskDue: boolean) => {
+  const changeNotification = async (
+    notifyTaskDue: boolean,
+  ) => {
     if (!settings || updatingField) return;
 
     const previousSettings = settings;
 
     setUpdatingField('notification');
+
     setSettings({
       ...settings,
       notifyTaskDue,
@@ -141,16 +158,21 @@ export function useSettings() {
       );
     } catch (error) {
       setSettings(previousSettings);
+
       throw error;
     } finally {
       setUpdatingField(null);
     }
   };
 
-  const changeActivityColor = async (activityColor: string) => {
+  const changeActivityColor = async (
+    activityColor: string,
+  ) => {
     if (!settings || updatingField) return;
+
     if (
-      settings.activityColor.toUpperCase() === activityColor.toUpperCase()
+      settings.activityColor.toUpperCase() ===
+      activityColor.toUpperCase()
     ) {
       return;
     }
@@ -158,6 +180,7 @@ export function useSettings() {
     const previousSettings = settings;
 
     setUpdatingField('activityColor');
+
     setSettings({
       ...settings,
       activityColor,
@@ -178,6 +201,7 @@ export function useSettings() {
       );
     } catch (error) {
       setSettings(previousSettings);
+
       throw error;
     } finally {
       setUpdatingField(null);
