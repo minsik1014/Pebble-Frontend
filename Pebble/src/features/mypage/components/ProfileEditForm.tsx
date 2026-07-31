@@ -5,6 +5,9 @@ const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 export const ProfileEditForm = (): JSX.Element => {
   const profile = useProfileStore((state) => state.profile);
+  const hasPendingImage = useProfileStore(
+    (state) => state.pendingImageUrl !== null,
+  );
   const updateProfile = useProfileStore((state) => state.updateProfile);
   const isSaving = useProfileStore((state) => state.isSaving);
   const error = useProfileStore((state) => state.error);
@@ -27,7 +30,8 @@ export const ProfileEditForm = (): JSX.Element => {
   const normalizedBio = bio.trim();
   const hasChanges =
     normalizedNickname !== profile.nickname ||
-    normalizedBio !== profile.bio;
+    normalizedBio !== profile.bio ||
+    hasPendingImage;
   const canSave = normalizedNickname.length > 0 && hasChanges && !isSaving;
 
   useEffect(() => {
@@ -82,6 +86,8 @@ export const ProfileEditForm = (): JSX.Element => {
       setToastMessage(
         "닉네임이 변경되었어요. 15일 후에 다시 변경할 수 있어요.",
       );
+    } else if (hasPendingImage) {
+      setToastMessage("프로필 이미지가 변경되었어요.");
     } else if (bioChanged) {
       setToastMessage("한 줄 소개가 변경되었어요.");
     }

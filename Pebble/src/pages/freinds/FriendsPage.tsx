@@ -1,46 +1,45 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Trash2 } from "lucide-react";
 
 import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
 import SearchIcon from "@/assets/icons/Search.svg?react";
+import MySolidIcon from "@/assets/icons/user-solid.svg?react";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
-import { useFriendStore } from "@/features/friends/store/useFriendStore";
-import type { Friend } from "@/features/friends/types/friend";
+import {
+  acceptFollowRequest,
+  deleteFollow,
+  getFollows,
+  searchUsers,
+  sendFollowRequest,
+  type FollowListItem,
+  type FollowUser,
+  type SearchedUser,
+} from "@/features/friends/api/followApi";
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 export default function FriendsPage(): JSX.Element {
   const { isSidebarOpen } = useCalendarLayoutContext();
   const [activeTab, setActiveTab] = useState<"friends" | "search">("friends");
   const [searchQuery, setSearchQuery] = useState("");
-  const users = useFriendStore((state) => state.users);
-  const friends = users.filter(
-    ({ relationshipStatus }) => relationshipStatus === "FRIEND",
-  );
-  const requests = useFriendStore((state) => state.requests);
-  const pendingRequests = requests.flatMap((request) => {
-    if (request.status !== "PENDING") {
-      return [];
-    }
-
-    const user = users.find(({ id }) => id === request.userId);
-    return user ? [{ request, user }] : [];
-  });
-  const respondRequest = useFriendStore((state) => state.respondRequest);
-  const deleteFriend = useFriendStore((state) => state.deleteFriend);
-  const sendFriendRequest = useFriendStore(
-    (state) => state.sendFriendRequest,
-  );
+  const [friends, setFriends] = useState<FollowListItem[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<FollowListItem[]>([]);
+  const [sentRequests, setSentRequests] = useState<FollowListItem[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchedUser[]>([]);
+  const [isListLoading, setIsListLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+  const [processingId, setProcessingId] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(
-    () => () => {
-      if (toastTimerRef.current) {
-        clearTimeout(toastTimerRef.current);
-      }
-    },
-    [],
-  );
+  const normalizedSearchQuery = searchQuery.trim();
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -55,37 +54,141 @@ export default function FriendsPage(): JSX.Element {
     }, 2000);
   };
 
-  const handleRequestResponse = (
-    requestId: number,
-    nickname: string,
-    action: "ACCEPT" | "REJECT",
+  const loadFollowLists = useCallback(async () => {
+    setIsListLoading(true);
+    setErrorMessage("");
+
+    try {
+      const [friendsResponse, pendingResponse, sentResponse] =
+        await Promise.all([
+          getFollows("friends"),
+          getFollows("pending"),
+          getFollows("sent"),
+        ]);
+
+      setFriends(friendsResponse.follows);
+      setPendingRequests(pendingResponse.follows);
+      setSentRequests(sentResponse.follows);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "친구 목록을 불러오지 못했어요.",
+      );
+    } finally {
+      setIsListLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadFollowLists();
+  }, [loadFollowLists]);
+
+  useEffect(
+    () => () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!normalizedSearchQuery) {
+      setSearchResults([]);
+      setIsSearching(false);
+      setErrorMessage("");
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setIsSearching(true);
+      setErrorMessage("");
+
+      try {
+        const response = await searchUsers(
+          normalizedSearchQuery,
+          controller.signal,
+        );
+        setSearchResults(response.users);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setSearchResults([]);
+          setErrorMessage(
+            error instanceof Error
+              ? error.message
+              : "사용자를 검색하지 못했어요.",
+          );
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsSearching(false);
+        }
+      }
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [normalizedSearchQuery]);
+
+  const runAction = async (
+    id: number,
+    action: () => Promise<void>,
+    successMessage: string,
   ) => {
-    respondRequest(requestId, action);
-    showToast(
-      action === "ACCEPT"
-        ? `${nickname}님과 친구가 되었어요`
-        : `${nickname}님의 요청을 거절했어요`,
+    setProcessingId(id);
+    setErrorMessage("");
+
+    try {
+      await action();
+      await loadFollowLists();
+
+      if (normalizedSearchQuery) {
+        const response = await searchUsers(normalizedSearchQuery);
+        setSearchResults(response.users);
+      }
+
+      showToast(successMessage);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "요청을 처리하지 못했어요.",
+      );
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleSendFollow = (user: SearchedUser) =>
+    runAction(
+      user.userId,
+      async () => {
+        await sendFollowRequest(user.userId);
+      },
+      `${user.nickname}님에게 친구 신청을 보냈어요`,
     );
-  };
 
-  const handleDeleteFriend = (friendId: number, nickname: string) => {
-    deleteFriend(friendId);
-    showToast(`${nickname}님을 친구에서 삭제했어요`);
-  };
+  const handleAccept = (request: FollowListItem) =>
+    runAction(
+      request.followId,
+      async () => {
+        await acceptFollowRequest(request.followId);
+      },
+      `${request.nickname}님과 친구가 되었어요`,
+    );
 
-  const handleSendFriendRequest = (userId: number, nickname: string) => {
-    sendFriendRequest(userId);
-    showToast(`${nickname}님에게 친구 신청을 보냈어요`);
-  };
-
-  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
-  const searchResults = normalizedSearchQuery
-    ? users.filter(
-        ({ email, nickname }) =>
-          nickname.toLowerCase().includes(normalizedSearchQuery) ||
-          email.toLowerCase().includes(normalizedSearchQuery),
-      )
-    : [];
+  const handleDelete = (
+    followId: number,
+    nickname: string,
+    message: string,
+  ) =>
+    runAction(
+      followId,
+      () => deleteFollow(followId),
+      `${nickname}님의 ${message}`,
+    );
 
   return (
     <section
@@ -106,110 +209,136 @@ export default function FriendsPage(): JSX.Element {
         <div className="mx-auto w-full max-w-[780px] pt-10">
           <div className="relative flex h-12 items-center justify-center">
             <div className="grid h-11 w-[440px] grid-cols-2 rounded-token-s bg-fill-surface p-1">
-              <button
-                type="button"
-                onClick={() => setActiveTab("friends")}
-                className={`rounded-[6px] text-body-02-m transition-colors ${
-                  activeTab === "friends"
-                    ? "bg-fill-inverse text-text-strong shadow-sm"
-                    : "text-text-teritary"
-                }`}
-              >
-                모든 친구
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("search")}
-                className={`rounded-[6px] text-body-02-m transition-colors ${
-                  activeTab === "search"
-                    ? "bg-fill-inverse text-text-strong shadow-sm"
-                    : "text-text-teritary"
-                }`}
-              >
-                친구 찾기
-              </button>
+              {(["friends", "search"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={`rounded-[6px] text-body-02-m transition-colors ${
+                    activeTab === tab
+                      ? "bg-fill-inverse text-text-strong shadow-sm"
+                      : "text-text-teritary"
+                  }`}
+                >
+                  {tab === "friends" ? "모든 친구" : "친구 찾기"}
+                </button>
+              ))}
             </div>
           </div>
 
+          {errorMessage && (
+            <p
+              role="alert"
+              className="mx-auto mt-6 rounded-token-s bg-fill-surface px-4 py-3 text-body-03-r text-fill-danger"
+            >
+              {errorMessage}
+            </p>
+          )}
+
           {activeTab === "friends" ? (
             <div className="mt-14">
-              <section aria-labelledby="friend-request-heading">
-                <h2
-                  id="friend-request-heading"
-                  className="text-body-02-m text-text-teritary"
-                >
-                  친구 요청 ({pendingRequests.length})
-                </h2>
+              {isListLoading ? (
+                <StatusMessage message="친구 목록을 불러오는 중이에요..." />
+              ) : (
+                <>
+                  {pendingRequests.length > 0 && (
+                    <FollowSection
+                      title="친구 요청"
+                      count={pendingRequests.length}
+                    >
+                      {pendingRequests.map((request) => (
+                        <FollowRow key={request.followId} user={request}>
+                          <button
+                            type="button"
+                            disabled={processingId === request.followId}
+                            onClick={() => void handleAccept(request)}
+                            className="h-11 min-w-[80px] rounded-token-s bg-fill-primary px-5 text-body-02-m text-text-onFill disabled:opacity-50"
+                          >
+                            수락
+                          </button>
+                          <button
+                            type="button"
+                            disabled={processingId === request.followId}
+                            onClick={() =>
+                              void handleDelete(
+                                request.followId,
+                                request.nickname,
+                                "요청을 거절했어요",
+                              )
+                            }
+                            className="h-11 min-w-[80px] rounded-token-s bg-fill-surface px-5 text-body-02-m text-text-strong disabled:opacity-50"
+                          >
+                            거절
+                          </button>
+                        </FollowRow>
+                      ))}
+                    </FollowSection>
+                  )}
 
-                <div className="mt-5 flex flex-col gap-5">
-                  {pendingRequests.map(({ request, user }) => (
-                    <div key={request.id} className="flex min-h-16 items-center">
-                      <FriendProfile friend={user} />
-                      <div className="ml-auto flex gap-3">
+                  {sentRequests.length > 0 && (
+                    <FollowSection
+                      title="보낸 요청"
+                      count={sentRequests.length}
+                      className="mt-12"
+                    >
+                      {sentRequests.map((request) => (
+                        <FollowRow key={request.followId} user={request}>
+                          <button
+                            type="button"
+                            disabled={processingId === request.followId}
+                            onClick={() =>
+                              void handleDelete(
+                                request.followId,
+                                request.nickname,
+                                "친구 신청을 취소했어요",
+                              )
+                            }
+                            className="h-11 min-w-[96px] rounded-token-s bg-fill-surface px-5 text-body-02-m text-text-strong disabled:opacity-50"
+                          >
+                            요청 취소
+                          </button>
+                        </FollowRow>
+                      ))}
+                    </FollowSection>
+                  )}
+
+                  <FollowSection
+                    title="내 친구"
+                    count={friends.length}
+                    className={
+                      pendingRequests.length > 0 || sentRequests.length > 0
+                        ? "mt-12"
+                        : ""
+                    }
+                  >
+                    {friends.map((friend) => (
+                      <FollowRow key={friend.followId} user={friend}>
                         <button
                           type="button"
+                          disabled={processingId === friend.followId}
                           onClick={() =>
-                            handleRequestResponse(
-                              request.id,
-                              user.nickname,
-                              "ACCEPT",
+                            void handleDelete(
+                              friend.followId,
+                              friend.nickname,
+                              "친구 관계를 삭제했어요",
                             )
                           }
-                          className="h-11 min-w-[80px] rounded-token-s bg-fill-primary px-5 text-body-02-m text-text-onFill"
+                          className="flex size-11 items-center justify-center rounded-token-s bg-[#FF8A8A] text-text-onFill transition-opacity hover:opacity-80 disabled:opacity-50"
+                          aria-label={`${friend.nickname} 친구 삭제`}
                         >
-                          수락
+                          <Trash2 className="size-5" strokeWidth={2} />
                         </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleRequestResponse(
-                              request.id,
-                              user.nickname,
-                              "REJECT",
-                            )
-                          }
-                          className="h-11 min-w-[80px] rounded-token-s bg-fill-surface px-5 text-body-02-m text-text-strong"
-                        >
-                          거절
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section className="mt-12" aria-labelledby="friends-heading">
-                <h2
-                  id="friends-heading"
-                  className="text-body-02-m text-text-teritary"
-                >
-                  내 친구 ({friends.length})
-                </h2>
-                <div className="mt-5 flex flex-col gap-5">
-                  {friends.map((friend) => (
-                    <div key={friend.id} className="flex min-h-16 items-center">
-                      <FriendProfile friend={friend} />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleDeleteFriend(friend.id, friend.nickname)
-                        }
-                        className="ml-auto flex size-11 items-center justify-center rounded-token-s bg-[#FF8A8A] text-text-onFill transition-opacity hover:opacity-80"
-                        aria-label={`${friend.nickname} 친구 삭제`}
-                      >
-                        <Trash2 className="size-5" strokeWidth={2} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </section>
+                      </FollowRow>
+                    ))}
+                  </FollowSection>
+                </>
+              )}
             </div>
           ) : (
             <section className="mt-14" aria-labelledby="friend-search-heading">
               <h2 id="friend-search-heading" className="sr-only">
                 친구 찾기
               </h2>
-
               <div className="relative">
                 <input
                   type="search"
@@ -224,69 +353,69 @@ export default function FriendsPage(): JSX.Element {
 
               {!normalizedSearchQuery ? (
                 <SearchGuide />
-              ) : searchResults.length > 0 ? (
+              ) : isSearching ? (
+                <StatusMessage message="사용자를 검색하는 중이에요..." />
+              ) : searchResults.length ? (
                 <div className="mt-10 flex flex-col gap-5" aria-live="polite">
                   <p className="text-body-02-m text-text-teritary">
                     검색 결과 ({searchResults.length})
                   </p>
                   {searchResults.map((user) => {
+                    const friend = friends.find(
+                      ({ userId }) => userId === user.userId,
+                    );
+
                     return (
-                      <div key={user.id} className="flex min-h-16 items-center">
-                        <FriendProfile friend={user} hideBio />
-                        {user.relationshipStatus === "FRIEND" && (
+                      <FollowRow
+                        key={user.userId}
+                        user={user}
+                        showUniqueTag={false}
+                      >
+                        {user.followStatus === "NONE" && (
                           <button
                             type="button"
+                            disabled={processingId === user.userId}
+                            onClick={() => void handleSendFollow(user)}
+                            className="h-11 min-w-[96px] rounded-token-s bg-fill-primary px-5 text-body-02-m text-text-onFill disabled:opacity-50"
+                          >
+                            친구 신청
+                          </button>
+                        )}
+                        {user.followStatus === "PENDING" && (
+                          <button
+                            type="button"
+                            disabled
+                            className="h-11 min-w-[96px] rounded-token-s bg-fill-surface px-5 text-body-02-m text-text-strong"
+                          >
+                            요청 중
+                          </button>
+                        )}
+                        {user.followStatus === "ACCEPTED" && friend && (
+                          <button
+                            type="button"
+                            disabled={processingId === friend.followId}
                             onClick={() =>
-                              handleDeleteFriend(user.id, user.nickname)
+                              void handleDelete(
+                                friend.followId,
+                                user.nickname,
+                                "친구 관계를 삭제했어요",
+                              )
                             }
-                            className="ml-auto flex size-11 items-center justify-center rounded-token-s bg-[#FF8A8A] text-text-onFill transition-opacity hover:opacity-80"
+                            className="flex size-11 items-center justify-center rounded-token-s bg-[#FF8A8A] text-text-onFill transition-opacity hover:opacity-80 disabled:opacity-50"
                             aria-label={`${user.nickname} 친구 삭제`}
                           >
                             <Trash2 className="size-5" strokeWidth={2} />
                           </button>
                         )}
-                        {user.relationshipStatus === "NONE" && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleSendFriendRequest(user.id, user.nickname)
-                            }
-                            className="ml-auto h-11 min-w-[96px] rounded-token-s bg-fill-primary px-5 text-body-02-m text-text-onFill"
-                          >
-                            친구 신청
-                          </button>
-                        )}
-                        {user.relationshipStatus === "OUTGOING" && (
-                          <button
-                            type="button"
-                            disabled
-                            className="ml-auto h-11 min-w-[96px] cursor-default rounded-token-s bg-fill-surface px-5 text-body-02-m text-text-strong"
-                          >
-                            요청 중
-                          </button>
-                        )}
-                        {user.relationshipStatus === "INCOMING" && (
-                          <span className="ml-auto text-body-02-m text-text-teritary">
-                            받은 요청
-                          </span>
-                        )}
-                      </div>
+                      </FollowRow>
                     );
                   })}
                 </div>
               ) : (
-                <div
-                  className="flex h-[500px] flex-col items-center justify-center text-center"
-                  aria-live="polite"
-                >
-                  <SearchIcon className="size-16 text-border-default" />
-                  <p className="mt-6 text-title-03-sb text-text-secondary">
-                    검색 결과가 없어요
-                  </p>
-                  <p className="mt-2 text-body-02-r text-text-teritary">
-                    닉네임 또는 이메일로 찾을 수 있어요
-                  </p>
-                </div>
+                <StatusMessage
+                  title="검색 결과가 없어요"
+                  message="닉네임 또는 이메일로 찾을 수 있어요"
+                />
               )}
             </section>
           )}
@@ -308,48 +437,92 @@ export default function FriendsPage(): JSX.Element {
   );
 }
 
-function SearchGuide(): JSX.Element {
+function FollowSection({
+  title,
+  count,
+  className = "",
+  children,
+}: {
+  title: string;
+  count: number;
+  className?: string;
+  children: ReactNode;
+}) {
   return (
-    <div className="flex h-[570px] flex-col items-center justify-center text-center">
-      <SearchIcon className="size-16 text-border-default" />
-      <p className="mt-6 text-title-03-sb text-text-secondary">
-        친구를 검색해 보세요
-      </p>
-      <p className="mt-2 text-body-02-r text-text-teritary">
-        닉네임 또는 이메일로 찾을 수 있어요
-      </p>
+    <section className={className}>
+      <h2 className="text-body-02-m text-text-teritary">
+        {title} ({count})
+      </h2>
+      <div className="mt-5 flex flex-col gap-5">{children}</div>
+    </section>
+  );
+}
+
+function FollowRow({
+  user,
+  showUniqueTag = true,
+  children,
+}: {
+  user: FollowUser;
+  showUniqueTag?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex min-h-16 items-center">
+      <div className="flex min-w-0 items-center gap-4">
+        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border-default bg-fill-surface text-text-secondary">
+          {user.profileImageUrl ? (
+            <img
+              src={user.profileImageUrl}
+              alt={`${user.nickname}님의 프로필`}
+              className="size-full object-cover"
+            />
+          ) : (
+            <MySolidIcon className="size-8" />
+          )}
+        </div>
+        <div className="min-w-0">
+          <p className="text-body-01-sb text-text-strong">{user.nickname}</p>
+          {showUniqueTag && (
+            <p className="mt-1 text-body-03-r text-text-teritary">
+              #{user.uniqueTag}
+            </p>
+          )}
+        </div>
+      </div>
+      <div className="ml-auto flex gap-3">{children}</div>
     </div>
   );
 }
 
-function FriendProfile({
-  friend,
-  hideBio = false,
-}: {
-  friend: Friend;
-  hideBio?: boolean;
-}): JSX.Element {
+function SearchGuide() {
   return (
-    <div className="flex min-w-0 items-center gap-4">
-      <img
-        src={friend.imageUrl}
-        alt=""
-        className="size-16 shrink-0 rounded-full border border-border-default object-cover"
-      />
-      <div className={`min-w-0 ${hideBio ? "flex h-16 items-center" : ""}`}>
-        <p
-          className={`${
-            hideBio ? "text-title-03-sb" : "text-body-01-sb"
-          } text-text-strong`}
-        >
-          {friend.nickname}
-        </p>
-        {!hideBio && friend.bio && (
-          <p className="mt-1 max-w-[650px] text-body-03-r text-text-secondary">
-            {friend.bio}
-          </p>
-        )}
-      </div>
+    <StatusMessage
+      title="친구를 검색해 보세요"
+      message="닉네임 또는 이메일로 찾을 수 있어요"
+    />
+  );
+}
+
+function StatusMessage({
+  title,
+  message,
+}: {
+  title?: string;
+  message: string;
+}) {
+  return (
+    <div
+      className="flex h-[500px] flex-col items-center justify-center text-center"
+      aria-live="polite"
+    >
+      <SearchIcon className="size-16 text-border-default" />
+      {title && (
+        <p className="mt-6 text-title-03-sb text-text-secondary">{title}</p>
+      )}
+      <p className={`${title ? "mt-2" : "mt-6"} text-body-02-r text-text-teritary`}>
+        {message}
+      </p>
     </div>
   );
 }

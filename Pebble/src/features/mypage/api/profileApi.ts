@@ -1,6 +1,10 @@
 import { apiRequest } from "@/services/api";
 import type { EditableProfile, Profile } from "@/features/mypage/types/profile";
 
+export type UpdateMyProfileRequest = Partial<EditableProfile> & {
+  profileImageUrl?: string | null;
+};
+
 type MyProfileResponse = {
   id: number;
   email: string;
@@ -34,7 +38,7 @@ export async function getMyProfile(): Promise<Profile> {
 }
 
 export async function updateMyProfile(
-  profile: Partial<EditableProfile>,
+  profile: UpdateMyProfileRequest,
 ): Promise<void> {
   await apiRequest({
     method: "PATCH",

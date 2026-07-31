@@ -2,7 +2,9 @@ import { create } from "zustand";
 import {
   getMyProfile,
   updateMyProfile,
+  type UpdateMyProfileRequest,
 } from "@/features/mypage/api/profileApi";
+import { uploadImageDataUrl } from "@/features/category/api/uploadImageApi";
 import type {
   EditableProfile,
   Profile,
@@ -60,7 +62,8 @@ export const useProfileStore = create<ProfileStore>((set) => ({
 
     try {
       const currentProfile = useProfileStore.getState().profile;
-      const changes: Partial<EditableProfile> = {};
+      const pendingImageUrl = useProfileStore.getState().pendingImageUrl;
+      const changes: UpdateMyProfileRequest = {};
 
       if (updatedProfile.nickname !== currentProfile.nickname) {
         changes.nickname = updatedProfile.nickname;
@@ -68,6 +71,19 @@ export const useProfileStore = create<ProfileStore>((set) => ({
 
       if (updatedProfile.bio !== currentProfile.bio) {
         changes.bio = updatedProfile.bio;
+      }
+
+      if (pendingImageUrl) {
+        const uploadedImageUrl = await uploadImageDataUrl(
+          pendingImageUrl,
+          "profile-image.jpg",
+        );
+
+        if (!uploadedImageUrl) {
+          throw new Error("프로필 이미지를 업로드하지 못했어요.");
+        }
+
+        changes.profileImageUrl = uploadedImageUrl;
       }
 
       await updateMyProfile(changes);
