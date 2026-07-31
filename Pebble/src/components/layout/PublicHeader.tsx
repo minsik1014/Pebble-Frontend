@@ -2,7 +2,7 @@
 
 import { Link, useNavigate } from 'react-router-dom';
 
-import pebbleLogo from '@/assets/icons/Logo_Pebble3.png';
+import pebbleLogo from '@/assets/icons/Logo_Pebble 3.svg';
 import { Button } from '@/components/ui/Button';
 
 type PublicHeaderVariant = 'landing' | 'auth';
