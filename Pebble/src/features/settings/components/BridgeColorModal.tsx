@@ -110,7 +110,7 @@ export function BridgeColorModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/45"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow/30 backdrop-blur-[3px]"
       role="presentation"
       onMouseDown={handleClose}
     >
