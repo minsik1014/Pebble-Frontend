@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import BellIcon from '@/assets/icons/bell-outline.svg?react';
+import BellIcon from '@/assets/icons/bell-outline no-dot.svg?react';
 
 import { ToggleSwitch } from '@/components/ui/ToggleSwitch';
 
