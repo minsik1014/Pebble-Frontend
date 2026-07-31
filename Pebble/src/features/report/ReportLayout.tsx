@@ -12,9 +12,9 @@ import reportBgBottom from '@/assets/report/r003-bg-bottom.svg';
 const EXIT_PATH = '/my';
 
 interface ReportLayoutProps {
-  /** 조회할 연도. 없으면 현재 연도 */
+  /** 리포트가 아직 없을 때 빈 상태에 표시할 연도. 없으면 전월 */
   year?: number;
-  /** 조회할 월 (1~12). 없으면 현재 월 */
+  /** 리포트가 아직 없을 때 빈 상태에 표시할 월. 없으면 전월 */
   month?: number;
   /** "리포트 닫기" 동작. 없으면 EXIT_PATH 로 이동 */
   onClose?: () => void;
@@ -34,8 +34,12 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
   const navigate = useNavigate();
 
   const now = useMemo(() => new Date(), []);
-  const targetYear = year ?? now.getFullYear();
-  const targetMonth = month ?? now.getMonth() + 1;
+  const previousMonth = useMemo(
+    () => new Date(now.getFullYear(), now.getMonth() - 1, 1),
+    [now],
+  );
+  const targetYear = year ?? previousMonth.getFullYear();
+  const targetMonth = month ?? previousMonth.getMonth() + 1;
 
   const { report, usedFallback, isLoading, refetch } = useMonthlyReport(
     targetYear,

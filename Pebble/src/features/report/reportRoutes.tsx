@@ -7,6 +7,7 @@ import { BusiestCategoryStep } from './steps/BusiestCategoryStep';
 import { BusiestDayStep } from './steps/BusiestDayStep';
 import { SharedFriendsStep } from './steps/SharedFriendsStep';
 import { SummaryStep } from './steps/SummaryStep';
+import { RequireAuth } from '@/features/auth/components/RequireAuth';
 
 /** 경로 조각 -> 화면. constants/reportSteps.ts 의 순서와 짝을 이룹니다 */
 const STEP_ELEMENTS: Record<string, JSX.Element> = {
@@ -43,7 +44,11 @@ const STEP_ELEMENTS: Record<string, JSX.Element> = {
 export const reportRoutes: RouteObject[] = [
   {
     path: 'report',
-    element: <ReportLayout />,
+    element: (
+      <RequireAuth>
+        <ReportLayout />
+      </RequireAuth>
+    ),
     children: [
       { index: true, element: <Navigate to={FIRST_STEP_PATH} replace /> },
       ...REPORT_STEPS.map((step) => ({

@@ -132,11 +132,10 @@ const normalizeSchedule = (raw: unknown, index: number): DaySchedule | null => {
     breadcrumb: toStringOr(raw.breadcrumb, ''),
     name: raw.name,
     completed: toBooleanOr(raw.completed, false),
-    colorHex:
-      kind === 'milestone'
-        ? isHexColor(raw.colorHex)
-          ? raw.colorHex
-          : DEFAULT_ACCENT
+    colorHex: isHexColor(raw.colorHex)
+      ? raw.colorHex
+      : kind === 'milestone'
+        ? DEFAULT_ACCENT
         : null,
   };
 };
@@ -222,6 +221,12 @@ export function normalizeMonthlyReport(
     ? raw.reportMonth
     : mark('reportMonth', now.getMonth() + 1);
 
+  const reportId =
+    isCount(raw.reportId) && raw.reportId > 0 ? raw.reportId : null;
+  const reportImageUrl = isNonEmptyString(raw.reportImageUrl)
+    ? raw.reportImageUrl
+    : null;
+
   /* 최근 3개월 — 유효한 항목만 추려 뒤에서 3개. 모자라면 앞을 0으로 채움 */
   const rawMonths = Array.isArray(raw.recentMonths)
     ? raw.recentMonths.filter(isRecentMonth)
@@ -299,6 +304,8 @@ export function normalizeMonthlyReport(
 
   return {
     data: {
+      reportId,
+      reportImageUrl,
       reportYear,
       reportMonth,
       monthlyPebbleCount,

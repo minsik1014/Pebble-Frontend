@@ -15,6 +15,11 @@ interface UseSaveAsImageResult {
   errorMessage: string | null;
 }
 
+interface UseSaveAsImageOptions {
+  /** PNG 생성 후 서버 업로드 등 추가 저장 작업을 실행합니다. */
+  onImageCreated?: (file: File) => Promise<void>;
+}
+
 /** dataURL -> File. Web Share API 는 File 객체를 요구합니다 */
 async function dataUrlToFile(dataUrl: string, fileName: string): Promise<File> {
   const blob = await (await fetch(dataUrl)).blob();
@@ -55,7 +60,11 @@ function isMobileDevice() {
  *     를 기다린 뒤 캡처합니다.
  *  3. position: fixed 요소는 캡처에 안 잡힙니다. 카드 안에 두지 마세요.
  */
-export function useSaveAsImage(fileName: string): UseSaveAsImageResult {
+export function useSaveAsImage(
+  fileName: string,
+  options: UseSaveAsImageOptions = {},
+): UseSaveAsImageResult {
+  const { onImageCreated } = options;
   const targetRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<SaveImageStatus>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -92,11 +101,13 @@ export function useSaveAsImage(fileName: string): UseSaveAsImageResult {
         navigator.share
       ) {
         await navigator.share({ files: [file] });
-        setStatus('success');
-        return;
+      } else {
+        downloadDataUrl(dataUrl, fileName);
       }
 
-      downloadDataUrl(dataUrl, fileName);
+      // 기기 저장을 먼저 완료한 뒤 서버에 합본 이미지 URL을 연결합니다.
+      // 서버 저장이 느려도 모바일 공유 시트의 사용자 제스처가 끊기지 않습니다.
+      await onImageCreated?.(file);
       setStatus('success');
     } catch (error) {
       // 사용자가 공유 시트를 직접 닫은 경우는 실패가 아닙니다
@@ -109,7 +120,7 @@ export function useSaveAsImage(fileName: string): UseSaveAsImageResult {
       setStatus('error');
       setErrorMessage('이미지를 저장하지 못했어요. 잠시 후 다시 시도해주세요.');
     }
-  }, [fileName]);
+  }, [fileName, onImageCreated]);
 
   return { targetRef, save, status, errorMessage };
 }

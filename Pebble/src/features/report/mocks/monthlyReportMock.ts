@@ -9,6 +9,8 @@ import profile4 from '@/assets/profiles/profile4.png';
  * API 연동이 끝나면 이 파일은 지워도 됩니다.
  */
 export const monthlyReportMock: MonthlyReportResponse = {
+  reportId: null,
+  reportImageUrl: null,
   reportYear: 2026,
   reportMonth: 6,
 
@@ -114,6 +116,8 @@ export const monthlyReportFailureMock = undefined;
  * 경고 없이 각 섹션에 빈 상태 문구만 뜹니다.
  */
 export const monthlyReportEmptyMock = {
+  reportId: null,
+  reportImageUrl: null,
   reportYear: 2026,
   reportMonth: 6,
   monthlyPebbleCount: 0,
@@ -135,6 +139,8 @@ export const monthlyReportEmptyMock = {
  * 온 값은 유지되고 빈 곳만 채워지며 경고가 뜹니다.
  */
 export const monthlyReportPartialMock = {
+  reportId: null,
+  reportImageUrl: null,
   reportYear: 2026,
   reportMonth: 6,
   monthlyPebbleCount: 64,
