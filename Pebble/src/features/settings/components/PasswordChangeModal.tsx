@@ -56,31 +56,19 @@ function VisibilityButton({
   label,
   onVisibleChange,
 }: VisibilityButtonProps) {
-  const hidePassword = () => {
-    onVisibleChange(false);
-  };
-
   return (
     <button
       type="button"
       disabled={disabled}
-      aria-label={label}
+      aria-label={`${label} ${visible ? '숨기기' : '보기'}`}
       aria-pressed={visible}
       className="absolute right-token-m top-1/2 flex size-6 -translate-y-1/2 items-center justify-center text-text-secondary disabled:cursor-not-allowed"
-      onPointerDown={(event) => {
-        event.preventDefault();
-        onVisibleChange(true);
-      }}
-      onPointerUp={hidePassword}
-      onPointerCancel={hidePassword}
-      onPointerLeave={hidePassword}
-      onBlur={hidePassword}
-      onContextMenu={(event) => event.preventDefault()}
+      onClick={() => onVisibleChange(!visible)}
     >
       {visible ? (
-        <EyeOffIcon className="size-5" aria-hidden="true" />
-      ) : (
         <EyeOnIcon className="size-5" aria-hidden="true" />
+      ) : (
+        <EyeOffIcon className="size-5" aria-hidden="true" />
       )}
     </button>
   );
@@ -265,7 +253,7 @@ export function PasswordChangeModal({
               <VisibilityButton
                 visible={showCurrentPassword}
                 disabled={isSubmitting}
-                label="현재 비밀번호를 누르는 동안 보기"
+                label="현재 비밀번호"
                 onVisibleChange={setShowCurrentPassword}
               />
             </div>
@@ -303,7 +291,7 @@ export function PasswordChangeModal({
               <VisibilityButton
                 visible={showNewPassword}
                 disabled={isSubmitting}
-                label="새 비밀번호를 누르는 동안 보기"
+                label="새 비밀번호"
                 onVisibleChange={setShowNewPassword}
               />
             </div>
@@ -342,7 +330,7 @@ export function PasswordChangeModal({
               <VisibilityButton
                 visible={showConfirmPassword}
                 disabled={isSubmitting}
-                label="새 비밀번호 확인을 누르는 동안 보기"
+                label="새 비밀번호 확인"
                 onVisibleChange={setShowConfirmPassword}
               />
             </div>
