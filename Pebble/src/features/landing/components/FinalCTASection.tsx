@@ -74,7 +74,7 @@ export function FinalCTASection() {
         <Button
           type="button"
           variant="secondary"
-          className="absolute left-[625px] top-[582px] h-[66px] w-[189px] rounded-token-s bg-fill-inverse px-token-xl py-0 text-[20px] font-semibold leading-[130%] tracking-[-0.01em] text-text-strong shadow-[0_2px_10px_rgba(23,23,23,0.1)] hover:bg-fill-inverse"
+          className="absolute left-[625px] top-[582px] h-[66px] w-[189px] rounded-token-s bg-fill-inverse px-token-xl py-0 font-sans !text-[20px] !font-semibold !leading-[130%] tracking-[-0.01em] text-text-strong shadow-[0_2px_10px_rgba(23,23,23,0.1)] hover:bg-fill-inverse"
           onClick={handleStartClick}
         >
           무료로 시작하기
