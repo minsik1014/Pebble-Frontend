@@ -38,6 +38,7 @@ import {
 type UseCalendarScheduleActionsParams = {
   categories: Category[];
   reloadCalendarData: () => Promise<void>;
+  standaloneTasks: TaskItem[];
   setCategories: Dispatch<SetStateAction<Category[]>>;
   setStandaloneTasks: Dispatch<SetStateAction<TaskItem[]>>;
 };
@@ -47,9 +48,21 @@ const getMilestoneDeleteScope = (
 ): MilestoneDeleteScope | undefined =>
   dateType === "MULTIPLE" ? "ALL" : undefined;
 
+const getFallbackTaskDateId = (task?: TaskItem | null) => {
+  if (task?.dateType !== "MULTIPLE") {
+    return undefined;
+  }
+
+  return (
+    task.taskDates?.find((taskDate) => !taskDate.isCompleted)?.taskDateId ??
+    task.taskDates?.[0]?.taskDateId
+  );
+};
+
 export const useCalendarScheduleActions = ({
   categories,
   reloadCalendarData,
+  standaloneTasks,
   setCategories,
   setStandaloneTasks,
 }: UseCalendarScheduleActionsParams) => {
@@ -289,12 +302,18 @@ export const useCalendarScheduleActions = ({
 
   const toggleCategoryTaskCompleted = useCallback(
     async (categoryId: string, taskId: string, taskDateId?: number) => {
+      const task =
+        categories
+          .find((category) => category.id === categoryId)
+          ?.tasks?.find((categoryTask) => categoryTask.id === taskId) ?? null;
+      const nextTaskDateId = taskDateId ?? getFallbackTaskDateId(task);
+
       setCategories((previousCategories) =>
         toggleCategoryTaskCompletedInList(previousCategories, categoryId, taskId),
       );
 
       try {
-        await toggleTaskCompleteApi(taskId, taskDateId);
+        await toggleTaskCompleteApi(taskId, nextTaskDateId);
         await reloadCalendarData();
       } catch (error) {
         setCategories((previousCategories) =>
@@ -307,7 +326,7 @@ export const useCalendarScheduleActions = ({
         throw error;
       }
     },
-    [reloadCalendarData, setCategories],
+    [categories, reloadCalendarData, setCategories],
   );
 
   const toggleTaskCompleted = useCallback(
@@ -317,6 +336,13 @@ export const useCalendarScheduleActions = ({
       taskId: string,
       taskDateId?: number,
     ) => {
+      const task =
+        categories
+          .find((category) => category.id === categoryId)
+          ?.items.find((item) => item.id === milestoneId)
+          ?.tasks?.find((milestoneTask) => milestoneTask.id === taskId) ?? null;
+      const nextTaskDateId = taskDateId ?? getFallbackTaskDateId(task);
+
       setCategories((previousCategories) =>
         toggleTaskCompletedInMilestone(
           previousCategories,
@@ -327,7 +353,7 @@ export const useCalendarScheduleActions = ({
       );
 
       try {
-        await toggleTaskCompleteApi(taskId, taskDateId);
+        await toggleTaskCompleteApi(taskId, nextTaskDateId);
         await reloadCalendarData();
       } catch (error) {
         setCategories((previousCategories) =>
@@ -341,17 +367,22 @@ export const useCalendarScheduleActions = ({
         throw error;
       }
     },
-    [reloadCalendarData, setCategories],
+    [categories, reloadCalendarData, setCategories],
   );
 
   const toggleStandaloneTaskCompleted = useCallback(
     async (taskId: string, taskDateId?: number) => {
+      const task =
+        standaloneTasks.find((standaloneTask) => standaloneTask.id === taskId) ??
+        null;
+      const nextTaskDateId = taskDateId ?? getFallbackTaskDateId(task);
+
       setStandaloneTasks((previousTasks) =>
         toggleStandaloneTaskCompletedInList(previousTasks, taskId),
       );
 
       try {
-        await toggleTaskCompleteApi(taskId, taskDateId);
+        await toggleTaskCompleteApi(taskId, nextTaskDateId);
         await reloadCalendarData();
       } catch (error) {
         setStandaloneTasks((previousTasks) =>
@@ -360,7 +391,7 @@ export const useCalendarScheduleActions = ({
         throw error;
       }
     },
-    [reloadCalendarData, setStandaloneTasks],
+    [reloadCalendarData, setStandaloneTasks, standaloneTasks],
   );
 
   return {
