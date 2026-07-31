@@ -1,6 +1,7 @@
 import { type ScheduleItem } from "@/types";
 import EditIcon from "@/assets/icons/newedit.svg?react";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 // The task definition inside a category detail item seems to be just a standard ScheduleItem
@@ -37,7 +38,7 @@ export const TaskDetailRow = ({
           </span>
         </div>
         <SidebarScheduleCheckbox
-          checked={Boolean(task.isCompleted)}
+          checked={isTaskCompleted(task)}
           ariaLabel={`${task.title} 일정 완료`}
           onChange={() => {
             void onToggleCompleted?.();

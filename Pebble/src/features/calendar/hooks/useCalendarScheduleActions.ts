@@ -48,15 +48,26 @@ const getMilestoneDeleteScope = (
 ): MilestoneDeleteScope | undefined =>
   dateType === "MULTIPLE" ? "ALL" : undefined;
 
-const getFallbackTaskDateId = (task?: TaskItem | null) => {
-  if (task?.dateType !== "MULTIPLE") {
-    return undefined;
+const getTaskCompleteTargetIds = (
+  task?: TaskItem | null,
+  taskDateId?: number,
+) => {
+  if (taskDateId) {
+    return [taskDateId];
   }
 
-  return (
-    task.taskDates?.find((taskDate) => !taskDate.isCompleted)?.taskDateId ??
-    task.taskDates?.[0]?.taskDateId
+  if (task?.dateType !== "MULTIPLE" || !task.taskDates?.length) {
+    return [undefined];
+  }
+
+  const isEveryTaskDateCompleted = task.taskDates.every(
+    (taskDate) => taskDate.isCompleted,
   );
+  const targetTaskDates = isEveryTaskDateCompleted
+    ? task.taskDates
+    : task.taskDates.filter((taskDate) => !taskDate.isCompleted);
+
+  return targetTaskDates.map((taskDate) => taskDate.taskDateId);
 };
 
 export const useCalendarScheduleActions = ({
@@ -306,14 +317,18 @@ export const useCalendarScheduleActions = ({
         categories
           .find((category) => category.id === categoryId)
           ?.tasks?.find((categoryTask) => categoryTask.id === taskId) ?? null;
-      const nextTaskDateId = taskDateId ?? getFallbackTaskDateId(task);
+      const targetTaskDateIds = getTaskCompleteTargetIds(task, taskDateId);
 
       setCategories((previousCategories) =>
         toggleCategoryTaskCompletedInList(previousCategories, categoryId, taskId),
       );
 
       try {
-        await toggleTaskCompleteApi(taskId, nextTaskDateId);
+        await Promise.all(
+          targetTaskDateIds.map((targetTaskDateId) =>
+            toggleTaskCompleteApi(taskId, targetTaskDateId),
+          ),
+        );
         await reloadCalendarData();
       } catch (error) {
         setCategories((previousCategories) =>
@@ -341,7 +356,7 @@ export const useCalendarScheduleActions = ({
           .find((category) => category.id === categoryId)
           ?.items.find((item) => item.id === milestoneId)
           ?.tasks?.find((milestoneTask) => milestoneTask.id === taskId) ?? null;
-      const nextTaskDateId = taskDateId ?? getFallbackTaskDateId(task);
+      const targetTaskDateIds = getTaskCompleteTargetIds(task, taskDateId);
 
       setCategories((previousCategories) =>
         toggleTaskCompletedInMilestone(
@@ -353,7 +368,11 @@ export const useCalendarScheduleActions = ({
       );
 
       try {
-        await toggleTaskCompleteApi(taskId, nextTaskDateId);
+        await Promise.all(
+          targetTaskDateIds.map((targetTaskDateId) =>
+            toggleTaskCompleteApi(taskId, targetTaskDateId),
+          ),
+        );
         await reloadCalendarData();
       } catch (error) {
         setCategories((previousCategories) =>
@@ -375,14 +394,18 @@ export const useCalendarScheduleActions = ({
       const task =
         standaloneTasks.find((standaloneTask) => standaloneTask.id === taskId) ??
         null;
-      const nextTaskDateId = taskDateId ?? getFallbackTaskDateId(task);
+      const targetTaskDateIds = getTaskCompleteTargetIds(task, taskDateId);
 
       setStandaloneTasks((previousTasks) =>
         toggleStandaloneTaskCompletedInList(previousTasks, taskId),
       );
 
       try {
-        await toggleTaskCompleteApi(taskId, nextTaskDateId);
+        await Promise.all(
+          targetTaskDateIds.map((targetTaskDateId) =>
+            toggleTaskCompleteApi(taskId, targetTaskDateId),
+          ),
+        );
         await reloadCalendarData();
       } catch (error) {
         setStandaloneTasks((previousTasks) =>
