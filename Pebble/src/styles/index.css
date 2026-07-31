@@ -1,12 +1,9 @@
-/* src/index.css */
-
-/* 인증 화면 GUI 명세에 사용하는 Pretendard 웹폰트 */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css');
 
-/* 공식 배포본을 프로젝트에 포함해 로고가 네트워크 상태와 무관하게 동일하게 표시됩니다. */
 @font-face {
   font-family: 'LaundryGothic';
-  src: url('../assets/fonts/LaundryGothic-Regular.woff') format('woff');
+  src: url('../assets/fonts/LaundryGothic-Regular.woff')
+    format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -14,25 +11,199 @@
 
 @font-face {
   font-family: 'LaundryGothic';
-  src: url('../assets/fonts/LaundryGothic-Bold.woff') format('woff');
+  src: url('../assets/fonts/LaundryGothic-Bold.woff')
+    format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
-/* 1. Tailwind 기본 필수 지시어 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Figma 인증 플로우의 타이포그래피를 실제 화면에서 자연스럽게 보이도록 보정한 공통 규칙 */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --fill-primary: 23 23 23;
+  --fill-secondary: 163 163 163;
+  --fill-teritory: 229 229 229;
+  --fill-surface: 250 250 250;
+  --fill-inverse: 255 255 255;
+
+  --fill-danger: 252 76 70;
+  --fill-danger-bg: 254 231 218;
+
+  --fill-success: 13 164 113;
+  --fill-success-bg: 206 251 213;
+
+  --fill-warning: 232 174 2;
+  --fill-info: 48 89 255;
+  --fill-shadow: 23 23 23;
+
+  --text-strong: 23 23 23;
+  --text-primary: 64 64 64;
+  --text-secondary: 115 115 115;
+  --text-teritary: 163 163 163;
+  --text-quaternary: 212 212 212;
+  --text-on-fill: 255 255 255;
+  --text-sunday: 254 166 143;
+  --text-saturday: 130 160 255;
+
+  --border-primary: 23 23 23;
+  --border-selected: 115 115 115;
+  --border-default: 212 212 212;
+  --border-secondary: 212 212 212;
+  --border-teritory: 245 245 245;
+
+  --button-primary: 23 23 23;
+  --button-secondary: 64 64 64;
+  --button-teritory: 115 115 115;
+  --button-quaternary: 245 245 245;
+  --button-pressed: 229 229 229;
+
+  --shadow-color: 23 23 23;
+
+  --color-1-base: #00cef5;
+  --color-1-mid: #9ce7ff;
+  --color-1-light: #daf4ff;
+
+  --color-2-base: #60d062;
+  --color-2-mid: #9ae29b;
+  --color-2-light: #d3f4d4;
+
+  --color-3-base: #ff7580;
+  --color-3-mid: #ffc0c3;
+  --color-3-light: #ffeced;
+
+  --color-4-base: #f99d3d;
+  --color-4-mid: #fbc286;
+  --color-4-light: #fde6ce;
+
+  --color-5-base: #ffdd47;
+  --color-5-mid: #ffea8e;
+  --color-5-light: #fff6d5;
+
+  --color-6-base: #fd73af;
+  --color-6-mid: #fea5cd;
+  --color-6-light: #ffd7e9;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --fill-primary: 250 250 250;
+  --fill-secondary: 115 115 115;
+  --fill-teritory: 64 64 64;
+  --fill-surface: 23 23 23;
+  --fill-inverse: 38 38 38;
+
+  --fill-danger: 252 76 70;
+  --fill-danger-bg: 83 39 37;
+
+  --fill-success: 50 200 145;
+  --fill-success-bg: 30 74 56;
+
+  --fill-warning: 255 196 38;
+  --fill-info: 130 160 255;
+  --fill-shadow: 0 0 0;
+
+  --text-strong: 250 250 250;
+  --text-primary: 229 229 229;
+  --text-secondary: 163 163 163;
+  --text-teritary: 115 115 115;
+  --text-quaternary: 82 82 82;
+  --text-on-fill: 23 23 23;
+  --text-sunday: 254 166 143;
+  --text-saturday: 130 160 255;
+
+  --border-primary: 250 250 250;
+  --border-selected: 163 163 163;
+  --border-default: 82 82 82;
+  --border-secondary: 82 82 82;
+  --border-teritory: 64 64 64;
+
+  --button-primary: 250 250 250;
+  --button-secondary: 229 229 229;
+  --button-teritory: 115 115 115;
+  --button-quaternary: 38 38 38;
+  --button-pressed: 64 64 64;
+
+  --shadow-color: 0 0 0;
+}
+
+.theme-popart {
+  --color-1-base: #755ecc;
+  --color-1-mid: #b3a6e3;
+  --color-1-light: #e3dff5;
+
+  --color-2-base: #3c4e85;
+  --color-2-mid: #949ebc;
+  --color-2-light: #d8dce7;
+
+  --color-3-base: #f16f55;
+  --color-3-mid: #f8b7aa;
+  --color-3-light: #fbdbd4;
+
+  --color-4-base: #fffe00;
+  --color-4-mid: #ffff99;
+  --color-4-light: #ffffcc;
+
+  --color-5-base: #ff6bb5;
+  --color-5-mid: #ffb5da;
+  --color-5-light: #ffdaec;
+
+  --color-6-base: #75f7fe;
+  --color-6-mid: #bafbff;
+  --color-6-light: #e8feff;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: rgb(var(--fill-surface));
+    color: rgb(var(--text-strong));
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    @apply appearance-none bg-transparent outline-none;
+  }
+
+  input,
+  textarea,
+  select {
+    color: rgb(var(--text-strong));
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(var(--text-teritary));
+  }
+}
+
 @layer components {
+  /*
+   * 인증 화면은 비로그인 상태에서 항상 라이트 테마로 표시합니다.
+   */
   .auth-title {
-    @apply text-[23px] leading-[130%] font-medium tracking-[-0.23px] text-[#404040];
+    @apply text-[23px] font-medium leading-[130%] tracking-[-0.23px] text-[#404040];
   }
 
   .auth-label {
-    @apply text-[15px] leading-[150%] font-normal tracking-[-0.15px] text-[#737373];
+    @apply text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-[#737373];
   }
 
   .auth-required {
@@ -40,20 +211,41 @@
   }
 
   .auth-input {
-    @apply w-full h-[52px] border border-[#D4D4D4] rounded-[12px] bg-white text-[15px] leading-[150%] font-normal tracking-[-0.15px] outline-none transition-colors placeholder:text-[15px] placeholder:font-normal placeholder:tracking-[-0.16px] placeholder:text-[#D4D4D4] focus:border-[#171717];
+    @apply h-[52px] w-full rounded-[12px] border border-[#D4D4D4] bg-white text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-[#171717] outline-none transition-colors placeholder:text-[15px] placeholder:font-normal placeholder:tracking-[-0.16px] placeholder:text-[#D4D4D4] focus:border-[#171717];
     font-family: 'Pretendard', sans-serif;
   }
 
   .auth-body {
-    @apply text-[15px] leading-[150%] font-normal tracking-[-0.15px];
+    @apply text-[15px] font-normal leading-[150%] tracking-[-0.15px];
+  }
+
+  .all-unset {
+    all: unset;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--fill-teritory));
+    border-radius: 20px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(var(--fill-secondary));
   }
 }
 
-/* 비밀번호 찾기 배경: 각 조약돌은 동일한 0.5초 동안 목표 불투명도까지 선형으로 나타납니다. */
 .forgot-password-pebble {
   position: absolute;
   opacity: 0;
-  animation: forgot-password-pebble-fade 500ms linear var(--pebble-delay) forwards;
+  animation: forgot-password-pebble-fade
+    500ms linear var(--pebble-delay) forwards;
 }
 
 @keyframes forgot-password-pebble-fade {
@@ -67,99 +259,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
+
   .forgot-password-pebble {
     animation: none;
     opacity: var(--pebble-opacity);
   }
 }
-
-@layer base {
-  button,
-  input,
-  select,
-  textarea {
-    @apply appearance-none bg-transparent outline-none;
-  }
-
-  .all-unset {
-    all: unset;
-  }
-
-  /* 우아한 커스텀 스크롤바 */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #e5e7eb; /* tailwind neutral-200 */
-    border-radius: 20px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: #d1d5db; /* tailwind neutral-300 */
-  }
-}
-
-/* 2. 기본 테마 세팅 (예: '신나는' 테마를 기본값으로 설정) */
-:root {
-  /* Color-1 */
-  --color-1-base: #00cef5;
-  --color-1-mid: #9ce7ff;
-  --color-1-light: #daf4ff;
-  
-  /* Color-2 */
-  --color-2-base: #60d062;
-  --color-2-mid: #9ae29b;
-  --color-2-light: #d3f4d4;
-  
-  /* Color-3 */
-  --color-3-base: #ff7580;
-  --color-3-mid: #ffc0c3;
-  --color-3-light: #ffeced;
-  
-  /* Color-4 */
-  --color-4-base: #f99d3d;
-  --color-4-mid: #fbc286;
-  --color-4-light: #fde6ce;
-  
-  /* Color-5 */
-  --color-5-base: #ffdd47;
-  --color-5-mid: #ffea8e;
-  --color-5-light: #fff6d5;
-  
-  /* Color-6 */
-  --color-6-base: #fd73af;
-  --color-6-mid: #fea5cd;
-  --color-6-light: #ffd7e9;
-}
-
-/* 3. 테마 전환용 클래스 (예: 팝아트 테마) */
-/* 리액트 최상위 태그인 <html>이나 <body>에 className="theme-popart" 를 주면 전체 색상이 변합니다! */
-.theme-popart {
-  --color-1-base: #755ecc;
-  --color-1-mid: #b3a6e3;
-  --color-1-light: #e3dff5;
-  
-  --color-2-base: #3c4e85;
-  --color-2-mid: #949ebc;
-  --color-2-light: #d8dce7;
-  
-  --color-3-base: #f16f55;
-  --color-3-mid: #f8b7aa;
-  --color-3-light: #fbdbd4;
-  
-  --color-4-base: #fffe00;
-  --color-4-mid: #ffff99;
-  --color-4-light: #ffffcc;
-  
-  --color-5-base: #ff6bb5;
-  --color-5-mid: #ffb5da;
-  --color-5-light: #ffdaec;
-  
-  --color-6-base: #75f7fe;
-  --color-6-mid: #bafbff;
-  --color-6-light: #e8feff;
-}
-
-/* 필요하다면 여기에 '.theme-autumn', '.theme-night' 등을 추가해 나갑니다. */
