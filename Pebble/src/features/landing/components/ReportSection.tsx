@@ -300,7 +300,7 @@ export function ReportSection() {
   return (
     <div
       ref={sectionRef}
-      className="relative h-full w-full overflow-hidden bg-[linear-gradient(116.7deg,#FAFAFA_3.1%,#E5E5E5_99.9%)]"
+      className="relative h-full w-full overflow-hidden bg-transparent"
     >
       <div
         className={[

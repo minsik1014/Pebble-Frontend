@@ -33,7 +33,7 @@ export function FeaturePanelsSection({
   );
 
   return (
-    <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-fill-inverse">
+    <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-transparent">
       <article className="absolute left-[100px] top-[200px] h-[624px] w-[1240px] overflow-hidden rounded-token-l bg-fill-surface">
         {FEATURE_PANEL_DATA.map((panel, index) => (
           <FeaturePanel

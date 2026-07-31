@@ -43,7 +43,7 @@ export function FinalCTASection() {
   return (
     <div
       ref={sectionRef}
-      className="relative h-full w-full overflow-hidden bg-[#171717]"
+      className="relative h-full w-full overflow-hidden bg-transparent"
     >
       <FinalCTABackgroundShapes />
 

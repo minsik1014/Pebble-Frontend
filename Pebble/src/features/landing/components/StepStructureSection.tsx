@@ -16,7 +16,7 @@ export function StepStructureSection({
   );
 
   return (
-    <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-[linear-gradient(116.82deg,#FFFFFF_0%,#FAFAFA_100%)]">
+    <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-transparent">
       {/* 두 번째 섹션 상단 텍스트 등장 애니메이션 */}
       <div
         aria-hidden={!isTextVisible}

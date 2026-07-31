@@ -46,7 +46,10 @@ export function LandingPage() {
           <PublicHeader variant="landing" />
         </div>
 
-        <LandingFigmaSection height={1474}>
+        <LandingFigmaSection
+          height={1474}
+          className="bg-fill-inverse"
+        >
           <HeroSection />
         </LandingFigmaSection>
 
@@ -54,15 +57,24 @@ export function LandingPage() {
 
         <FeaturePanelsScrollSection />
 
-        <LandingFigmaSection height={1024}>
+        <LandingFigmaSection
+          height={1024}
+          className="bg-fill-inverse"
+        >
           <BridgeSection />
         </LandingFigmaSection>
 
-        <LandingFigmaSection height={1024}>
+        <LandingFigmaSection
+          height={1024}
+          className="bg-[linear-gradient(116.7deg,#FAFAFA_3.1%,#E5E5E5_99.9%)]"
+        >
           <ReportSection />
         </LandingFigmaSection>
 
-        <LandingFigmaSection height={1024}>
+        <LandingFigmaSection
+          height={1024}
+          className="bg-[#171717]"
+        >
           <FinalCTASection />
         </LandingFigmaSection>
       </div>

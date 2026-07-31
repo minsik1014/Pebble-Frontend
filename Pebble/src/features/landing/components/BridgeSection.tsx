@@ -92,7 +92,7 @@ export function BridgeSection() {
   return (
     <div
       ref={sectionRef}
-      className="relative h-full w-full overflow-hidden bg-fill-inverse"
+      className="relative h-full w-full overflow-hidden bg-transparent"
     >
       <BridgeBackgroundImages isVisible={hasEntered} />
 

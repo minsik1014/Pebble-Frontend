@@ -48,7 +48,7 @@ export function StepStructureScrollSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full bg-fill-inverse"
+      className="relative w-full bg-[linear-gradient(116.82deg,#FFFFFF_0%,#FAFAFA_100%)]"
       style={{
         height: scrollSectionHeight,
       }}
