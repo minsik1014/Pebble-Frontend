@@ -9,6 +9,7 @@ import {
   toggleMilestoneComplete as toggleMilestoneCompleteApi,
   updateMilestone as updateMilestoneApi,
 } from "@/features/milestone/api/milestoneApi";
+import type { MilestoneDeleteScope } from "@/features/milestone/api/milestoneApi.types";
 import {
   createTask as createTaskApi,
   deleteTask as deleteTaskApi,
@@ -31,30 +32,24 @@ import {
   toggleStandaloneTaskCompletedInList,
   toggleTaskCompletedInMilestone,
   updateCategoryTaskInList,
-  updateMilestoneInCategory,
   updateTaskInMilestone,
 } from "@/features/calendar/utils/calendarStateUtils";
 
 type UseCalendarScheduleActionsParams = {
   categories: Category[];
+  reloadCalendarData: () => Promise<void>;
   setCategories: Dispatch<SetStateAction<Category[]>>;
   setStandaloneTasks: Dispatch<SetStateAction<TaskItem[]>>;
 };
 
-const getScheduleDateType = (input: CreateScheduleItemInput) => {
-  if (input.dates && input.dates.length > 0) {
-    return "MULTIPLE";
-  }
-
-  if (input.end) {
-    return "RANGE";
-  }
-
-  return "SINGLE";
-};
+const getMilestoneDeleteScope = (
+  dateType?: string,
+): MilestoneDeleteScope | undefined =>
+  dateType === "MULTIPLE" ? "ALL" : undefined;
 
 export const useCalendarScheduleActions = ({
   categories,
+  reloadCalendarData,
   setCategories,
   setStandaloneTasks,
 }: UseCalendarScheduleActionsParams) => {
@@ -83,52 +78,10 @@ export const useCalendarScheduleActions = ({
       milestoneId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const previousMilestone =
-        categories
-          .find((category) => category.id === categoryId)
-          ?.items.find((item) => item.id === milestoneId) ?? null;
-      const nextDateType = getScheduleDateType(input);
-
-      if (
-        previousMilestone?.dateType &&
-        previousMilestone.dateType !== nextDateType
-      ) {
-        const milestones = await createMilestoneApi(categoryId, input);
-        await deleteMilestoneApi(milestoneId);
-
-        setCategories((previousCategories) =>
-          appendMilestonesToCategory(
-            removeMilestoneFromCategory(
-              previousCategories,
-              categoryId,
-              milestoneId,
-            ),
-            categoryId,
-            milestones.length > 0
-              ? milestones
-              : [createMilestoneEntity(input)],
-          ),
-        );
-
-        return;
-      }
-
-      const milestone = await updateMilestoneApi(
-        milestoneId,
-        input,
-        previousMilestone,
-      );
-
-      setCategories((previousCategories) =>
-        updateMilestoneInCategory(
-          previousCategories,
-          categoryId,
-          milestoneId,
-          milestone ?? createMilestoneEntity({ ...input, id: milestoneId }),
-        ),
-      );
+      await updateMilestoneApi(milestoneId, categoryId, input);
+      await reloadCalendarData();
     },
-    [categories, setCategories],
+    [reloadCalendarData],
   );
 
   const createTask = useCallback(
@@ -242,13 +195,21 @@ export const useCalendarScheduleActions = ({
 
   const deleteMilestone = useCallback(
     async (categoryId: string, milestoneId: string) => {
-      await deleteMilestoneApi(milestoneId);
+      const milestone =
+        categories
+          .find((category) => category.id === categoryId)
+          ?.items.find((item) => item.id === milestoneId) ?? null;
+
+      await deleteMilestoneApi(
+        milestoneId,
+        getMilestoneDeleteScope(milestone?.dateType),
+      );
 
       setCategories((previousCategories) =>
         removeMilestoneFromCategory(previousCategories, categoryId, milestoneId),
       );
     },
-    [setCategories],
+    [categories, setCategories],
   );
 
   const deleteTask = useCallback(

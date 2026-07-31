@@ -44,7 +44,11 @@ export async function getMilestones(categoryId: string): Promise<MilestoneItem[]
     url: `/categories/${categoryId}/milestones`,
   });
 
-  return data?.milestones.map(mapMilestoneResponseToMilestone) ?? [];
+  return (
+    data?.milestones.map((milestone) =>
+      mapMilestoneResponseToMilestone(milestone),
+    ) ?? []
+  );
 }
 
 export async function createMilestone(
@@ -62,13 +66,13 @@ export async function createMilestone(
 
 export async function updateMilestone(
   milestoneId: string,
+  categoryId: string,
   input: CreateScheduleItemInput,
-  previousMilestone?: MilestoneItem | null,
 ): Promise<MilestoneItem | null> {
   const data = await apiRequest<MilestoneResponse>({
     method: "PATCH",
     url: `/milestones/${milestoneId}`,
-    data: mapScheduleInputToUpdateMilestoneRequest(input, previousMilestone),
+    data: mapScheduleInputToUpdateMilestoneRequest(input, categoryId),
   });
 
   return data ? mapMilestoneResponseToMilestone(data) : null;
