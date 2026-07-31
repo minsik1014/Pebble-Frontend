@@ -15,6 +15,7 @@ const FIGMA_HEIGHT = 1024;
  * 모든 화면에서 단계별 전환 거리를 동일하게 유지합니다.
  */
 const STEP_SCROLL_DISTANCE = 360;
+const LAST_STEP_HOLD_DISTANCE = 120;
 
 export function FeaturePanelsScrollSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -27,9 +28,15 @@ export function FeaturePanelsScrollSection() {
    * sticky 화면 한 개 높이와 패널 전환용 스크롤 공간을 확보합니다.
    * 마지막 패널도 바로 다음 섹션으로 넘어가지 않고 일정 거리 동안 유지됩니다.
    */
-  const scrollSectionHeight = `calc(
-    100vh + ${stepScrollDistance * stepCount}px
-  )`;
+  // 수정
+const transitionCount = Math.max(stepCount - 1, 0);
+
+const scrollSectionHeight = `calc(
+  100vh + ${
+    stepScrollDistance * transitionCount +
+    LAST_STEP_HOLD_DISTANCE
+  }px
+)`;
 
   const activeStep = useFeaturePanelsScroll({
     sectionRef,

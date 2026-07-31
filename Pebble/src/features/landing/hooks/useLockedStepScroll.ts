@@ -1,10 +1,6 @@
 
 import type { RefObject } from 'react';
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface UseLockedStepScrollParams {
   sectionRef: RefObject<HTMLElement>;
@@ -21,14 +17,8 @@ const BLOCKED_SCROLL_KEYS = new Set([
   ' ',
 ]);
 
-function clampStep(
-  step: number,
-  stepCount: number,
-) {
-  return Math.min(
-    stepCount - 1,
-    Math.max(0, step),
-  );
+function clampStep(step: number, stepCount: number) {
+  return Math.min(stepCount - 1, Math.max(0, step));
 }
 
 export function useLockedStepScroll({
@@ -42,27 +32,21 @@ export function useLockedStepScroll({
   const activeStepRef = useRef(0);
   const isTransitioningRef = useRef(false);
   const isInitializedRef = useRef(false);
-
-  const transitionTimerRef =
-    useRef<number | null>(null);
+  const transitionTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     let animationFrameId = 0;
 
-    const prefersReducedMotion =
-      window.matchMedia(
-        '(prefers-reduced-motion: reduce)',
-      ).matches;
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
 
     const clearTransitionTimer = () => {
       if (transitionTimerRef.current === null) {
         return;
       }
 
-      window.clearTimeout(
-        transitionTimerRef.current,
-      );
-
+      window.clearTimeout(transitionTimerRef.current);
       transitionTimerRef.current = null;
     };
 
@@ -72,60 +56,76 @@ export function useLockedStepScroll({
     };
 
     const lockTransition = () => {
-      if (
-        prefersReducedMotion ||
-        transitionDuration <= 0
-      ) {
+      if (prefersReducedMotion || transitionDuration <= 0) {
         isTransitioningRef.current = false;
         return;
       }
 
       clearTransitionTimer();
-
       isTransitioningRef.current = true;
 
-      transitionTimerRef.current =
-        window.setTimeout(() => {
-          isTransitioningRef.current = false;
-          transitionTimerRef.current = null;
-        }, transitionDuration);
+      transitionTimerRef.current = window.setTimeout(() => {
+        isTransitioningRef.current = false;
+        transitionTimerRef.current = null;
+      }, transitionDuration);
     };
 
     const isSectionPinned = () => {
       const section = sectionRef.current;
 
-      if (!section) return false;
+      if (!section) {
+        return false;
+      }
 
-      const sectionRect =
-        section.getBoundingClientRect();
+      const sectionRect = section.getBoundingClientRect();
 
-      /*
-       * 소수점 렌더링 오차를 고려해 1px 여유를 둡니다.
-       */
+      // 브라우저의 소수점 단위 위치 오차를 고려합니다.
       return (
         sectionRect.top <= 1 &&
-        sectionRect.bottom >=
-          window.innerHeight - 1
+        sectionRect.bottom >= window.innerHeight - 1
       );
     };
 
-    const moveToStepPosition = (
-      nextStep: number,
-      sectionTop: number,
-    ) => {
+    const moveToStep = (direction: 1 | -1) => {
+      const section = sectionRef.current;
+
+      if (!section || stepCount <= 0) {
+        return false;
+      }
+
+      const previousStep = activeStepRef.current;
+
+      const nextStep = clampStep(
+        previousStep + direction,
+        stepCount,
+      );
+
       /*
-       * 큰 wheel delta로 실제 문서 스크롤이 여러 단계 앞까지
-       * 이동했더라도 현재 변경한 한 단계 위치로 되돌립니다.
-       *
-       * 카드 자체의 CSS transition이 애니메이션을 담당하므로
-       * 문서 스크롤에는 smooth를 사용하지 않습니다.
+       * 첫 카드에서 위로 이동하거나 마지막 카드에서 아래로 이동하면
+       * 내부에서 이동할 단계가 없으므로 페이지 스크롤을 허용합니다.
+       */
+      if (nextStep === previousStep) {
+        return false;
+      }
+
+      const sectionRect = section.getBoundingClientRect();
+      const sectionTop = window.scrollY + sectionRect.top;
+
+      activeStepRef.current = nextStep;
+      setActiveStep(nextStep);
+
+      lockTransition();
+
+      /*
+       * wheel 기본 동작을 차단한 상태에서 실행되므로
+       * 화면이 내려갔다가 다시 올라오는 현상이 발생하지 않습니다.
        */
       window.scrollTo({
-        top:
-          sectionTop +
-          nextStep * stepScrollDistance,
+        top: sectionTop + nextStep * stepScrollDistance,
         behavior: 'auto',
       });
+
+      return true;
     };
 
     const updateActiveStep = () => {
@@ -137,39 +137,22 @@ export function useLockedStepScroll({
         return;
       }
 
-      /*
-       * 카드 전환 애니메이션이 진행 중일 때는
-       * scroll 이벤트가 발생해도 단계를 다시 계산하지 않습니다.
-       */
       if (isTransitioningRef.current) {
         return;
       }
 
-      const sectionRect =
-        section.getBoundingClientRect();
+      const sectionRect = section.getBoundingClientRect();
 
-      const sectionTop =
-        window.scrollY + sectionRect.top;
-
-      const passedDistance = Math.max(
-        -sectionRect.top,
-        0,
-      );
+      const passedDistance = Math.max(-sectionRect.top, 0);
 
       const targetStep = clampStep(
-        Math.floor(
-          passedDistance /
-            stepScrollDistance,
-        ),
+        Math.floor(passedDistance / stepScrollDistance),
         stepCount,
       );
 
-      const previousStep =
-        activeStepRef.current;
-
       /*
-       * 새로고침으로 섹션 중간에서 시작한 경우에는
-       * 애니메이션 없이 현재 위치에 맞는 단계를 적용합니다.
+       * 새로고침 또는 스크롤바 직접 이동으로 섹션 중간에 진입했을 때
+       * 현재 위치에 해당하는 단계를 즉시 적용합니다.
        */
       if (!isInitializedRef.current) {
         isInitializedRef.current = true;
@@ -178,35 +161,17 @@ export function useLockedStepScroll({
         return;
       }
 
-      if (targetStep === previousStep) {
-        return;
+      /*
+       * wheel과 키보드 입력은 각 입력 핸들러에서 단계 변경을 처리합니다.
+       * 여기서는 스크롤바 드래그나 직접적인 위치 이동만 동기화합니다.
+       */
+      if (
+        !isSectionPinned() &&
+        targetStep !== activeStepRef.current
+      ) {
+        activeStepRef.current = targetStep;
+        setActiveStep(targetStep);
       }
-
-      /*
-       * 스크롤 거리가 여러 단계의 기준점을 통과했더라도
-       * 상태는 한 번에 한 단계만 변경합니다.
-       */
-      const direction =
-        targetStep > previousStep ? 1 : -1;
-
-      const nextStep = clampStep(
-        previousStep + direction,
-        stepCount,
-      );
-
-      activeStepRef.current = nextStep;
-      setActiveStep(nextStep);
-
-      lockTransition();
-
-      /*
-       * 문서 위치도 변경한 단계의 기준점으로 맞춰
-       * 애니메이션 종료 후 다음 스크롤에서 한 단계씩 진행되게 합니다.
-       */
-      moveToStepPosition(
-        nextStep,
-        sectionTop,
-      );
     };
 
     const requestStepUpdate = () => {
@@ -214,15 +179,55 @@ export function useLockedStepScroll({
         return;
       }
 
-      animationFrameId =
-        window.requestAnimationFrame(
-          updateActiveStep,
-        );
+      animationFrameId = window.requestAnimationFrame(
+        updateActiveStep,
+      );
     };
 
-    const handleWheel = (
-      event: WheelEvent,
-    ) => {
+    const handleWheel = (event: WheelEvent) => {
+      if (!isSectionPinned()) {
+        return;
+      }
+
+      /*
+       * 카드 애니메이션이 진행 중이면
+       * 위·아래 방향 모두 추가 스크롤을 차단합니다.
+       */
+      if (isTransitioningRef.current) {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.deltaY === 0) {
+        return;
+      }
+
+      const direction: 1 | -1 =
+        event.deltaY > 0 ? 1 : -1;
+
+      const previousStep = activeStepRef.current;
+
+      const nextStep = clampStep(
+        previousStep + direction,
+        stepCount,
+      );
+
+      /*
+       * 섹션 내부에서 이동할 카드가 있다면 브라우저가 먼저
+       * 스크롤하지 않도록 막은 다음 단계를 변경합니다.
+       */
+      if (nextStep !== previousStep) {
+        event.preventDefault();
+        moveToStep(direction);
+      }
+
+      /*
+       * 첫 카드에서 위로 이동하거나 마지막 카드에서 아래로 이동하면
+       * preventDefault를 호출하지 않아 이전·다음 섹션으로 이동합니다.
+       */
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
       if (
         !isTransitioningRef.current ||
         !isSectionPinned()
@@ -233,99 +238,71 @@ export function useLockedStepScroll({
       event.preventDefault();
     };
 
-    const handleTouchMove = (
-      event: TouchEvent,
-    ) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (
-        !isTransitioningRef.current ||
-        !isSectionPinned()
-      ) {
-        return;
-      }
-
-      event.preventDefault();
-    };
-
-    const handleKeyDown = (
-      event: KeyboardEvent,
-    ) => {
-      if (
-        !isTransitioningRef.current ||
         !isSectionPinned() ||
         !BLOCKED_SCROLL_KEYS.has(event.key)
       ) {
         return;
       }
 
-      event.preventDefault();
+      if (isTransitioningRef.current) {
+        event.preventDefault();
+        return;
+      }
+
+      let direction: 1 | -1;
+
+      if (
+        event.key === 'ArrowUp' ||
+        event.key === 'PageUp' ||
+        (event.key === ' ' && event.shiftKey)
+      ) {
+        direction = -1;
+      } else {
+        direction = 1;
+      }
+
+      const previousStep = activeStepRef.current;
+
+      const nextStep = clampStep(
+        previousStep + direction,
+        stepCount,
+      );
+
+      if (nextStep !== previousStep) {
+        event.preventDefault();
+        moveToStep(direction);
+      }
     };
 
     updateActiveStep();
 
-    window.addEventListener(
-      'scroll',
-      requestStepUpdate,
-      {
-        passive: true,
-      },
-    );
+    window.addEventListener('scroll', requestStepUpdate, {
+      passive: true,
+    });
 
-    window.addEventListener(
-      'resize',
-      requestStepUpdate,
-    );
+    window.addEventListener('resize', requestStepUpdate);
 
-    window.addEventListener(
-      'wheel',
-      handleWheel,
-      {
-        passive: false,
-      },
-    );
+    window.addEventListener('wheel', handleWheel, {
+      passive: false,
+    });
 
-    window.addEventListener(
-      'touchmove',
-      handleTouchMove,
-      {
-        passive: false,
-      },
-    );
+    window.addEventListener('touchmove', handleTouchMove, {
+      passive: false,
+    });
 
-    window.addEventListener(
-      'keydown',
-      handleKeyDown,
-    );
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener(
-        'scroll',
-        requestStepUpdate,
-      );
-
-      window.removeEventListener(
-        'resize',
-        requestStepUpdate,
-      );
-
-      window.removeEventListener(
-        'wheel',
-        handleWheel,
-      );
-
-      window.removeEventListener(
-        'touchmove',
-        handleTouchMove,
-      );
-
-      window.removeEventListener(
-        'keydown',
-        handleKeyDown,
-      );
+      window.removeEventListener('scroll', requestStepUpdate);
+      window.removeEventListener('resize', requestStepUpdate);
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('keydown', handleKeyDown);
 
       if (animationFrameId !== 0) {
-        window.cancelAnimationFrame(
-          animationFrameId,
-        );
+        window.cancelAnimationFrame(animationFrameId);
       }
 
       unlockTransition();
