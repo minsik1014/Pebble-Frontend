@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import { type DateType, type DayStatus } from "@/hooks/useScheduleDatePicker";
 import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 
@@ -54,6 +56,9 @@ export const ScheduleDatePicker = ({
     type === "다중"
       ? getReadableCategoryTextColor(themeBaseColor, getSelectedColor(type))
       : "#ffffff";
+  const rangeBackgroundStyle = {
+    "--schedule-range-color": themeLightColor,
+  } as CSSProperties;
 
   const getTypeButtonClass = (type: DateType) => {
     const baseClass = isTaskVariant
@@ -87,8 +92,8 @@ export const ScheduleDatePicker = ({
     if (status === "range-start") {
       return (
         <div
-          className="absolute -right-px top-0 h-full w-[calc(50%+1px)] dark:opacity-40"
-          style={{ backgroundColor: themeLightColor }}
+          className="schedule-date-range-segment absolute -right-px top-0 h-full w-[calc(50%+1px)]"
+          style={rangeBackgroundStyle}
         />
       );
     }
@@ -96,8 +101,8 @@ export const ScheduleDatePicker = ({
     if (status === "range-end") {
       return (
         <div
-          className="absolute -left-px top-0 h-full w-[calc(50%+1px)] dark:opacity-40"
-          style={{ backgroundColor: themeLightColor }}
+          className="schedule-date-range-segment absolute -left-px top-0 h-full w-[calc(50%+1px)]"
+          style={rangeBackgroundStyle}
         />
       );
     }
@@ -105,8 +110,8 @@ export const ScheduleDatePicker = ({
     if (status === "in-range") {
       return (
         <div
-          className="absolute -inset-x-px inset-y-0 dark:opacity-40"
-          style={{ backgroundColor: themeLightColor }}
+          className="schedule-date-range-segment absolute -inset-x-px inset-y-0"
+          style={rangeBackgroundStyle}
         />
       );
     }
