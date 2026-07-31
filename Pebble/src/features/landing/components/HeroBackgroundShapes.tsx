@@ -11,7 +11,6 @@ export function HeroBackgroundShapes() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
-      {/* 1. Vector 3 */}
       <img
         src={vector3}
         alt=""
@@ -19,7 +18,6 @@ export function HeroBackgroundShapes() {
         style={{ animationDelay: '700ms' }}
       />
 
-      {/* 2. Vector 1 */}
       <img
         src={vector1}
         alt=""
@@ -27,7 +25,6 @@ export function HeroBackgroundShapes() {
         style={{ animationDelay: '900ms' }}
       />
 
-      {/* 3. Vector 2 */}
       <img
         src={vector2}
         alt=""
@@ -35,7 +32,6 @@ export function HeroBackgroundShapes() {
         style={{ animationDelay: '1100ms' }}
       />
 
-      {/* 5. Vector 4: 캘린더 다음 등장 */}
       <img
         src={vector4}
         alt=""

@@ -1,26 +1,17 @@
+// src/features/landing/components/BridgePebbleRow.tsx
+
 import { BRIDGE_PEBBLES } from '@/features/landing/constants/bridgeSectionData';
 
 import '../styles/bridgeAnimation.css';
 
-interface BridgePebbleRowProps {
-  isActive: boolean;
-}
-
-export function BridgePebbleRow({
-  isActive,
-}: BridgePebbleRowProps) {
+export function BridgePebbleRow() {
   return (
     <div
       role="img"
       aria-label="최근 7일의 징검다리 미리보기"
       className="absolute left-0 top-[571px] z-10 h-[195px] w-full overflow-hidden"
     >
-      <div
-        className={[
-          'absolute left-[-58px] top-0 flex w-max gap-[32px]',
-          isActive ? 'landing-bridge-marquee' : '',
-        ].join(' ')}
-      >
+      <div className="landing-bridge-marquee absolute left-[-58px] top-0 flex w-max gap-[32px]">
         {[0, 1].map((groupIndex) => (
           <div
             key={groupIndex}

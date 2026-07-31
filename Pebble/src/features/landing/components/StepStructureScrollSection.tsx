@@ -1,8 +1,7 @@
-// src/features/landing/components/StepStructureScrollSection.tsx
-
 import { useRef } from 'react';
 
 import { STEP_STRUCTURE_STAGES } from '@/features/landing/constants/stepStructureData';
+import { useInView } from '@/features/landing/hooks/useInView';
 import { useLandingScale } from '@/features/landing/hooks/useLandingScale';
 import { useStepStructureScroll } from '@/features/landing/hooks/useStepStructureScroll';
 
@@ -12,36 +11,31 @@ const FIGMA_WIDTH = 1440;
 const FIGMA_HEIGHT = 1024;
 
 /*
- * Figma에서 카드가 시작되는 위치입니다.
- * 카드가 화면에 보이는 동안 전환이 끝나도록
- * 이 거리만 3단계로 나눠 사용합니다.
+ * 화면 축소 비율과 관계없이 동일한 스크롤 거리를 사용합니다.
+ * scale은 Figma UI의 시각적 크기 조절에만 사용합니다.
  */
-const CARD_TOP = 460;
+const STEP_SCROLL_DISTANCE = 360;
 
 export function StepStructureScrollSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const scale = useLandingScale();
 
   const stepCount = STEP_STRUCTURE_STAGES.length;
-
-  const scaledStageHeight = FIGMA_HEIGHT * scale;
-
-  /*
-   * 460px을 3단계로 나누므로
-   * 기본 화면 기준 단계당 약 153px입니다.
-   */
-  const stepScrollDistance = (CARD_TOP / stepCount) * scale;
+  const stepScrollDistance = STEP_SCROLL_DISTANCE;
 
   /*
-   * 1024 × 3처럼 과도하게 긴 스크롤 공간을 만들지 않습니다.
+   * sticky 화면 한 개 높이와 각 단계가 유지될 스크롤 공간을 더합니다.
    *
-   * 고정 화면 높이
-   * + CATEGORY 표시 거리
-   * + MILESTONE 표시 거리
-   * + TASK 표시 거리
+   * 0 ~ 359px: CATEGORY
+   * 360 ~ 719px: MILESTONE
+   * 720px 이상: TASK
+   *
+   * 마지막 단계도 일정 거리 동안 화면에 유지되도록
+   * stepCount 전체를 높이에 반영합니다.
    */
-  const scrollSectionHeight =
-    scaledStageHeight + stepScrollDistance * stepCount;
+  const scrollSectionHeight = `calc(
+    100vh + ${stepScrollDistance * stepCount}px
+  )`;
 
   const activeStep = useStepStructureScroll({
     sectionRef,
@@ -49,29 +43,30 @@ export function StepStructureScrollSection() {
     stepScrollDistance,
   });
 
+  const isSectionVisible = useInView(sectionRef);
+
   return (
     <section
       ref={sectionRef}
-      className="relative w-full bg-fill-inverse"
+      className="relative w-full bg-[linear-gradient(116.82deg,#FFFFFF_0%,#FAFAFA_100%)]"
       style={{
         height: scrollSectionHeight,
       }}
     >
-      <div
-        className="sticky top-0 w-full overflow-hidden"
-        style={{
-          height: scaledStageHeight,
-        }}
-      >
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
         <div
-          className="absolute left-1/2 top-0 origin-top"
+          className="absolute left-1/2 top-1/2"
           style={{
             width: FIGMA_WIDTH,
             height: FIGMA_HEIGHT,
-            transform: `translateX(-50%) scale(${scale})`,
+            transform: `translate(-50%, -50%) scale(${scale})`,
+            transformOrigin: 'center',
           }}
         >
-          <StepStructureSection activeStep={activeStep} />
+          <StepStructureSection
+            activeStep={activeStep}
+            isTextVisible={isSectionVisible}
+          />
         </div>
       </div>
     </section>

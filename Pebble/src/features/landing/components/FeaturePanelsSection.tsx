@@ -1,3 +1,5 @@
+// src/features/landing/components/FeaturePanelsSection.tsx
+
 import type { ReactNode } from 'react';
 
 import {
@@ -12,6 +14,7 @@ import { TaskColorPreview } from './TaskColorPreview';
 
 interface FeaturePanelsSectionProps {
   activeStep?: number;
+  isSectionVisible?: boolean;
 }
 
 const PREVIEW_COMPONENTS: Record<FeaturePanelId, ReactNode> = {
@@ -22,6 +25,7 @@ const PREVIEW_COMPONENTS: Record<FeaturePanelId, ReactNode> = {
 
 export function FeaturePanelsSection({
   activeStep = 0,
+  isSectionVisible = false,
 }: FeaturePanelsSectionProps) {
   const normalizedActiveStep = Math.min(
     Math.max(activeStep, 0),
@@ -29,7 +33,7 @@ export function FeaturePanelsSection({
   );
 
   return (
-    <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-fill-inverse">
+    <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-transparent">
       <article className="absolute left-[100px] top-[200px] h-[624px] w-[1240px] overflow-hidden rounded-token-l bg-fill-surface">
         {FEATURE_PANEL_DATA.map((panel, index) => (
           <FeaturePanel
@@ -38,6 +42,7 @@ export function FeaturePanelsSection({
             description={panel.description}
             isActive={index === normalizedActiveStep}
             hasPassed={index < normalizedActiveStep}
+            isSectionVisible={isSectionVisible}
           >
             {PREVIEW_COMPONENTS[panel.id]}
           </FeaturePanel>

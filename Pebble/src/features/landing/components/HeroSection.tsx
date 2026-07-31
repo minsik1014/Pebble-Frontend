@@ -13,7 +13,7 @@ export function HeroSection() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative h-[1474px] w-[1440px] overflow-hidden bg-fill-inverse">
+    <div className="relative h-[1474px] w-[1440px] overflow-hidden bg-transparent">
       <HeroBackgroundShapes />
 
       <div
@@ -34,17 +34,16 @@ export function HeroSection() {
         오늘 할 일부터 오래 남을 성취까지 한눈에 관리하세요
       </p>
 
-      {/* 버튼은 처음부터 표시 */}
+      {/* 버튼은 애니메이션 없이 항상 표시 */}
       <Button
         type="button"
         variant="primary"
-        className="absolute left-[624px] top-[548px] z-20 h-[66px] w-[189px] rounded-token-s px-token-xl py-token-l text-[20px] font-semibold leading-[130%] tracking-[-0.01em] shadow-[0_2px_10px_rgba(23,23,23,0.1)]"
+        className="absolute left-[624px] top-[548px] z-20 h-[66px] w-[189px] rounded-token-s px-token-xl py-token-l font-sans !text-[20px] !font-semibold !leading-[130%] tracking-[-0.01em] shadow-[0_2px_10px_rgba(23,23,23,0.1)]"
         onClick={() => navigate('/signup')}
       >
         무료로 시작하기
       </Button>
 
-      {/* Vector 2 다음 등장 */}
       <LandingCalendarPreview
         className="landing-hero-pop-in"
         style={{ animationDelay: '1350ms' }}
