@@ -35,7 +35,7 @@ export function MonthlyPebbleSection({ report }: MonthlyPebbleSectionProps) {
         </p>
 
         <h2 className="mt-[12px] text-[40px] font-bold leading-[120%] tracking-[-0.4px] text-[#404040]">
-          이번 달에는
+          저번 달에는
           <br />
           이만큼 쌓았어요!
         </h2>

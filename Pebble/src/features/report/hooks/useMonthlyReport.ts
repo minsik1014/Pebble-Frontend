@@ -4,6 +4,8 @@ import { getLatestReport } from '../api/reportApi';
 import { adaptLatestReport } from '../utils/adaptLatestReport';
 import { normalizeMonthlyReport } from '../utils/normalizeMonthlyReport';
 import type { MonthlyReportResponse } from '../types/report';
+import { monthlyReportMock } from '../mocks/monthlyReportMock';
+import { REPORT_DEMO_MODE } from '../constants/reportDemo';
 
 interface UseMonthlyReportResult {
   report: MonthlyReportResponse;
@@ -27,6 +29,14 @@ export function useMonthlyReport(
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
+    // [DEMO-ONLY] 발표 중에는 0/null인 API 응답 대신 시안과 동일한 목데이터를 사용합니다.
+    // REPORT_DEMO_MODE를 false로 바꾸면 아래 분기를 건너뛰고 기존 API를 다시 호출합니다.
+    if (REPORT_DEMO_MODE) {
+      setRaw(monthlyReportMock);
+      setIsLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
     let isActive = true;
     setIsLoading(true);
