@@ -89,9 +89,11 @@ export const filterCategoriesByMonth = (
   categories: Category[],
   year: number,
   month: number,
-): Category[] =>
-  categories
-    .map((category) => {
+): Category[] => {
+  const filteredCategories: Array<Category & { hasAnySchedule: boolean }> =
+    categories.map((category) => {
+      const hasAnySchedule =
+        category.items.length > 0 || (category.tasks?.length ?? 0) > 0;
       const tasks = category.tasks?.filter((task) =>
         isScheduleItemInMonth(task, year, month),
       );
@@ -120,9 +122,20 @@ export const filterCategoriesByMonth = (
         ...category,
         tasks,
         items,
+        hasAnySchedule,
       };
-    })
+    });
+
+  return filteredCategories
     .filter(
       (category) =>
-        category.items.length > 0 || (category.tasks?.length ?? 0) > 0,
-    );
+        !category.hasAnySchedule ||
+        category.items.length > 0 ||
+        (category.tasks?.length ?? 0) > 0,
+    )
+    .map((category) => {
+      const { hasAnySchedule: _hasAnySchedule, ...visibleCategory } = category;
+
+      return visibleCategory;
+    });
+};
