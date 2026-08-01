@@ -93,7 +93,7 @@ export const MilestoneAccordion = ({
   return (
     <section
       className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[20px] shadow-shadow-s overflow-hidden border-[1.5px] ${
-        isSelected ? "border-border-default" : "border-transparent"
+        isSelected ? "border-border-selected" : "border-transparent"
       }`}
     >
       <div 
