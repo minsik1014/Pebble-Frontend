@@ -7,8 +7,7 @@ import { useCalendarScheduleActions } from "@/features/calendar/hooks/useCalenda
 import { getCategories } from "@/features/category/api/categoryApi";
 import { getCategoryMembers } from "@/features/category/api/sharedCategoryApi";
 import {
-  getMilestones,
-  getUserCategoryMilestones,
+  getMonthlyMilestones,
 } from "@/features/milestone/api/milestoneApi";
 import { getMyProfile } from "@/features/mypage/api/profileApi";
 import { getStandaloneTasks, getUserTasks } from "@/features/task/api/taskApi";
@@ -30,42 +29,6 @@ type UseCalendarStateParams = {
 
 const formatBaseDate = (year: number, month: number) =>
   `${year}-${String(month).padStart(2, "0")}-01`;
-
-const getAccessibleMilestones = async (
-  category: Category,
-  currentUserId: number | null,
-) => {
-  try {
-    return await getMilestones(category.id);
-  } catch (error) {
-    if (
-      error instanceof ApiRequestError &&
-      error.status === 403 &&
-      category.isShared &&
-      category.userId &&
-      category.userId !== currentUserId
-    ) {
-      try {
-        return await getUserCategoryMilestones(category.userId, category.id);
-      } catch (fallbackError) {
-        if (
-          fallbackError instanceof ApiRequestError &&
-          (fallbackError.status === 403 || fallbackError.status === 404)
-        ) {
-          return [];
-        }
-
-        throw fallbackError;
-      }
-    }
-
-    if (error instanceof ApiRequestError && error.status === 403) {
-      return [];
-    }
-
-    throw error;
-  }
-};
 
 const getSharedOwnerId = async (category: Category) => {
   if (category.userId) {
@@ -210,6 +173,38 @@ const attachTasksToCategories = (
   };
 };
 
+const attachMilestonesToCategories = (
+  categories: Category[],
+  milestones: MilestoneItem[],
+) => {
+  const categoryMap = new Map<string, Category>(
+    categories.map((category) => [
+      category.id,
+      {
+        ...category,
+        items: [],
+        tasks: category.tasks ?? [],
+      },
+    ]),
+  );
+
+  milestones.forEach((milestone) => {
+    if (!milestone.categoryId) {
+      return;
+    }
+
+    const category = categoryMap.get(milestone.categoryId);
+
+    if (!category) {
+      return;
+    }
+
+    category.items = [...category.items, { ...milestone, tasks: [] }];
+  });
+
+  return [...categoryMap.values()];
+};
+
 export const useCalendarState = ({
   currentYear,
   currentMonth,
@@ -251,9 +246,15 @@ export const useCalendarState = ({
 
       try {
         const baseDate = formatBaseDate(currentYear, currentMonth);
-        const [loadedCategories, loadedTasks, loadedProfile] = await Promise.all([
+        const [
+          loadedCategories,
+          loadedTasks,
+          loadedMilestones,
+          loadedProfile,
+        ] = await Promise.all([
           getCategories(),
           getStandaloneTasks(baseDate),
+          getMonthlyMilestones(baseDate),
           getMyProfile().catch(() => null),
         ]);
         const nextCurrentUserId = loadedProfile?.id ?? null;
@@ -269,12 +270,9 @@ export const useCalendarState = ({
           ),
         );
         const uniqueTasks = mergeUniqueTasks([loadedTasks, ...sharedTasks]);
-        const categoriesWithMilestones = await Promise.all(
-          categoriesWithOwners.map(async (category) => ({
-            ...category,
-            items: await getAccessibleMilestones(category, nextCurrentUserId),
-            tasks: [],
-          })),
+        const categoriesWithMilestones = attachMilestonesToCategories(
+          categoriesWithOwners,
+          loadedMilestones,
         );
         const nextCalendarState = attachTasksToCategories(
           categoriesWithMilestones,

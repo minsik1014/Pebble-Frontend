@@ -36,6 +36,7 @@ export function mapMilestoneResponseToMilestone(
 
   return {
     id: String(milestone.id),
+    categoryId: milestone.categoryId ? String(milestone.categoryId) : undefined,
     title: milestone.name || fallbackInput?.title || "",
     start: startDate ?? dates?.[0] ?? fallbackStart,
     end: endDate ?? fallbackInput?.end ?? undefined,

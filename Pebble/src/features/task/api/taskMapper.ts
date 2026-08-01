@@ -98,6 +98,5 @@ export function mapScheduleInputToUpdateTaskRequest({
     endDate: dateType === "RANGE" ? input.end ?? null : null,
     dates: dateType === "MULTIPLE" ? input.dates ?? [] : null,
     color: nextCategoryId ? null : input.accent ?? "#171717",
-    editScope: dateType === "MULTIPLE" ? "ALL" : undefined,
   };
 }

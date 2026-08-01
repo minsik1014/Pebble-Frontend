@@ -36,6 +36,7 @@ export type TaskItem = ScheduleEntityBase &
 export type MilestoneItem = ScheduleEntityBase &
   ScheduleStyleFields & {
     itemType?: "milestone";
+    categoryId?: string;
     seriesId?: number;
     dateType?: "SINGLE" | "RANGE" | "MULTIPLE";
     isCompleted?: boolean;
