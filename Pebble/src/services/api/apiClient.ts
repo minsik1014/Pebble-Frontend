@@ -1,24 +1,23 @@
-import axios from "axios";
-import type { AxiosError, AxiosRequestConfig } from "axios";
+import axios from 'axios';
+import type { AxiosError, AxiosRequestConfig } from 'axios';
+
+import { showGlobalErrorToast } from '@/components/feedback/globalErrorToastStore';
 
 import {
   clearAuthTokens,
   getAccessToken,
   getRefreshToken,
   setAuthTokens,
-} from "./authToken";
+} from './authToken';
+import { API_TIMEOUT, TEMPORARY_ERROR_MESSAGE } from './constants';
 import {
   ApiRequestError,
   isApiErrorResponse,
   type ApiRequestConfig,
   type ApiResponse,
-} from "./types";
+} from './types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_TIMEOUT = 10_000;
-
-const TEMPORARY_ERROR_MESSAGE =
-  "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
 
 type AuthTokens = {
   accessToken: string;
@@ -36,7 +35,7 @@ async function refreshAccessToken() {
   const refreshToken = getRefreshToken();
 
   if (!refreshToken) {
-    throw new Error("저장된 리프레시 토큰이 없습니다.");
+    throw new Error('저장된 리프레시 토큰이 없습니다.');
   }
 
   if (!refreshPromise) {
@@ -54,7 +53,7 @@ async function refreshAccessToken() {
         const tokens = response.data.data;
 
         if (!tokens?.accessToken || !tokens.refreshToken) {
-          throw new Error("토큰 재발급 응답이 올바르지 않습니다.");
+          throw new Error('토큰 재발급 응답이 올바르지 않습니다.');
         }
 
         setAuthTokens(tokens.accessToken, tokens.refreshToken);
@@ -73,11 +72,25 @@ function redirectToLoginAfterAuthExpired() {
   clearAuthTokens();
 
   if (
-    typeof window !== "undefined" &&
-    window.location.pathname !== "/login"
+    typeof window !== 'undefined' &&
+    window.location.pathname !== '/login'
   ) {
-    window.location.assign("/login");
+    window.location.assign('/login');
   }
+}
+
+function showRetryableErrorToast(
+  error: ApiRequestError,
+  requestConfig?: AxiosRequestConfig & ApiRequestConfig,
+) {
+  if (requestConfig?.skipGlobalErrorToast) {
+    return;
+  }
+
+  showGlobalErrorToast({
+    message: error.message,
+    retry: requestConfig?.onRetry,
+  });
 }
 
 apiClient.interceptors.request.use((config) => {
@@ -130,18 +143,50 @@ apiClient.interceptors.response.use(
     }
 
     const isTimeoutError =
-      error.code === "ECONNABORTED" ||
-      error.code === "ETIMEDOUT";
+      error.code === 'ECONNABORTED' ||
+      error.code === 'ETIMEDOUT';
 
     const isNetworkError = !error.response;
     const isServerError =
-      typeof status === "number" && status >= 500;
+      typeof status === 'number' && status >= 500;
 
-    if (isTimeoutError || isNetworkError || isServerError) {
-      throw new ApiRequestError({
+    if (isTimeoutError) {
+      const apiError = new ApiRequestError({
         message: TEMPORARY_ERROR_MESSAGE,
         status,
+        type: 'timeout',
+        retryable: true,
       });
+
+      showRetryableErrorToast(apiError, requestConfig);
+
+      throw apiError;
+    }
+
+    if (isNetworkError) {
+      const apiError = new ApiRequestError({
+        message: TEMPORARY_ERROR_MESSAGE,
+        status,
+        type: 'network',
+        retryable: true,
+      });
+
+      showRetryableErrorToast(apiError, requestConfig);
+
+      throw apiError;
+    }
+
+    if (isServerError) {
+      const apiError = new ApiRequestError({
+        message: TEMPORARY_ERROR_MESSAGE,
+        status,
+        type: 'server',
+        retryable: true,
+      });
+
+      showRetryableErrorToast(apiError, requestConfig);
+
+      throw apiError;
     }
 
     if (isApiErrorResponse(responseData)) {
@@ -150,12 +195,16 @@ apiClient.interceptors.response.use(
         status,
         code: responseData.error.code,
         response: responseData,
+        type: status === 401 ? 'auth' : 'business',
+        retryable: false,
       });
     }
 
     throw new ApiRequestError({
       message: error.message || TEMPORARY_ERROR_MESSAGE,
       status,
+      type: 'unknown',
+      retryable: false,
     });
   },
 );

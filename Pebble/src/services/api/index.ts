@@ -1,4 +1,6 @@
-export { apiClient, apiRequest } from "./apiClient";
+export { apiClient, apiRequest } from './apiClient';
+export { API_TIMEOUT, TEMPORARY_ERROR_MESSAGE } from './constants';
+
 export {
   clearAccessToken,
   clearAuthTokens,
@@ -7,11 +9,18 @@ export {
   setAccessToken,
   setAuthTokens,
   setRefreshToken,
-} from "./authToken";
+} from './authToken';
+
 export type {
   ApiErrorResponse,
   ApiRequestConfig,
   ApiResponse,
   ApiResponseBody,
-} from "./types";
-export { ApiRequestError, isApiErrorResponse } from "./types";
+  CommonApiErrorType,
+} from './types';
+
+export {
+  ApiRequestError,
+  isApiErrorResponse,
+  isCommonRetryableApiError,
+} from './types';
