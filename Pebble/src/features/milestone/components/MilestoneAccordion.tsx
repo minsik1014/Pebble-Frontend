@@ -92,8 +92,10 @@ export const MilestoneAccordion = ({
 
   return (
     <section
-      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[22px] shadow-shadow-s overflow-hidden border-2 ${
-        isSelected ? "border-border-selected" : "border-transparent"
+      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[22px] overflow-hidden border-2 ${
+        isSelected
+          ? "border-border-selected shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_14px_0px_rgba(23,23,23,0.05)]"
+          : "border-transparent shadow-shadow-s"
       }`}
     >
       <div 
