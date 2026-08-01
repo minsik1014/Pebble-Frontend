@@ -14,6 +14,9 @@ export const useCalendarSidebarModals = ({
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [createModalType, setCreateModalType] =
     useState<CreateModalType | null>(null);
+  const [createDefaultCategoryId, setCreateDefaultCategoryId] = useState<
+    string | null
+  >(null);
   const [editingStandaloneTaskId, setEditingStandaloneTaskId] = useState<
     string | null
   >(null);
@@ -27,6 +30,7 @@ export const useCalendarSidebarModals = ({
 
   const closeCreateModal = () => {
     setCreateModalType(null);
+    setCreateDefaultCategoryId(null);
   };
 
   const closeStandaloneTaskEditor = () => {
@@ -35,14 +39,27 @@ export const useCalendarSidebarModals = ({
 
   return {
     isAddMenuOpen,
-    openAddMenu: () => setIsAddMenuOpen(true),
+    openAddMenu: (categoryId: string | null = null) => {
+      setCreateDefaultCategoryId(categoryId);
+      setIsAddMenuOpen(true);
+    },
     closeAddMenu: () => setIsAddMenuOpen(false),
+    createDefaultCategoryId,
     isCategoryModalOpen: createModalType === "category",
     isMilestoneModalOpen: createModalType === "milestone",
     isTaskModalOpen: createModalType === "task",
-    openCategoryModal: () => setCreateModalType("category"),
-    openMilestoneModal: () => setCreateModalType("milestone"),
-    openTaskModal: () => setCreateModalType("task"),
+    openCategoryModal: () => {
+      setCreateDefaultCategoryId(null);
+      setCreateModalType("category");
+    },
+    openMilestoneModal: (categoryId: string | null = null) => {
+      setCreateDefaultCategoryId(categoryId);
+      setCreateModalType("milestone");
+    },
+    openTaskModal: (categoryId: string | null = null) => {
+      setCreateDefaultCategoryId(categoryId);
+      setCreateModalType("task");
+    },
     closeCreateModal,
     editingStandaloneTaskId,
     editingStandaloneTask,

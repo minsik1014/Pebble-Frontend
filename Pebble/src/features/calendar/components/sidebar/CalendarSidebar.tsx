@@ -103,6 +103,7 @@ export const CalendarSidebar = ({
     openCategoryModal,
     openMilestoneModal,
     openTaskModal,
+    createDefaultCategoryId,
     closeCreateModal,
     editingStandaloneTaskId,
     editingStandaloneTask,
@@ -164,6 +165,7 @@ export const CalendarSidebar = ({
                       onToggleMilestoneCompleted={onToggleMilestoneCompleted}
                       onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
                       onToggleTaskCompleted={onToggleTaskCompleted}
+                      onAddSchedule={(categoryId) => openAddMenu(categoryId)}
                       onSelectCategory={onSelectCategory}
                       isSelected={selectedCategoryId === category.id}
                     />
@@ -186,7 +188,7 @@ export const CalendarSidebar = ({
                 variant="primary"
                 className="w-[352px]"
                 showIcon={false}
-                onClick={openAddMenu}
+                onClick={() => openAddMenu()}
               />
             </div>
           </div>
@@ -196,9 +198,10 @@ export const CalendarSidebar = ({
       <AddMenuModal
         isOpen={isAddMenuOpen}
         onClose={closeAddMenu}
+        variant={createDefaultCategoryId ? "category" : "global"}
         onSelectCategory={openCategoryModal}
-        onSelectMilestone={openMilestoneModal}
-        onSelectTask={openTaskModal}
+        onSelectMilestone={() => openMilestoneModal(createDefaultCategoryId)}
+        onSelectTask={() => openTaskModal(createDefaultCategoryId)}
       />
 
       <CategoryFormModal
@@ -212,6 +215,7 @@ export const CalendarSidebar = ({
         isOpen={isMilestoneModalOpen}
         onClose={closeCreateModal}
         categories={categories}
+        defaultCategoryId={createDefaultCategoryId}
         onSubmit={async (categoryId, input) => {
           await onCreateMilestone?.(categoryId, input);
         }}
@@ -221,6 +225,7 @@ export const CalendarSidebar = ({
         isOpen={isTaskModalOpen}
         onClose={closeCreateModal}
         categories={categories}
+        defaultCategoryId={createDefaultCategoryId}
         onSubmit={onCreateTask}
       />
 

@@ -26,6 +26,7 @@ type MilestoneAccordionProps = {
     milestoneId: string,
     taskId: string,
   ) => void | Promise<void>;
+  onAddSchedule?: (categoryId: string) => void;
   onSelectCategory?: (categoryId: string) => void;
   isSelected?: boolean;
 };
@@ -83,6 +84,7 @@ export const MilestoneAccordion = ({
   onToggleMilestoneCompleted,
   onToggleCategoryTaskCompleted,
   onToggleTaskCompleted,
+  onAddSchedule,
   onSelectCategory,
   isSelected = false,
 }: MilestoneAccordionProps) => {
@@ -183,6 +185,7 @@ export const MilestoneAccordion = ({
             label="일정 추가하기" 
             variant="secondary" 
             className="w-[312px]" 
+            onClick={() => onAddSchedule?.(category.id)}
           />
         </div>
       )}
