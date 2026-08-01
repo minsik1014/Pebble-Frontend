@@ -156,6 +156,10 @@ const getVisibleDayRangeInWeek = (
   };
 };
 
+const isRangeScheduleItem = (scheduleItem: DatedScheduleItem) =>
+  scheduleItem.item.dateType === "RANGE" ||
+  scheduleItem.startDate.toDateString() !== scheduleItem.endDate.toDateString();
+
 const rangesOverlap = (
   firstRange: { startColumn: number; endColumn: number },
   secondRange: { startColumn: number; endColumn: number },
@@ -239,6 +243,13 @@ export const generateWeeks = (
           scheduleItem.endDate.getTime() >= weekStartDate.getTime(),
       )
       .sort((a, b) => {
+        const rangePriorityDiff =
+          Number(isRangeScheduleItem(b)) - Number(isRangeScheduleItem(a));
+
+        if (rangePriorityDiff !== 0) {
+          return rangePriorityDiff;
+        }
+
         const aRange = getVisibleDayRangeInWeek(a, weekStartDate, weekEndDate);
         const bRange = getVisibleDayRangeInWeek(b, weekStartDate, weekEndDate);
         const startColumnDiff = aRange.startColumn - bRange.startColumn;
