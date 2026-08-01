@@ -10,11 +10,12 @@ export type CreateCategoryInput = Omit<Category, "id" | "items"> & {
   id?: string;
   items?: MilestoneItem[];
   tasks?: TaskItem[];
-  inviteUserIds?: number[];
+  previousMembers?: Category["members"];
 };
 
 export type UpdateCategoryInput = Partial<Omit<Category, "id" | "items">> & {
   items?: MilestoneItem[];
+  previousMembers?: Category["members"];
 };
 
 export type CreateScheduleItemInput = Omit<ScheduleEntityBase, "id"> &

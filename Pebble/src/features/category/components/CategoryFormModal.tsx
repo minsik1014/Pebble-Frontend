@@ -4,12 +4,14 @@ import { ImageCropModal } from "@/components/ui/image-crop/ImageCropModal";
 import { ModalActionBar } from "@/components/ui/ModalActionBar";
 import { CategoryColorPicker } from "./CategoryColorPicker";
 import { CategoryImageUploader } from "./CategoryImageUploader";
+import { CategoryMemberList } from "./CategoryMemberList";
 import { CategoryMemberSelector } from "./CategoryMemberSelector";
 import { CategoryShareOption } from "./CategoryShareOption";
 import { CategoryStatusOptions } from "./CategoryStatusOptions";
 import { CategoryThemePreview } from "./CategoryThemePreview";
 import type { Friend } from "@/features/category/types";
 import { getFollowingFriends } from "@/features/category/api/categoryFriendsApi";
+import { getCategoryMembers } from "@/features/category/api/sharedCategoryApi";
 import { uploadImageDataUrl } from "@/features/category/api/uploadImageApi";
 import {
   createCategoryColorTheme,
@@ -48,6 +50,7 @@ export const CategoryFormModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [selectedMembers, setSelectedMembers] = useState<Friend[]>([]);
+  const [initialMembers, setInitialMembers] = useState<Friend[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hasLoadedFriends, setHasLoadedFriends] = useState(false);
@@ -60,6 +63,8 @@ export const CategoryFormModal = ({
       friend.name.includes(searchQuery) &&
       !selectedMembers.some((member) => member.id === friend.id),
   );
+  const shouldShowMemberList = mode === "edit" && selectedMembers.length > 0;
+  const canToggleShared = !(mode === "edit" && category?.isShared && isShared);
 
   const toggleMember = (member: Friend) => {
     setSelectedMembers((prev) => {
@@ -80,7 +85,11 @@ export const CategoryFormModal = ({
       setIsPublic(category.isPublic ?? true);
       setIsCompleted(category.isCompleted ?? false);
       setIsShared(category.isShared ?? false);
-      setSelectedMembers([]);
+      setSelectedMembers(category.members ?? []);
+      setInitialMembers(category.members ?? []);
+      setSearchQuery("");
+      setIsDropdownOpen(false);
+      setHasLoadedFriends(false);
     } else {
       setCategoryName("");
       setImageUrl(undefined);
@@ -89,6 +98,7 @@ export const CategoryFormModal = ({
       setIsCompleted(false);
       setIsShared(false);
       setSelectedMembers([]);
+      setInitialMembers([]);
       setSearchQuery("");
       setIsDropdownOpen(false);
       setHasLoadedFriends(false);
@@ -102,6 +112,49 @@ export const CategoryFormModal = ({
       return;
     }
   }, [isOpen, isShared]);
+
+  useEffect(() => {
+    if (!isOpen || mode !== "edit" || !isShared || !category?.id) {
+      return;
+    }
+
+    let isActive = true;
+
+    const loadCategoryMembers = async () => {
+      try {
+        const [loadedFriends, sharedMembers] = await Promise.all([
+          getFollowingFriends(),
+          getCategoryMembers(category.id),
+        ]);
+        const memberUserIds = new Set(
+          sharedMembers
+            .filter((member) => member.role === "MEMBER")
+            .map((member) => member.userId),
+        );
+
+        if (!isActive) {
+          return;
+        }
+
+        setFriends(loadedFriends);
+        setHasLoadedFriends(true);
+        const loadedMembers = loadedFriends.filter((friend) =>
+          memberUserIds.has(friend.id),
+        );
+
+        setSelectedMembers(loadedMembers);
+        setInitialMembers(loadedMembers);
+      } catch (error) {
+        console.error("Failed to load category members:", error);
+      }
+    };
+
+    void loadCategoryMembers();
+
+    return () => {
+      isActive = false;
+    };
+  }, [category?.id, isOpen, isShared, mode]);
 
   const loadFriends = async () => {
     if (hasLoadedFriends) {
@@ -153,9 +206,8 @@ export const CategoryFormModal = ({
         isPublic,
         isCompleted,
         isShared,
-        inviteUserIds: isShared
-          ? selectedMembers.map((member) => member.id)
-          : undefined,
+        members: isShared ? selectedMembers : undefined,
+        previousMembers: mode === "edit" ? initialMembers : undefined,
       });
       onClose();
     } catch (error) {
@@ -224,19 +276,46 @@ export const CategoryFormModal = ({
 
         <CategoryShareOption
           isShared={isShared}
-          onToggleShared={() => setIsShared(!isShared)}
+          disabled={!canToggleShared}
+          onToggleShared={() => {
+            if (!canToggleShared) {
+              return;
+            }
+
+            setIsShared(!isShared);
+          }}
         />
 
         {isShared && (
-          <CategoryMemberSelector
-            selectedMembers={selectedMembers}
-            filteredFriends={filteredFriends}
-            searchQuery={searchQuery}
-            isDropdownOpen={isDropdownOpen}
-            onSearchChange={setSearchQuery}
-            onDropdownOpenChange={handleMemberDropdownOpenChange}
-            onToggleMember={toggleMember}
-          />
+          <div className="flex w-full flex-col gap-token-m">
+            <div className="flex w-full flex-col gap-token-s">
+              <h3 className="text-body-01-sb tracking-[-0.18px] text-text-primary">
+                친구 초대
+              </h3>
+              <CategoryMemberSelector
+                selectedMembers={selectedMembers}
+                filteredFriends={filteredFriends}
+                searchQuery={searchQuery}
+                isDropdownOpen={isDropdownOpen}
+                showSelectedMembersInInput={mode === "create"}
+                onSearchChange={setSearchQuery}
+                onDropdownOpenChange={handleMemberDropdownOpenChange}
+                onToggleMember={toggleMember}
+              />
+            </div>
+
+            {shouldShowMemberList && (
+              <div className="flex w-full flex-col gap-token-s">
+                <h3 className="text-body-01-sb tracking-[-0.18px] text-text-primary">
+                  구성원
+                </h3>
+                <CategoryMemberList
+                  members={selectedMembers}
+                  onRemoveMember={toggleMember}
+                />
+              </div>
+            )}
+          </div>
         )}
 
         <div className="flex w-full flex-col gap-5">

@@ -1,10 +1,11 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { CalendarLayoutContext } from "@/features/calendar/context/calendarLayoutContext";
 import type { CalendarLayoutContextValue } from "@/features/calendar/context/calendarLayoutContext.types";
 import { useCalendarState } from "@/features/calendar/hooks/useCalendarState";
 import type { CreateCategoryInput } from "@/features/calendar/types";
+import { CALENDAR_UPDATED_EVENT } from "@/features/calendar/utils/calendarSync";
 import type { TaskFormSubmitInput } from "@/features/task/components/TaskFormModal";
 
 type CalendarLayoutProviderProps = {
@@ -72,6 +73,18 @@ export const CalendarLayoutProvider = ({
     await createCategory(input);
     navigate("/");
   };
+
+  useEffect(() => {
+    const handleCalendarUpdated = () => {
+      void reloadCalendarData();
+    };
+
+    window.addEventListener(CALENDAR_UPDATED_EVENT, handleCalendarUpdated);
+
+    return () => {
+      window.removeEventListener(CALENDAR_UPDATED_EVENT, handleCalendarUpdated);
+    };
+  }, [reloadCalendarData]);
 
   const handleDeleteCategory = async (categoryId: string) => {
     await deleteCategory(categoryId);

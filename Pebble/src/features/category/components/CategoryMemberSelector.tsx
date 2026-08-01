@@ -5,6 +5,7 @@ type CategoryMemberSelectorProps = {
   filteredFriends: Friend[];
   searchQuery: string;
   isDropdownOpen: boolean;
+  showSelectedMembersInInput?: boolean;
   onSearchChange: (query: string) => void;
   onDropdownOpenChange: (isOpen: boolean) => void;
   onToggleMember: (member: Friend) => void;
@@ -15,48 +16,61 @@ export const CategoryMemberSelector = ({
   filteredFriends,
   searchQuery,
   isDropdownOpen,
+  showSelectedMembersInInput = true,
   onSearchChange,
   onDropdownOpenChange,
   onToggleMember,
 }: CategoryMemberSelectorProps) => (
-  <div className="flex flex-col gap-2 w-full relative">
-    <h3 className="font-semibold text-[18px] text-text-primary leading-[1.5] tracking-[-0.18px]">
-      구성원
-    </h3>
-    <div className="bg-fill-surface border border-border-default flex gap-3 items-center px-5 py-3 rounded-token-s w-full flex-wrap">
-      {selectedMembers.map((member) => (
-        <div key={member.id} className="bg-[#e5e5e5] drop-shadow-sm flex gap-3 items-center p-2 rounded-full">
-          <div className="flex gap-2 items-center">
+  <div className="relative flex w-full flex-col gap-2">
+    <div
+      className={[
+        "flex min-h-12 w-full flex-wrap items-center gap-token-m rounded-token-s border px-token-l py-token-m",
+        selectedMembers.length > 0
+          ? "border-border-secondary bg-fill-surface"
+          : searchQuery
+            ? "border-border-primary bg-fill-inverse"
+            : isDropdownOpen
+              ? "border-border-primary bg-fill-inverse"
+              : "border-border-secondary bg-fill-surface",
+      ].join(" ")}
+    >
+      {showSelectedMembersInInput && selectedMembers.map((member) => (
+        <div
+          key={member.id}
+          className="flex items-center gap-token-m rounded-token-infinite bg-fill-teritory p-token-s shadow-shadow-s"
+        >
+          <div className="flex items-center gap-token-s">
             {member.profileImageUrl ? (
               <img
                 src={member.profileImageUrl}
                 alt=""
-                className="h-9 w-9 flex-shrink-0 rounded-full border border-border-default object-cover"
+                className="size-9 shrink-0 rounded-token-infinite border border-border-secondary object-cover"
               />
             ) : (
-              <div className="w-9 h-9 rounded-full bg-gray-300 border border-border-default flex-shrink-0" />
+              <div className="size-9 shrink-0 rounded-token-infinite border border-border-secondary bg-border-default" />
             )}
-            <span className="font-medium text-[18px] text-text-strong tracking-[-0.18px]">
+            <span className="text-body-01-m tracking-[-0.18px] text-text-strong">
               {member.name}
             </span>
           </div>
           <button
             type="button"
             onClick={() => onToggleMember(member)}
-            className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-black/5 transition-colors"
+            className="flex size-9 items-center justify-center rounded-token-s text-text-secondary transition-colors hover:bg-black/5"
+            aria-label={`${member.name} 구성원 제거`}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="#737373" />
-            </svg>
+            <span className="text-title-03-m leading-none" aria-hidden="true">
+              ×
+            </span>
           </button>
         </div>
       ))}
 
-      <div className="relative flex-1 min-w-[150px]">
+      <div className="relative min-w-[220px] flex-1">
         <input
           type="text"
-          placeholder="친구 추가..."
-          className="w-full bg-transparent outline-none text-[16px] text-text-primary placeholder:text-text-teritary"
+          placeholder="닉네임 또는 이메일을 입력해 주세요"
+          className="w-full bg-transparent text-body-02-m text-text-primary outline-none placeholder:text-text-quaternary"
           value={searchQuery}
           onChange={(event) => onSearchChange(event.target.value)}
           onFocus={() => onDropdownOpenChange(true)}
@@ -66,23 +80,41 @@ export const CategoryMemberSelector = ({
     </div>
 
     {isDropdownOpen && filteredFriends.length > 0 && (
-      <div className="absolute top-full mt-2 w-full bg-fill-inverse border border-border-default rounded-token-s shadow-shadow-m max-h-48 overflow-y-auto z-10">
+      <div className="absolute top-full z-10 mt-2 max-h-48 w-full overflow-y-auto rounded-token-s border border-border-secondary bg-fill-inverse shadow-shadow-m">
         {filteredFriends.map((friend) => (
           <div
             key={friend.id}
-            onClick={() => onToggleMember(friend)}
-            className="flex gap-3 items-center px-4 py-3 hover:bg-fill-surface cursor-pointer transition-colors"
+            className="flex w-full items-center justify-between overflow-hidden rounded-token-m p-token-m transition-colors hover:bg-btn-pressed"
           >
-            {friend.profileImageUrl ? (
-              <img
-                src={friend.profileImageUrl}
-                alt=""
-                className="h-9 w-9 flex-shrink-0 rounded-full border border-border-default object-cover"
-              />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-gray-300 border border-border-default flex-shrink-0" />
-            )}
-            <span className="font-medium text-[16px] text-text-primary">{friend.name}</span>
+            <button
+              type="button"
+              onClick={() => onToggleMember(friend)}
+              className="flex min-w-0 flex-1 items-center gap-5 pr-token-l text-left"
+            >
+              {friend.profileImageUrl ? (
+                <img
+                  src={friend.profileImageUrl}
+                  alt=""
+                  className="size-16 shrink-0 rounded-token-infinite border border-border-teritory object-cover"
+                />
+              ) : (
+                <div className="size-16 shrink-0 rounded-token-infinite border border-border-teritory bg-border-default" />
+              )}
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate text-body-01-sb tracking-[-0.18px] text-text-strong">
+                  {friend.name}
+                </span>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onToggleMember(friend)}
+              className="flex h-12 shrink-0 items-center justify-center rounded-token-s bg-btn-primary px-token-xl py-token-m text-body-02-m tracking-[-0.16px] text-text-onFill transition-colors hover:brightness-95"
+              aria-label={`${friend.name} 구성원 추가`}
+            >
+              추가
+            </button>
           </div>
         ))}
       </div>

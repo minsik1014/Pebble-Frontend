@@ -9,8 +9,20 @@ export type CategoryResponse = {
   isCompleted?: boolean;
   isShared?: boolean;
   displayOrder?: number;
+  members?: CategoryMemberResponse[];
+  categoryMembers?: CategoryMemberResponse[];
+  invitedUsers?: CategoryMemberResponse[];
+  users?: CategoryMemberResponse[];
   createdAt?: string;
   updatedAt?: string;
+};
+
+export type CategoryMemberResponse = {
+  id?: number;
+  userId?: number;
+  nickname?: string;
+  name?: string;
+  profileImageUrl?: string | null;
 };
 
 export type GetCategoriesResponse = {
@@ -23,7 +35,6 @@ export type CreateCategoryRequest = {
   imageUrl?: string | null;
   isPublic?: boolean;
   isCompleted?: boolean;
-  inviteUserIds?: number[];
 };
 
 export type UpdateCategoryRequest = {

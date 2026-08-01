@@ -1,7 +1,11 @@
 import ReportIcon from "@/assets/icons/memo-outline.svg?react";
 import CalendarIcon from "@/assets/icons/calendar-nav-default.svg?react";
 
-import type { Alarm, FollowRequestAction } from "../types/alarm";
+import type {
+  Alarm,
+  CategoryInviteAction,
+  FollowRequestAction,
+} from "../types/alarm";
 
 interface AlarmItemProps {
   alarm: Alarm;
@@ -9,6 +13,10 @@ interface AlarmItemProps {
   onFollowRequestResponse?: (
     alarm: Alarm,
     action: FollowRequestAction,
+  ) => Promise<void>;
+  onCategoryInviteResponse?: (
+    alarm: Alarm,
+    action: CategoryInviteAction,
   ) => Promise<void>;
 }
 
@@ -48,14 +56,21 @@ export const AlarmItem = ({
   alarm,
   onDelete,
   onFollowRequestResponse,
+  onCategoryInviteResponse,
 }: AlarmItemProps) => {
   const isPendingFollowRequest =
     alarm.type === "FOLLOW_REQUEST" &&
     (alarm.followStatus ?? "PENDING") === "PENDING";
-
+  const isPendingCategoryInvite =
+    alarm.type === "CATEGORY_INVITE" &&
+    (alarm.followStatus ?? "PENDING") === "PENDING";
 
   const shouldShowActiveBackground =
-    alarm.type === "FOLLOW_REQUEST" ? isPendingFollowRequest : !alarm.isRead;
+    alarm.type === "FOLLOW_REQUEST"
+      ? isPendingFollowRequest
+      : alarm.type === "CATEGORY_INVITE"
+        ? isPendingCategoryInvite
+        : !alarm.isRead;
 
   const hasUserImage =
     alarm.type === "FOLLOW_REQUEST" || alarm.type === "FOLLOW_ACCEPTED";
@@ -67,11 +82,21 @@ export const AlarmItem = ({
 
   const handleAccept = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    if (isPendingCategoryInvite) {
+      void onCategoryInviteResponse?.(alarm, "ACCEPT");
+      return;
+    }
+
     void onFollowRequestResponse?.(alarm, "ACCEPT");
   };
 
   const handleReject = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    if (isPendingCategoryInvite) {
+      void onCategoryInviteResponse?.(alarm, "REJECT");
+      return;
+    }
+
     void onFollowRequestResponse?.(alarm, "REJECT");
   };
 
@@ -118,7 +143,7 @@ export const AlarmItem = ({
             {alarm.createdAt}
           </p>
 
-          {isPendingFollowRequest && (
+          {(isPendingFollowRequest || isPendingCategoryInvite) && (
             <div className="mt-2 flex gap-2.5">
               <button
                 type="button"
@@ -138,7 +163,7 @@ export const AlarmItem = ({
           )}
         </div>
 
-        {!isPendingFollowRequest && (
+        {!isPendingFollowRequest && !isPendingCategoryInvite && (
           <button
             type="button"
             onClick={handleDelete}

@@ -1,4 +1,10 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ThemeInitializer } from '@/components/theme/ThemeInitializer';
@@ -27,14 +33,6 @@ import { getAccessToken } from '@/services/api';
 import SettingsPage from './pages/settings/SettingsPage';
 import { EmailVerifyPage } from './pages/settings/EmailVerifyPage';
 
-function RootRoute() {
-  if (!getAccessToken()) {
-    return <Navigate to="/landing" replace />;
-  }
-
-  return <CalendarMainPage />;
-}
-
 function LandingRoute() {
   if (getAccessToken()) {
     return <Navigate to="/" replace />;
@@ -44,8 +42,10 @@ function LandingRoute() {
 }
 
 function ProtectedLayoutRoute() {
+  const { pathname } = useLocation();
+
   if (!getAccessToken()) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={pathname === '/' ? '/landing' : '/login'} replace />;
   }
 
   return <MainLayout />;
@@ -61,11 +61,8 @@ function App() {
         <Routes>
           <Route path="/landing" element={<LandingRoute />} />
 
-          <Route element={<MainLayout />}>
-            <Route index element={<RootRoute />} />
-          </Route>
-
           <Route element={<ProtectedLayoutRoute />}>
+            <Route index element={<CalendarMainPage />} />
             <Route path="friends" element={<FriendsPage />} />
             <Route path="my" element={<MyPage />} />
             <Route path="my/profile" element={<ProfileEditPage />} />

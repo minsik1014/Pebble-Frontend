@@ -1,7 +1,11 @@
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import type { Alarm, FollowRequestAction } from "../types/alarm";
+import type {
+  Alarm,
+  CategoryInviteAction,
+  FollowRequestAction,
+} from "../types/alarm";
 import { AlarmItem } from "./AlarmItem";
 
 interface AlarmPopoverProps {
@@ -14,6 +18,10 @@ interface AlarmPopoverProps {
     alarmId: number,
     action: FollowRequestAction,
   ) => Promise<void>;
+  onRespondCategoryInvite: (
+    alarmId: number,
+    action: CategoryInviteAction,
+  ) => Promise<void>;
 }
 
 export const AlarmPopover = ({
@@ -23,6 +31,7 @@ export const AlarmPopover = ({
   onDelete,
   onDeleteAll,
   onRespondFollowRequest,
+  onRespondCategoryInvite,
 }: AlarmPopoverProps) => {
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
@@ -63,6 +72,26 @@ export const AlarmPopover = ({
     );
   };
 
+  const handleCategoryInviteResponse = async (
+    alarm: Alarm,
+    action: CategoryInviteAction,
+  ) => {
+    try {
+      await onRespondCategoryInvite(alarm.id, action);
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : "요청을 처리하지 못했어요.",
+      );
+      return;
+    }
+
+    showToast(
+      action === "ACCEPT"
+        ? "공유 카테고리 초대를 수락했어요"
+        : "공유 카테고리 초대를 거절했어요",
+    );
+  };
+
   return createPortal(
     <div
       data-alarm-popover
@@ -97,6 +126,7 @@ export const AlarmPopover = ({
               alarm={alarm}
               onDelete={(alarmId) => void onDelete(alarmId)}
               onFollowRequestResponse={handleFollowRequestResponse}
+              onCategoryInviteResponse={handleCategoryInviteResponse}
             />
           ))
         ) : (

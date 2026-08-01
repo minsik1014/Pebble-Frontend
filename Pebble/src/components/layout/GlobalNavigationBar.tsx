@@ -49,7 +49,14 @@ export const GlobalNavigationBar = ({
     handleDeleteAlarm,
     handleDeleteAllAlarms,
     handleRespondFollowRequest,
+    handleRespondCategoryInvite,
   } = useAlarms();
+
+  const navigateIfNeeded = (targetPath: string) => {
+    if (pathname !== targetPath) {
+      navigate(targetPath);
+    }
+  };
 
   const openAlarmPopover = async () => {
     try {
@@ -187,6 +194,7 @@ export const GlobalNavigationBar = ({
                 onDelete={handleDeleteAlarm}
                 onDeleteAll={handleDeleteAllAlarms}
                 onRespondFollowRequest={handleRespondFollowRequest}
+                onRespondCategoryInvite={handleRespondCategoryInvite}
               />
             )}
           </div>
@@ -196,7 +204,7 @@ export const GlobalNavigationBar = ({
         <div className="flex flex-col justify-start items-center gap-10 w-full">
           <button
             type="button"
-            onClick={() => navigate('/friends')}
+            onClick={() => navigateIfNeeded('/friends')}
             className={getNavigationButtonClassName(isFriendsActive)}
             aria-label="소셜 페이지로 이동"
             aria-current={isFriendsActive ? 'page' : undefined}
@@ -210,7 +218,7 @@ export const GlobalNavigationBar = ({
 
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => navigateIfNeeded('/')}
             className={getNavigationButtonClassName(isCalendarActive)}
             aria-label="캘린더 페이지로 이동"
             aria-current={isCalendarActive ? 'page' : undefined}
@@ -224,7 +232,7 @@ export const GlobalNavigationBar = ({
 
           <button
             type="button"
-            onClick={() => navigate('/my')}
+            onClick={() => navigateIfNeeded('/my')}
             className={getNavigationButtonClassName(isMyPageActive)}
             aria-label="마이페이지로 이동"
             aria-current={isMyPageActive ? 'page' : undefined}
@@ -241,7 +249,7 @@ export const GlobalNavigationBar = ({
         <div className="flex flex-col justify-start items-center gap-10 w-full">
           <button
             type="button"
-            onClick={() => navigate('/settings')}
+            onClick={() => navigateIfNeeded('/settings')}
             className={getNavigationButtonClassName(isSettingsActive)}
             aria-label="설정 페이지로 이동"
             aria-current={isSettingsActive ? 'page' : undefined}

@@ -161,6 +161,7 @@ export const useCalendarState = ({
   }, [loadCalendarData]);
 
   const categoryActions = useCalendarCategoryActions({
+    categories,
     setCategories,
     setSelectedCategoryId,
   });

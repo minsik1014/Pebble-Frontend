@@ -90,26 +90,39 @@ export const filterCategoriesByMonth = (
   year: number,
   month: number,
 ): Category[] =>
-  categories.map((category) => ({
-    ...category,
-    tasks: category.tasks?.filter((task) =>
-      isScheduleItemInMonth(task, year, month),
-    ),
-    items: category.items
-      .map((item): MilestoneItem | null => {
-        const filteredTasks = item.tasks?.filter((task) =>
-          isScheduleItemInMonth(task, year, month),
-        );
-        const shouldKeepMilestone = isScheduleItemInMonth(item, year, month);
+  categories
+    .map((category) => {
+      const tasks = category.tasks?.filter((task) =>
+        isScheduleItemInMonth(task, year, month),
+      );
+      const items = category.items
+        .map((item): MilestoneItem | null => {
+          const filteredTasks = item.tasks?.filter((task) =>
+            isScheduleItemInMonth(task, year, month),
+          );
+          const shouldKeepMilestone = isScheduleItemInMonth(item, year, month);
 
-        if (!shouldKeepMilestone && (!filteredTasks || filteredTasks.length === 0)) {
-          return null;
-        }
+          if (
+            !shouldKeepMilestone &&
+            (!filteredTasks || filteredTasks.length === 0)
+          ) {
+            return null;
+          }
 
-        return {
-          ...item,
-          tasks: filteredTasks,
-        };
-      })
-      .filter((item): item is MilestoneItem => Boolean(item)),
-  }));
+          return {
+            ...item,
+            tasks: filteredTasks,
+          };
+        })
+        .filter((item): item is MilestoneItem => Boolean(item));
+
+      return {
+        ...category,
+        tasks,
+        items,
+      };
+    })
+    .filter(
+      (category) =>
+        category.items.length > 0 || (category.tasks?.length ?? 0) > 0,
+    );
