@@ -46,7 +46,10 @@ export type CreateTaskRequest = {
 };
 
 export type UpdateTaskRequest = {
+  categoryId: number | null;
+  milestoneId: number | null;
   name?: string | null;
+  dateType: TaskDateType;
   startDate?: string | null;
   endDate?: string | null;
   dates?: string[] | null;

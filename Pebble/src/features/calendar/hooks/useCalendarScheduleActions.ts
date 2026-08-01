@@ -167,12 +167,16 @@ export const useCalendarScheduleActions = ({
 
   const updateCategoryTask = useCallback(
     async (categoryId: string, taskId: string, input: CreateScheduleItemInput) => {
-      void categoryId;
+      const nextCategoryId =
+        "categoryId" in input ? input.categoryId ?? null : categoryId;
+      const nextMilestoneId =
+        "milestoneId" in input ? input.milestoneId ?? null : null;
 
       await updateTaskApi({
         taskId,
         input,
-        isChildTask: true,
+        categoryId: nextCategoryId,
+        milestoneId: nextMilestoneId,
       });
 
       await reloadCalendarData();
@@ -216,7 +220,8 @@ export const useCalendarScheduleActions = ({
       await updateTaskApi({
         taskId,
         input,
-        isChildTask: false,
+        categoryId: input.categoryId ?? null,
+        milestoneId: input.milestoneId ?? null,
       });
       await reloadCalendarData();
     },
@@ -275,13 +280,16 @@ export const useCalendarScheduleActions = ({
       taskId: string,
       input: CreateScheduleItemInput,
     ) => {
-      void categoryId;
-      void milestoneId;
+      const nextCategoryId =
+        "categoryId" in input ? input.categoryId ?? null : categoryId;
+      const nextMilestoneId =
+        "milestoneId" in input ? input.milestoneId ?? null : milestoneId;
 
       await updateTaskApi({
         taskId,
         input,
-        isChildTask: true,
+        categoryId: nextCategoryId,
+        milestoneId: nextMilestoneId,
       });
       await reloadCalendarData();
     },

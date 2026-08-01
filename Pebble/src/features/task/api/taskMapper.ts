@@ -73,19 +73,31 @@ export function mapScheduleInputToCreateTaskRequest({
 
 export function mapScheduleInputToUpdateTaskRequest({
   input,
-  isChildTask,
+  categoryId,
+  milestoneId,
 }: {
   input: CreateScheduleItemInput;
-  isChildTask: boolean;
+  categoryId?: string | null;
+  milestoneId?: string | null;
 }): UpdateTaskRequest {
   const dateType = getDateTypeFromInput(input);
+  const nextCategoryId =
+    categoryId !== undefined ? categoryId : input.categoryId ?? null;
+  const nextMilestoneId = nextCategoryId
+    ? milestoneId !== undefined
+      ? milestoneId
+      : input.milestoneId ?? null
+    : null;
 
   return {
+    categoryId: nextCategoryId ? Number(nextCategoryId) : null,
+    milestoneId: nextMilestoneId ? Number(nextMilestoneId) : null,
     name: input.title,
+    dateType,
     startDate: dateType === "MULTIPLE" ? null : input.start,
     endDate: dateType === "RANGE" ? input.end ?? null : null,
     dates: dateType === "MULTIPLE" ? input.dates ?? [] : null,
-    color: isChildTask ? undefined : input.accent ?? "#171717",
+    color: nextCategoryId ? null : input.accent ?? "#171717",
     editScope: dateType === "MULTIPLE" ? "ALL" : undefined,
   };
 }
