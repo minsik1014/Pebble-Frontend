@@ -5,7 +5,7 @@ import {
   collectSidebarItemsForDate,
   getDatedItemKey,
   type DatedSidebarItem,
-} from "./CalendarSidebarListView";
+} from "./CalendarSidebarDateItems";
 import { AddButton } from "@/components/ui/AddButton";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
