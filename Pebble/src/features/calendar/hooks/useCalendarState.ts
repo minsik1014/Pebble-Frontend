@@ -31,7 +31,10 @@ type UseCalendarStateParams = {
 const formatBaseDate = (year: number, month: number) =>
   `${year}-${String(month).padStart(2, "0")}-01`;
 
-const getAccessibleMilestones = async (category: Category) => {
+const getAccessibleMilestones = async (
+  category: Category,
+  currentUserId: number | null,
+) => {
   try {
     return await getMilestones(category.id);
   } catch (error) {
@@ -39,7 +42,8 @@ const getAccessibleMilestones = async (category: Category) => {
       error instanceof ApiRequestError &&
       error.status === 403 &&
       category.isShared &&
-      category.userId
+      category.userId &&
+      category.userId !== currentUserId
     ) {
       try {
         return await getUserCategoryMilestones(category.userId, category.id);
@@ -90,11 +94,18 @@ const withSharedOwnerIds = async (categories: Category[]) =>
     }),
   );
 
-const getSharedCategoryIdsByOwner = (categories: Category[]) => {
+const getSharedCategoryIdsByOwner = (
+  categories: Category[],
+  currentUserId: number | null,
+) => {
   const categoryIdsByOwner = new Map<number, Set<string>>();
 
   categories.forEach((category) => {
-    if (!category.isShared || !category.userId) {
+    if (
+      !category.isShared ||
+      !category.userId ||
+      category.userId === currentUserId
+    ) {
       return;
     }
 
@@ -247,8 +258,10 @@ export const useCalendarState = ({
         ]);
         const nextCurrentUserId = loadedProfile?.id ?? null;
         const categoriesWithOwners = await withSharedOwnerIds(loadedCategories);
-        const sharedCategoryIdsByOwner =
-          getSharedCategoryIdsByOwner(categoriesWithOwners);
+        const sharedCategoryIdsByOwner = getSharedCategoryIdsByOwner(
+          categoriesWithOwners,
+          nextCurrentUserId,
+        );
         const sharedTasks = await Promise.all(
           [...sharedCategoryIdsByOwner.entries()].map(
             ([userId, categoryIds]) =>
@@ -259,7 +272,7 @@ export const useCalendarState = ({
         const categoriesWithMilestones = await Promise.all(
           categoriesWithOwners.map(async (category) => ({
             ...category,
-            items: await getAccessibleMilestones(category),
+            items: await getAccessibleMilestones(category, nextCurrentUserId),
             tasks: [],
           })),
         );
