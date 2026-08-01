@@ -65,6 +65,11 @@ export const CalendarLayoutProvider = ({
   };
 
   const handleSelectCategory = (categoryId: string) => {
+    if (selectedCategoryId === categoryId) {
+      navigate("/");
+      return;
+    }
+
     selectCategory(categoryId);
     navigate(`/?category=${categoryId}`);
   };

@@ -1,6 +1,5 @@
 import { type Category } from "@/types";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import UploadIcon from "@/assets/icons/Upload.svg?react";
 
 type CategoryDetailHeaderProps = {
   category: Category;
@@ -21,10 +20,11 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
             alt={`${category.title} 썸네일`}
           />
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-text-teritary">
-            <UploadIcon className="h-8 w-8" />
-            <span className="text-body-03-r">대표 이미지 없음</span>
-          </div>
+          <div
+            className="h-full w-full"
+            style={{ backgroundColor: category.themeBase }}
+            aria-label={`${category.title} 대표 색상`}
+          />
         )}
       </div>
 
