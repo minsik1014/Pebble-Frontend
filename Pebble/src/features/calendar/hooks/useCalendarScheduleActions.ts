@@ -16,6 +16,7 @@ import {
   toggleTaskComplete as toggleTaskCompleteApi,
   updateTask as updateTaskApi,
 } from "@/features/task/api/taskApi";
+import type { TaskDeleteScope } from "@/features/task/api/taskApi.types";
 import {
   appendMilestoneToCategory,
   appendMilestonesToCategory,
@@ -46,6 +47,11 @@ type UseCalendarScheduleActionsParams = {
 const getMilestoneDeleteScope = (
   dateType?: string,
 ): MilestoneDeleteScope | undefined =>
+  dateType === "MULTIPLE" ? "ALL" : undefined;
+
+const getTaskDeleteScope = (
+  dateType?: string,
+): TaskDeleteScope | undefined =>
   dateType === "MULTIPLE" ? "ALL" : undefined;
 
 const getTaskCompleteTargetIds = (
@@ -169,13 +175,21 @@ export const useCalendarScheduleActions = ({
 
   const deleteCategoryTask = useCallback(
     async (categoryId: string, taskId: string) => {
-      await deleteTaskApi({ taskId });
+      const task =
+        categories
+          .find((category) => category.id === categoryId)
+          ?.tasks?.find((categoryTask) => categoryTask.id === taskId) ?? null;
+
+      await deleteTaskApi({
+        taskId,
+        deleteScope: getTaskDeleteScope(task?.dateType),
+      });
 
       setCategories((previousCategories) =>
         removeCategoryTaskFromList(previousCategories, categoryId, taskId),
       );
     },
-    [setCategories],
+    [categories, setCategories],
   );
 
   const createStandaloneTask = useCallback(
@@ -208,13 +222,20 @@ export const useCalendarScheduleActions = ({
 
   const deleteStandaloneTask = useCallback(
     async (taskId: string) => {
-      await deleteTaskApi({ taskId });
+      const task =
+        standaloneTasks.find((standaloneTask) => standaloneTask.id === taskId) ??
+        null;
+
+      await deleteTaskApi({
+        taskId,
+        deleteScope: getTaskDeleteScope(task?.dateType),
+      });
 
       setStandaloneTasks((previousTasks) =>
         previousTasks.filter((task) => task.id !== taskId),
       );
     },
-    [setStandaloneTasks],
+    [setStandaloneTasks, standaloneTasks],
   );
 
   const deleteMilestone = useCallback(
@@ -238,7 +259,16 @@ export const useCalendarScheduleActions = ({
 
   const deleteTask = useCallback(
     async (categoryId: string, milestoneId: string, taskId: string) => {
-      await deleteTaskApi({ taskId });
+      const task =
+        categories
+          .find((category) => category.id === categoryId)
+          ?.items.find((item) => item.id === milestoneId)
+          ?.tasks?.find((milestoneTask) => milestoneTask.id === taskId) ?? null;
+
+      await deleteTaskApi({
+        taskId,
+        deleteScope: getTaskDeleteScope(task?.dateType),
+      });
 
       setCategories((previousCategories) =>
         removeTaskFromMilestone(
@@ -249,7 +279,7 @@ export const useCalendarScheduleActions = ({
         ),
       );
     },
-    [setCategories],
+    [categories, setCategories],
   );
 
   const updateTask = useCallback(
