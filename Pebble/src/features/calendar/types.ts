@@ -27,6 +27,7 @@ export type CreateScheduleItemInput = Omit<ScheduleEntityBase, "id"> &
   };
 
 export type CalendarState = {
+  currentUserId: number | null;
   categories: Category[];
   standaloneTasks: TaskItem[];
   selectedCategory: Category | null;

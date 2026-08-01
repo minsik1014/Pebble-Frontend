@@ -24,6 +24,7 @@ type ProfileStore = {
 
 export const useProfileStore = create<ProfileStore>((set) => ({
   profile: {
+    id: 0,
     email: "",
     nickname: "",
     bio: "",

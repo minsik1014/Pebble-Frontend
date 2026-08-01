@@ -12,6 +12,7 @@ export const CalendarMainPage = (): JSX.Element => {
     selectedCalendarDate,
     onSelectCalendarDate,
     onClearSelectedCalendarDate,
+    currentUserId,
     categories,
     standaloneTasks,
     isCalendarLoading,
@@ -39,6 +40,7 @@ export const CalendarMainPage = (): JSX.Element => {
     <CategoryDetailSection
       isSidebarOpen={isSidebarOpen}
       category={selectedCategory}
+      currentUserId={currentUserId}
       onBack={() => setSearchParams({})}
       categories={categories}
       onUpdateCategory={updateCategory}

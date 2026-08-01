@@ -19,6 +19,7 @@ import type {
 export const CategoryDetailSection = ({
   isSidebarOpen,
   category,
+  currentUserId,
   onBack,
   categories,
   onUpdateCategory,
@@ -36,6 +37,7 @@ export const CategoryDetailSection = ({
 }: {
   isSidebarOpen: boolean;
   category: Category;
+  currentUserId: number | null;
   onBack: () => void;
   categories: Category[];
   onUpdateCategory: (
@@ -98,6 +100,11 @@ export const CategoryDetailSection = ({
     category.items
       .find((item) => item.id === selectedMilestoneForTask)
       ?.tasks?.find((task) => task.id === editingTaskId) ?? null;
+  const canDeleteCategory =
+    !category.isShared ||
+    (currentUserId !== null &&
+      category.userId !== undefined &&
+      category.userId === currentUserId);
 
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
@@ -202,10 +209,14 @@ export const CategoryDetailSection = ({
           await onUpdateCategory(category.id, input);
         }}
         onClose={() => setIsEditModalOpen(false)} 
-        onRequestDelete={() => {
-          setIsEditModalOpen(false);
-          setIsDeleteModalOpen(true);
-        }}
+        onRequestDelete={
+          canDeleteCategory
+            ? () => {
+                setIsEditModalOpen(false);
+                setIsDeleteModalOpen(true);
+              }
+            : undefined
+        }
       />
 
       <DeleteCategoryModal

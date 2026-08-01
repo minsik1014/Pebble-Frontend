@@ -67,6 +67,7 @@ export const CategoryFormModal = ({
   );
   const shouldShowMemberList = mode === "edit" && selectedMembers.length > 0;
   const canToggleShared = !(mode === "edit" && category?.isShared && isShared);
+  const canDeleteCategory = Boolean(onRequestDelete);
 
   const toggleMember = (member: Friend) => {
     setSelectedMembers((prev) => {
@@ -87,8 +88,11 @@ export const CategoryFormModal = ({
       setIsPublic(category.isPublic ?? true);
       setIsCompleted(category.isCompleted ?? false);
       setIsShared(category.isShared ?? false);
-      setSelectedMembers(category.members ?? []);
-      setInitialMembers(category.members ?? []);
+      const editableMembers =
+        category.members?.filter((member) => member.role !== "OWNER") ?? [];
+
+      setSelectedMembers(editableMembers);
+      setInitialMembers(editableMembers);
       setSearchQuery("");
       setIsDropdownOpen(false);
       setHasLoadedFriends(false);
@@ -326,7 +330,7 @@ export const CategoryFormModal = ({
             disabled={!categoryName.trim() || isSubmitting}
             onCancel={onClose}
             onSubmit={handleSubmit}
-            onDelete={mode === "edit" ? onRequestDelete : undefined}
+            onDelete={mode === "edit" && canDeleteCategory ? onRequestDelete : undefined}
             deleteLabel="카테고리 삭제"
           />
         </div>

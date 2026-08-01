@@ -48,6 +48,7 @@ export type ScheduleItem = MilestoneItem | TaskItem;
 export type CategoryMember = {
   id: number;
   name: string;
+  role?: "OWNER" | "MEMBER";
   uniqueTag?: string;
   email?: string;
   profileImageUrl?: string | null;

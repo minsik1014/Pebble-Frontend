@@ -28,6 +28,7 @@ export const CalendarLayoutProvider = ({
   const [selectedCalendarDate, setSelectedCalendarDate] =
     useState<Date | null>(null);
   const {
+    currentUserId,
     categories,
     standaloneTasks,
     replaceCategories,
@@ -143,6 +144,7 @@ export const CalendarLayoutProvider = ({
     onSelectCalendarDate: handleSelectCalendarDate,
     onClearSelectedCalendarDate: () => setSelectedCalendarDate(null),
     selectedCategoryId,
+    currentUserId,
     categories,
     standaloneTasks,
     isCalendarLoading,

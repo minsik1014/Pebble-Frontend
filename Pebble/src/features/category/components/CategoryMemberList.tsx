@@ -18,11 +18,14 @@ export const CategoryMemberList = ({
 
   return (
     <div className="flex max-h-40 w-full flex-col items-start overflow-y-auto overflow-x-hidden rounded-token-s border border-border-secondary bg-fill-surface px-token-m py-token-s">
-      {members.map((member) => (
-        <div
-          key={member.id}
-          className="flex h-14 w-full shrink-0 items-center gap-5 overflow-hidden rounded-token-s px-token-s py-token-xs"
-        >
+      {members.map((member) => {
+        const canRemoveMember = member.role !== "OWNER";
+
+        return (
+          <div
+            key={member.id}
+            className="flex h-14 w-full shrink-0 items-center gap-5 overflow-hidden rounded-token-s px-token-s py-token-xs"
+          >
           <div className="flex min-w-0 flex-1 items-center gap-token-s overflow-hidden rounded-token-s">
             {member.profileImageUrl ? (
               <img
@@ -39,16 +42,19 @@ export const CategoryMemberList = ({
             </span>
           </div>
 
-          <button
-            type="button"
-            className="flex h-12 shrink-0 items-center justify-center rounded-token-s bg-fill-danger-bg px-token-xl py-token-m text-body-02-m tracking-[-0.16px] text-fill-danger"
-            onClick={() => onRemoveMember(member)}
-            aria-label={`${member.name} 구성원 탈퇴`}
-          >
-            탈퇴
-          </button>
-        </div>
-      ))}
+            {canRemoveMember && (
+              <button
+                type="button"
+                className="flex h-12 shrink-0 items-center justify-center rounded-token-s bg-fill-danger-bg px-token-xl py-token-m text-body-02-m tracking-[-0.16px] text-fill-danger"
+                onClick={() => onRemoveMember(member)}
+                aria-label={`${member.name} 구성원 탈퇴`}
+              >
+                탈퇴
+              </button>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };

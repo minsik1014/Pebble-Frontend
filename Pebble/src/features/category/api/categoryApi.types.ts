@@ -20,6 +20,7 @@ export type CategoryResponse = {
 export type CategoryMemberResponse = {
   id?: number;
   userId?: number;
+  role?: "OWNER" | "MEMBER";
   nickname?: string;
   name?: string;
   uniqueTag?: string;

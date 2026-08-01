@@ -10,6 +10,7 @@ import {
   getMilestones,
   getUserCategoryMilestones,
 } from "@/features/milestone/api/milestoneApi";
+import { getMyProfile } from "@/features/mypage/api/profileApi";
 import { getStandaloneTasks, getUserTasks } from "@/features/task/api/taskApi";
 import { ApiRequestError, getAccessToken } from "@/services/api";
 
@@ -203,6 +204,7 @@ export const useCalendarState = ({
   currentMonth,
 }: UseCalendarStateParams): CalendarStateModel => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [standaloneTasks, setStandaloneTasks] = useState<TaskItem[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
@@ -222,6 +224,7 @@ export const useCalendarState = ({
     async (canUpdate: () => boolean = () => true) => {
       if (!getAccessToken()) {
         if (canUpdate()) {
+          setCurrentUserId(null);
           setCategories([]);
           setStandaloneTasks([]);
           setCalendarErrorMessage(null);
@@ -237,10 +240,12 @@ export const useCalendarState = ({
 
       try {
         const baseDate = formatBaseDate(currentYear, currentMonth);
-        const [loadedCategories, loadedTasks] = await Promise.all([
+        const [loadedCategories, loadedTasks, loadedProfile] = await Promise.all([
           getCategories(),
           getStandaloneTasks(baseDate),
+          getMyProfile().catch(() => null),
         ]);
+        const nextCurrentUserId = loadedProfile?.id ?? null;
         const categoriesWithOwners = await withSharedOwnerIds(loadedCategories);
         const sharedCategoryIdsByOwner =
           getSharedCategoryIdsByOwner(categoriesWithOwners);
@@ -264,6 +269,7 @@ export const useCalendarState = ({
         );
 
         if (canUpdate()) {
+          setCurrentUserId(nextCurrentUserId);
           setCategories(nextCalendarState.categories);
           setStandaloneTasks(nextCalendarState.standaloneTasks);
         }
@@ -307,6 +313,7 @@ export const useCalendarState = ({
     setStandaloneTasks,
   });
   return {
+    currentUserId,
     categories,
     standaloneTasks,
     selectedCategory,

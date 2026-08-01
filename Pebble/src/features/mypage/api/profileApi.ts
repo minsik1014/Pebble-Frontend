@@ -28,6 +28,7 @@ export async function getMyProfile(): Promise<Profile> {
   }
 
   return {
+    id: data.id,
     email: data.email,
     nickname: data.nickname,
     bio: data.bio ?? "",
