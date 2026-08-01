@@ -58,7 +58,14 @@ export const MilestoneFormModal = ({
       return;
     }
 
-    setSelectedCategory(defaultCategoryId);
+    setSelectedCategory(
+      defaultCategoryId &&
+        categories.some(
+          (category) => category.id === defaultCategoryId && !category.isHidden,
+        )
+        ? defaultCategoryId
+        : null,
+    );
 
     if (!milestone) {
       setMilestoneName("");
@@ -91,6 +98,7 @@ export const MilestoneFormModal = ({
     setSelectedDate(parseIsoScheduleDate(milestone.start));
   }, [
     defaultCategoryId,
+    categories,
     isOpen,
     milestone,
     reset,
