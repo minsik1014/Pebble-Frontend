@@ -1,5 +1,6 @@
 import { type Category } from "@/types";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
 
 type CategoryDetailHeaderProps = {
   category: Category;
@@ -7,7 +8,19 @@ type CategoryDetailHeaderProps = {
 };
 
 export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderProps) => {
-  const totalTasksCount = category.items.reduce((acc, item) => acc + (item.tasks?.length || 0), 0);
+  const categoryTasks = category.tasks ?? [];
+  const milestoneTasks = category.items.flatMap((item) => item.tasks ?? []);
+  const totalTasksCount = categoryTasks.length + milestoneTasks.length;
+  const progressTargets = [
+    ...category.items.map((item) => Boolean(item.isCompleted)),
+    ...categoryTasks.map(isTaskCompleted),
+    ...milestoneTasks.map(isTaskCompleted),
+  ];
+  const completedTargetsCount = progressTargets.filter(Boolean).length;
+  const progress =
+    progressTargets.length > 0
+      ? Math.round((completedTargetsCount / progressTargets.length) * 100)
+      : 0;
   const visibilityLabel = category.isPublic ? "공개" : "비공개";
 
   return (
@@ -72,8 +85,8 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
           </div>
         </div>
 
-        <ProgressBar 
-          progress={0} 
+        <ProgressBar
+          progress={progress}
           themeBaseColor={category.themeBase}
         />
       </div>
