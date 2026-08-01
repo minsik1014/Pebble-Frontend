@@ -1,5 +1,6 @@
 import { type TaskItem } from "@/types";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
@@ -18,6 +19,11 @@ export const StandaloneTaskSection = ({
     {tasks.map((task) => {
       const dateLabel = formatScheduleDisplayLabel(task);
       const accentColor = task.accent ?? "#171717";
+      const isCompleted = isTaskCompleted(task);
+      const titleColorClass = getScheduleTextColorClass(
+        isCompleted,
+        "text-text-strong",
+      );
 
       return (
         <section
@@ -34,7 +40,7 @@ export const StandaloneTaskSection = ({
                 className="h-10 w-2 shrink-0 rounded"
                 style={{ backgroundColor: accentColor }}
               />
-              <span className="min-w-0 flex-1 truncate text-title-03-sb text-text-strong">
+              <span className={`min-w-0 flex-1 truncate text-title-03-sb ${titleColorClass}`}>
                 {task.title}
               </span>
             </div>
@@ -44,7 +50,7 @@ export const StandaloneTaskSection = ({
                 {dateLabel}
               </span>
               <SidebarScheduleCheckbox
-                checked={isTaskCompleted(task)}
+                checked={isCompleted}
                 ariaLabel={`${task.title} 일정 완료`}
                 onChange={() => onToggleTaskCompleted?.(task.id)}
                 stopPropagation

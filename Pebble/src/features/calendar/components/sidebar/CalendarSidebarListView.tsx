@@ -1,5 +1,6 @@
 import type { Category, ScheduleItem, TaskItem } from "@/types";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { parseScheduleDate } from "@/features/milestone/components/scheduleDateUtils";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
@@ -202,6 +203,7 @@ const collectSidebarItemsByDate = ({
             item: milestone,
             date,
             barColor: category.themeMid,
+            isCompleted: Boolean(milestone.isCompleted),
             type: "milestone",
             categoryId: category.id,
             milestoneId: milestone.id,
@@ -323,6 +325,9 @@ export const CalendarSidebarListView = ({
           <div className="flex w-full flex-col gap-2">
             {group.items.map((datedItem) => {
               const { item, barColor } = datedItem;
+              const titleColorClass = getScheduleTextColorClass(
+                Boolean(datedItem.isCompleted),
+              );
 
               return (
                 <label
@@ -334,7 +339,7 @@ export const CalendarSidebarListView = ({
                       className="h-8 w-2 shrink-0 rounded"
                       style={{ backgroundColor: barColor }}
                     />
-                    <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
+                    <span className={`min-w-0 max-w-[190px] flex-1 truncate text-body-02-m ${titleColorClass}`}>
                       {item.title}
                     </span>
                   </div>

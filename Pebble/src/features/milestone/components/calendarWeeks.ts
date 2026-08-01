@@ -1,4 +1,5 @@
 import { type Category, type ScheduleItem, type TaskItem } from "@/types";
+import { getScheduleTextColor } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 import { type CalendarDay, type CalendarEvent, type CalendarWeek } from "./types";
 import { parseScheduleDate } from "./scheduleDateUtils";
@@ -13,6 +14,36 @@ type DatedScheduleItem = {
   variant: "milestone" | "task" | "standaloneTask";
   startDate: Date;
   endDate: Date;
+  isCompleted: boolean;
+};
+
+const isTaskScheduleItem = (item: ScheduleItem): item is TaskItem =>
+  item.itemType === "task" || "taskDates" in item;
+
+const isSameScheduleDate = (
+  firstDate: Date,
+  secondDateValue: string,
+  fallbackYear: number,
+) => {
+  const secondDate = parseScheduleDate(secondDateValue, fallbackYear);
+
+  return Boolean(secondDate) && firstDate.toDateString() === secondDate.toDateString();
+};
+
+const getScheduleItemCompleted = (
+  item: ScheduleItem,
+  date: Date,
+  fallbackYear: number,
+) => {
+  if (isTaskScheduleItem(item) && item.dateType === "MULTIPLE" && item.taskDates?.length) {
+    const matchedTaskDate = item.taskDates.find((taskDate) =>
+      isSameScheduleDate(date, taskDate.date, fallbackYear),
+    );
+
+    return Boolean(matchedTaskDate?.isCompleted);
+  }
+
+  return Boolean(item.isCompleted);
 };
 
 const normalizeScheduleItem = (
@@ -31,6 +62,7 @@ const normalizeScheduleItem = (
         variant,
         startDate: date,
         endDate: date,
+        isCompleted: getScheduleItemCompleted(item, date, fallbackYear),
       }));
   }
 
@@ -48,6 +80,7 @@ const normalizeScheduleItem = (
       variant,
       startDate: startDate.getTime() <= endDate.getTime() ? startDate : endDate,
       endDate: startDate.getTime() <= endDate.getTime() ? endDate : startDate,
+      isCompleted: getScheduleItemCompleted(item, startDate, fallbackYear),
     },
   ];
 };
@@ -112,12 +145,16 @@ const createCalendarEvent = (
       : datedItem.category?.themeLight ?? "#F4F4F5";
   const accentColor =
     datedItem.category?.themeBase ?? datedItem.item.accent ?? "#171717";
-  const textColor =
+  const activeTextColor =
     datedItem.variant === "milestone"
       ? datedItem.category?.themeTextOnMid ??
         getReadableCategoryTextColor(accentColor, backgroundColor)
       : datedItem.category?.themeTextOnLight ??
         getReadableCategoryTextColor(accentColor, backgroundColor);
+  const textColor = getScheduleTextColor(
+    datedItem.isCompleted,
+    activeTextColor,
+  );
 
   return {
     id: [
@@ -133,6 +170,7 @@ const createCalendarEvent = (
     backgroundColor,
     accentColor,
     textColor,
+    isCompleted: datedItem.isCompleted,
     variant: datedItem.variant,
   };
 };

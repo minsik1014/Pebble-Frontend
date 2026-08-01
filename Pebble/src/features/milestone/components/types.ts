@@ -12,6 +12,7 @@ export type CalendarEvent = {
   backgroundColor: string;
   accentColor: string;
   textColor: string;
+  isCompleted: boolean;
   variant: "milestone" | "task" | "standaloneTask";
 };
 

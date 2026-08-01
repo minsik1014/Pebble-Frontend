@@ -1,6 +1,7 @@
 import { type ScheduleItem } from "@/types";
 import EditIcon from "@/assets/icons/newedit.svg?react";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
@@ -19,6 +20,8 @@ export const TaskDetailRow = ({
   onEdit,
 }: TaskDetailRowProps) => {
   const dateLabel = formatScheduleDisplayLabel(task);
+  const isCompleted = isTaskCompleted(task);
+  const titleColorClass = getScheduleTextColorClass(isCompleted);
 
   return (
     <div className="w-[736px] pr-2 py-2 bg-fill-inverse rounded-xl inline-flex justify-start items-center gap-2 overflow-hidden">
@@ -27,7 +30,7 @@ export const TaskDetailRow = ({
           className="w-2 h-8 rounded-sm"
           style={{ backgroundColor: themeLightColor }}
         />
-        <span className="max-w-64 text-body-02-m truncate text-text-strong">
+        <span className={`max-w-64 truncate text-body-02-m ${titleColorClass}`}>
           {task.title}
         </span>
       </div>
@@ -38,7 +41,7 @@ export const TaskDetailRow = ({
           </span>
         </div>
         <SidebarScheduleCheckbox
-          checked={isTaskCompleted(task)}
+          checked={isCompleted}
           ariaLabel={`${task.title} 일정 완료`}
           onChange={() => {
             void onToggleCompleted?.();

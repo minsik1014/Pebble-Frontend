@@ -1,5 +1,6 @@
 import { type ScheduleItem } from "@/types";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
 type TaskListItemProps = {
@@ -15,6 +16,7 @@ export const TaskListItem = ({
 }: TaskListItemProps) => {
   const dateLabel = formatScheduleDisplayLabel(item);
   const accentColor = item.accent ?? "#171717";
+  const titleColorClass = getScheduleTextColorClass(checked);
 
   return (
     <label
@@ -25,7 +27,7 @@ export const TaskListItem = ({
           className="relative w-2 h-8 rounded shrink-0"
           style={{ backgroundColor: accentColor }}
         />
-        <div className="relative min-w-0 max-w-[170px] text-body-02-m text-text-strong truncate">
+        <div className={`relative min-w-0 max-w-[170px] truncate text-body-02-m ${titleColorClass}`}>
           {item.title}
         </div>
       </div>

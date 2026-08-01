@@ -2,6 +2,7 @@ import ChevronDownIcon from "@/assets/icons/chevron-down.svg?react";
 import EditIcon from "@/assets/icons/newedit.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { TaskDetailRow } from "@/features/task/components/TaskDetailRow";
 import { type MilestoneItem } from "@/types";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
@@ -32,6 +33,8 @@ export const MilestoneDetailItem = ({
   onToggleTaskCompleted,
 }: MilestoneDetailItemProps) => {
   const dateLabel = formatScheduleDisplayLabel(item);
+  const isCompleted = Boolean(item.isCompleted);
+  const titleColorClass = getScheduleTextColorClass(isCompleted);
 
   return (
     <div className="w-full bg-fill-inverse rounded-[20px] shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] flex flex-col overflow-hidden">
@@ -44,7 +47,7 @@ export const MilestoneDetailItem = ({
             className="w-2 h-10 rounded-sm"
             style={{ backgroundColor: themeMidColor }}
           />
-          <span className="text-title-03-sb truncate text-text-strong">
+          <span className={`truncate text-title-03-sb ${titleColorClass}`}>
             {item.title}
           </span>
         </div>
@@ -55,7 +58,7 @@ export const MilestoneDetailItem = ({
             </span>
           </div>
           <SidebarScheduleCheckbox
-            checked={Boolean(item.isCompleted)}
+            checked={isCompleted}
             ariaLabel={`${item.title} 일정 완료`}
             onChange={() => {
               void onToggleCompleted?.();

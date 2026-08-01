@@ -5,6 +5,7 @@ import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
 import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
 
@@ -45,6 +46,7 @@ const SidebarScheduleRow = ({
   widthClassName,
 }: SidebarScheduleRowProps) => {
   const dateLabel = formatScheduleDisplayLabel(item);
+  const titleColorClass = getScheduleTextColorClass(checked);
 
   return (
     <label
@@ -55,7 +57,7 @@ const SidebarScheduleRow = ({
           className="h-8 w-2 shrink-0 rounded"
           style={{ backgroundColor: barColor }}
         />
-        <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
+        <span className={`min-w-0 max-w-[190px] flex-1 truncate text-body-02-m ${titleColorClass}`}>
           {item.title}
         </span>
       </div>
