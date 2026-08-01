@@ -98,7 +98,11 @@ export const filterCategoriesByMonth = (
   > = categories.map((category) => {
       const hasAnyLoadedSchedule =
         category.items.length > 0 || (category.tasks?.length ?? 0) > 0;
-      const hasAnySchedule = category.hasSchedules ?? hasAnyLoadedSchedule;
+      const hasAnySharedSchedule = (category.sharedTaskCount ?? 0) > 0;
+      const hasAnySchedule =
+        category.hasSchedules === undefined
+          ? hasAnyLoadedSchedule
+          : category.hasSchedules || hasAnySharedSchedule;
       const tasks = category.tasks?.filter((task) =>
         isScheduleItemInMonth(task, year, month),
       );
