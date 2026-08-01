@@ -7,7 +7,7 @@ import { useCalendarLayoutContext } from "@/features/calendar/context/useCalenda
 import { CalendarSidebar } from "@/features/calendar/components/sidebar/CalendarSidebar";
 import { SidebarDivider } from "@/features/calendar/components/sidebar/SidebarDivider";
 import { CalendarStatusView } from "@/features/calendar/components/CalendarStatusView";
-import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
+import { getScheduleDisplayLabels } from "@/utils/scheduleDate";
 import type { Category, ScheduleItem } from "@/types";
 
 const ORIGINAL_WIDTH = 1416;
@@ -105,21 +105,26 @@ const MobileScheduleRow = ({
   accentColor,
   backgroundColor = "#F4F4F5",
 }: MobileScheduleRowProps) => (
-  <div
-    className="flex items-center gap-3 rounded-token-s px-3 py-2"
-    style={{ backgroundColor }}
-  >
-    <span
-      className="h-8 w-1.5 shrink-0 rounded-token-infinite"
-      style={{ backgroundColor: accentColor }}
-    />
-    <div className="min-w-0 flex-1">
-      <p className="truncate text-body-02-sb text-text-strong">{item.title}</p>
-      <p className="text-body-03-r text-text-teritary">
-        {formatScheduleDisplayLabel(item)}
-      </p>
-    </div>
-  </div>
+  <>
+    {getScheduleDisplayLabels(item).map((dateLabel) => (
+      <div
+        key={`${item.id}-${dateLabel}`}
+        className="flex items-center gap-3 rounded-token-s px-3 py-2"
+        style={{ backgroundColor }}
+      >
+        <span
+          className="h-8 w-1.5 shrink-0 rounded-token-infinite"
+          style={{ backgroundColor: accentColor }}
+        />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-body-02-sb text-text-strong">{item.title}</p>
+          <p className="text-body-03-r text-text-teritary">
+            {dateLabel}
+          </p>
+        </div>
+      </div>
+    ))}
+  </>
 );
 
 const MobileMainLayout = (): JSX.Element => {

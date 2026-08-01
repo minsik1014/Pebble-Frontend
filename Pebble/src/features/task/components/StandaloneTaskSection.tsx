@@ -2,7 +2,7 @@ import { type TaskItem } from "@/types";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
-import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
+import { getScheduleDisplayLabels } from "@/utils/scheduleDate";
 
 type StandaloneTaskSectionProps = {
   tasks: TaskItem[];
@@ -16,8 +16,8 @@ export const StandaloneTaskSection = ({
   onEditTask,
 }: StandaloneTaskSectionProps): JSX.Element => (
   <>
-    {tasks.map((task) => {
-      const dateLabel = formatScheduleDisplayLabel(task);
+    {tasks.flatMap((task) => {
+      const dateLabels = getScheduleDisplayLabels(task);
       const accentColor = task.accent ?? "#171717";
       const isCompleted = isTaskCompleted(task);
       const titleColorClass = getScheduleTextColorClass(
@@ -25,9 +25,9 @@ export const StandaloneTaskSection = ({
         "text-text-strong",
       );
 
-      return (
+      return dateLabels.map((dateLabel) => (
         <section
-          key={task.id}
+          key={`${task.id}-${dateLabel}`}
           className="flex w-[352px] shrink-0 flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-s"
         >
           <div
@@ -71,7 +71,7 @@ export const StandaloneTaskSection = ({
             </div>
           </div>
         </section>
-      );
+      ));
     })}
   </>
 );

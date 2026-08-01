@@ -100,6 +100,21 @@ const getTaskCompleteTargetIds = (
   return targetTaskDates.map((taskDate) => taskDate.taskDateId);
 };
 
+const splitMultipleScheduleInput = (
+  input: CreateScheduleItemInput,
+): CreateScheduleItemInput[] => {
+  if (!input.dates?.length) {
+    return [input];
+  }
+
+  return input.dates.map((date) => ({
+    ...input,
+    start: date,
+    end: undefined,
+    dates: undefined,
+  }));
+};
+
 export const useCalendarScheduleActions = ({
   categories,
   reloadCalendarData,
@@ -109,7 +124,14 @@ export const useCalendarScheduleActions = ({
 }: UseCalendarScheduleActionsParams) => {
   const createMilestone = useCallback(
     async (categoryId: string, input: CreateScheduleItemInput) => {
-      const milestones = await createMilestoneApi(categoryId, input);
+      const splitInputs = splitMultipleScheduleInput(input);
+      const milestones = (
+        await Promise.all(
+          splitInputs.map((splitInput) =>
+            createMilestoneApi(categoryId, splitInput),
+          ),
+        )
+      ).flat();
 
       setCategories((previousCategories) =>
         milestones.length > 0
@@ -117,7 +139,7 @@ export const useCalendarScheduleActions = ({
           : appendMilestoneToCategory(
               previousCategories,
               categoryId,
-              createMilestoneEntity(input),
+              createMilestoneEntity(splitInputs[0] ?? input),
             ),
       );
 
@@ -144,35 +166,51 @@ export const useCalendarScheduleActions = ({
       milestoneId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const task =
-        (await createTaskApi({ categoryId, milestoneId, input })) ??
-        createTaskEntity({ ...input, categoryId, milestoneId });
-
-      setCategories((previousCategories) =>
-        appendTaskToMilestone(
-          previousCategories,
-          categoryId,
-          milestoneId,
-          task,
+      const splitInputs = splitMultipleScheduleInput(input);
+      const tasks = await Promise.all(
+        splitInputs.map(async (splitInput) =>
+          (await createTaskApi({ categoryId, milestoneId, input: splitInput })) ??
+          createTaskEntity({ ...splitInput, categoryId, milestoneId }),
         ),
       );
 
-      return task;
+      setCategories((previousCategories) =>
+        tasks.reduce(
+          (nextCategories, task) =>
+            appendTaskToMilestone(
+              nextCategories,
+              categoryId,
+              milestoneId,
+              task,
+            ),
+          previousCategories,
+        ),
+      );
+
+      return tasks[0];
     },
     [setCategories],
   );
 
   const createCategoryTask = useCallback(
     async (categoryId: string, input: CreateScheduleItemInput) => {
-      const task =
-        (await createTaskApi({ categoryId, input })) ??
-        createTaskEntity({ ...input, categoryId });
-
-      setCategories((previousCategories) =>
-        appendTaskToCategory(previousCategories, categoryId, task),
+      const splitInputs = splitMultipleScheduleInput(input);
+      const tasks = await Promise.all(
+        splitInputs.map(async (splitInput) =>
+          (await createTaskApi({ categoryId, input: splitInput })) ??
+          createTaskEntity({ ...splitInput, categoryId }),
+        ),
       );
 
-      return task;
+      setCategories((previousCategories) =>
+        tasks.reduce(
+          (nextCategories, task) =>
+            appendTaskToCategory(nextCategories, categoryId, task),
+          previousCategories,
+        ),
+      );
+
+      return tasks[0];
     },
     [setCategories],
   );
@@ -213,12 +251,17 @@ export const useCalendarScheduleActions = ({
 
   const createStandaloneTask = useCallback(
     async (input: CreateScheduleItemInput) => {
-      const task =
-        (await createTaskApi({ input })) ?? createTaskEntity(input);
+      const splitInputs = splitMultipleScheduleInput(input);
+      const tasks = await Promise.all(
+        splitInputs.map(async (splitInput) =>
+          (await createTaskApi({ input: splitInput })) ??
+          createTaskEntity(splitInput),
+        ),
+      );
 
-      setStandaloneTasks((previousTasks) => [...previousTasks, task]);
+      setStandaloneTasks((previousTasks) => [...previousTasks, ...tasks]);
 
-      return task;
+      return tasks[0];
     },
     [setStandaloneTasks],
   );
