@@ -21,6 +21,7 @@ export type CalendarLayoutContextValue = {
   reloadCalendarData: CalendarStateModel["reloadCalendarData"];
   replaceCategories: CalendarStateModel["replaceCategories"];
   selectCategory: (categoryId: string) => void;
+  toggleCategoryVisibility: CalendarStateModel["toggleCategoryVisibility"];
   createCategory: (input: CreateCategoryInput) => Promise<void>;
   createMilestone: (
     categoryId: string,

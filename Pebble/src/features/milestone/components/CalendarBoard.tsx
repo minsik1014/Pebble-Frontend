@@ -31,9 +31,19 @@ export const CalendarBoard = ({
   const todayDate = useMemo(() => new Date(), []);
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
+  const visibleCategories = useMemo(
+    () => categories.filter((category) => !category.isHidden),
+    [categories],
+  );
   const weeks = useMemo(
-    () => generateWeeks(currentYear, currentMonth, categories, standaloneTasks),
-    [currentYear, currentMonth, categories, standaloneTasks],
+    () =>
+      generateWeeks(
+        currentYear,
+        currentMonth,
+        visibleCategories,
+        standaloneTasks,
+      ),
+    [currentYear, currentMonth, visibleCategories, standaloneTasks],
   );
   const hasVisibleScheduleItems = useMemo(
     () => weeks.some((week) => (week.events?.length ?? 0) > 0),

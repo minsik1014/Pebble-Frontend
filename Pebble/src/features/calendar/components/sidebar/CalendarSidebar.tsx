@@ -45,6 +45,7 @@ export const CalendarSidebar = ({
   onToggleCategoryTaskCompleted,
   onToggleTaskCompleted,
   onToggleStandaloneTaskCompleted,
+  onToggleCategoryVisibility,
 }: {
   isSidebarOpen?: boolean;
   categories: Category[];
@@ -107,6 +108,7 @@ export const CalendarSidebar = ({
     taskId: string,
   ) => void | Promise<void>;
   onToggleStandaloneTaskCompleted?: (taskId: string) => void | Promise<void>;
+  onToggleCategoryVisibility?: (categoryId: string) => void | Promise<void>;
 }): JSX.Element => {
   const {
     viewMode,
@@ -278,6 +280,7 @@ export const CalendarSidebar = ({
                       }
                       onAddSchedule={(categoryId) => openAddMenu(categoryId)}
                       onSelectCategory={onSelectCategory}
+                      onToggleVisibility={onToggleCategoryVisibility}
                       isSelected={selectedCategoryId === category.id}
                     />
                   ))}

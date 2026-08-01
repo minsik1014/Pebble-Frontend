@@ -172,7 +172,6 @@ export const useCalendarState = ({
     setCategories,
     setStandaloneTasks,
   });
-
   return {
     categories,
     standaloneTasks,

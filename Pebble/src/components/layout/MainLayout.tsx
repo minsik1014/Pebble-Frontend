@@ -152,7 +152,8 @@ const MobileMainLayout = (): JSX.Element => {
           ...getVisibleCategoryItems(category, currentYear, currentMonth),
         }))
         .filter(
-          ({ milestones, tasks }) => milestones.length > 0 || tasks.length > 0,
+          ({ category, milestones, tasks }) =>
+            !category.isHidden && (milestones.length > 0 || tasks.length > 0),
         ),
     [categories, currentMonth, currentYear],
   );
@@ -347,6 +348,7 @@ const MainLayoutFrame = (): JSX.Element => {
     categories,
     standaloneTasks,
     selectCategory,
+    toggleCategoryVisibility,
     createCategory,
     createMilestone,
     createTask,
@@ -427,6 +429,7 @@ const MainLayoutFrame = (): JSX.Element => {
               currentYear={currentYear}
               currentMonth={currentMonth}
               onSelectCategory={selectCategory}
+              onToggleCategoryVisibility={toggleCategoryVisibility}
               selectedCategoryId={selectedCategoryId}
               onCreateCategory={createCategory}
               onCreateMilestone={createMilestone}

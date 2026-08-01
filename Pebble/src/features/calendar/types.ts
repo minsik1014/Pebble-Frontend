@@ -40,6 +40,7 @@ export type CalendarActions = {
   replaceCategories: (categories: Category[]) => void;
   selectCategory: (categoryId: string) => void;
   clearSelectedCategory: () => void;
+  toggleCategoryVisibility: (categoryId: string) => Promise<void>;
   createCategory: (input: CreateCategoryInput) => Promise<Category | null>;
   updateCategory: (
     categoryId: string,

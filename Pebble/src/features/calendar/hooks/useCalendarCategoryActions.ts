@@ -162,6 +162,19 @@ export const useCalendarCategoryActions = ({
     [categories, setCategories, syncSharedCategoryMembers],
   );
 
+  const toggleCategoryVisibility = useCallback(
+    async (categoryId: string) => {
+      const category = categories.find((category) => category.id === categoryId);
+
+      if (!category) {
+        return;
+      }
+
+      await updateCategory(categoryId, { isHidden: !category.isHidden });
+    },
+    [categories, updateCategory],
+  );
+
   const deleteCategory = useCallback(
     async (categoryId: string) => {
       await deleteCategoryApi(categoryId);
@@ -184,6 +197,7 @@ export const useCalendarCategoryActions = ({
     clearSelectedCategory,
     createCategory,
     updateCategory,
+    toggleCategoryVisibility,
     deleteCategory,
   };
 };

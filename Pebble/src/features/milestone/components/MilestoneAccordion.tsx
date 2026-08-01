@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { type Category, type ScheduleItem } from "@/types";
 import ChevronUpIcon from "@/assets/icons/chevron-up.svg?react";
 import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
@@ -35,6 +34,7 @@ type MilestoneAccordionProps = {
   ) => void;
   onAddSchedule?: (categoryId: string) => void;
   onSelectCategory?: (categoryId: string) => void;
+  onToggleVisibility?: (categoryId: string) => void | Promise<void>;
   isSelected?: boolean;
 };
 
@@ -114,9 +114,10 @@ export const MilestoneAccordion = ({
   onEditTask,
   onAddSchedule,
   onSelectCategory,
+  onToggleVisibility,
   isSelected = false,
 }: MilestoneAccordionProps) => {
-  const [visible, setVisible] = useState(true);
+  const isVisible = !category.isHidden;
 
   return (
     <section
@@ -158,17 +159,18 @@ export const MilestoneAccordion = ({
           </button>
           <button
             type="button"
-            aria-label={`${category.title} 보기`}
+            aria-label={`${category.title} ${isVisible ? "숨기기" : "보이기"}`}
+            aria-pressed={!isVisible}
             onClick={(e) => {
               e.stopPropagation();
-              setVisible(!visible);
+              void onToggleVisibility?.(category.id);
             }}
             className="relative flex items-center justify-center w-11 h-11 rounded-token-s hover:bg-fill-surface-hover transition-colors"
           >
-            {visible ? (
-              <EyeOnIcon className="w-6 h-6 text-text-strong" />
+            {isVisible ? (
+              <EyeOnIcon className="w-6 h-6 text-text-secondary" />
             ) : (
-              <EyeOffIcon className="w-6 h-6 text-text-strong" />
+              <EyeOffIcon className="w-6 h-6 text-text-secondary" />
             )}
           </button>
         </div>
