@@ -2,11 +2,13 @@ import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 
 type CategoryShareOptionProps = {
   isShared: boolean;
+  disabled?: boolean;
   onToggleShared: () => void;
 };
 
 export const CategoryShareOption = ({
   isShared,
+  disabled = false,
   onToggleShared,
 }: CategoryShareOptionProps): JSX.Element => (
   <div className="flex w-full items-center justify-between rounded-token-s border border-border-default bg-fill-inverse px-5 py-3">
@@ -19,7 +21,8 @@ export const CategoryShareOption = ({
     <ToggleSwitch
       checked={isShared}
       aria-label="친구와 함께하기"
-      uncheckedClassName="bg-btn-teritary"
+      disabled={disabled}
+      uncheckedClassName="bg-border-default"
       onToggle={onToggleShared}
     />
   </div>

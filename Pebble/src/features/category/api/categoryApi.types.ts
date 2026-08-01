@@ -9,8 +9,27 @@ export type CategoryResponse = {
   isCompleted?: boolean;
   isShared?: boolean;
   displayOrder?: number;
+  milestoneCount?: number;
+  taskCount?: number;
+  sharedTaskCount?: number;
+  hasSchedules?: boolean;
+  members?: CategoryMemberResponse[];
+  categoryMembers?: CategoryMemberResponse[];
+  invitedUsers?: CategoryMemberResponse[];
+  users?: CategoryMemberResponse[];
   createdAt?: string;
   updatedAt?: string;
+};
+
+export type CategoryMemberResponse = {
+  id?: number;
+  userId?: number;
+  role?: "OWNER" | "MEMBER";
+  nickname?: string;
+  name?: string;
+  uniqueTag?: string;
+  email?: string;
+  profileImageUrl?: string | null;
 };
 
 export type GetCategoriesResponse = {

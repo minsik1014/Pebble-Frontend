@@ -49,6 +49,7 @@ export function SettingsView() {
     changeTheme,
     changeNotification,
     changeActivityColor,
+    markPasswordChanged,
   } = useSettings();
 
   const {
@@ -201,6 +202,7 @@ export function SettingsView() {
           currentEmail={currentUser.email}
           isSocialAccount={settings.isSocialOnly}
           isTempPassword={settings.isTempPassword}
+          onPasswordChanged={markPasswordChanged}
         />
 
         <WithdrawalSection />

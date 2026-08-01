@@ -13,6 +13,36 @@ type DatedScheduleItem = {
   variant: "milestone" | "task" | "standaloneTask";
   startDate: Date;
   endDate: Date;
+  isCompleted: boolean;
+};
+
+const isTaskScheduleItem = (item: ScheduleItem): item is TaskItem =>
+  item.itemType === "task" || "taskDates" in item;
+
+const isSameScheduleDate = (
+  firstDate: Date,
+  secondDateValue: string,
+  fallbackYear: number,
+) => {
+  const secondDate = parseScheduleDate(secondDateValue, fallbackYear);
+
+  return Boolean(secondDate) && firstDate.toDateString() === secondDate.toDateString();
+};
+
+const getScheduleItemCompleted = (
+  item: ScheduleItem,
+  date: Date,
+  fallbackYear: number,
+) => {
+  if (isTaskScheduleItem(item) && item.dateType === "MULTIPLE" && item.taskDates?.length) {
+    const matchedTaskDate = item.taskDates.find((taskDate) =>
+      isSameScheduleDate(date, taskDate.date, fallbackYear),
+    );
+
+    return Boolean(matchedTaskDate?.isCompleted);
+  }
+
+  return Boolean(item.isCompleted);
 };
 
 const normalizeScheduleItem = (
@@ -31,6 +61,7 @@ const normalizeScheduleItem = (
         variant,
         startDate: date,
         endDate: date,
+        isCompleted: getScheduleItemCompleted(item, date, fallbackYear),
       }));
   }
 
@@ -48,6 +79,7 @@ const normalizeScheduleItem = (
       variant,
       startDate: startDate.getTime() <= endDate.getTime() ? startDate : endDate,
       endDate: startDate.getTime() <= endDate.getTime() ? endDate : startDate,
+      isCompleted: getScheduleItemCompleted(item, startDate, fallbackYear),
     },
   ];
 };
@@ -133,6 +165,8 @@ const createCalendarEvent = (
     backgroundColor,
     accentColor,
     textColor,
+    isCompleted: datedItem.isCompleted,
+    variant: datedItem.variant,
   };
 };
 
@@ -155,6 +189,10 @@ const getVisibleDayRangeInWeek = (
     endColumn: eventEndDate.getDay(),
   };
 };
+
+const isRangeScheduleItem = (scheduleItem: DatedScheduleItem) =>
+  scheduleItem.item.dateType === "RANGE" ||
+  scheduleItem.startDate.toDateString() !== scheduleItem.endDate.toDateString();
 
 const rangesOverlap = (
   firstRange: { startColumn: number; endColumn: number },
@@ -239,6 +277,13 @@ export const generateWeeks = (
           scheduleItem.endDate.getTime() >= weekStartDate.getTime(),
       )
       .sort((a, b) => {
+        const rangePriorityDiff =
+          Number(isRangeScheduleItem(b)) - Number(isRangeScheduleItem(a));
+
+        if (rangePriorityDiff !== 0) {
+          return rangePriorityDiff;
+        }
+
         const aRange = getVisibleDayRangeInWeek(a, weekStartDate, weekEndDate);
         const bRange = getVisibleDayRangeInWeek(b, weekStartDate, weekEndDate);
         const startColumnDiff = aRange.startColumn - bRange.startColumn;

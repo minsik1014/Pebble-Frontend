@@ -28,18 +28,22 @@ export function mapMilestoneResponseToMilestone(
   fallbackInput?: CreateScheduleItemInput,
 ): MilestoneItem {
   const fallbackStart = fallbackInput?.dates?.[0] ?? fallbackInput?.start ?? "";
+  const dates =
+    milestone.dates?.map((date) => normalizeApiDate(date) ?? date) ??
+    fallbackInput?.dates;
   const startDate = normalizeApiDate(milestone.startDate);
   const endDate = normalizeApiDate(milestone.endDate);
 
   return {
     id: String(milestone.id),
+    categoryId: milestone.categoryId ? String(milestone.categoryId) : undefined,
     title: milestone.name || fallbackInput?.title || "",
-    start: startDate ?? fallbackStart,
+    start: startDate ?? dates?.[0] ?? fallbackStart,
     end: endDate ?? fallbackInput?.end ?? undefined,
     itemType: "milestone",
     seriesId: milestone.seriesId ?? undefined,
     dateType: milestone.dateType,
-    dates: milestone.dateType === "MULTIPLE" ? undefined : fallbackInput?.dates,
+    dates,
     isCompleted: milestone.isCompleted ?? false,
     displayOrder: milestone.displayOrder,
     tasks: [],
@@ -62,16 +66,16 @@ export function mapScheduleInputToCreateMilestoneRequest(
 
 export function mapScheduleInputToUpdateMilestoneRequest(
   input: CreateScheduleItemInput,
-  previousMilestone?: MilestoneItem | null,
+  categoryId: string,
 ): UpdateMilestoneRequest {
-  const isMultipleMilestone = previousMilestone?.dateType === "MULTIPLE";
-  const isNameChanged =
-    Boolean(input.title) && input.title !== previousMilestone?.title;
+  const dateType = getDateTypeFromInput(input);
 
   return {
     name: input.title,
-    startDate: input.dates?.[0] ?? input.start,
-    endDate: input.end ?? null,
-    editScope: isMultipleMilestone && isNameChanged ? "THIS_ONLY" : undefined,
+    categoryId: Number(categoryId),
+    dateType,
+    startDate: dateType === "MULTIPLE" ? undefined : input.start,
+    endDate: dateType === "RANGE" ? input.end ?? null : null,
+    dates: dateType === "MULTIPLE" ? input.dates ?? [] : null,
   };
 }

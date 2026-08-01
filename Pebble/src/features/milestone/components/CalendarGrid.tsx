@@ -8,6 +8,9 @@ type CalendarGridProps = {
   currentYear: number;
   currentMonth: number;
   todayDate: Date;
+  selectedDate?: Date | null;
+  onSelectDate?: (date: Date) => void;
+  onClearSelectedDate?: () => void;
 };
 
 const dayLabels = [
@@ -29,7 +32,15 @@ const getWeekRowMinHeight = (eventCount: number) =>
     EVENT_START_TOP_OFFSET + eventCount * EVENT_ROW_HEIGHT + EVENT_BOTTOM_PADDING,
   );
 
-export const CalendarGrid = ({ weeks, currentYear, currentMonth, todayDate }: CalendarGridProps) => {
+export const CalendarGrid = ({
+  weeks,
+  currentYear,
+  currentMonth,
+  todayDate,
+  selectedDate = null,
+  onSelectDate,
+  onClearSelectedDate,
+}: CalendarGridProps) => {
   return (
     <div className="relative flex min-h-0 w-full flex-1 grow flex-col items-start gap-3 self-stretch">
       {/* 요일 헤더 */}
@@ -38,8 +49,8 @@ export const CalendarGrid = ({ weeks, currentYear, currentMonth, todayDate }: Ca
         className="relative flex w-full flex-[0_0_auto] items-center self-stretch"
       >
         {dayLabels.map((day) => (
-          <div key={day.label} className="relative h-[45px] flex-1 grow">
-            <div className={`absolute left-2 top-2 text-body-01-m ${day.textClass}`}>
+          <div key={day.label} className="relative flex h-[45px] flex-1 grow justify-center">
+            <div className={`absolute top-2 text-body-01-m ${day.textClass}`}>
               {day.label}
             </div>
           </div>
@@ -47,7 +58,10 @@ export const CalendarGrid = ({ weeks, currentYear, currentMonth, todayDate }: Ca
       </div>
 
       {/* 달력 그리드 */}
-      <div className="custom-scrollbar relative flex w-full flex-1 grow flex-col items-start self-stretch overflow-y-auto overflow-x-hidden pr-1">
+      <div
+        className="custom-scrollbar relative flex w-full flex-1 grow flex-col items-start self-stretch overflow-y-auto overflow-x-hidden pr-1"
+        onClick={onClearSelectedDate}
+      >
         {weeks.map((week, weekIndex) => (
           <div
             key={`week-${weekIndex}`}
@@ -57,7 +71,16 @@ export const CalendarGrid = ({ weeks, currentYear, currentMonth, todayDate }: Ca
           >
             {/* 각 일(Day) 셀 */}
             {week.days.map((day, dayIndex) => {
+              const cellDate = new Date(
+                currentYear,
+                currentMonth - 1 + day.monthOffset,
+                day.day,
+              );
               const isSelected =
+                selectedDate?.getFullYear() === cellDate.getFullYear() &&
+                selectedDate?.getMonth() === cellDate.getMonth() &&
+                selectedDate?.getDate() === cellDate.getDate();
+              const isToday =
                 currentYear === todayDate.getFullYear() &&
                 currentMonth === todayDate.getMonth() + 1 &&
                 day.day === todayDate.getDate() &&
@@ -69,6 +92,11 @@ export const CalendarGrid = ({ weeks, currentYear, currentMonth, todayDate }: Ca
                   day={day}
                   columnIndex={dayIndex}
                   isSelected={isSelected}
+                  isToday={isToday}
+                  onSelect={(event) => {
+                    event.stopPropagation();
+                    onSelectDate?.(cellDate);
+                  }}
                 />
               );
             })}

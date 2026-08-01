@@ -36,6 +36,7 @@ export type TaskItem = ScheduleEntityBase &
 export type MilestoneItem = ScheduleEntityBase &
   ScheduleStyleFields & {
     itemType?: "milestone";
+    categoryId?: string;
     seriesId?: number;
     dateType?: "SINGLE" | "RANGE" | "MULTIPLE";
     isCompleted?: boolean;
@@ -45,8 +46,18 @@ export type MilestoneItem = ScheduleEntityBase &
 
 export type ScheduleItem = MilestoneItem | TaskItem;
 
+export type CategoryMember = {
+  id: number;
+  name: string;
+  role?: "OWNER" | "MEMBER";
+  uniqueTag?: string;
+  email?: string;
+  profileImageUrl?: string | null;
+};
+
 export type Category = {
   id: string;
+  userId?: number;
   title: string;
   accent: string;
   themeBase: string;
@@ -59,7 +70,12 @@ export type Category = {
   isPublic?: boolean;
   isCompleted?: boolean;
   isShared?: boolean;
+  members?: CategoryMember[];
   displayOrder?: number;
+  milestoneCount?: number;
+  taskCount?: number;
+  sharedTaskCount?: number;
+  hasSchedules?: boolean;
   items: MilestoneItem[];
   tasks?: TaskItem[];
 };

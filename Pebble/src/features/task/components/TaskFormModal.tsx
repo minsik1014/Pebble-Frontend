@@ -61,16 +61,24 @@ export const TaskFormModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      setSelectedCategory(defaultCategoryId);
-      setSelectedMilestone(defaultMilestoneId);
+      const nextCategoryId =
+        defaultCategoryId &&
+        categories.some(
+          (category) => category.id === defaultCategoryId && !category.isHidden,
+        )
+          ? defaultCategoryId
+          : null;
+
+      setSelectedCategory(nextCategoryId);
+      setSelectedMilestone(nextCategoryId ? defaultMilestoneId : null);
       setTaskName(task?.title ?? "");
     }
-  }, [isOpen, defaultCategoryId, defaultMilestoneId, task]);
+  }, [categories, isOpen, defaultCategoryId, defaultMilestoneId, task]);
 
   if (!isOpen) return null;
 
   const activeCategory = categories.find(
-    (category) => category.id === selectedCategory,
+    (category) => category.id === selectedCategory && !category.isHidden,
   );
   const availableMilestones = activeCategory?.items || [];
 

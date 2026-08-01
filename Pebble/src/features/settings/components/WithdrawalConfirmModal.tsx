@@ -153,7 +153,8 @@ export function WithdrawalConfirmModal({
         <div className="mt-auto grid h-11 w-full grid-cols-2 gap-token-m">
           <Button
             type="button"
-            className="h-11 bg-btn-quaternary text-text-strong disabled:opacity-100"
+            variant="cancel"
+            className="h-11 disabled:opacity-100"
             disabled={isSubmitting}
             onClick={() => onOpenChange(false)}
           >

@@ -58,6 +58,14 @@ export const formatScheduleDisplayLabel = (item: ScheduleItem) => {
   return formatScheduleDisplayDate(item.start);
 };
 
+export const getScheduleDisplayLabels = (item: ScheduleItem) => {
+  if (item.dates && item.dates.length > 0) {
+    return item.dates.map(formatScheduleDisplayDate);
+  }
+
+  return [formatScheduleDisplayLabel(item)];
+};
+
 export const getScheduleRangeFromSelection = ({
   dateType,
   selectedDate,

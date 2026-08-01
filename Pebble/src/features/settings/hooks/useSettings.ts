@@ -171,6 +171,17 @@ export function useSettings() {
     }
   };
 
+  const markPasswordChanged = useCallback(() => {
+    setSettings((current) =>
+      current
+        ? {
+            ...current,
+            isTempPassword: false,
+          }
+        : current,
+    );
+  }, []);
+
   return {
     currentUser,
     settings,
@@ -183,5 +194,6 @@ export function useSettings() {
     changeTheme,
     changeNotification,
     changeActivityColor,
+    markPasswordChanged,
   };
 }

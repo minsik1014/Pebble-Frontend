@@ -10,6 +10,7 @@ export type AlarmType =
 export type FollowRequestStatus = "PENDING" | "ACCEPTED" | "REJECTED";
 
 export type FollowRequestAction = "ACCEPT" | "REJECT";
+export type CategoryInviteAction = "ACCEPT" | "REJECT";
 
 export interface AlarmUser {
   id: number;

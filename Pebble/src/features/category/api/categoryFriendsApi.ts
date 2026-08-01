@@ -7,6 +7,7 @@ export async function getFollowingFriends(): Promise<Friend[]> {
   return follows.map((follow) => ({
     id: follow.userId,
     name: follow.nickname,
+    uniqueTag: follow.uniqueTag,
     profileImageUrl: follow.profileImageUrl,
   }));
 }

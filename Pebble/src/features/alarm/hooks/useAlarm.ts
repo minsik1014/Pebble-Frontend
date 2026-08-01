@@ -18,8 +18,11 @@ import {
   getAllFollows,
   type FollowListItem,
 } from "@/features/friends/api/followApi";
+import { respondCategoryInvite } from "@/features/category/api/sharedCategoryApi";
+import { notifyCalendarUpdated } from "@/features/calendar/utils/calendarSync";
 import type {
   Alarm,
+  CategoryInviteAction,
   AlarmType,
   FollowRequestAction,
 } from "@/features/alarm/types/alarm";
@@ -122,7 +125,9 @@ const mapNotificationToAlarm = (
         ? follow && pendingRequests.includes(follow)
           ? "PENDING"
           : "ACCEPTED"
-        : undefined,
+        : notification.type === "CATEGORY_INVITE" && !notification.isRead
+          ? "PENDING"
+          : undefined,
     user: follow
       ? {
           id: follow.userId,
@@ -203,8 +208,15 @@ export const useAlarms = () => {
       const isPendingFollowRequest =
         alarm.type === "FOLLOW_REQUEST" &&
         (alarm.followStatus ?? "PENDING") === "PENDING";
+      const isPendingCategoryInvite =
+        alarm.type === "CATEGORY_INVITE" &&
+        (alarm.followStatus ?? "PENDING") === "PENDING";
 
-      return !alarm.isRead && !isPendingFollowRequest;
+      return (
+        !alarm.isRead &&
+        !isPendingFollowRequest &&
+        !isPendingCategoryInvite
+      );
     });
 
     if (!alarmsToRead.length) {
@@ -229,8 +241,11 @@ export const useAlarms = () => {
     const isPendingFollowRequest =
       alarm?.type === "FOLLOW_REQUEST" &&
       (alarm.followStatus ?? "PENDING") === "PENDING";
+    const isPendingCategoryInvite =
+      alarm?.type === "CATEGORY_INVITE" &&
+      (alarm.followStatus ?? "PENDING") === "PENDING";
 
-    if (!alarm || isPendingFollowRequest) {
+    if (!alarm || isPendingFollowRequest || isPendingCategoryInvite) {
       return;
     }
 
@@ -249,8 +264,15 @@ export const useAlarms = () => {
       const isPendingFollowRequest =
         alarm.type === "FOLLOW_REQUEST" &&
         (alarm.followStatus ?? "PENDING") === "PENDING";
+      const isPendingCategoryInvite =
+        alarm.type === "CATEGORY_INVITE" &&
+        (alarm.followStatus ?? "PENDING") === "PENDING";
 
-      return alarm.isRead && !isPendingFollowRequest;
+      return (
+        alarm.isRead &&
+        !isPendingFollowRequest &&
+        !isPendingCategoryInvite
+      );
     });
 
     if (!alarmsToDelete.length) {
@@ -309,6 +331,46 @@ export const useAlarms = () => {
     );
   };
 
+  const handleRespondCategoryInvite = async (
+    alarmId: number,
+    action: CategoryInviteAction,
+  ) => {
+    const alarm = alarms.find(({ id }) => id === alarmId);
+    const categoryId = alarm?.relatedId;
+
+    if (!alarm || !categoryId) {
+      return;
+    }
+
+    await respondCategoryInvite(String(categoryId), action);
+
+    if (action === "ACCEPT") {
+      notifyCalendarUpdated();
+    }
+
+    if (!alarm.isRead) {
+      await readAlarm(alarmId);
+      setUnreadCount((previous) => Math.max(0, previous - 1));
+    }
+
+    setAlarms((previous) =>
+      previous.map((item) =>
+        item.id === alarmId
+          ? {
+              ...item,
+              isRead: true,
+              followStatus:
+                action === "ACCEPT" ? "ACCEPTED" : "REJECTED",
+              content:
+                action === "ACCEPT"
+                  ? "공유 카테고리 초대를 수락했어요"
+                  : "공유 카테고리 초대를 거절했어요",
+            }
+          : item,
+      ),
+    );
+  };
+
   return {
     alarms: resolvedAlarms,
     unreadCount,
@@ -317,5 +379,6 @@ export const useAlarms = () => {
     handleDeleteAlarm,
     handleDeleteAllAlarms,
     handleRespondFollowRequest,
+    handleRespondCategoryInvite,
   };
 };

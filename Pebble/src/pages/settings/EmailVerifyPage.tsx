@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { PublicHeader } from '@/components/layout/PublicHeader';
 import { Button } from '@/components/ui/Button';
 import { confirmEmailChange } from '@/features/settings/api/settingsApi';
 import type { EmailConfirmResponse } from '@/features/settings/types/settings';
-import { getAccessToken } from '@/services/api';
+import {
+  ApiRequestError,
+  getAccessToken,
+} from '@/services/api';
 
 type VerificationStatus = 'loading' | 'success' | 'error';
 
@@ -21,7 +24,11 @@ function confirmEmailOnce(token: string) {
     return cachedRequest;
   }
 
-  const request = confirmEmailChange(token);
+  const request = confirmEmailChange(token).catch((error) => {
+    verificationRequests.delete(token);
+    throw error;
+  });
+
   verificationRequests.set(token, request);
 
   return request;
@@ -42,51 +49,68 @@ export function EmailVerifyPage() {
     '이메일 인증 정보를 확인하고 있어요.',
   );
   const [changedEmail, setChangedEmail] = useState('');
+  const [canRetry, setCanRetry] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const isAuthenticated = Boolean(getAccessToken());
 
-  useEffect(() => {
-    let isActive = true;
-
+  const verifyEmail = useCallback(async () => {
     if (!token) {
       setStatus('error');
       setMessage('이메일 인증 토큰이 없어요.');
-      return () => {
-        isActive = false;
-      };
+      setCanRetry(false);
+      return;
     }
 
     setStatus('loading');
     setMessage('이메일 인증 정보를 확인하고 있어요.');
+    setChangedEmail('');
+    setCanRetry(false);
 
-    void confirmEmailOnce(token)
-      .then((result) => {
-        if (!isActive) return;
+    try {
+      const result = await confirmEmailOnce(token);
 
-        setChangedEmail(result.email);
-        setStatus('success');
-        setMessage('이메일이 변경되었어요.');
-      })
-      .catch((error) => {
-        if (!isActive) return;
+      setChangedEmail(result.email);
+      setStatus('success');
+      setMessage('이메일이 변경되었어요.');
+    } catch (error) {
+      const isTemporaryError =
+        error instanceof ApiRequestError &&
+        (!error.status || error.status >= 500);
 
-        setStatus('error');
-        setMessage(
-          error instanceof Error
-            ? error.message
-            : '인증 링크가 만료되었거나 유효하지 않아요.',
-        );
-      });
+      setStatus('error');
+      setCanRetry(isTemporaryError);
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : '인증 링크가 만료되었거나 유효하지 않아요.',
+      );
+    }
+  }, [token]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    void verifyEmail().catch(() => {
+      if (!isActive) return;
+    });
 
     return () => {
       isActive = false;
     };
-  }, [token]);
+  }, [retryCount, verifyEmail]);
 
   const handleMove = () => {
     navigate(isAuthenticated ? '/settings' : '/login', {
       replace: true,
     });
+  };
+
+  const handleRetry = () => {
+    if (status === 'loading') return;
+
+    verificationRequests.delete(token);
+    setRetryCount((current) => current + 1);
   };
 
   return (
@@ -162,19 +186,32 @@ export function EmailVerifyPage() {
               </p>
 
               <p className="mt-token-xs text-caption-01 text-text-teritary">
-                인증 링크가 만료되었다면 이메일 변경을 다시 요청해
-                주세요.
+                {canRetry
+                  ? '네트워크 연결을 확인한 후 다시 시도해 주세요.'
+                  : '인증 링크가 만료되었다면 이메일 변경을 다시 요청해 주세요.'}
               </p>
 
-              <Button
-                variant="primary"
-                className="mt-token-xl h-11 w-full"
-                onClick={handleMove}
-              >
-                {isAuthenticated
-                  ? '설정으로 돌아가기'
-                  : '로그인하러 가기'}
-              </Button>
+              <div className="mt-token-xl flex flex-col gap-token-s">
+                {canRetry ? (
+                  <Button
+                    variant="primary"
+                    className="h-11 w-full"
+                    onClick={handleRetry}
+                  >
+                    다시 확인
+                  </Button>
+                ) : null}
+
+                <Button
+                  variant={canRetry ? 'secondary' : 'primary'}
+                  className="h-11 w-full"
+                  onClick={handleMove}
+                >
+                  {isAuthenticated
+                    ? '설정으로 돌아가기'
+                    : '로그인하러 가기'}
+                </Button>
+              </div>
             </>
           ) : null}
         </section>
