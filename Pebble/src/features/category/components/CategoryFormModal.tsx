@@ -11,8 +11,13 @@ import { CategoryStatusOptions } from "./CategoryStatusOptions";
 import { CategoryThemePreview } from "./CategoryThemePreview";
 import type { Friend } from "@/features/category/types";
 import { getFollowingFriends } from "@/features/category/api/categoryFriendsApi";
-import { getCategoryMembers } from "@/features/category/api/sharedCategoryApi";
+import {
+  getCategoryMembers,
+  getSharedCategoryUserProfile,
+  type SharedCategoryMemberResponse,
+} from "@/features/category/api/sharedCategoryApi";
 import { uploadImageDataUrl } from "@/features/category/api/uploadImageApi";
+import { getMyProfile } from "@/features/mypage/api/profileApi";
 import {
   createCategoryColorTheme,
   DEFAULT_CATEGORY_COLOR,
@@ -32,6 +37,23 @@ const CATEGORY_IMAGE_ASPECT_RATIO = 175 / 234;
 
 const getEditableMembers = (members: Friend[]) =>
   members.filter((member) => member.role !== "OWNER");
+
+const mapProfileToFriend = (
+  profile: {
+    id: number;
+    nickname: string;
+    uniqueTag?: string;
+    imageUrl?: string | null;
+    profileImageUrl?: string | null;
+  },
+  role?: Friend["role"],
+): Friend => ({
+  id: profile.id,
+  name: profile.nickname,
+  role,
+  uniqueTag: profile.uniqueTag,
+  profileImageUrl: profile.profileImageUrl ?? profile.imageUrl ?? null,
+});
 
 export const CategoryFormModal = ({ 
   isOpen, 
@@ -130,9 +152,10 @@ export const CategoryFormModal = ({
 
     const loadCategoryMembers = async () => {
       try {
-        const [loadedFriends, sharedMembers] = await Promise.all([
+        const [loadedFriends, sharedMembers, myProfile] = await Promise.all([
           getFollowingFriends(),
           getCategoryMembers(category.id),
+          getMyProfile().catch(() => null),
         ]);
         const friendMap = new Map(
           loadedFriends.map((friend) => [friend.id, friend]),
@@ -140,25 +163,43 @@ export const CategoryFormModal = ({
         const categoryMemberMap = new Map(
           (category.members ?? []).map((member) => [member.id, member]),
         );
-        const loadedMembers = sharedMembers
-          .filter((member) => member.status === "ACCEPTED")
-          .map((member): Friend => {
-            const friend = friendMap.get(member.userId);
-            const categoryMember = categoryMemberMap.get(member.userId);
+        const resolveMember = async (
+          member: SharedCategoryMemberResponse,
+        ): Promise<Friend> => {
+          const friend = friendMap.get(member.userId);
+          const categoryMember = categoryMemberMap.get(member.userId);
 
-            return {
-              id: member.userId,
-              name:
-                friend?.name ??
-                categoryMember?.name ??
-                (member.role === "OWNER" ? "카테고리 생성자" : "구성원"),
-              role: member.role,
-              uniqueTag: friend?.uniqueTag ?? categoryMember?.uniqueTag,
-              email: friend?.email ?? categoryMember?.email,
-              profileImageUrl:
-                friend?.profileImageUrl ?? categoryMember?.profileImageUrl,
-            };
-          });
+          if (friend) {
+            return { ...friend, role: member.role };
+          }
+
+          if (categoryMember?.name) {
+            return { ...categoryMember, role: member.role };
+          }
+
+          if (myProfile?.id === member.userId) {
+            return mapProfileToFriend(myProfile, member.role);
+          }
+
+          const userProfile = await getSharedCategoryUserProfile(
+            member.userId,
+          ).catch(() => null);
+
+          if (userProfile) {
+            return { ...userProfile, role: member.role };
+          }
+
+          return {
+            id: member.userId,
+            name: `사용자 ${member.userId}`,
+            role: member.role,
+          };
+        };
+        const loadedMembers = await Promise.all(
+          sharedMembers
+          .filter((member) => member.status === "ACCEPTED")
+          .map(resolveMember),
+        );
 
         if (!isActive) {
           return;

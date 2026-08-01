@@ -11,6 +11,13 @@ export type SharedCategoryMemberResponse = {
   updatedAt?: string;
 };
 
+type UserProfileResponse = {
+  id: number;
+  nickname: string;
+  uniqueTag?: string;
+  profileImageUrl?: string | null;
+};
+
 type CategoryInviteTarget =
   | {
       nickname: string;
@@ -68,6 +75,26 @@ export async function getCategoryMembers(
   });
 
   return members ?? [];
+}
+
+export async function getSharedCategoryUserProfile(
+  userId: number,
+): Promise<CategoryMember | null> {
+  const user = await apiRequest<UserProfileResponse>({
+    method: "GET",
+    url: `/users/${userId}`,
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    name: user.nickname,
+    uniqueTag: user.uniqueTag,
+    profileImageUrl: user.profileImageUrl ?? null,
+  };
 }
 
 export async function removeCategoryMember(
