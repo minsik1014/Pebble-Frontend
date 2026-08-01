@@ -61,6 +61,10 @@ export function mapCategoryResponseToCategory(
     isPublic: category.isPublic,
     isCompleted: category.isCompleted,
     isShared: category.isShared,
+    milestoneCount: category.milestoneCount,
+    taskCount: category.taskCount,
+    sharedTaskCount: category.sharedTaskCount,
+    hasSchedules: category.hasSchedules,
     members: getCategoryMemberResponses(category)
       .map(mapCategoryMemberResponse)
       .filter((member): member is NonNullable<typeof member> => member !== null),
