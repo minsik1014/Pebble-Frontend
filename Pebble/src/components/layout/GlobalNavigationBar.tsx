@@ -169,7 +169,7 @@ export const GlobalNavigationBar = ({
               onClick={toggleAlarmPopover}
               className={`size-11 relative flex items-center justify-center rounded-token-s cursor-pointer transition-colors duration-[450ms] ease-in-out ${
                 isAlarmOpen
-                  ? 'bg-black text-white'
+                  ? 'bg-btn-primary text-text-onFill'
                   : 'text-text-secondary hover:bg-fill-surface hover:text-text-strong'
               }`}
               aria-label="알림 목록 열기"

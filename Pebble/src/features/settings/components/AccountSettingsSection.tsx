@@ -15,12 +15,14 @@ interface AccountSettingsSectionProps {
   currentEmail: string;
   isSocialAccount?: boolean;
   isTempPassword?: boolean;
+  onPasswordChanged: () => void;
 }
 
 export function AccountSettingsSection({
   currentEmail,
   isSocialAccount = false,
   isTempPassword = false,
+  onPasswordChanged,
 }: AccountSettingsSectionProps) {
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -72,6 +74,7 @@ export function AccountSettingsSection({
       <PasswordChangeModal
         open={isPasswordModalOpen}
         onOpenChange={setIsPasswordModalOpen}
+        onSuccess={onPasswordChanged}
       />
     </>
   );

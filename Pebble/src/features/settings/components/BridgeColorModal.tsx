@@ -212,9 +212,9 @@ export function BridgeColorModal({
         <div className="mt-auto flex h-11 w-full gap-token-m">
           <Button
             type="button"
-            variant="secondary"
+            variant="cancel"
             disabled={isSubmitting}
-            className="h-11 w-[282px] !bg-btn-quaternary !text-text-strong"
+            className="h-11 w-[282px]"
             onClick={handleClose}
           >
             취소

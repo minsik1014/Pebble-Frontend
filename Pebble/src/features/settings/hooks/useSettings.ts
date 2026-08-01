@@ -15,8 +15,8 @@ import type {
   SettingsTheme,
   UserSettings,
 } from '../types/settings';
-import { applyTheme } from '../utils/theme';
 import type { DailyBridgeActivity } from '../utils/bridgeActivity';
+import { applyTheme } from '../utils/theme';
 
 export function useSettings() {
   const [currentUser, setCurrentUser] =
@@ -208,6 +208,17 @@ export function useSettings() {
     }
   };
 
+  const markPasswordChanged = useCallback(() => {
+    setSettings((current) =>
+      current
+        ? {
+            ...current,
+            isTempPassword: false,
+          }
+        : current,
+    );
+  }, []);
+
   return {
     currentUser,
     settings,
@@ -221,5 +232,6 @@ export function useSettings() {
     changeTheme,
     changeNotification,
     changeActivityColor,
+    markPasswordChanged,
   };
 }

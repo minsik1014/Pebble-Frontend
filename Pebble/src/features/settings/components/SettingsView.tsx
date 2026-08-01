@@ -50,6 +50,7 @@ export function SettingsView() {
     changeTheme,
     changeNotification,
     changeActivityColor,
+    markPasswordChanged,
   } = useSettings();
 
   const [failedAction, setFailedAction] =
@@ -185,6 +186,7 @@ export function SettingsView() {
           currentEmail={currentUser.email}
           isSocialAccount={settings.isSocialOnly}
           isTempPassword={settings.isTempPassword}
+          onPasswordChanged={markPasswordChanged}
         />
 
         <WithdrawalSection />
