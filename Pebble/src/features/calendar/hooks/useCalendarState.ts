@@ -7,7 +7,7 @@ import { useCalendarScheduleActions } from "@/features/calendar/hooks/useCalenda
 import { getCategories } from "@/features/category/api/categoryApi";
 import { getMilestones } from "@/features/milestone/api/milestoneApi";
 import { getStandaloneTasks } from "@/features/task/api/taskApi";
-import { getAccessToken } from "@/services/api";
+import { ApiRequestError, getAccessToken } from "@/services/api";
 
 export type {
   CalendarState,
@@ -25,6 +25,18 @@ type UseCalendarStateParams = {
 
 const formatBaseDate = (year: number, month: number) =>
   `${year}-${String(month).padStart(2, "0")}-01`;
+
+const getAccessibleMilestones = async (categoryId: string) => {
+  try {
+    return await getMilestones(categoryId);
+  } catch (error) {
+    if (error instanceof ApiRequestError && error.status === 403) {
+      return [];
+    }
+
+    throw error;
+  }
+};
 
 const attachTasksToCategories = (
   categories: Category[],
@@ -120,7 +132,7 @@ export const useCalendarState = ({
         const categoriesWithMilestones = await Promise.all(
           loadedCategories.map(async (category) => ({
             ...category,
-            items: await getMilestones(category.id),
+            items: await getAccessibleMilestones(category.id),
             tasks: [],
           })),
         );
