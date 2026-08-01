@@ -45,7 +45,7 @@ export function ThemeSegmentControl({
             onClick={() => onChange(optionValue)}
             className={[
               'flex h-10 flex-1 items-center justify-center gap-token-s rounded-[9px] px-3 py-2',
-              'text-body-02-m transition-colors',
+              'whitespace-nowrap text-body-02-m transition-colors',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary',
               'disabled:cursor-not-allowed disabled:opacity-60',
               isSelected
@@ -53,7 +53,7 @@ export function ThemeSegmentControl({
                 : 'text-text-teritary',
             ].join(' ')}
           >
-            <Icon className="size-6" aria-hidden="true" />
+            <Icon className="size-6 shrink-0" aria-hidden="true" />
             {label}
           </button>
         );
