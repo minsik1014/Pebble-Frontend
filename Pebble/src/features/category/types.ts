@@ -1,5 +1,3 @@
-export type Friend = {
-  id: number;
-  name: string;
-  profileImageUrl?: string | null;
-};
+import type { CategoryMember } from "@/types";
+
+export type Friend = CategoryMember;

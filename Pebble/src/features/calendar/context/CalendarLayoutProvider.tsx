@@ -1,10 +1,11 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { CalendarLayoutContext } from "@/features/calendar/context/calendarLayoutContext";
 import type { CalendarLayoutContextValue } from "@/features/calendar/context/calendarLayoutContext.types";
 import { useCalendarState } from "@/features/calendar/hooks/useCalendarState";
 import type { CreateCategoryInput } from "@/features/calendar/types";
+import { CALENDAR_UPDATED_EVENT } from "@/features/calendar/utils/calendarSync";
 import type { TaskFormSubmitInput } from "@/features/task/components/TaskFormModal";
 
 type CalendarLayoutProviderProps = {
@@ -24,11 +25,15 @@ export const CalendarLayoutProvider = ({
   const [currentMonth, setCurrentMonth] = useState<number>(
     () => new Date().getMonth() + 1,
   );
+  const [selectedCalendarDate, setSelectedCalendarDate] =
+    useState<Date | null>(null);
   const {
+    currentUserId,
     categories,
     standaloneTasks,
     replaceCategories,
     selectCategory,
+    toggleCategoryVisibility,
     createCategory,
     createMilestone,
     createTask,
@@ -61,9 +66,30 @@ export const CalendarLayoutProvider = ({
   const handleChangeCalendarMonth = (year: number, month: number) => {
     setCurrentYear(year);
     setCurrentMonth(month);
+    setSelectedCalendarDate(null);
+  };
+
+  const handleSelectCalendarDate = (date: Date) => {
+    setSelectedCalendarDate((previousSelectedDate) => {
+      if (
+        previousSelectedDate &&
+        previousSelectedDate.getFullYear() === date.getFullYear() &&
+        previousSelectedDate.getMonth() === date.getMonth() &&
+        previousSelectedDate.getDate() === date.getDate()
+      ) {
+        return null;
+      }
+
+      return date;
+    });
   };
 
   const handleSelectCategory = (categoryId: string) => {
+    if (selectedCategoryId === categoryId) {
+      navigate("/");
+      return;
+    }
+
     selectCategory(categoryId);
     navigate(`/?category=${categoryId}`);
   };
@@ -72,6 +98,18 @@ export const CalendarLayoutProvider = ({
     await createCategory(input);
     navigate("/");
   };
+
+  useEffect(() => {
+    const handleCalendarUpdated = () => {
+      void reloadCalendarData();
+    };
+
+    window.addEventListener(CALENDAR_UPDATED_EVENT, handleCalendarUpdated);
+
+    return () => {
+      window.removeEventListener(CALENDAR_UPDATED_EVENT, handleCalendarUpdated);
+    };
+  }, [reloadCalendarData]);
 
   const handleDeleteCategory = async (categoryId: string) => {
     await deleteCategory(categoryId);
@@ -102,7 +140,11 @@ export const CalendarLayoutProvider = ({
     currentYear,
     currentMonth,
     onChangeCalendarMonth: handleChangeCalendarMonth,
+    selectedCalendarDate,
+    onSelectCalendarDate: handleSelectCalendarDate,
+    onClearSelectedCalendarDate: () => setSelectedCalendarDate(null),
     selectedCategoryId,
+    currentUserId,
     categories,
     standaloneTasks,
     isCalendarLoading,
@@ -110,6 +152,7 @@ export const CalendarLayoutProvider = ({
     reloadCalendarData,
     replaceCategories,
     selectCategory: handleSelectCategory,
+    toggleCategoryVisibility,
     createCategory: handleCreateCategory,
     createMilestone,
     createTask: handleCreateTask,

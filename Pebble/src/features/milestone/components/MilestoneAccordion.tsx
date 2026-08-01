@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { type Category, type ScheduleItem } from "@/types";
 import ChevronUpIcon from "@/assets/icons/chevron-up.svg?react";
 import EyeOnIcon from "@/assets/icons/eye-on.svg?react";
 import EyeOffIcon from "@/assets/icons/eye-off.svg?react";
 import { AddButton } from "@/components/ui/AddButton";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
+import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
-import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
+import { getScheduleDisplayLabels } from "@/utils/scheduleDate";
 
 type MilestoneAccordionProps = {
   category: Category;
@@ -25,7 +25,16 @@ type MilestoneAccordionProps = {
     milestoneId: string,
     taskId: string,
   ) => void | Promise<void>;
+  onEditMilestone?: (categoryId: string, milestoneId: string) => void;
+  onEditCategoryTask?: (categoryId: string, taskId: string) => void;
+  onEditTask?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void;
+  onAddSchedule?: (categoryId: string) => void;
   onSelectCategory?: (categoryId: string) => void;
+  onToggleVisibility?: (categoryId: string) => void | Promise<void>;
   isSelected?: boolean;
 };
 
@@ -33,6 +42,7 @@ type SidebarScheduleRowProps = {
   item: ScheduleItem;
   checked: boolean;
   onToggle: () => void;
+  onEdit: () => void;
   barColor: string;
   widthClassName: string;
 };
@@ -41,36 +51,59 @@ const SidebarScheduleRow = ({
   item,
   checked,
   onToggle,
+  onEdit,
   barColor,
   widthClassName,
 }: SidebarScheduleRowProps) => {
-  const dateLabel = formatScheduleDisplayLabel(item);
+  const dateLabels = getScheduleDisplayLabels(item);
+  const titleColorClass = getScheduleTextColorClass(checked);
 
   return (
-    <label
-      className={`${widthClassName} flex shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface`}
-    >
-      <div className="flex min-w-0 flex-1 items-center gap-2">
+    <>
+      {dateLabels.map((dateLabel) => (
         <div
-          className="h-8 w-2 shrink-0 rounded"
-          style={{ backgroundColor: barColor }}
-        />
-        <span className="min-w-0 max-w-[190px] flex-1 truncate text-body-02-m text-text-strong">
-          {item.title}
-        </span>
-      </div>
+          key={`${item.id}-${dateLabel}`}
+          className={`${widthClassName} flex shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface`}
+        >
+          <button
+            type="button"
+            className="flex min-w-0 flex-1 items-center gap-2 text-left"
+            onClick={onEdit}
+          >
+            <div
+              className="h-8 w-2 shrink-0 rounded"
+              style={{ backgroundColor: barColor }}
+            />
+            <span className={`min-w-0 max-w-[190px] flex-1 truncate text-body-02-m ${titleColorClass}`}>
+              {item.title}
+            </span>
+          </button>
 
-      <div className="flex shrink-0 items-center justify-end gap-3">
-        <span className="whitespace-nowrap text-body-02-m text-text-teritary">
-          {dateLabel}
-        </span>
-        <SidebarScheduleCheckbox
-          checked={checked}
-          ariaLabel={`${item.title} 일정 완료`}
-          onChange={onToggle}
-        />
-      </div>
-    </label>
+          <div
+            role="button"
+            tabIndex={0}
+            className="flex shrink-0 cursor-pointer items-center justify-end gap-3"
+            onClick={onToggle}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onToggle();
+              }
+            }}
+          >
+            <span className="whitespace-nowrap text-body-02-m text-text-teritary">
+              {dateLabel}
+            </span>
+            <SidebarScheduleCheckbox
+              checked={checked}
+              ariaLabel={`${item.title} 일정 완료`}
+              onChange={onToggle}
+              stopPropagation
+            />
+          </div>
+        </div>
+      ))}
+    </>
   );
 };
 
@@ -81,17 +114,26 @@ export const MilestoneAccordion = ({
   onToggleMilestoneCompleted,
   onToggleCategoryTaskCompleted,
   onToggleTaskCompleted,
+  onEditMilestone,
+  onEditCategoryTask,
+  onEditTask,
+  onAddSchedule,
   onSelectCategory,
+  onToggleVisibility,
   isSelected = false,
 }: MilestoneAccordionProps) => {
-  const [visible, setVisible] = useState(true);
+  const isVisible = !category.isHidden;
 
   return (
-    <section className="w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[20px] shadow-shadow-s overflow-hidden">
+    <section
+      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[22px] overflow-hidden border-2 ${
+        isSelected
+          ? "border-border-selected shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_14px_0px_rgba(23,23,23,0.05)]"
+          : "border-transparent shadow-shadow-s"
+      }`}
+    >
       <div 
-        className={`flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-[20px] overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors ${
-          isSelected ? "border-[1.5px] border-border-default" : "border-[1.5px] border-transparent"
-        }`}
+        className="flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-[22px] overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors"
         onClick={() => onSelectCategory?.(category.id)}
       >
         <div className="flex items-center gap-3 relative">
@@ -122,17 +164,18 @@ export const MilestoneAccordion = ({
           </button>
           <button
             type="button"
-            aria-label={`${category.title} 보기`}
+            aria-label={`${category.title} ${isVisible ? "숨기기" : "보이기"}`}
+            aria-pressed={!isVisible}
             onClick={(e) => {
               e.stopPropagation();
-              setVisible(!visible);
+              void onToggleVisibility?.(category.id);
             }}
             className="relative flex items-center justify-center w-11 h-11 rounded-token-s hover:bg-fill-surface-hover transition-colors"
           >
-            {visible ? (
-              <EyeOnIcon className="w-6 h-6 text-text-strong" />
+            {isVisible ? (
+              <EyeOnIcon className="w-6 h-6 text-text-secondary" />
             ) : (
-              <EyeOffIcon className="w-6 h-6 text-text-strong" />
+              <EyeOffIcon className="w-6 h-6 text-text-secondary" />
             )}
           </button>
         </div>
@@ -146,6 +189,7 @@ export const MilestoneAccordion = ({
                 item={task}
                 checked={isTaskCompleted(task)}
                 onToggle={() => onToggleCategoryTaskCompleted?.(category.id, task.id)}
+                onEdit={() => onEditCategoryTask?.(category.id, task.id)}
                 barColor={category.themeLight}
                 widthClassName="w-80"
               />
@@ -159,6 +203,7 @@ export const MilestoneAccordion = ({
                   onToggle={() =>
                     onToggleMilestoneCompleted?.(category.id, item.id)
                   }
+                  onEdit={() => onEditMilestone?.(category.id, item.id)}
                   barColor={category.themeMid}
                   widthClassName="w-80"
                 />
@@ -170,6 +215,7 @@ export const MilestoneAccordion = ({
                     onToggle={() =>
                       onToggleTaskCompleted?.(category.id, item.id, task.id)
                     }
+                    onEdit={() => onEditTask?.(category.id, item.id, task.id)}
                     barColor={category.themeLight}
                     widthClassName="w-[308px]"
                   />
@@ -181,6 +227,7 @@ export const MilestoneAccordion = ({
             label="일정 추가하기" 
             variant="secondary" 
             className="w-[312px]" 
+            onClick={() => onAddSchedule?.(category.id)}
           />
         </div>
       )}

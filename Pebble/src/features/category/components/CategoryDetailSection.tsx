@@ -15,10 +15,12 @@ import type {
   CreateScheduleItemInput,
   UpdateCategoryInput,
 } from "@/features/calendar/types";
+import { leaveSharedCategory } from "@/features/category/api/sharedCategoryApi";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
   category,
+  currentUserId,
   onBack,
   categories,
   onUpdateCategory,
@@ -26,6 +28,7 @@ export const CategoryDetailSection = ({
   onUpdateCategoryTask,
   onDeleteCategoryTask,
   onDeleteCategory,
+  onReloadCalendarData,
   onUpdateMilestone,
   onDeleteMilestone,
   onUpdateTask,
@@ -36,6 +39,7 @@ export const CategoryDetailSection = ({
 }: {
   isSidebarOpen: boolean;
   category: Category;
+  currentUserId: number | null;
   onBack: () => void;
   categories: Category[];
   onUpdateCategory: (
@@ -47,9 +51,10 @@ export const CategoryDetailSection = ({
     categoryId: string,
     taskId: string,
     input: CreateScheduleItemInput,
-  ) => void;
-  onDeleteCategoryTask: (categoryId: string, taskId: string) => void;
+  ) => Promise<void>;
+  onDeleteCategoryTask: (categoryId: string, taskId: string) => Promise<void>;
   onDeleteCategory: (categoryId: string) => Promise<void>;
+  onReloadCalendarData: () => Promise<void>;
   onUpdateMilestone: (
     categoryId: string,
     milestoneId: string,
@@ -98,7 +103,11 @@ export const CategoryDetailSection = ({
     category.items
       .find((item) => item.id === selectedMilestoneForTask)
       ?.tasks?.find((task) => task.id === editingTaskId) ?? null;
-
+  const canDeleteCategory =
+    !category.isShared ||
+    (currentUserId !== null &&
+      category.userId !== undefined &&
+      category.userId === currentUserId);
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
       ...prev,
@@ -202,9 +211,20 @@ export const CategoryDetailSection = ({
           await onUpdateCategory(category.id, input);
         }}
         onClose={() => setIsEditModalOpen(false)} 
-        onRequestDelete={() => {
+        onRequestDelete={
+          canDeleteCategory
+            ? () => {
+                setIsEditModalOpen(false);
+                setIsDeleteModalOpen(true);
+              }
+            : undefined
+        }
+        currentUserId={currentUserId}
+        onLeaveCategory={async () => {
+          await leaveSharedCategory(category.id);
+          await onReloadCalendarData();
           setIsEditModalOpen(false);
-          setIsDeleteModalOpen(true);
+          onBack();
         }}
       />
 
@@ -285,20 +305,20 @@ export const CategoryDetailSection = ({
         defaultCategoryId={category.id}
         task={editingCategoryTask}
         mode="edit"
-        onSubmit={({ task }) => {
+        onSubmit={async ({ task }) => {
           if (!editingCategoryTaskId) {
             return;
           }
 
-          onUpdateCategoryTask(category.id, editingCategoryTaskId, task);
+          await onUpdateCategoryTask(category.id, editingCategoryTaskId, task);
           setEditingCategoryTaskId(null);
         }}
-        onRequestDelete={() => {
+        onRequestDelete={async () => {
           if (!editingCategoryTaskId) {
             return;
           }
 
-          onDeleteCategoryTask(category.id, editingCategoryTaskId);
+          await onDeleteCategoryTask(category.id, editingCategoryTaskId);
           setEditingCategoryTaskId(null);
         }}
       />

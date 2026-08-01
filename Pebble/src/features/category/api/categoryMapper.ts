@@ -1,6 +1,7 @@
 import type { Category } from "@/types";
 import { createCategoryColorTheme } from "@/utils/categoryColorTheme";
 import type {
+  CategoryMemberResponse,
   CategoryResponse,
   CreateCategoryRequest,
   UpdateCategoryRequest,
@@ -15,6 +16,31 @@ const mapImageUrlToRequest = (imageUrl: string | undefined) =>
     ? imageUrl
     : null;
 
+const getCategoryMemberResponses = (category: CategoryResponse) =>
+  category.members ??
+  category.categoryMembers ??
+  category.invitedUsers ??
+  category.users ??
+  [];
+
+const mapCategoryMemberResponse = (member: CategoryMemberResponse) => {
+  const id = member.userId ?? member.id;
+  const name = member.nickname ?? member.name;
+
+  if (id === undefined || !name) {
+    return null;
+  }
+
+  return {
+    id,
+    name,
+    role: member.role,
+    uniqueTag: member.uniqueTag,
+    email: member.email,
+    profileImageUrl: member.profileImageUrl ?? null,
+  };
+};
+
 export function mapCategoryResponseToCategory(
   category: CategoryResponse,
 ): Category {
@@ -22,6 +48,7 @@ export function mapCategoryResponseToCategory(
 
   return {
     id: String(category.id),
+    userId: category.userId,
     title: category.name,
     accent: theme.accent,
     themeBase: theme.themeBase,
@@ -34,6 +61,9 @@ export function mapCategoryResponseToCategory(
     isPublic: category.isPublic,
     isCompleted: category.isCompleted,
     isShared: category.isShared,
+    members: getCategoryMemberResponses(category)
+      .map(mapCategoryMemberResponse)
+      .filter((member): member is NonNullable<typeof member> => member !== null),
     displayOrder: category.displayOrder,
     items: [],
     tasks: [],
@@ -49,7 +79,6 @@ export function mapCreateCategoryInputToRequest(
     imageUrl: mapImageUrlToRequest(input.imageUrl),
     isPublic: input.isPublic,
     isCompleted: input.isCompleted,
-    inviteUserIds: input.inviteUserIds,
   };
 }
 

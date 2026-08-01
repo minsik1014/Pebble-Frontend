@@ -1,7 +1,13 @@
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import type { Alarm, FollowRequestAction } from "../types/alarm";
+import { Toast } from "@/components/ui/Toast";
+
+import type {
+  Alarm,
+  CategoryInviteAction,
+  FollowRequestAction,
+} from "../types/alarm";
 import { AlarmItem } from "./AlarmItem";
 
 interface AlarmPopoverProps {
@@ -14,6 +20,10 @@ interface AlarmPopoverProps {
     alarmId: number,
     action: FollowRequestAction,
   ) => Promise<void>;
+  onRespondCategoryInvite: (
+    alarmId: number,
+    action: CategoryInviteAction,
+  ) => Promise<void>;
 }
 
 export const AlarmPopover = ({
@@ -23,6 +33,7 @@ export const AlarmPopover = ({
   onDelete,
   onDeleteAll,
   onRespondFollowRequest,
+  onRespondCategoryInvite,
 }: AlarmPopoverProps) => {
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
@@ -63,6 +74,26 @@ export const AlarmPopover = ({
     );
   };
 
+  const handleCategoryInviteResponse = async (
+    alarm: Alarm,
+    action: CategoryInviteAction,
+  ) => {
+    try {
+      await onRespondCategoryInvite(alarm.id, action);
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : "요청을 처리하지 못했어요.",
+      );
+      return;
+    }
+
+    showToast(
+      action === "ACCEPT"
+        ? "공유 카테고리 초대를 수락했어요"
+        : "공유 카테고리 초대를 거절했어요",
+    );
+  };
+
   return createPortal(
     <div
       data-alarm-popover
@@ -97,6 +128,7 @@ export const AlarmPopover = ({
               alarm={alarm}
               onDelete={(alarmId) => void onDelete(alarmId)}
               onFollowRequestResponse={handleFollowRequestResponse}
+              onCategoryInviteResponse={handleCategoryInviteResponse}
             />
           ))
         ) : (
@@ -106,15 +138,11 @@ export const AlarmPopover = ({
         )}
       </div>
 
-      <div
-        className={`pointer-events-none absolute bottom-4 left-5 right-5 rounded-[16px] bg-black px-5 py-3 text-[14px] font-medium leading-[20px] text-white shadow-lg transition-all duration-[450ms] ease-in-out ${
-          isToastVisible
-            ? "translate-y-0 opacity-100"
-            : "translate-y-3 opacity-0"
-        }`}
-      >
-        {toastMessage}
-      </div>
+      <Toast
+        message={toastMessage}
+        open={isToastVisible}
+        className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2"
+      />
     </div>,
     document.body,
   );

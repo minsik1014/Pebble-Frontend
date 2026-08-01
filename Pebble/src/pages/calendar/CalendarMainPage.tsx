@@ -9,6 +9,10 @@ export const CalendarMainPage = (): JSX.Element => {
     currentYear,
     currentMonth,
     onChangeCalendarMonth,
+    selectedCalendarDate,
+    onSelectCalendarDate,
+    onClearSelectedCalendarDate,
+    currentUserId,
     categories,
     standaloneTasks,
     isCalendarLoading,
@@ -36,6 +40,7 @@ export const CalendarMainPage = (): JSX.Element => {
     <CategoryDetailSection
       isSidebarOpen={isSidebarOpen}
       category={selectedCategory}
+      currentUserId={currentUserId}
       onBack={() => setSearchParams({})}
       categories={categories}
       onUpdateCategory={updateCategory}
@@ -43,6 +48,7 @@ export const CalendarMainPage = (): JSX.Element => {
       onUpdateCategoryTask={updateCategoryTask}
       onDeleteCategoryTask={deleteCategoryTask}
       onDeleteCategory={deleteCategory}
+      onReloadCalendarData={reloadCalendarData}
       onUpdateMilestone={updateMilestone}
       onDeleteMilestone={deleteMilestone}
       onUpdateTask={updateTask}
@@ -59,6 +65,9 @@ export const CalendarMainPage = (): JSX.Element => {
       currentYear={currentYear}
       currentMonth={currentMonth}
       onChangeCalendarMonth={onChangeCalendarMonth}
+      selectedDate={selectedCalendarDate}
+      onSelectDate={onSelectCalendarDate}
+      onClearSelectedDate={onClearSelectedCalendarDate}
       isLoading={isCalendarLoading}
       errorMessage={calendarErrorMessage}
       onRetry={reloadCalendarData}

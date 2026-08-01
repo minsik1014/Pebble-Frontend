@@ -1,7 +1,11 @@
 import ReportIcon from "@/assets/icons/memo-outline.svg?react";
 import CalendarIcon from "@/assets/icons/calendar-nav-default.svg?react";
 
-import type { Alarm, FollowRequestAction } from "../types/alarm";
+import type {
+  Alarm,
+  CategoryInviteAction,
+  FollowRequestAction,
+} from "../types/alarm";
 
 interface AlarmItemProps {
   alarm: Alarm;
@@ -9,6 +13,10 @@ interface AlarmItemProps {
   onFollowRequestResponse?: (
     alarm: Alarm,
     action: FollowRequestAction,
+  ) => Promise<void>;
+  onCategoryInviteResponse?: (
+    alarm: Alarm,
+    action: CategoryInviteAction,
   ) => Promise<void>;
 }
 
@@ -48,17 +56,28 @@ export const AlarmItem = ({
   alarm,
   onDelete,
   onFollowRequestResponse,
+  onCategoryInviteResponse,
 }: AlarmItemProps) => {
   const isPendingFollowRequest =
     alarm.type === "FOLLOW_REQUEST" &&
     (alarm.followStatus ?? "PENDING") === "PENDING";
-
+  const isPendingCategoryInvite =
+    alarm.type === "CATEGORY_INVITE" &&
+    (alarm.followStatus ?? "PENDING") === "PENDING";
 
   const shouldShowActiveBackground =
-    alarm.type === "FOLLOW_REQUEST" ? isPendingFollowRequest : !alarm.isRead;
+    alarm.type === "FOLLOW_REQUEST"
+      ? isPendingFollowRequest
+      : alarm.type === "CATEGORY_INVITE"
+        ? isPendingCategoryInvite
+        : !alarm.isRead;
 
   const hasUserImage =
     alarm.type === "FOLLOW_REQUEST" || alarm.type === "FOLLOW_ACCEPTED";
+  const isActionableAlarm = isPendingFollowRequest || isPendingCategoryInvite;
+  const overlayClass = shouldShowActiveBackground
+    ? "before:bg-[rgba(48,89,255,0.05)] hover:before:bg-[rgba(23,23,23,0.05)]"
+    : "before:bg-transparent hover:before:bg-[rgba(23,23,23,0.05)]";
 
   const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -67,24 +86,38 @@ export const AlarmItem = ({
 
   const handleAccept = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    if (isPendingCategoryInvite) {
+      void onCategoryInviteResponse?.(alarm, "ACCEPT");
+      return;
+    }
+
     void onFollowRequestResponse?.(alarm, "ACCEPT");
   };
 
   const handleReject = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    if (isPendingCategoryInvite) {
+      void onCategoryInviteResponse?.(alarm, "REJECT");
+      return;
+    }
+
     void onFollowRequestResponse?.(alarm, "REJECT");
   };
 
   return (
     <div
-      className={`mt-3 rounded-token-m px-4 py-3.5 transition-colors duration-150 ${
-        shouldShowActiveBackground
-          ? "bg-[rgba(48,89,255,0.05)] hover:bg-[rgba(23,23,23,0.05)]"
-          : "hover:bg-[rgba(23,23,23,0.05)]"
+      className={`relative mt-3 min-h-[81px] w-[376px] overflow-hidden rounded-token-s bg-fill-inverse px-3 py-5 transition-colors duration-150 before:pointer-events-none before:absolute before:inset-0 before:transition-colors ${overlayClass} ${
+        isActionableAlarm ? "min-h-[118px]" : ""
       }`}
     >
-      <div className="flex items-start gap-3">
-        <div className="size-10 shrink-0 overflow-hidden rounded-full bg-fill-surface">
+      <div className="relative z-10 flex items-start gap-3">
+        <div
+          className={`size-10 shrink-0 overflow-hidden rounded-full ${
+            hasUserImage
+              ? "border-[0.5px] border-border-secondary bg-fill-inverse"
+              : "bg-btn-quaternary"
+          }`}
+        >
           {hasUserImage && alarm.user?.profileImageUrl ? (
             <img
               src={alarm.user.profileImageUrl}
@@ -102,35 +135,35 @@ export const AlarmItem = ({
 
         <div className="min-w-0 flex-1">
           {hasUserImage && alarm.user ? (
-            <p className="text-[16px] leading-[22px] text-text-strong">
+            <p className="text-body-02-m text-text-strong">
               <span className="font-semibold">{alarm.user.nickname}</span>
-              <span className="font-normal">
+              <span className="font-medium">
                 {getFollowMessageSuffix(alarm)}
               </span>
             </p>
           ) : (
-            <p className="text-[16px] font-normal leading-[22px] text-text-strong">
+            <p className="text-body-02-m text-text-strong">
               {alarm.content}
             </p>
           )}
 
-          <p className="mt-0.5 text-[13px] font-normal leading-[18px] text-gray-400">
+          <p className="mt-0.5 text-[13px] font-normal leading-[1.3] text-text-teritary">
             {alarm.createdAt}
           </p>
 
-          {isPendingFollowRequest && (
-            <div className="mt-2 flex gap-2.5">
+          {isActionableAlarm && (
+            <div className="mt-2 flex gap-[7px]">
               <button
                 type="button"
                 onClick={handleAccept}
-                className="h-[29px] min-w-[49px] rounded-[6px] bg-[rgba(23,23,23,1)] px-3 text-[14px] font-medium leading-[20px] text-white"
+                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-primary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-onFill"
               >
                 수락
               </button>
               <button
                 type="button"
                 onClick={handleReject}
-                className="h-[29px] min-w-[49px] rounded-[6px] bg-[rgba(23,23,23,0.05)] px-3 text-[14px] font-medium leading-[20px] text-text-strong"
+                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-quaternary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-strong"
               >
                 거절
               </button>
@@ -138,11 +171,11 @@ export const AlarmItem = ({
           )}
         </div>
 
-        {!isPendingFollowRequest && (
+        {!isActionableAlarm && (
           <button
             type="button"
             onClick={handleDelete}
-            className="shrink-0 text-[22px] leading-none text-gray-400 hover:text-text-strong"
+            className="flex size-6 shrink-0 items-center justify-center text-[22px] leading-none text-text-teritary transition-colors hover:text-text-strong"
             aria-label="알림 삭제"
           >
             ×

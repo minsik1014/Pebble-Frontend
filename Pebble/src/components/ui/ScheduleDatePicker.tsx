@@ -46,8 +46,8 @@ export const ScheduleDatePicker = ({
   themeLightColor = "rgba(23, 23, 23, 0.05)",
 }: ScheduleDatePickerProps) => {
   const isTaskVariant = variant === "task";
-  const daySizeClass = isTaskVariant ? "w-10 h-10" : "w-12 h-12";
-  const wrapperHeightClass = isTaskVariant ? "h-10" : "h-12";
+  const daySizeClass = "size-12";
+  const wrapperHeightClass = "h-14";
   const getSelectedColor = (type: DateType) =>
     type === "다중" ? themeMidColor : themeBaseColor;
   const getSelectedTextColor = (type: DateType) =>
@@ -56,9 +56,8 @@ export const ScheduleDatePicker = ({
       : "#ffffff";
 
   const getTypeButtonClass = (type: DateType) => {
-    const baseClass = isTaskVariant
-      ? "flex-[1] px-5 py-3 rounded-[12px] flex flex-col items-start justify-center gap-1 transition-colors"
-      : "flex-1 p-4 rounded-[12px] flex flex-col items-start gap-1 transition-colors";
+    const baseClass =
+      "group relative flex h-[73px] flex-1 flex-col items-start justify-center gap-1 overflow-hidden rounded-token-s px-5 py-3 transition-colors";
 
     const activeClass = "text-fill-inverse";
 
@@ -69,8 +68,13 @@ export const ScheduleDatePicker = ({
     return `${baseClass} ${dateType === type ? activeClass : inactiveClass}`;
   };
 
+  const getTypeButtonOverlayClass = (type: DateType) =>
+    dateType === type
+      ? "group-hover:bg-[rgba(250,250,250,0.25)] group-active:bg-[rgba(250,250,250,0.4)]"
+      : "group-hover:bg-[rgba(23,23,23,0.05)] group-active:bg-[rgba(23,23,23,0.1)]";
+
   const getDayButtonClass = (status: DayStatus) => {
-    const baseClass = `${daySizeClass} rounded-[12px] flex items-center justify-center text-[16px] font-medium transition-colors z-10 relative`;
+    const baseClass = `${daySizeClass} rounded-[12px] flex items-center justify-center text-body-01-m tracking-[-0.18px] transition-colors z-10 relative`;
 
     if (status === "selected" || status === "range-start" || status === "range-end") {
       return baseClass;
@@ -83,17 +87,48 @@ export const ScheduleDatePicker = ({
     return `${baseClass} text-text-strong hover:bg-fill-surface`;
   };
 
-  const renderRangeBackground = (status: DayStatus) => {
+  const getRangeEdgeRadiusClass = (dayOfWeek: number) => {
+    if (dayOfWeek === 0) {
+      return "rounded-l-[12px]";
+    }
+
+    if (dayOfWeek === 6) {
+      return "rounded-r-[12px]";
+    }
+
+    return "";
+  };
+
+  const renderRangeBackground = (status: DayStatus, dayOfWeek: number) => {
     if (status === "range-start") {
-      return <div className="absolute right-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
+      return (
+        <div
+          className={`absolute right-0 top-0 h-full w-1/2 ${
+            dayOfWeek === 6 ? "rounded-r-[12px]" : ""
+          }`}
+          style={{ backgroundColor: themeLightColor }}
+        />
+      );
     }
 
     if (status === "range-end") {
-      return <div className="absolute left-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
+      return (
+        <div
+          className={`absolute left-0 top-0 h-full w-1/2 ${
+            dayOfWeek === 0 ? "rounded-l-[12px]" : ""
+          }`}
+          style={{ backgroundColor: themeLightColor }}
+        />
+      );
     }
 
     if (status === "in-range") {
-      return <div className="absolute inset-0" style={{ backgroundColor: themeLightColor }} />;
+      return (
+        <div
+          className={`absolute inset-0 ${getRangeEdgeRadiusClass(dayOfWeek)}`}
+          style={{ backgroundColor: themeLightColor }}
+        />
+      );
     }
 
     return null;
@@ -114,14 +149,20 @@ export const ScheduleDatePicker = ({
             }
           >
             <span
+              className={`pointer-events-none absolute inset-0 transition-colors ${getTypeButtonOverlayClass(
+                type,
+              )}`}
+              aria-hidden="true"
+            />
+            <span
               className={
                 isTaskVariant
-                  ? `text-[16px] font-medium tracking-[-0.16px] leading-[1.5] ${
+                  ? `relative z-10 text-[16px] font-medium tracking-[-0.16px] leading-[1.5] ${
                       dateType === type
                         ? ""
                         : "text-text-strong"
                     }`
-                  : `text-[16px] font-semibold ${
+                  : `relative z-10 text-body-02-m ${
                       dateType === type
                         ? ""
                         : "text-text-strong"
@@ -138,12 +179,12 @@ export const ScheduleDatePicker = ({
             <span
               className={
                 isTaskVariant
-                  ? `text-[14px] tracking-[-0.14px] leading-[1.5] ${
+                  ? `relative z-10 text-[14px] font-medium tracking-[-0.14px] leading-[1.5] ${
                       dateType === type
                         ? ""
                         : "text-text-secondary"
                     }`
-                  : `text-[13px] ${
+                  : `relative z-10 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] ${
                       dateType === type
                         ? ""
                         : "text-text-secondary"
@@ -203,7 +244,7 @@ export const ScheduleDatePicker = ({
 
         <div className={`grid grid-cols-7 gap-y-4 w-full text-center ${isTaskVariant ? "px-4" : ""}`}>
           {WEEK_DAYS.map((day) => (
-            <span key={day} className="text-[14px] text-text-teritary font-medium">
+            <span key={day} className="text-body-02-m tracking-[-0.16px] text-text-teritary">
               {day}
             </span>
           ))}
@@ -215,10 +256,11 @@ export const ScheduleDatePicker = ({
           {Array.from({ length: daysInMonth }).map((_, index) => {
             const day = index + 1;
             const status = getDayStatus(day);
+            const dayOfWeek = (firstDay + index) % WEEK_DAYS.length;
 
             return (
               <div key={day} className={`w-full ${wrapperHeightClass} flex items-center justify-center relative overflow-hidden`}>
-                {renderRangeBackground(status)}
+                {renderRangeBackground(status, dayOfWeek)}
                 <button
                   onClick={() => onDateClick(day)}
                   className={getDayButtonClass(status)}
