@@ -1,6 +1,6 @@
 import { type Category } from "@/types";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
+import { getTaskCompletionTargets } from "@/features/task/utils/taskCompletion";
 
 type CategoryDetailHeaderProps = {
   category: Category;
@@ -13,8 +13,8 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
   const totalTasksCount = categoryTasks.length + milestoneTasks.length;
   const progressTargets = [
     ...category.items.map((item) => Boolean(item.isCompleted)),
-    ...categoryTasks.map(isTaskCompleted),
-    ...milestoneTasks.map(isTaskCompleted),
+    ...categoryTasks.flatMap(getTaskCompletionTargets),
+    ...milestoneTasks.flatMap(getTaskCompletionTargets),
   ];
   const completedTargetsCount = progressTargets.filter(Boolean).length;
   const progress =
