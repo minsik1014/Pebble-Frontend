@@ -38,7 +38,7 @@ type CalendarSidebarListViewProps = {
   ) => void;
 };
 
-type DatedSidebarItem = {
+export type DatedSidebarItem = {
   item: ScheduleItem;
   date: Date;
   barColor: string;
@@ -133,7 +133,10 @@ const isSameMonth = (date: Date, year: number, month: number) =>
 const formatGroupTitle = (date: Date) =>
   `${date.getMonth() + 1}월 ${date.getDate()}일`;
 
-const getDatedItemKey = (groupKey: string, datedItem: DatedSidebarItem) => {
+export const getDatedItemKey = (
+  groupKey: string,
+  datedItem: DatedSidebarItem,
+) => {
   const baseKey = [
     groupKey,
     datedItem.type,
@@ -156,7 +159,7 @@ const getDatedItemKey = (groupKey: string, datedItem: DatedSidebarItem) => {
   return baseKey.join("-");
 };
 
-const collectSidebarItemsByDate = ({
+export const collectSidebarItemsByDate = ({
   categories,
   standaloneTasks,
   currentYear,
@@ -272,6 +275,33 @@ const collectSidebarItemsByDate = ({
     },
     [],
   );
+};
+
+export const collectSidebarItemsForDate = ({
+  categories,
+  standaloneTasks,
+  currentYear,
+  currentMonth,
+  selectedDate,
+}: Pick<
+  CalendarSidebarListViewProps,
+  "categories" | "standaloneTasks" | "currentYear" | "currentMonth"
+> & {
+  selectedDate: Date;
+}) => {
+  const selectedKey = [
+    selectedDate.getFullYear(),
+    selectedDate.getMonth() + 1,
+    selectedDate.getDate(),
+  ].join("-");
+  const selectedGroup = collectSidebarItemsByDate({
+    categories,
+    standaloneTasks,
+    currentYear,
+    currentMonth,
+  }).find((group) => group.key === selectedKey);
+
+  return selectedGroup?.items ?? [];
 };
 
 export const CalendarSidebarListView = ({

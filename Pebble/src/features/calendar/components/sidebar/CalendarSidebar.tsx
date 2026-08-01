@@ -14,6 +14,7 @@ import { MilestoneAccordion } from "@/features/milestone/components/MilestoneAcc
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
 import { CalendarSidebarListView } from "./CalendarSidebarListView";
+import { CalendarSidebarSelectedDateView } from "./CalendarSidebarSelectedDateView";
 import { useCalendarSidebarModals } from "@/features/calendar/hooks/useCalendarSidebarModals";
 import { useCalendarSidebarState } from "@/features/calendar/hooks/useCalendarSidebarState";
 import { useSidebarButtonShadow } from "@/features/calendar/hooks/useSidebarButtonShadow";
@@ -28,6 +29,7 @@ export const CalendarSidebar = ({
   standaloneTasks,
   currentYear,
   currentMonth,
+  selectedDate,
   onSelectCategory,
   selectedCategoryId,
   onCreateCategory,
@@ -52,6 +54,7 @@ export const CalendarSidebar = ({
   standaloneTasks: TaskItem[];
   currentYear: number;
   currentMonth: number;
+  selectedDate?: Date | null;
   onSelectCategory?: (categoryId: string) => void;
   selectedCategoryId?: string | null;
   onCreateCategory?: (input: CreateCategoryInput) => void | Promise<void>;
@@ -125,6 +128,9 @@ export const CalendarSidebar = ({
     currentYear,
     currentMonth,
   });
+  const sidebarTitle = selectedDate
+    ? `${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일`
+    : monthLabel;
   const { scrollContainerRef, hasHiddenContentUnderButton } =
     useSidebarButtonShadow({
       displayedCategories,
@@ -219,7 +225,7 @@ export const CalendarSidebar = ({
       >
         <div className="w-[392px] min-w-[392px] h-[1000px] flex flex-col">
           <CalendarSidebarHeader
-            monthLabel={monthLabel}
+            monthLabel={sidebarTitle}
             viewMode={viewMode}
             onChangeViewMode={setViewMode}
           />
@@ -229,7 +235,31 @@ export const CalendarSidebar = ({
               ref={scrollContainerRef}
               className="-mx-3 flex max-h-[calc(100%-56px)] w-[calc(100%+24px)] flex-col items-start gap-5 overflow-y-auto overflow-x-hidden px-3 py-3 custom-scrollbar"
             >
-              {viewMode === "list" ? (
+              {selectedDate ? (
+                <CalendarSidebarSelectedDateView
+                  categories={displayedCategories}
+                  standaloneTasks={displayedStandaloneTasks}
+                  currentYear={currentYear}
+                  currentMonth={currentMonth}
+                  selectedDate={selectedDate}
+                  viewMode={viewMode}
+                  onAddSchedule={openAddMenu}
+                  onToggleMilestoneCompleted={onToggleMilestoneCompleted}
+                  onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
+                  onToggleTaskCompleted={onToggleTaskCompleted}
+                  onToggleStandaloneTaskCompleted={onToggleStandaloneTaskCompleted}
+                  onEditStandaloneTask={openStandaloneTaskEditor}
+                  onEditCategoryTask={(categoryId, taskId) =>
+                    setEditingCategoryTaskTarget({ categoryId, taskId })
+                  }
+                  onEditMilestone={(categoryId, milestoneId) =>
+                    setEditingMilestoneTarget({ categoryId, milestoneId })
+                  }
+                  onEditTask={(categoryId, milestoneId, taskId) =>
+                    setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                  }
+                />
+              ) : viewMode === "list" ? (
                 <CalendarSidebarListView
                   categories={displayedCategories}
                   standaloneTasks={displayedStandaloneTasks}

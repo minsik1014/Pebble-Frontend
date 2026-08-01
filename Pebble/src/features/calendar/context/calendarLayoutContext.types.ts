@@ -13,6 +13,9 @@ export type CalendarLayoutContextValue = {
   currentYear: number;
   currentMonth: number;
   onChangeCalendarMonth: (year: number, month: number) => void;
+  selectedCalendarDate: Date | null;
+  onSelectCalendarDate: (date: Date) => void;
+  onClearSelectedCalendarDate: () => void;
   selectedCategoryId: string | null;
   categories: Category[];
   standaloneTasks: CalendarStateModel["standaloneTasks"];

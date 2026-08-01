@@ -25,6 +25,8 @@ export const CalendarLayoutProvider = ({
   const [currentMonth, setCurrentMonth] = useState<number>(
     () => new Date().getMonth() + 1,
   );
+  const [selectedCalendarDate, setSelectedCalendarDate] =
+    useState<Date | null>(null);
   const {
     categories,
     standaloneTasks,
@@ -63,6 +65,22 @@ export const CalendarLayoutProvider = ({
   const handleChangeCalendarMonth = (year: number, month: number) => {
     setCurrentYear(year);
     setCurrentMonth(month);
+    setSelectedCalendarDate(null);
+  };
+
+  const handleSelectCalendarDate = (date: Date) => {
+    setSelectedCalendarDate((previousSelectedDate) => {
+      if (
+        previousSelectedDate &&
+        previousSelectedDate.getFullYear() === date.getFullYear() &&
+        previousSelectedDate.getMonth() === date.getMonth() &&
+        previousSelectedDate.getDate() === date.getDate()
+      ) {
+        return null;
+      }
+
+      return date;
+    });
   };
 
   const handleSelectCategory = (categoryId: string) => {
@@ -121,6 +139,9 @@ export const CalendarLayoutProvider = ({
     currentYear,
     currentMonth,
     onChangeCalendarMonth: handleChangeCalendarMonth,
+    selectedCalendarDate,
+    onSelectCalendarDate: handleSelectCalendarDate,
+    onClearSelectedCalendarDate: () => setSelectedCalendarDate(null),
     selectedCategoryId,
     categories,
     standaloneTasks,

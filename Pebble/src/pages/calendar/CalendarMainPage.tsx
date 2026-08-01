@@ -9,6 +9,9 @@ export const CalendarMainPage = (): JSX.Element => {
     currentYear,
     currentMonth,
     onChangeCalendarMonth,
+    selectedCalendarDate,
+    onSelectCalendarDate,
+    onClearSelectedCalendarDate,
     categories,
     standaloneTasks,
     isCalendarLoading,
@@ -59,6 +62,9 @@ export const CalendarMainPage = (): JSX.Element => {
       currentYear={currentYear}
       currentMonth={currentMonth}
       onChangeCalendarMonth={onChangeCalendarMonth}
+      selectedDate={selectedCalendarDate}
+      onSelectDate={onSelectCalendarDate}
+      onClearSelectedDate={onClearSelectedCalendarDate}
       isLoading={isCalendarLoading}
       errorMessage={calendarErrorMessage}
       onRetry={reloadCalendarData}

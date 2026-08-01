@@ -344,6 +344,7 @@ const MainLayoutFrame = (): JSX.Element => {
     onToggleSidebar,
     currentYear,
     currentMonth,
+    selectedCalendarDate,
     selectedCategoryId,
     categories,
     standaloneTasks,
@@ -428,6 +429,7 @@ const MainLayoutFrame = (): JSX.Element => {
               standaloneTasks={standaloneTasks}
               currentYear={currentYear}
               currentMonth={currentMonth}
+              selectedDate={selectedCalendarDate}
               onSelectCategory={selectCategory}
               onToggleCategoryVisibility={toggleCategoryVisibility}
               selectedCategoryId={selectedCategoryId}

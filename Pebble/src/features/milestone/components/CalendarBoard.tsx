@@ -12,6 +12,9 @@ type CalendarBoardProps = {
   currentYear: number;
   currentMonth: number;
   onChangeCalendarMonth: (year: number, month: number) => void;
+  selectedDate?: Date | null;
+  onSelectDate?: (date: Date) => void;
+  onClearSelectedDate?: () => void;
   isLoading?: boolean;
   errorMessage?: string | null;
   onRetry?: () => void;
@@ -24,6 +27,9 @@ export const CalendarBoard = ({
   currentYear,
   currentMonth,
   onChangeCalendarMonth,
+  selectedDate = null,
+  onSelectDate,
+  onClearSelectedDate,
   isLoading = false,
   errorMessage = null,
   onRetry,
@@ -102,6 +108,9 @@ export const CalendarBoard = ({
             currentYear={currentYear}
             currentMonth={currentMonth}
             todayDate={todayDate}
+            selectedDate={selectedDate}
+            onSelectDate={onSelectDate}
+            onClearSelectedDate={onClearSelectedDate}
           />
           {(isLoading || errorMessage || !hasVisibleScheduleItems) && (
             <div className="absolute inset-[45px_0_0_0] rounded-token-m bg-fill-inverse/80 backdrop-blur-[1px]">
