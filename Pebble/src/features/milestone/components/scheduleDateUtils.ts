@@ -124,6 +124,5 @@ export const filterCategoriesByMonth = (
     })
     .filter(
       (category) =>
-        category.isShared ||
         category.items.length > 0 || (category.tasks?.length ?? 0) > 0,
     );
