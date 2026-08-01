@@ -91,14 +91,19 @@ export async function updateTask({
 export async function deleteTask({
   taskId,
   deleteScope,
+  taskDateId,
 }: {
   taskId: string;
   deleteScope?: TaskDeleteScope;
+  taskDateId?: number;
 }): Promise<void> {
   await apiRequest({
     method: "DELETE",
     url: `/tasks/${taskId}`,
-    params: deleteScope ? { deleteScope } : undefined,
+    params: {
+      ...(deleteScope ? { deleteScope } : {}),
+      ...(taskDateId ? { taskDateId } : {}),
+    },
   });
 }
 

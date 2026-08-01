@@ -16,7 +16,6 @@ import {
   toggleTaskComplete as toggleTaskCompleteApi,
   updateTask as updateTaskApi,
 } from "@/features/task/api/taskApi";
-import type { TaskDeleteScope } from "@/features/task/api/taskApi.types";
 import {
   appendMilestoneToCategory,
   appendMilestonesToCategory,
@@ -47,13 +46,36 @@ const getMilestoneDeleteScope = (
 ): MilestoneDeleteScope | undefined =>
   dateType === "MULTIPLE" ? "ALL" : undefined;
 
-const getTaskDeleteScope = (
-  task?: TaskItem | null,
-): TaskDeleteScope | undefined => {
+const isMultipleTask = (task?: TaskItem | null) => {
   const hasMultipleDates =
     (task?.dates?.length ?? 0) > 1 || (task?.taskDates?.length ?? 0) > 1;
 
-  return task?.dateType === "MULTIPLE" || hasMultipleDates ? "ALL" : undefined;
+  return task?.dateType === "MULTIPLE" || hasMultipleDates;
+};
+
+const deleteTaskWithScope = async (taskId: string, task?: TaskItem | null) => {
+  if (!isMultipleTask(task)) {
+    await deleteTaskApi({ taskId });
+    return;
+  }
+
+  const taskDateIds =
+    task?.taskDates
+      ?.map((taskDate) => taskDate.taskDateId)
+      .filter((taskDateId): taskDateId is number => Boolean(taskDateId)) ?? [];
+
+  if (taskDateIds.length === 0) {
+    await deleteTaskApi({ taskId, deleteScope: "ALL" });
+    return;
+  }
+
+  for (const taskDateId of taskDateIds) {
+    await deleteTaskApi({
+      taskId,
+      deleteScope: "THIS_ONLY",
+      taskDateId,
+    });
+  }
 };
 
 const getTaskCompleteTargetIds = (
@@ -182,10 +204,7 @@ export const useCalendarScheduleActions = ({
           .find((category) => category.id === categoryId)
           ?.tasks?.find((categoryTask) => categoryTask.id === taskId) ?? null;
 
-      await deleteTaskApi({
-        taskId,
-        deleteScope: getTaskDeleteScope(task),
-      });
+      await deleteTaskWithScope(taskId, task);
 
       await reloadCalendarData();
     },
@@ -226,10 +245,7 @@ export const useCalendarScheduleActions = ({
         standaloneTasks.find((standaloneTask) => standaloneTask.id === taskId) ??
         null;
 
-      await deleteTaskApi({
-        taskId,
-        deleteScope: getTaskDeleteScope(task),
-      });
+      await deleteTaskWithScope(taskId, task);
 
       await reloadCalendarData();
     },
@@ -263,10 +279,7 @@ export const useCalendarScheduleActions = ({
           ?.items.find((item) => item.id === milestoneId)
           ?.tasks?.find((milestoneTask) => milestoneTask.id === taskId) ?? null;
 
-      await deleteTaskApi({
-        taskId,
-        deleteScope: getTaskDeleteScope(task),
-      });
+      await deleteTaskWithScope(taskId, task);
 
       await reloadCalendarData();
     },
