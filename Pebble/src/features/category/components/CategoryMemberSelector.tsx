@@ -30,7 +30,12 @@ export const CategoryMemberSelector = ({
     member.uniqueTag ? `${member.name}#${member.uniqueTag}` : member.name;
 
   return (
-    <div className="relative flex w-full flex-col gap-2">
+    <div
+      className={[
+        "relative flex w-full flex-col gap-2",
+        isDropdownOpen ? "z-30" : "z-0",
+      ].join(" ")}
+    >
       <div
         className={[
           "flex min-h-12 w-full flex-wrap items-center gap-token-m rounded-token-s border py-token-m",
@@ -93,7 +98,7 @@ export const CategoryMemberSelector = ({
       </div>
 
       {isDropdownOpen && filteredFriends.length > 0 && (
-        <div className="absolute top-full z-10 mt-2 max-h-48 w-full overflow-y-auto rounded-token-s border border-border-secondary bg-fill-inverse shadow-shadow-m">
+        <div className="absolute top-full z-50 mt-2 max-h-48 w-full overflow-y-auto rounded-token-s border border-border-secondary bg-fill-inverse shadow-shadow-m">
           {filteredFriends.map((friend) => (
             <div
               key={friend.id}
