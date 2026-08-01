@@ -6,7 +6,10 @@ import { AddButton } from "@/components/ui/AddButton";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
-import { getScheduleDisplayLabels } from "@/utils/scheduleDate";
+import {
+  formatScheduleDisplayDate,
+  getScheduleDisplayLabels,
+} from "@/utils/scheduleDate";
 
 type MilestoneAccordionProps = {
   category: Category;
@@ -19,11 +22,13 @@ type MilestoneAccordionProps = {
   onToggleCategoryTaskCompleted?: (
     categoryId: string,
     taskId: string,
+    taskDateId?: number,
   ) => void | Promise<void>;
   onToggleTaskCompleted?: (
     categoryId: string,
     milestoneId: string,
     taskId: string,
+    taskDateId?: number,
   ) => void | Promise<void>;
   onEditMilestone?: (categoryId: string, milestoneId: string) => void;
   onEditCategoryTask?: (categoryId: string, taskId: string) => void;
@@ -41,10 +46,28 @@ type MilestoneAccordionProps = {
 type SidebarScheduleRowProps = {
   item: ScheduleItem;
   checked: boolean;
-  onToggle: () => void;
+  onToggle: (taskDateId?: number) => void;
   onEdit: () => void;
   barColor: string;
   widthClassName: string;
+};
+
+const getScheduleRows = (item: ScheduleItem, checked: boolean) => {
+  if ("taskDates" in item && item.taskDates?.length) {
+    return item.taskDates.map((taskDate) => ({
+      key: String(taskDate.taskDateId),
+      dateLabel: formatScheduleDisplayDate(taskDate.date.slice(0, 10)),
+      checked: Boolean(taskDate.isCompleted),
+      taskDateId: taskDate.taskDateId,
+    }));
+  }
+
+  return getScheduleDisplayLabels(item).map((dateLabel) => ({
+    key: dateLabel,
+    dateLabel,
+    checked,
+    taskDateId: undefined,
+  }));
 };
 
 const SidebarScheduleRow = ({
@@ -55,14 +78,16 @@ const SidebarScheduleRow = ({
   barColor,
   widthClassName,
 }: SidebarScheduleRowProps) => {
-  const dateLabels = getScheduleDisplayLabels(item);
-  const titleColorClass = getScheduleTextColorClass(checked);
+  const rows = getScheduleRows(item, checked);
 
   return (
     <>
-      {dateLabels.map((dateLabel) => (
+      {rows.map((row) => {
+        const titleColorClass = getScheduleTextColorClass(row.checked);
+
+        return (
         <div
-          key={`${item.id}-${dateLabel}`}
+          key={`${item.id}-${row.key}`}
           className={`${widthClassName} flex shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface`}
         >
           <button
@@ -83,26 +108,27 @@ const SidebarScheduleRow = ({
             role="button"
             tabIndex={0}
             className="flex shrink-0 cursor-pointer items-center justify-end gap-3"
-            onClick={onToggle}
+            onClick={() => onToggle(row.taskDateId)}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                onToggle();
+                onToggle(row.taskDateId);
               }
             }}
           >
             <span className="whitespace-nowrap text-body-02-m text-text-teritary">
-              {dateLabel}
+              {row.dateLabel}
             </span>
             <SidebarScheduleCheckbox
-              checked={checked}
+              checked={row.checked}
               ariaLabel={`${item.title} 일정 완료`}
-              onChange={onToggle}
+              onChange={() => onToggle(row.taskDateId)}
               stopPropagation
             />
           </div>
         </div>
-      ))}
+        );
+      })}
     </>
   );
 };
@@ -188,7 +214,9 @@ export const MilestoneAccordion = ({
                 key={task.id}
                 item={task}
                 checked={isTaskCompleted(task)}
-                onToggle={() => onToggleCategoryTaskCompleted?.(category.id, task.id)}
+                onToggle={(taskDateId) =>
+                  onToggleCategoryTaskCompleted?.(category.id, task.id, taskDateId)
+                }
                 onEdit={() => onEditCategoryTask?.(category.id, task.id)}
                 barColor={category.themeLight}
                 widthClassName="w-80"
@@ -212,8 +240,13 @@ export const MilestoneAccordion = ({
                     key={task.id}
                     item={task}
                     checked={isTaskCompleted(task)}
-                    onToggle={() =>
-                      onToggleTaskCompleted?.(category.id, item.id, task.id)
+                    onToggle={(taskDateId) =>
+                      onToggleTaskCompleted?.(
+                        category.id,
+                        item.id,
+                        task.id,
+                        taskDateId,
+                      )
                     }
                     onEdit={() => onEditTask?.(category.id, item.id, task.id)}
                     barColor={category.themeLight}

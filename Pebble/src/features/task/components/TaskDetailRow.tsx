@@ -2,14 +2,37 @@ import { type ScheduleItem } from "@/types";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
-import { getScheduleDisplayLabels } from "@/utils/scheduleDate";
+import {
+  formatScheduleDisplayDate,
+  getScheduleDisplayLabels,
+} from "@/utils/scheduleDate";
 
 // The task definition inside a category detail item seems to be just a standard ScheduleItem
 type TaskDetailRowProps = {
   task: ScheduleItem;
   themeLightColor: string;
-  onToggleCompleted?: () => void | Promise<void>;
+  onToggleCompleted?: (taskDateId?: number) => void | Promise<void>;
   onEdit?: () => void;
+};
+
+const getTaskDateRows = (task: ScheduleItem) => {
+  if ("taskDates" in task && task.taskDates?.length) {
+    return task.taskDates.map((taskDate) => ({
+      key: String(taskDate.taskDateId),
+      dateLabel: formatScheduleDisplayDate(taskDate.date.slice(0, 10)),
+      isCompleted: Boolean(taskDate.isCompleted),
+      taskDateId: taskDate.taskDateId,
+    }));
+  }
+
+  const isCompleted = isTaskCompleted(task);
+
+  return getScheduleDisplayLabels(task).map((dateLabel) => ({
+    key: dateLabel,
+    dateLabel,
+    isCompleted,
+    taskDateId: undefined,
+  }));
 };
 
 export const TaskDetailRow = ({
@@ -18,15 +41,16 @@ export const TaskDetailRow = ({
   onToggleCompleted,
   onEdit,
 }: TaskDetailRowProps) => {
-  const dateLabels = getScheduleDisplayLabels(task);
-  const isCompleted = isTaskCompleted(task);
-  const titleColorClass = getScheduleTextColorClass(isCompleted);
+  const dateRows = getTaskDateRows(task);
 
   return (
     <>
-      {dateLabels.map((dateLabel) => (
+      {dateRows.map((dateRow) => {
+        const titleColorClass = getScheduleTextColorClass(dateRow.isCompleted);
+
+        return (
         <div
-          key={`${task.id}-${dateLabel}`}
+          key={`${task.id}-${dateRow.key}`}
           className="w-[736px] pr-2 py-2 bg-fill-inverse rounded-xl inline-flex justify-start items-center gap-2 overflow-hidden"
         >
           <button
@@ -48,30 +72,31 @@ export const TaskDetailRow = ({
               tabIndex={0}
               className="flex cursor-pointer items-center gap-3"
               onClick={() => {
-                void onToggleCompleted?.();
+                void onToggleCompleted?.(dateRow.taskDateId);
               }}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
-                  void onToggleCompleted?.();
+                  void onToggleCompleted?.(dateRow.taskDateId);
                 }
               }}
             >
               <span className="text-body-02-m text-text-teritary">
-                {dateLabel}
+                {dateRow.dateLabel}
               </span>
               <SidebarScheduleCheckbox
-                checked={isCompleted}
+                checked={dateRow.isCompleted}
                 ariaLabel={`${task.title} 일정 완료`}
                 onChange={() => {
-                  void onToggleCompleted?.();
+                  void onToggleCompleted?.(dateRow.taskDateId);
                 }}
                 stopPropagation
               />
             </div>
           </div>
         </div>
-      ))}
+        );
+      })}
     </>
   );
 };

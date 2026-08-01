@@ -79,6 +79,7 @@ export const CategoryDetailSection = ({
   onToggleCategoryTaskCompleted: (
     categoryId: string,
     taskId: string,
+    taskDateId?: number,
   ) => Promise<void>;
   onToggleTaskCompleted: (
     categoryId: string,
@@ -163,8 +164,8 @@ export const CategoryDetailSection = ({
                   key={task.id}
                   task={task}
                   themeLightColor={category.themeLight}
-                  onToggleCompleted={() =>
-                    onToggleCategoryTaskCompleted(category.id, task.id)
+                  onToggleCompleted={(taskDateId) =>
+                    onToggleCategoryTaskCompleted(category.id, task.id, taskDateId)
                   }
                   onEdit={() => setEditingCategoryTaskId(task.id)}
                 />

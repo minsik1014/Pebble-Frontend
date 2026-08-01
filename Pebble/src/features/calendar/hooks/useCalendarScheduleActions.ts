@@ -74,14 +74,7 @@ const getTaskCompleteTargetIds = (
     return [undefined];
   }
 
-  const isEveryTaskDateCompleted = task.taskDates.every(
-    (taskDate) => taskDate.isCompleted,
-  );
-  const targetTaskDates = isEveryTaskDateCompleted
-    ? task.taskDates
-    : task.taskDates.filter((taskDate) => !taskDate.isCompleted);
-
-  return targetTaskDates.map((taskDate) => taskDate.taskDateId);
+  return [];
 };
 
 const splitMultipleScheduleInput = (
