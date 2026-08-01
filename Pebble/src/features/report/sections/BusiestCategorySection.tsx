@@ -130,7 +130,7 @@ export function BusiestCategorySection({
 }: BusiestCategorySectionProps) {
   if (!category) {
     return (
-      <EmptyState message="이번 달에는 기록한 카테고리가 없어요." />
+      <EmptyState message="저번 달에는 기록한 카테고리가 없어요." />
     );
   }
 
@@ -146,7 +146,7 @@ export function BusiestCategorySection({
       {/* ---------- 좌: 카테고리 요약 ---------- */}
       <section className="w-[318px] shrink-0">
         <p className="text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-[#A3A3A3]">
-          이번 달 가장 바빴던 카테고리
+          저번 달 가장 바빴던 카테고리
         </p>
 
         <h2 className="mt-[12px] flex items-center gap-[12px] text-[40px] font-bold leading-[120%] tracking-[-0.4px] text-[#404040]">
@@ -186,7 +186,7 @@ export function BusiestCategorySection({
       {/* ---------- 우: 타임라인 + 태스크 ---------- */}
       <section className="flex h-[300px] w-[574px] shrink-0 flex-col rounded-[20px] bg-white p-[20px]">
         <h3 className="text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-[#A3A3A3]">
-          {name}에서 쌓은 이번 달의 기록
+          {name}에서 쌓은 저번 달의 기록
         </h3>
 
         <MilestoneTimeline milestones={milestones} />
