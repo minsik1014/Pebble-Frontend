@@ -107,14 +107,6 @@ export const useCalendarCategoryActions = ({
 
       const members = input.isShared ? input.members ?? [] : [];
 
-      await syncSharedCategoryMembers(
-        category.id,
-        [],
-        members,
-        false,
-        Boolean(input.isShared),
-      );
-
       setCategories((previousCategories) => [
         ...previousCategories,
         {
@@ -127,7 +119,7 @@ export const useCalendarCategoryActions = ({
 
       return category;
     },
-    [setCategories, setSelectedCategoryId, syncSharedCategoryMembers],
+    [setCategories, setSelectedCategoryId],
   );
 
   const updateCategory = useCallback(
