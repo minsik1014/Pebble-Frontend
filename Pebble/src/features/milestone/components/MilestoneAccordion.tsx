@@ -91,11 +91,13 @@ export const MilestoneAccordion = ({
   const [visible, setVisible] = useState(true);
 
   return (
-    <section className="w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[20px] shadow-shadow-s overflow-hidden">
+    <section
+      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[20px] shadow-shadow-s overflow-hidden border-[1.5px] ${
+        isSelected ? "border-border-default" : "border-transparent"
+      }`}
+    >
       <div 
-        className={`flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-[20px] overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors ${
-          isSelected ? "border-[1.5px] border-border-default" : "border-[1.5px] border-transparent"
-        }`}
+        className="flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-[20px] overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors"
         onClick={() => onSelectCategory?.(category.id)}
       >
         <div className="flex items-center gap-3 relative">
