@@ -1,5 +1,4 @@
 export type TaskDateType = "SINGLE" | "RANGE" | "MULTIPLE";
-export type TaskEditScope = "THIS_ONLY" | "ALL";
 export type TaskDeleteScope = "THIS_ONLY" | "ALL";
 
 export type TaskDateResponse = {
@@ -46,11 +45,13 @@ export type CreateTaskRequest = {
 };
 
 export type UpdateTaskRequest = {
+  categoryId: number | null;
+  milestoneId: number | null;
   name?: string | null;
+  dateType: TaskDateType;
   startDate?: string | null;
   endDate?: string | null;
   dates?: string[] | null;
   color?: string | null;
-  editScope?: TaskEditScope;
   taskDateId?: number;
 };

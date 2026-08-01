@@ -26,7 +26,7 @@ export const ScheduleBar = ({ event }: ScheduleBarProps) => {
         className="relative z-10 flex h-full w-full items-center gap-[10px] overflow-hidden rounded-[4px] px-3 py-1 shadow-none transition-[width,box-shadow] duration-150 group-hover:w-max group-hover:min-w-full group-hover:shadow-shadow-s"
         style={{ backgroundColor: event.backgroundColor }}
       >
-        <div className="flex min-w-0 flex-1 items-center gap-2 group-hover:min-w-max">
+        <div className="flex min-w-0 flex-1 items-center gap-1 group-hover:min-w-max">
           {event.isCompleted && (
             <CheckIcon
               className="size-4 shrink-0"

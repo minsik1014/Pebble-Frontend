@@ -379,12 +379,16 @@ export const CalendarSidebar = ({
         categories={categories}
         task={editingStandaloneTask}
         mode="edit"
-        onSubmit={async ({ task }) => {
+        onSubmit={async ({ categoryId, milestoneId, task }) => {
           if (!editingStandaloneTaskId) {
             return;
           }
 
-          await onUpdateStandaloneTask?.(editingStandaloneTaskId, task);
+          await onUpdateStandaloneTask?.(editingStandaloneTaskId, {
+            ...task,
+            categoryId: categoryId ?? undefined,
+            milestoneId: milestoneId ?? undefined,
+          });
           closeStandaloneTaskEditor();
         }}
         onRequestDelete={async () => {
@@ -436,7 +440,7 @@ export const CalendarSidebar = ({
         defaultCategoryId={editingCategoryTaskTarget?.categoryId ?? null}
         task={editingCategoryTask}
         mode="edit"
-        onSubmit={async ({ task }) => {
+        onSubmit={async ({ categoryId, milestoneId, task }) => {
           if (!editingCategoryTaskTarget) {
             return;
           }
@@ -444,7 +448,11 @@ export const CalendarSidebar = ({
           await onUpdateCategoryTask?.(
             editingCategoryTaskTarget.categoryId,
             editingCategoryTaskTarget.taskId,
-            task,
+            {
+              ...task,
+              categoryId: categoryId ?? null,
+              milestoneId: milestoneId ?? null,
+            },
           );
           setEditingCategoryTaskTarget(null);
         }}
@@ -469,7 +477,7 @@ export const CalendarSidebar = ({
         defaultMilestoneId={editingTaskTarget?.milestoneId ?? null}
         task={editingTask}
         mode="edit"
-        onSubmit={async ({ task }) => {
+        onSubmit={async ({ categoryId, milestoneId, task }) => {
           if (!editingTaskTarget) {
             return;
           }
@@ -478,7 +486,11 @@ export const CalendarSidebar = ({
             editingTaskTarget.categoryId,
             editingTaskTarget.milestoneId,
             editingTaskTarget.taskId,
-            task,
+            {
+              ...task,
+              categoryId: categoryId ?? null,
+              milestoneId: milestoneId ?? null,
+            },
           );
           setEditingTaskTarget(null);
         }}

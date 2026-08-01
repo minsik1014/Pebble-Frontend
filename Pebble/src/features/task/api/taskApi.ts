@@ -86,16 +86,22 @@ export async function createTask({
 export async function updateTask({
   taskId,
   input,
-  isChildTask,
+  categoryId,
+  milestoneId,
 }: {
   taskId: string;
   input: CreateScheduleItemInput;
-  isChildTask: boolean;
+  categoryId?: string | null;
+  milestoneId?: string | null;
 }): Promise<TaskItem | null> {
   const data = await apiRequest<TaskMutationResponse>({
     method: "PATCH",
     url: `/tasks/${taskId}`,
-    data: mapScheduleInputToUpdateTaskRequest({ input, isChildTask }),
+    data: mapScheduleInputToUpdateTaskRequest({
+      input,
+      categoryId,
+      milestoneId,
+    }),
   });
 
   return mapTaskMutationResponse(data);

@@ -22,7 +22,10 @@ import {
   createCategoryColorTheme,
   DEFAULT_CATEGORY_COLOR,
 } from "@/utils/categoryColorTheme";
-import type { CreateCategoryInput } from "@/features/calendar/types";
+import type {
+  CreateCategoryInput,
+  UpdateCategoryInput,
+} from "@/features/calendar/types";
 
 type CategoryFormModalProps = {
   isOpen: boolean;
@@ -32,13 +35,91 @@ type CategoryFormModalProps = {
   onClose: () => void;
   onRequestDelete?: () => void;
   onLeaveCategory?: () => void | Promise<void>;
-  onSubmit?: (input: CreateCategoryInput) => void | Promise<void>;
+  onSubmit?: (
+    input: CreateCategoryInput | UpdateCategoryInput,
+  ) => void | Promise<void>;
 };
 
 const CATEGORY_IMAGE_ASPECT_RATIO = 175 / 234;
 
 const getEditableMembers = (members: Friend[]) =>
   members.filter((member) => member.role !== "OWNER");
+
+const normalizeImageUrl = (imageUrl: string | undefined) =>
+  imageUrl ?? undefined;
+
+const getMemberIdsKey = (members: Friend[] = []) =>
+  getEditableMembers(members)
+    .map((member) => member.id)
+    .sort((a, b) => a - b)
+    .join(",");
+
+const buildChangedCategoryInput = ({
+  category,
+  categoryName,
+  selectedTheme,
+  imageUrl,
+  isPublic,
+  isCompleted,
+  isShared,
+  selectedMembers,
+  initialMembers,
+}: {
+  category: Category;
+  categoryName: string;
+  selectedTheme: ReturnType<typeof createCategoryColorTheme>;
+  imageUrl?: string;
+  isPublic: boolean;
+  isCompleted: boolean;
+  isShared: boolean;
+  selectedMembers: Friend[];
+  initialMembers: Friend[];
+}): UpdateCategoryInput => {
+  const input: UpdateCategoryInput = {};
+  const nextTitle = categoryName.trim();
+  const nextImageUrl = normalizeImageUrl(imageUrl);
+  const previousImageUrl = normalizeImageUrl(category.imageUrl);
+  const nextMembers = isShared ? getEditableMembers(selectedMembers) : [];
+  const hasMemberChanges =
+    getMemberIdsKey(initialMembers) !== getMemberIdsKey(nextMembers);
+
+  if (nextTitle !== category.title) {
+    input.title = nextTitle;
+  }
+
+  if (selectedTheme.accent !== category.accent) {
+    input.accent = selectedTheme.accent;
+    input.themeBase = selectedTheme.themeBase;
+    input.themeMid = selectedTheme.themeMid;
+    input.themeLight = selectedTheme.themeLight;
+    input.themeTextOnMid = selectedTheme.themeTextOnMid;
+    input.themeTextOnLight = selectedTheme.themeTextOnLight;
+  }
+
+  if (nextImageUrl !== previousImageUrl) {
+    input.imageUrl = nextImageUrl;
+  }
+
+  if (isPublic !== Boolean(category.isPublic ?? true)) {
+    input.isPublic = isPublic;
+  }
+
+  if (isCompleted !== Boolean(category.isCompleted ?? false)) {
+    input.isCompleted = isCompleted;
+  }
+
+  if (isShared !== Boolean(category.isShared ?? false)) {
+    input.isShared = isShared;
+  }
+
+  if (isShared && hasMemberChanges) {
+    input.isShared = true;
+    input.members = nextMembers;
+    input.previousMembers = initialMembers;
+  }
+
+  return input;
+};
 
 const mapProfileToFriend = (
   profile: {
@@ -264,21 +345,38 @@ export const CategoryFormModal = ({
           ? await uploadImageDataUrl(imageUrl)
           : imageUrl;
 
-      await onSubmit?.({
-        title: categoryName.trim(),
-        accent: selectedTheme.accent,
-        themeBase: selectedTheme.themeBase,
-        themeMid: selectedTheme.themeMid,
-        themeLight: selectedTheme.themeLight,
-        themeTextOnMid: selectedTheme.themeTextOnMid,
-        themeTextOnLight: selectedTheme.themeTextOnLight,
-        imageUrl: uploadedImageUrl ?? undefined,
-        isPublic,
-        isCompleted,
-        isShared,
-        members: isShared ? getEditableMembers(selectedMembers) : undefined,
-        previousMembers: mode === "edit" ? initialMembers : undefined,
-      });
+      if (mode === "edit" && category) {
+        const changedInput = buildChangedCategoryInput({
+          category,
+          categoryName,
+          selectedTheme,
+          imageUrl: uploadedImageUrl,
+          isPublic,
+          isCompleted,
+          isShared,
+          selectedMembers,
+          initialMembers,
+        });
+
+        if (Object.keys(changedInput).length > 0) {
+          await onSubmit?.(changedInput);
+        }
+      } else {
+        await onSubmit?.({
+          title: categoryName.trim(),
+          accent: selectedTheme.accent,
+          themeBase: selectedTheme.themeBase,
+          themeMid: selectedTheme.themeMid,
+          themeLight: selectedTheme.themeLight,
+          themeTextOnMid: selectedTheme.themeTextOnMid,
+          themeTextOnLight: selectedTheme.themeTextOnLight,
+          imageUrl: uploadedImageUrl ?? undefined,
+          isPublic,
+          isCompleted,
+          isShared,
+          members: isShared ? getEditableMembers(selectedMembers) : undefined,
+        });
+      }
       onClose();
     } catch (error) {
       console.error("Failed to submit category:", error);
@@ -297,7 +395,7 @@ export const CategoryFormModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(44,44,44,0.3)] backdrop-blur-[4px]">
       <div className="flex w-[607px] flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m">
         <header className="flex w-full items-center justify-between">
           <h2 className="w-full text-title-02-sb text-text-strong">

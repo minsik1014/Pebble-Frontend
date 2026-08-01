@@ -89,9 +89,23 @@ export const filterCategoriesByMonth = (
   categories: Category[],
   year: number,
   month: number,
-): Category[] =>
-  categories
-    .map((category) => {
+): Category[] => {
+  const filteredCategories: Array<
+    Category & {
+      hasAnySchedule: boolean;
+      hasCurrentMonthSchedule: boolean;
+    }
+  > = categories.map((category) => {
+      const hasAnyLoadedSchedule =
+        category.items.length > 0 || (category.tasks?.length ?? 0) > 0;
+      const hasAnyCountedSchedule =
+        (category.milestoneCount ?? 0) > 0 ||
+        (category.taskCount ?? 0) > 0 ||
+        (category.sharedTaskCount ?? 0) > 0;
+      const hasAnySchedule =
+        Boolean(category.hasSchedules) ||
+        hasAnyLoadedSchedule ||
+        hasAnyCountedSchedule;
       const tasks = category.tasks?.filter((task) =>
         isScheduleItemInMonth(task, year, month),
       );
@@ -115,15 +129,30 @@ export const filterCategoriesByMonth = (
           };
         })
         .filter((item): item is MilestoneItem => Boolean(item));
+      const hasCurrentMonthSchedule =
+        items.length > 0 || (tasks?.length ?? 0) > 0;
 
       return {
         ...category,
         tasks,
         items,
+        hasAnySchedule,
+        hasCurrentMonthSchedule,
       };
-    })
+    });
+
+  return filteredCategories
     .filter(
       (category) =>
-        category.isShared ||
-        category.items.length > 0 || (category.tasks?.length ?? 0) > 0,
-    );
+        !category.hasAnySchedule || category.hasCurrentMonthSchedule,
+    )
+    .map((category) => {
+      const {
+        hasAnySchedule: _hasAnySchedule,
+        hasCurrentMonthSchedule: _hasCurrentMonthSchedule,
+        ...visibleCategory
+      } = category;
+
+      return visibleCategory;
+    });
+};

@@ -79,6 +79,7 @@ export const CategoryDetailSection = ({
   onToggleCategoryTaskCompleted: (
     categoryId: string,
     taskId: string,
+    taskDateId?: number,
   ) => Promise<void>;
   onToggleTaskCompleted: (
     categoryId: string,
@@ -163,8 +164,8 @@ export const CategoryDetailSection = ({
                   key={task.id}
                   task={task}
                   themeLightColor={category.themeLight}
-                  onToggleCompleted={() =>
-                    onToggleCategoryTaskCompleted(category.id, task.id)
+                  onToggleCompleted={(taskDateId) =>
+                    onToggleCategoryTaskCompleted(category.id, task.id, taskDateId)
                   }
                   onEdit={() => setEditingCategoryTaskId(task.id)}
                 />
@@ -282,7 +283,11 @@ export const CategoryDetailSection = ({
               category.id,
               selectedMilestoneForTask,
               editingTaskId,
-              input.task,
+              {
+                ...input.task,
+                categoryId: input.categoryId ?? null,
+                milestoneId: input.milestoneId ?? null,
+              },
             );
             return;
           }
@@ -305,12 +310,16 @@ export const CategoryDetailSection = ({
         defaultCategoryId={category.id}
         task={editingCategoryTask}
         mode="edit"
-        onSubmit={async ({ task }) => {
+        onSubmit={async ({ categoryId, milestoneId, task }) => {
           if (!editingCategoryTaskId) {
             return;
           }
 
-          await onUpdateCategoryTask(category.id, editingCategoryTaskId, task);
+          await onUpdateCategoryTask(category.id, editingCategoryTaskId, {
+            ...task,
+            categoryId: categoryId ?? null,
+            milestoneId: milestoneId ?? null,
+          });
           setEditingCategoryTaskId(null);
         }}
         onRequestDelete={async () => {
