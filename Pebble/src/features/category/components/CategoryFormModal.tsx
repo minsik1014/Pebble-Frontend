@@ -30,6 +30,9 @@ type CategoryFormModalProps = {
 
 const CATEGORY_IMAGE_ASPECT_RATIO = 175 / 234;
 
+const getEditableMembers = (members: Friend[]) =>
+  members.filter((member) => member.role !== "OWNER");
+
 export const CategoryFormModal = ({ 
   isOpen, 
   mode = "create", 
@@ -88,11 +91,10 @@ export const CategoryFormModal = ({
       setIsPublic(category.isPublic ?? true);
       setIsCompleted(category.isCompleted ?? false);
       setIsShared(category.isShared ?? false);
-      const editableMembers =
-        category.members?.filter((member) => member.role !== "OWNER") ?? [];
+      const displayMembers = category.members ?? [];
 
-      setSelectedMembers(editableMembers);
-      setInitialMembers(editableMembers);
+      setSelectedMembers(displayMembers);
+      setInitialMembers(displayMembers);
       setSearchQuery("");
       setIsDropdownOpen(false);
       setHasLoadedFriends(false);
@@ -132,11 +134,31 @@ export const CategoryFormModal = ({
           getFollowingFriends(),
           getCategoryMembers(category.id),
         ]);
-        const memberUserIds = new Set(
-          sharedMembers
-            .filter((member) => member.role === "MEMBER")
-            .map((member) => member.userId),
+        const friendMap = new Map(
+          loadedFriends.map((friend) => [friend.id, friend]),
         );
+        const categoryMemberMap = new Map(
+          (category.members ?? []).map((member) => [member.id, member]),
+        );
+        const loadedMembers = sharedMembers
+          .filter((member) => member.status === "ACCEPTED")
+          .map((member): Friend => {
+            const friend = friendMap.get(member.userId);
+            const categoryMember = categoryMemberMap.get(member.userId);
+
+            return {
+              id: member.userId,
+              name:
+                friend?.name ??
+                categoryMember?.name ??
+                (member.role === "OWNER" ? "카테고리 생성자" : "구성원"),
+              role: member.role,
+              uniqueTag: friend?.uniqueTag ?? categoryMember?.uniqueTag,
+              email: friend?.email ?? categoryMember?.email,
+              profileImageUrl:
+                friend?.profileImageUrl ?? categoryMember?.profileImageUrl,
+            };
+          });
 
         if (!isActive) {
           return;
@@ -144,9 +166,6 @@ export const CategoryFormModal = ({
 
         setFriends(loadedFriends);
         setHasLoadedFriends(true);
-        const loadedMembers = loadedFriends.filter((friend) =>
-          memberUserIds.has(friend.id),
-        );
 
         setSelectedMembers(loadedMembers);
         setInitialMembers(loadedMembers);
@@ -160,7 +179,7 @@ export const CategoryFormModal = ({
     return () => {
       isActive = false;
     };
-  }, [category?.id, isOpen, isShared, mode]);
+  }, [category?.id, category?.members, isOpen, isShared, mode]);
 
   const loadFriends = async () => {
     if (hasLoadedFriends) {
@@ -212,7 +231,7 @@ export const CategoryFormModal = ({
         isPublic,
         isCompleted,
         isShared,
-        members: isShared ? selectedMembers : undefined,
+        members: isShared ? getEditableMembers(selectedMembers) : undefined,
         previousMembers: mode === "edit" ? initialMembers : undefined,
       });
       onClose();

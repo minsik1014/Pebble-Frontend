@@ -44,19 +44,27 @@ export const useCalendarCategoryActions = ({
         return;
       }
 
-      const membersToAdd = nextMembers.filter(
+      const previousEditableMembers = previousMembers.filter(
+        (member) => member.role !== "OWNER",
+      );
+      const nextEditableMembers = nextMembers.filter(
+        (member) => member.role !== "OWNER",
+      );
+      const membersToAdd = nextEditableMembers.filter(
         (nextMember) =>
-          !previousMembers.some(
+          !previousEditableMembers.some(
             (previousMember) => previousMember.id === nextMember.id,
           ),
       );
-      const membersToRemove = previousMembers.filter(
+      const membersToRemove = previousEditableMembers.filter(
         (previousMember) =>
-          !nextMembers.some((nextMember) => nextMember.id === previousMember.id),
+          !nextEditableMembers.some(
+            (nextMember) => nextMember.id === previousMember.id,
+          ),
       );
 
       if (!wasShared) {
-        await shareCategory(categoryId, nextMembers);
+        await shareCategory(categoryId, nextEditableMembers);
         return;
       }
 
@@ -129,6 +137,12 @@ export const useCalendarCategoryActions = ({
       );
       const category = await updateCategoryApi(categoryId, input);
       const nextMembers = input.isShared ? input.members ?? [] : [];
+      const nextDisplayMembers = [
+        ...(input.previousMembers ?? previousCategory?.members ?? []).filter(
+          (member) => member.role === "OWNER",
+        ),
+        ...nextMembers,
+      ];
 
       await syncSharedCategoryMembers(
         categoryId,
@@ -163,7 +177,7 @@ export const useCalendarCategoryActions = ({
                       category.isShared ??
                       previousCategory.isShared,
                     members: input.isShared
-                      ? nextMembers
+                      ? nextDisplayMembers
                       : category.members ?? previousCategory.members,
                   }
                 : previousCategory,
