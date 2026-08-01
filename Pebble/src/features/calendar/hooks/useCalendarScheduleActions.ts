@@ -24,9 +24,7 @@ import {
   appendTaskToMilestone,
   createMilestoneEntity,
   createTaskEntity,
-  removeCategoryTaskFromList,
   removeMilestoneFromCategory,
-  removeTaskFromMilestone,
   replaceStandaloneTaskInList,
   toggleCategoryTaskCompletedInList,
   toggleMilestoneCompletedInCategory,
@@ -50,9 +48,13 @@ const getMilestoneDeleteScope = (
   dateType === "MULTIPLE" ? "ALL" : undefined;
 
 const getTaskDeleteScope = (
-  dateType?: string,
-): TaskDeleteScope | undefined =>
-  dateType === "MULTIPLE" ? "ALL" : undefined;
+  task?: TaskItem | null,
+): TaskDeleteScope | undefined => {
+  const hasMultipleDates =
+    (task?.dates?.length ?? 0) > 1 || (task?.taskDates?.length ?? 0) > 1;
+
+  return task?.dateType === "MULTIPLE" || hasMultipleDates ? "ALL" : undefined;
+};
 
 const getTaskCompleteTargetIds = (
   task?: TaskItem | null,
@@ -182,14 +184,12 @@ export const useCalendarScheduleActions = ({
 
       await deleteTaskApi({
         taskId,
-        deleteScope: getTaskDeleteScope(task?.dateType),
+        deleteScope: getTaskDeleteScope(task),
       });
 
-      setCategories((previousCategories) =>
-        removeCategoryTaskFromList(previousCategories, categoryId, taskId),
-      );
+      await reloadCalendarData();
     },
-    [categories, setCategories],
+    [categories, reloadCalendarData],
   );
 
   const createStandaloneTask = useCallback(
@@ -228,14 +228,12 @@ export const useCalendarScheduleActions = ({
 
       await deleteTaskApi({
         taskId,
-        deleteScope: getTaskDeleteScope(task?.dateType),
+        deleteScope: getTaskDeleteScope(task),
       });
 
-      setStandaloneTasks((previousTasks) =>
-        previousTasks.filter((task) => task.id !== taskId),
-      );
+      await reloadCalendarData();
     },
-    [setStandaloneTasks, standaloneTasks],
+    [reloadCalendarData, standaloneTasks],
   );
 
   const deleteMilestone = useCallback(
@@ -267,19 +265,12 @@ export const useCalendarScheduleActions = ({
 
       await deleteTaskApi({
         taskId,
-        deleteScope: getTaskDeleteScope(task?.dateType),
+        deleteScope: getTaskDeleteScope(task),
       });
 
-      setCategories((previousCategories) =>
-        removeTaskFromMilestone(
-          previousCategories,
-          categoryId,
-          milestoneId,
-          taskId,
-        ),
-      );
+      await reloadCalendarData();
     },
-    [categories, setCategories],
+    [categories, reloadCalendarData],
   );
 
   const updateTask = useCallback(

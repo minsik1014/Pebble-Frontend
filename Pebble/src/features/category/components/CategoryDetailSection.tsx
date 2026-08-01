@@ -47,8 +47,8 @@ export const CategoryDetailSection = ({
     categoryId: string,
     taskId: string,
     input: CreateScheduleItemInput,
-  ) => void;
-  onDeleteCategoryTask: (categoryId: string, taskId: string) => void;
+  ) => Promise<void>;
+  onDeleteCategoryTask: (categoryId: string, taskId: string) => Promise<void>;
   onDeleteCategory: (categoryId: string) => Promise<void>;
   onUpdateMilestone: (
     categoryId: string,
@@ -285,20 +285,20 @@ export const CategoryDetailSection = ({
         defaultCategoryId={category.id}
         task={editingCategoryTask}
         mode="edit"
-        onSubmit={({ task }) => {
+        onSubmit={async ({ task }) => {
           if (!editingCategoryTaskId) {
             return;
           }
 
-          onUpdateCategoryTask(category.id, editingCategoryTaskId, task);
+          await onUpdateCategoryTask(category.id, editingCategoryTaskId, task);
           setEditingCategoryTaskId(null);
         }}
-        onRequestDelete={() => {
+        onRequestDelete={async () => {
           if (!editingCategoryTaskId) {
             return;
           }
 
-          onDeleteCategoryTask(category.id, editingCategoryTaskId);
+          await onDeleteCategoryTask(category.id, editingCategoryTaskId);
           setEditingCategoryTaskId(null);
         }}
       />
