@@ -12,6 +12,7 @@ export type CalendarEvent = {
   backgroundColor: string;
   accentColor: string;
   textColor: string;
+  variant: "milestone" | "task" | "standaloneTask";
 };
 
 export type CalendarWeek = {

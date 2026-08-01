@@ -133,6 +133,7 @@ const createCalendarEvent = (
     backgroundColor,
     accentColor,
     textColor,
+    variant: datedItem.variant,
   };
 };
 
