@@ -44,16 +44,16 @@ export function ThemeSegmentControl({
             aria-pressed={isSelected}
             onClick={() => onChange(optionValue)}
             className={[
-              'flex h-10 flex-1 items-center justify-center gap-token-s rounded-[10px]',
+              'flex h-10 flex-1 items-center justify-center gap-token-s rounded-[9px] px-3 py-2',
               'text-body-02-m transition-colors',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary',
               'disabled:cursor-not-allowed disabled:opacity-60',
               isSelected
-                ? 'bg-fill-inverse text-text-strong shadow-shadow-s'
-                : 'text-text-teritary hover:text-text-primary',
+                ? 'bg-fill-inverse text-text-primary shadow-[0px_0px_4px_rgba(23,23,23,0.1)]'
+                : 'text-text-teritary',
             ].join(' ')}
           >
-            <Icon className="size-5" aria-hidden="true" />
+            <Icon className="size-6" aria-hidden="true" />
             {label}
           </button>
         );

@@ -11,6 +11,7 @@ import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
 import SearchIcon from "@/assets/icons/Search.svg?react";
 import ClearIcon from "@/assets/icons/Close.svg?react";
 import MySolidIcon from "@/assets/icons/user-solid.svg?react";
+import { Toast } from "@/components/ui/Toast";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import {
   acceptFollowRequest,
@@ -268,15 +269,15 @@ export default function FriendsPage(): JSX.Element {
       <div className="h-full overflow-y-auto px-[72px] pb-12 custom-scrollbar">
         <div className="mx-auto w-full max-w-[780px] pt-10">
           <div className="relative flex h-12 items-center justify-center">
-            <div className="grid h-11 w-[440px] grid-cols-2 rounded-token-s bg-fill-surface p-1">
+            <div className="grid h-12 w-64 grid-cols-2 gap-1 rounded-token-s bg-btn-quaternary p-1">
               {(["friends", "search"] as const).map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
-                  className={`rounded-[6px] text-body-02-m transition-colors ${
+                  className={`rounded-[9px] px-3 py-2 text-body-02-m transition-colors ${
                     activeTab === tab
-                      ? "bg-fill-inverse text-text-strong shadow-sm"
+                      ? "bg-fill-inverse text-text-primary shadow-[0px_0px_4px_rgba(23,23,23,0.1)]"
                       : "text-text-teritary"
                   }`}
                 >
@@ -492,17 +493,11 @@ export default function FriendsPage(): JSX.Element {
         </div>
       </div>
 
-      <div
-        role="status"
-        aria-live="polite"
-        className={`pointer-events-none absolute bottom-6 right-6 z-20 min-w-[280px] rounded-[16px] bg-fill-primary px-5 py-3 text-body-02-m text-text-onFill shadow-lg transition-all duration-[450ms] ease-in-out ${
-          isToastVisible
-            ? "translate-y-0 opacity-100"
-            : "translate-y-3 opacity-0"
-        }`}
-      >
-        {toastMessage}
-      </div>
+      <Toast
+        message={toastMessage}
+        open={isToastVisible}
+        className="absolute bottom-6 right-6 z-20"
+      />
     </section>
   );
 }

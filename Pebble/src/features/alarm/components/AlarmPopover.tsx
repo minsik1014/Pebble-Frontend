@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { Toast } from "@/components/ui/Toast";
+
 import type {
   Alarm,
   CategoryInviteAction,
@@ -136,15 +138,11 @@ export const AlarmPopover = ({
         )}
       </div>
 
-      <div
-        className={`pointer-events-none absolute bottom-4 left-5 right-5 rounded-[16px] bg-black px-5 py-3 text-[14px] font-medium leading-[20px] text-white shadow-lg transition-all duration-[450ms] ease-in-out ${
-          isToastVisible
-            ? "translate-y-0 opacity-100"
-            : "translate-y-3 opacity-0"
-        }`}
-      >
-        {toastMessage}
-      </div>
+      <Toast
+        message={toastMessage}
+        open={isToastVisible}
+        className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2"
+      />
     </div>,
     document.body,
   );
