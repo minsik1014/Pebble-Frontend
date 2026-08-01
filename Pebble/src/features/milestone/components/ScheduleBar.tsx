@@ -7,7 +7,7 @@ type ScheduleBarProps = {
 export const ScheduleBar = ({ event }: ScheduleBarProps) => {
   return (
     <div
-      className="absolute flex items-center gap-2 overflow-hidden rounded-[4px] px-3 py-1 shadow-shadow-s pointer-events-auto"
+      className="pointer-events-auto absolute flex h-[29px] items-center gap-[10px] overflow-hidden rounded-[4px] px-3 py-1"
       style={{
         left: `calc(${event.leftPercent}% + 4px)`,
         top: event.topOffset,
