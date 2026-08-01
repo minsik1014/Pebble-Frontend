@@ -313,7 +313,7 @@ export default function FriendsPage(): JSX.Element {
                             type="button"
                             disabled={processingId === request.followId}
                             onClick={() => void handleAccept(request)}
-                            className="h-11 min-w-[80px] rounded-token-s bg-fill-primary px-5 text-body-02-m text-text-onFill disabled:opacity-50"
+                            className="h-12 min-w-[92px] rounded-token-s bg-btn-primary px-8 py-3 text-body-02-m text-text-onFill disabled:opacity-50"
                           >
                             수락
                           </button>
@@ -327,7 +327,7 @@ export default function FriendsPage(): JSX.Element {
                                 "요청을 거절했어요",
                               )
                             }
-                            className="h-11 min-w-[80px] rounded-token-s bg-fill-surface px-5 text-body-02-m text-text-strong disabled:opacity-50"
+                            className="h-12 min-w-[92px] rounded-token-s bg-btn-quaternary px-8 py-3 text-body-02-m text-text-strong disabled:opacity-50"
                           >
                             거절
                           </button>
@@ -354,7 +354,7 @@ export default function FriendsPage(): JSX.Element {
                                 "친구 신청을 취소했어요",
                               )
                             }
-                            className="h-11 min-w-[96px] rounded-token-s bg-fill-surface px-5 text-body-02-m text-text-strong disabled:opacity-50"
+                            className="h-12 min-w-[116px] rounded-token-s bg-btn-quaternary px-8 py-3 text-body-02-m text-text-strong disabled:opacity-50"
                           >
                             요청 취소
                           </button>
@@ -384,10 +384,10 @@ export default function FriendsPage(): JSX.Element {
                               "친구 관계를 삭제했어요",
                             )
                           }
-                          className="flex size-11 items-center justify-center rounded-token-s bg-[#FF8A8A] text-text-onFill transition-opacity hover:opacity-80 disabled:opacity-50"
+                          className="relative flex size-11 items-center justify-center overflow-hidden rounded-token-s bg-fill-danger text-text-onFill transition-colors before:pointer-events-none before:absolute before:inset-0 before:transition-colors hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)] disabled:opacity-50"
                           aria-label={`${friend.nickname} 친구 삭제`}
                         >
-                          <Trash2 className="size-5" strokeWidth={2} />
+                          <Trash2 className="relative z-10 size-5" strokeWidth={2} />
                         </button>
                       </FollowRow>
                     ))}
@@ -447,7 +447,7 @@ export default function FriendsPage(): JSX.Element {
                             type="button"
                             disabled={processingId === user.userId}
                             onClick={() => void handleSendFollow(user)}
-                            className="h-11 min-w-[96px] rounded-token-s bg-fill-primary px-5 text-body-02-m text-text-onFill disabled:opacity-50"
+                            className="h-12 rounded-token-s bg-btn-primary px-8 py-3 text-body-02-m text-text-onFill disabled:opacity-50"
                           >
                             친구 신청
                           </button>
@@ -456,7 +456,7 @@ export default function FriendsPage(): JSX.Element {
                           <button
                             type="button"
                             disabled
-                            className="h-11 min-w-[96px] rounded-token-s bg-fill-surface px-5 text-body-02-m text-text-strong"
+                            className="h-12 min-w-[96px] rounded-token-s bg-btn-quaternary px-8 py-3 text-body-02-m text-text-strong"
                           >
                             요청 중
                           </button>
@@ -472,10 +472,10 @@ export default function FriendsPage(): JSX.Element {
                                 "친구 관계를 삭제했어요",
                               )
                             }
-                            className="flex size-11 items-center justify-center rounded-token-s bg-[#FF8A8A] text-text-onFill transition-opacity hover:opacity-80 disabled:opacity-50"
+                            className="relative flex size-11 items-center justify-center overflow-hidden rounded-token-s bg-fill-danger text-text-onFill transition-colors before:pointer-events-none before:absolute before:inset-0 before:transition-colors hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)] disabled:opacity-50"
                             aria-label={`${user.nickname} 친구 삭제`}
                           >
-                            <Trash2 className="size-5" strokeWidth={2} />
+                            <Trash2 className="relative z-10 size-5" strokeWidth={2} />
                           </button>
                         )}
                       </FollowRow>
@@ -533,9 +533,9 @@ function FollowRow({
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-16 items-center">
-      <div className="flex min-w-0 items-center gap-4">
-        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border-default bg-fill-surface text-text-secondary">
+    <div className="group relative flex min-h-[88px] w-full items-center justify-between overflow-hidden rounded-token-m p-3 transition-colors hover:bg-[rgba(23,23,23,0.05)]">
+      <div className="flex min-w-0 flex-1 items-center gap-5 pr-5">
+        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border-teritory bg-fill-surface text-text-secondary">
           {user.profileImageUrl ? (
             <img
               src={user.profileImageUrl}
@@ -549,13 +549,13 @@ function FollowRow({
         <div className="min-w-0">
           <p className="text-body-01-sb text-text-strong">{user.nickname}</p>
           {showUniqueTag && (
-            <p className="mt-1 text-body-03-r text-text-teritary">
+            <p className="mt-1 text-body-02-m text-text-secondary">
               #{user.uniqueTag}
             </p>
           )}
         </div>
       </div>
-      <div className="ml-auto flex gap-3">{children}</div>
+      <div className="ml-auto flex shrink-0 gap-3">{children}</div>
     </div>
   );
 }
