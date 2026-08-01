@@ -111,8 +111,8 @@ export const CalendarBoard = ({
                 <CalendarStatusView
                   title={"왼쪽 추가하기 버튼으로\n카테고리, 마일스톤, 태스크를 만들어 보세요."}
                   showIcon={false}
-                  contentClassName="max-w-[640px]"
-                  titleClassName="whitespace-pre-line text-center font-sans text-[32px] font-medium leading-[130%] tracking-[-0.32px] text-[#000]"
+                  contentClassName="max-w-[360px]"
+                  titleClassName="whitespace-pre-line text-title-03-sb text-text-strong"
                 />
               )}
             </div>
