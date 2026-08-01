@@ -7,17 +7,29 @@ export type SharedCategoryMemberResponse = {
   userId: number;
   role: "OWNER" | "MEMBER";
   status: "PENDING" | "ACCEPTED";
+  createdAt?: string;
+  updatedAt?: string;
 };
 
-type CategoryInviteTarget = {
-  nickname: string;
-};
+type CategoryInviteTarget =
+  | {
+      nickname: string;
+    }
+  | {
+      email: string;
+    };
 
 const mapMemberToInviteTarget = (
   member: CategoryMember,
-): CategoryInviteTarget => ({
-  nickname: member.name,
-});
+): CategoryInviteTarget => {
+  if (member.email) {
+    return { email: member.email };
+  }
+
+  return {
+    nickname: member.uniqueTag ? `${member.name}#${member.uniqueTag}` : member.name,
+  };
+};
 
 export async function shareCategory(
   categoryId: string,

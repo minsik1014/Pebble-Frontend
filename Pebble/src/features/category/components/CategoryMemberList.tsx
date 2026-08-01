@@ -9,6 +9,9 @@ export const CategoryMemberList = ({
   members,
   onRemoveMember,
 }: CategoryMemberListProps) => {
+  const getMemberLabel = (member: Friend) =>
+    member.uniqueTag ? `${member.name}#${member.uniqueTag}` : member.name;
+
   if (members.length === 0) {
     return null;
   }
@@ -32,7 +35,7 @@ export const CategoryMemberList = ({
             )}
 
             <span className="min-w-0 flex-1 truncate text-body-01-m tracking-[-0.18px] text-text-strong">
-              {member.name}
+              {getMemberLabel(member)}
             </span>
           </div>
 

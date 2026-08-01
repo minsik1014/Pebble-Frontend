@@ -60,7 +60,9 @@ export const CategoryFormModal = ({
 
   const filteredFriends = friends.filter(
     (friend) =>
-      friend.name.includes(searchQuery) &&
+      [friend.name, friend.uniqueTag, friend.email]
+        .filter(Boolean)
+        .some((value) => value?.includes(searchQuery)) &&
       !selectedMembers.some((member) => member.id === friend.id),
   );
   const shouldShowMemberList = mode === "edit" && selectedMembers.length > 0;

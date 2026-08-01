@@ -26,6 +26,8 @@ export const CategoryMemberSelector = ({
   const inputPlaceholder = hasSelectedMembersInInput
     ? ""
     : "닉네임 또는 이메일을 입력해 주세요";
+  const getMemberLabel = (member: Friend) =>
+    member.uniqueTag ? `${member.name}#${member.uniqueTag}` : member.name;
 
   return (
     <div className="relative flex w-full flex-col gap-2">
@@ -56,7 +58,7 @@ export const CategoryMemberSelector = ({
                 <div className="size-9 shrink-0 rounded-token-infinite border border-border-secondary bg-border-default" />
               )}
               <span className="text-body-01-m tracking-[-0.18px] text-text-strong">
-                {member.name}
+                {getMemberLabel(member)}
               </span>
             </div>
             <button
@@ -113,8 +115,13 @@ export const CategoryMemberSelector = ({
                 )}
                 <span className="flex min-w-0 flex-1 flex-col">
                   <span className="truncate text-body-01-sb tracking-[-0.18px] text-text-strong">
-                    {friend.name}
+                    {getMemberLabel(friend)}
                   </span>
+                  {friend.email && (
+                    <span className="truncate text-body-03-r text-text-teritary">
+                      {friend.email}
+                    </span>
+                  )}
                 </span>
               </button>
 

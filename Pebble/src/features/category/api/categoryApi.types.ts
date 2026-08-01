@@ -22,6 +22,8 @@ export type CategoryMemberResponse = {
   userId?: number;
   nickname?: string;
   name?: string;
+  uniqueTag?: string;
+  email?: string;
   profileImageUrl?: string | null;
 };
 

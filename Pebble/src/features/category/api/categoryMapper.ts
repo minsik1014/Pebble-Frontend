@@ -34,6 +34,8 @@ const mapCategoryMemberResponse = (member: CategoryMemberResponse) => {
   return {
     id,
     name,
+    uniqueTag: member.uniqueTag,
+    email: member.email,
     profileImageUrl: member.profileImageUrl ?? null,
   };
 };
