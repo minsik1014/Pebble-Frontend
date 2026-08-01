@@ -102,24 +102,24 @@ export const CategoryMemberSelector = ({
           {filteredFriends.map((friend) => (
             <div
               key={friend.id}
-              className="flex w-full items-center justify-between overflow-hidden rounded-token-m p-token-m transition-colors hover:bg-btn-pressed"
+              className="flex h-14 w-full items-center justify-between gap-5 overflow-hidden rounded-token-s px-token-s py-token-xs transition-colors hover:bg-btn-pressed"
             >
               <button
                 type="button"
                 onClick={() => onToggleMember(friend)}
-                className="flex min-w-0 flex-1 items-center gap-5 pr-token-l text-left"
+                className="flex min-w-0 flex-1 items-center gap-token-s text-left"
               >
                 {friend.profileImageUrl ? (
                   <img
                     src={friend.profileImageUrl}
                     alt=""
-                    className="size-16 shrink-0 rounded-token-infinite border border-border-teritory object-cover"
+                    className="size-10 shrink-0 rounded-token-infinite border border-border-secondary object-cover"
                   />
                 ) : (
-                  <div className="size-16 shrink-0 rounded-token-infinite border border-border-teritory bg-border-default" />
+                  <div className="size-10 shrink-0 rounded-token-infinite border border-border-secondary bg-border-default" />
                 )}
                 <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-body-01-sb tracking-[-0.18px] text-text-strong">
+                  <span className="truncate text-body-01-m tracking-[-0.18px] text-text-strong">
                     {getMemberLabel(friend)}
                   </span>
                   {friend.email && (
@@ -133,7 +133,7 @@ export const CategoryMemberSelector = ({
               <button
                 type="button"
                 onClick={() => onToggleMember(friend)}
-                className="flex h-12 shrink-0 items-center justify-center rounded-token-s bg-btn-primary px-token-xl py-token-m text-body-02-m tracking-[-0.16px] text-text-onFill transition-colors hover:brightness-95"
+                className="flex h-11 shrink-0 items-center justify-center rounded-token-s bg-btn-quaternary px-token-xl py-token-m text-body-02-m tracking-[-0.16px] text-text-secondary transition-colors hover:bg-btn-pressed"
                 aria-label={`${friend.name} 구성원 추가`}
               >
                 추가
