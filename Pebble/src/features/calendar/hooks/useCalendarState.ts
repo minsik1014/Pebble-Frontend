@@ -5,8 +5,11 @@ import type { CalendarStateModel } from "@/features/calendar/types";
 import { useCalendarCategoryActions } from "@/features/calendar/hooks/useCalendarCategoryActions";
 import { useCalendarScheduleActions } from "@/features/calendar/hooks/useCalendarScheduleActions";
 import { getCategories } from "@/features/category/api/categoryApi";
-import { getMilestones } from "@/features/milestone/api/milestoneApi";
-import { getStandaloneTasks } from "@/features/task/api/taskApi";
+import {
+  getMilestones,
+  getUserCategoryMilestones,
+} from "@/features/milestone/api/milestoneApi";
+import { getStandaloneTasks, getUserTasks } from "@/features/task/api/taskApi";
 import { ApiRequestError, getAccessToken } from "@/services/api";
 
 export type {
@@ -26,16 +29,53 @@ type UseCalendarStateParams = {
 const formatBaseDate = (year: number, month: number) =>
   `${year}-${String(month).padStart(2, "0")}-01`;
 
-const getAccessibleMilestones = async (categoryId: string) => {
+const getAccessibleMilestones = async (category: Category) => {
   try {
-    return await getMilestones(categoryId);
+    return await getMilestones(category.id);
   } catch (error) {
+    if (
+      error instanceof ApiRequestError &&
+      error.status === 403 &&
+      category.isShared &&
+      category.userId
+    ) {
+      return await getUserCategoryMilestones(category.userId, category.id);
+    }
+
     if (error instanceof ApiRequestError && error.status === 403) {
       return [];
     }
 
     throw error;
   }
+};
+
+const getSharedOwnerIds = (categories: Category[]) => [
+  ...new Set(
+    categories
+      .filter((category) => category.isShared && category.userId)
+      .map((category) => category.userId as number),
+  ),
+];
+
+const getTaskKey = (task: TaskItem) =>
+  [
+    task.id,
+    task.categoryId ?? "standalone",
+    task.milestoneId ?? "none",
+    task.taskDates?.map((taskDate) => taskDate.taskDateId).join(",") ??
+      task.dates?.join(",") ??
+      task.start,
+  ].join("-");
+
+const mergeUniqueTasks = (taskGroups: TaskItem[][]) => {
+  const taskMap = new Map<string, TaskItem>();
+
+  taskGroups.flat().forEach((task) => {
+    taskMap.set(getTaskKey(task), task);
+  });
+
+  return [...taskMap.values()];
 };
 
 const attachTasksToCategories = (
@@ -125,14 +165,21 @@ export const useCalendarState = ({
       }
 
       try {
-        const [loadedCategories, loadedTasks] = await Promise.all([
+        const baseDate = formatBaseDate(currentYear, currentMonth);
+        const [loadedCategories, ownTasks] = await Promise.all([
           getCategories(),
-          getStandaloneTasks(formatBaseDate(currentYear, currentMonth)),
+          getStandaloneTasks(baseDate),
         ]);
+        const sharedTasks = await Promise.all(
+          getSharedOwnerIds(loadedCategories).map((userId) =>
+            getUserTasks(userId, baseDate),
+          ),
+        );
+        const loadedTasks = mergeUniqueTasks([ownTasks, ...sharedTasks]);
         const categoriesWithMilestones = await Promise.all(
           loadedCategories.map(async (category) => ({
             ...category,
-            items: await getAccessibleMilestones(category.id),
+            items: await getAccessibleMilestones(category),
             tasks: [],
           })),
         );

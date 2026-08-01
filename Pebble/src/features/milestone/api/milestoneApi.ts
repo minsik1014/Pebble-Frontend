@@ -51,6 +51,22 @@ export async function getMilestones(categoryId: string): Promise<MilestoneItem[]
   );
 }
 
+export async function getUserCategoryMilestones(
+  userId: number,
+  categoryId: string,
+): Promise<MilestoneItem[]> {
+  const data = await apiRequest<GetMilestonesResponse>({
+    method: "GET",
+    url: `/users/${userId}/categories/${categoryId}/milestones`,
+  });
+
+  return (
+    data?.milestones.map((milestone) =>
+      mapMilestoneResponseToMilestone(milestone),
+    ) ?? []
+  );
+}
+
 export async function createMilestone(
   categoryId: string,
   input: CreateScheduleItemInput,

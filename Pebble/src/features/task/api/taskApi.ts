@@ -18,6 +18,19 @@ export async function getStandaloneTasks(baseDate?: string): Promise<TaskItem[]>
   return data?.tasks.map(mapTaskResponseToTask) ?? [];
 }
 
+export async function getUserTasks(
+  userId: number,
+  baseDate?: string,
+): Promise<TaskItem[]> {
+  const data = await apiRequest<GetTasksResponse>({
+    method: "GET",
+    url: `/tasks/users/${userId}`,
+    params: baseDate ? { baseDate } : undefined,
+  });
+
+  return data?.tasks.map(mapTaskResponseToTask) ?? [];
+}
+
 type TaskMutationResponse =
   | TaskResponse
   | {

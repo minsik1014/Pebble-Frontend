@@ -47,6 +47,7 @@ export function mapCategoryResponseToCategory(
 
   return {
     id: String(category.id),
+    userId: category.userId,
     title: category.name,
     accent: theme.accent,
     themeBase: theme.themeBase,

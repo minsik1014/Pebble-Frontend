@@ -55,6 +55,7 @@ export type CategoryMember = {
 
 export type Category = {
   id: string;
+  userId?: number;
   title: string;
   accent: string;
   themeBase: string;
