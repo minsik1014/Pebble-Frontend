@@ -208,7 +208,7 @@ export const MilestoneAccordion = ({
       </div>
       {expanded && (
         <div className="flex w-full flex-col items-center">
-          <div className="flex w-full max-h-[216px] flex-col items-end justify-center gap-2 overflow-y-auto pl-5 pr-3 custom-scrollbar">
+          <div className="flex w-full max-h-[216px] flex-col items-end justify-start gap-2 overflow-y-auto pl-5 pr-3 custom-scrollbar">
             {category.items.map((item) => (
               <div key={item.id} className="flex w-full flex-col items-end gap-2">
                 <SidebarScheduleRow
