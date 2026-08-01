@@ -133,7 +133,6 @@ export const MilestoneFormModal = ({
             categories={categories}
             selectedCategoryId={selectedCategory}
             isOpen={isCategoryDropdownOpen}
-            variant="inverse"
             onToggleOpen={() =>
               setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
             }
