@@ -26,6 +26,13 @@ type MilestoneAccordionProps = {
     milestoneId: string,
     taskId: string,
   ) => void | Promise<void>;
+  onEditMilestone?: (categoryId: string, milestoneId: string) => void;
+  onEditCategoryTask?: (categoryId: string, taskId: string) => void;
+  onEditTask?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void;
   onAddSchedule?: (categoryId: string) => void;
   onSelectCategory?: (categoryId: string) => void;
   isSelected?: boolean;
@@ -35,6 +42,7 @@ type SidebarScheduleRowProps = {
   item: ScheduleItem;
   checked: boolean;
   onToggle: () => void;
+  onEdit: () => void;
   barColor: string;
   widthClassName: string;
 };
@@ -43,6 +51,7 @@ const SidebarScheduleRow = ({
   item,
   checked,
   onToggle,
+  onEdit,
   barColor,
   widthClassName,
 }: SidebarScheduleRowProps) => {
@@ -50,10 +59,14 @@ const SidebarScheduleRow = ({
   const titleColorClass = getScheduleTextColorClass(checked);
 
   return (
-    <label
-      className={`${widthClassName} flex shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface`}
+    <div
+      className={`${widthClassName} flex shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface`}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-2">
+      <button
+        type="button"
+        className="flex min-w-0 flex-1 items-center gap-2 text-left"
+        onClick={onEdit}
+      >
         <div
           className="h-8 w-2 shrink-0 rounded"
           style={{ backgroundColor: barColor }}
@@ -61,9 +74,20 @@ const SidebarScheduleRow = ({
         <span className={`min-w-0 max-w-[190px] flex-1 truncate text-body-02-m ${titleColorClass}`}>
           {item.title}
         </span>
-      </div>
+      </button>
 
-      <div className="flex shrink-0 items-center justify-end gap-3">
+      <div
+        role="button"
+        tabIndex={0}
+        className="flex shrink-0 cursor-pointer items-center justify-end gap-3"
+        onClick={onToggle}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onToggle();
+          }
+        }}
+      >
         <span className="whitespace-nowrap text-body-02-m text-text-teritary">
           {dateLabel}
         </span>
@@ -71,9 +95,10 @@ const SidebarScheduleRow = ({
           checked={checked}
           ariaLabel={`${item.title} 일정 완료`}
           onChange={onToggle}
+          stopPropagation
         />
       </div>
-    </label>
+    </div>
   );
 };
 
@@ -84,6 +109,9 @@ export const MilestoneAccordion = ({
   onToggleMilestoneCompleted,
   onToggleCategoryTaskCompleted,
   onToggleTaskCompleted,
+  onEditMilestone,
+  onEditCategoryTask,
+  onEditTask,
   onAddSchedule,
   onSelectCategory,
   isSelected = false,
@@ -154,6 +182,7 @@ export const MilestoneAccordion = ({
                 item={task}
                 checked={isTaskCompleted(task)}
                 onToggle={() => onToggleCategoryTaskCompleted?.(category.id, task.id)}
+                onEdit={() => onEditCategoryTask?.(category.id, task.id)}
                 barColor={category.themeLight}
                 widthClassName="w-80"
               />
@@ -167,6 +196,7 @@ export const MilestoneAccordion = ({
                   onToggle={() =>
                     onToggleMilestoneCompleted?.(category.id, item.id)
                   }
+                  onEdit={() => onEditMilestone?.(category.id, item.id)}
                   barColor={category.themeMid}
                   widthClassName="w-80"
                 />
@@ -178,6 +208,7 @@ export const MilestoneAccordion = ({
                     onToggle={() =>
                       onToggleTaskCompleted?.(category.id, item.id, task.id)
                     }
+                    onEdit={() => onEditTask?.(category.id, item.id, task.id)}
                     barColor={category.themeLight}
                     widthClassName="w-[308px]"
                   />

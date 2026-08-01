@@ -1,3 +1,5 @@
+import { useMemo, useState } from "react";
+
 import { type Category, type MilestoneItem, type TaskItem } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
@@ -31,6 +33,12 @@ export const CalendarSidebar = ({
   onCreateCategory,
   onCreateMilestone,
   onCreateTask,
+  onUpdateMilestone,
+  onDeleteMilestone,
+  onUpdateCategoryTask,
+  onDeleteCategoryTask,
+  onUpdateTask,
+  onDeleteTask,
   onUpdateStandaloneTask,
   onDeleteStandaloneTask,
   onToggleMilestoneCompleted,
@@ -51,6 +59,35 @@ export const CalendarSidebar = ({
     input: CreateScheduleItemInput,
   ) => void | Promise<MilestoneItem[]>;
   onCreateTask?: (input: TaskFormSubmitInput) => void | Promise<void>;
+  onUpdateMilestone?: (
+    categoryId: string,
+    milestoneId: string,
+    input: CreateScheduleItemInput,
+  ) => void | Promise<void>;
+  onDeleteMilestone?: (
+    categoryId: string,
+    milestoneId: string,
+  ) => void | Promise<void>;
+  onUpdateCategoryTask?: (
+    categoryId: string,
+    taskId: string,
+    input: CreateScheduleItemInput,
+  ) => void | Promise<void>;
+  onDeleteCategoryTask?: (
+    categoryId: string,
+    taskId: string,
+  ) => void | Promise<void>;
+  onUpdateTask?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+    input: CreateScheduleItemInput,
+  ) => void | Promise<void>;
+  onDeleteTask?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void | Promise<void>;
   onUpdateStandaloneTask?: (
     taskId: string,
     input: CreateScheduleItemInput,
@@ -110,6 +147,61 @@ export const CalendarSidebar = ({
     openStandaloneTaskEditor,
     closeStandaloneTaskEditor,
   } = useCalendarSidebarModals({ standaloneTasks });
+  const [editingMilestoneTarget, setEditingMilestoneTarget] = useState<{
+    categoryId: string;
+    milestoneId: string;
+  } | null>(null);
+  const [editingCategoryTaskTarget, setEditingCategoryTaskTarget] = useState<{
+    categoryId: string;
+    taskId: string;
+  } | null>(null);
+  const [editingTaskTarget, setEditingTaskTarget] = useState<{
+    categoryId: string;
+    milestoneId: string;
+    taskId: string;
+  } | null>(null);
+  const editingMilestoneCategory = useMemo(
+    () =>
+      editingMilestoneTarget
+        ? categories.find(
+            (category) => category.id === editingMilestoneTarget.categoryId,
+          ) ?? null
+        : null,
+    [categories, editingMilestoneTarget],
+  );
+  const editingMilestone =
+    editingMilestoneCategory?.items.find(
+      (item) => item.id === editingMilestoneTarget?.milestoneId,
+    ) ?? null;
+  const editingCategoryTaskCategory = useMemo(
+    () =>
+      editingCategoryTaskTarget
+        ? categories.find(
+            (category) => category.id === editingCategoryTaskTarget.categoryId,
+          ) ?? null
+        : null,
+    [categories, editingCategoryTaskTarget],
+  );
+  const editingCategoryTask =
+    editingCategoryTaskCategory?.tasks?.find(
+      (task) => task.id === editingCategoryTaskTarget?.taskId,
+    ) ?? null;
+  const editingTaskCategory = useMemo(
+    () =>
+      editingTaskTarget
+        ? categories.find((category) => category.id === editingTaskTarget.categoryId) ??
+          null
+        : null,
+    [categories, editingTaskTarget],
+  );
+  const editingTaskMilestone =
+    editingTaskCategory?.items.find(
+      (item) => item.id === editingTaskTarget?.milestoneId,
+    ) ?? null;
+  const editingTask =
+    editingTaskMilestone?.tasks?.find(
+      (task) => task.id === editingTaskTarget?.taskId,
+    ) ?? null;
 
   return (
     <aside 
@@ -145,6 +237,16 @@ export const CalendarSidebar = ({
                   onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
                   onToggleTaskCompleted={onToggleTaskCompleted}
                   onToggleStandaloneTaskCompleted={onToggleStandaloneTaskCompleted}
+                  onEditStandaloneTask={openStandaloneTaskEditor}
+                  onEditCategoryTask={(categoryId, taskId) =>
+                    setEditingCategoryTaskTarget({ categoryId, taskId })
+                  }
+                  onEditMilestone={(categoryId, milestoneId) =>
+                    setEditingMilestoneTarget({ categoryId, milestoneId })
+                  }
+                  onEditTask={(categoryId, milestoneId, taskId) =>
+                    setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                  }
                 />
               ) : (
                 <>
@@ -165,6 +267,15 @@ export const CalendarSidebar = ({
                       onToggleMilestoneCompleted={onToggleMilestoneCompleted}
                       onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
                       onToggleTaskCompleted={onToggleTaskCompleted}
+                      onEditCategoryTask={(categoryId, taskId) =>
+                        setEditingCategoryTaskTarget({ categoryId, taskId })
+                      }
+                      onEditMilestone={(categoryId, milestoneId) =>
+                        setEditingMilestoneTarget({ categoryId, milestoneId })
+                      }
+                      onEditTask={(categoryId, milestoneId, taskId) =>
+                        setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                      }
                       onAddSchedule={(categoryId) => openAddMenu(categoryId)}
                       onSelectCategory={onSelectCategory}
                       isSelected={selectedCategoryId === category.id}
@@ -250,6 +361,105 @@ export const CalendarSidebar = ({
 
           await onDeleteStandaloneTask?.(editingStandaloneTaskId);
           closeStandaloneTaskEditor();
+        }}
+      />
+
+      <MilestoneFormModal
+        isOpen={Boolean(editingMilestone)}
+        onClose={() => setEditingMilestoneTarget(null)}
+        categories={categories}
+        mode="edit"
+        milestone={editingMilestone}
+        defaultCategoryId={editingMilestoneTarget?.categoryId ?? null}
+        onSubmit={async (categoryId, input) => {
+          if (!editingMilestoneTarget) {
+            return;
+          }
+
+          await onUpdateMilestone?.(
+            categoryId,
+            editingMilestoneTarget.milestoneId,
+            input,
+          );
+          setEditingMilestoneTarget(null);
+        }}
+        onRequestDelete={async () => {
+          if (!editingMilestoneTarget) {
+            return;
+          }
+
+          await onDeleteMilestone?.(
+            editingMilestoneTarget.categoryId,
+            editingMilestoneTarget.milestoneId,
+          );
+          setEditingMilestoneTarget(null);
+        }}
+      />
+
+      <TaskFormModal
+        isOpen={Boolean(editingCategoryTask)}
+        onClose={() => setEditingCategoryTaskTarget(null)}
+        categories={categories}
+        defaultCategoryId={editingCategoryTaskTarget?.categoryId ?? null}
+        task={editingCategoryTask}
+        mode="edit"
+        onSubmit={async ({ task }) => {
+          if (!editingCategoryTaskTarget) {
+            return;
+          }
+
+          await onUpdateCategoryTask?.(
+            editingCategoryTaskTarget.categoryId,
+            editingCategoryTaskTarget.taskId,
+            task,
+          );
+          setEditingCategoryTaskTarget(null);
+        }}
+        onRequestDelete={async () => {
+          if (!editingCategoryTaskTarget) {
+            return;
+          }
+
+          await onDeleteCategoryTask?.(
+            editingCategoryTaskTarget.categoryId,
+            editingCategoryTaskTarget.taskId,
+          );
+          setEditingCategoryTaskTarget(null);
+        }}
+      />
+
+      <TaskFormModal
+        isOpen={Boolean(editingTask)}
+        onClose={() => setEditingTaskTarget(null)}
+        categories={categories}
+        defaultCategoryId={editingTaskTarget?.categoryId ?? null}
+        defaultMilestoneId={editingTaskTarget?.milestoneId ?? null}
+        task={editingTask}
+        mode="edit"
+        onSubmit={async ({ task }) => {
+          if (!editingTaskTarget) {
+            return;
+          }
+
+          await onUpdateTask?.(
+            editingTaskTarget.categoryId,
+            editingTaskTarget.milestoneId,
+            editingTaskTarget.taskId,
+            task,
+          );
+          setEditingTaskTarget(null);
+        }}
+        onRequestDelete={async () => {
+          if (!editingTaskTarget) {
+            return;
+          }
+
+          await onDeleteTask?.(
+            editingTaskTarget.categoryId,
+            editingTaskTarget.milestoneId,
+            editingTaskTarget.taskId,
+          );
+          setEditingTaskTarget(null);
         }}
       />
     </aside>

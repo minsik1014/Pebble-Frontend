@@ -30,12 +30,14 @@ export const StandaloneTaskSection = ({
           key={task.id}
           className="flex w-[352px] shrink-0 flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-s"
         >
-          <button
-            type="button"
+          <div
             className="flex w-full items-center justify-between gap-3 rounded-[20px] bg-fill-inverse py-3 pl-5 pr-3 text-left transition-colors hover:bg-fill-surface"
-            onClick={() => onEditTask(task.id)}
           >
-            <div className="flex min-w-0 flex-1 items-center gap-2">
+            <button
+              type="button"
+              className="flex min-w-0 flex-1 items-center gap-2 text-left"
+              onClick={() => onEditTask(task.id)}
+            >
               <div
                 className="h-10 w-2 shrink-0 rounded"
                 style={{ backgroundColor: accentColor }}
@@ -43,9 +45,20 @@ export const StandaloneTaskSection = ({
               <span className={`min-w-0 flex-1 truncate text-title-03-sb ${titleColorClass}`}>
                 {task.title}
               </span>
-            </div>
+            </button>
 
-            <div className="flex shrink-0 items-center justify-end gap-2">
+            <div
+              role="button"
+              tabIndex={0}
+              className="flex shrink-0 cursor-pointer items-center justify-end gap-2"
+              onClick={() => onToggleTaskCompleted?.(task.id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onToggleTaskCompleted?.(task.id);
+                }
+              }}
+            >
               <span className="whitespace-nowrap text-body-02-m text-text-teritary">
                 {dateLabel}
               </span>
@@ -56,7 +69,7 @@ export const StandaloneTaskSection = ({
                 stopPropagation
               />
             </div>
-          </button>
+          </div>
         </section>
       );
     })}

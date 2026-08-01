@@ -350,6 +350,12 @@ const MainLayoutFrame = (): JSX.Element => {
     createCategory,
     createMilestone,
     createTask,
+    updateMilestone,
+    deleteMilestone,
+    updateCategoryTask,
+    deleteCategoryTask,
+    updateTask,
+    deleteTask,
     updateStandaloneTask,
     deleteStandaloneTask,
     toggleMilestoneCompleted,
@@ -425,6 +431,12 @@ const MainLayoutFrame = (): JSX.Element => {
               onCreateCategory={createCategory}
               onCreateMilestone={createMilestone}
               onCreateTask={createTask}
+              onUpdateMilestone={updateMilestone}
+              onDeleteMilestone={deleteMilestone}
+              onUpdateCategoryTask={updateCategoryTask}
+              onDeleteCategoryTask={deleteCategoryTask}
+              onUpdateTask={updateTask}
+              onDeleteTask={deleteTask}
               onUpdateStandaloneTask={updateStandaloneTask}
               onDeleteStandaloneTask={deleteStandaloneTask}
               onToggleMilestoneCompleted={toggleMilestoneCompleted}

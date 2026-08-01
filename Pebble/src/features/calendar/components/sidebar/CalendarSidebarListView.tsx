@@ -28,6 +28,14 @@ type CalendarSidebarListViewProps = {
     taskId: string,
     taskDateId?: number,
   ) => void | Promise<void>;
+  onEditStandaloneTask?: (taskId: string) => void;
+  onEditCategoryTask?: (categoryId: string, taskId: string) => void;
+  onEditMilestone?: (categoryId: string, milestoneId: string) => void;
+  onEditTask?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void;
 };
 
 type DatedSidebarItem = {
@@ -275,6 +283,10 @@ export const CalendarSidebarListView = ({
   onToggleCategoryTaskCompleted,
   onToggleTaskCompleted,
   onToggleStandaloneTaskCompleted,
+  onEditStandaloneTask,
+  onEditCategoryTask,
+  onEditMilestone,
+  onEditTask,
 }: CalendarSidebarListViewProps): JSX.Element => {
   const groupedItems = collectSidebarItemsByDate({
     categories,
@@ -317,6 +329,29 @@ export const CalendarSidebarListView = ({
     );
   };
 
+  const handleEdit = (datedItem: DatedSidebarItem) => {
+    if (datedItem.type === "standaloneTask") {
+      onEditStandaloneTask?.(datedItem.taskId);
+      return;
+    }
+
+    if (datedItem.type === "categoryTask") {
+      onEditCategoryTask?.(datedItem.categoryId, datedItem.taskId);
+      return;
+    }
+
+    if (datedItem.type === "milestone") {
+      onEditMilestone?.(datedItem.categoryId, datedItem.milestoneId);
+      return;
+    }
+
+    onEditTask?.(
+      datedItem.categoryId,
+      datedItem.milestoneId,
+      datedItem.taskId,
+    );
+  };
+
   return (
     <div className="flex w-[352px] flex-col gap-5">
       {groupedItems.map((group) => (
@@ -330,11 +365,15 @@ export const CalendarSidebarListView = ({
               );
 
               return (
-                <label
+                <div
                   key={getDatedItemKey(group.key, datedItem)}
-                  className="flex h-12 w-full shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 shadow-shadow-s transition-colors hover:bg-fill-surface"
+                  className="flex h-12 w-full shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 shadow-shadow-s transition-colors hover:bg-fill-surface"
                 >
-                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                  <button
+                    type="button"
+                    className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                    onClick={() => handleEdit(datedItem)}
+                  >
                     <div
                       className="h-8 w-2 shrink-0 rounded"
                       style={{ backgroundColor: barColor }}
@@ -342,9 +381,20 @@ export const CalendarSidebarListView = ({
                     <span className={`min-w-0 max-w-[190px] flex-1 truncate text-body-02-m ${titleColorClass}`}>
                       {item.title}
                     </span>
-                  </div>
+                  </button>
 
-                  <div className="flex shrink-0 items-center justify-end gap-3">
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className="flex shrink-0 cursor-pointer items-center justify-end gap-3"
+                    onClick={() => handleToggleCompleted(datedItem)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        handleToggleCompleted(datedItem);
+                      }
+                    }}
+                  >
                     <span className="whitespace-nowrap text-body-02-m text-text-teritary">
                       {formatScheduleDisplayLabel(item)}
                     </span>
@@ -354,9 +404,10 @@ export const CalendarSidebarListView = ({
                       onChange={() => {
                         handleToggleCompleted(datedItem);
                       }}
+                      stopPropagation
                     />
                   </div>
-                </label>
+                </div>
               );
             })}
           </div>
