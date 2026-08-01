@@ -15,7 +15,7 @@ export interface ReportStep {
 }
 
 export const REPORT_STEPS: readonly ReportStep[] = [
-  { path: 'monthly', label: '이번 달 조약돌', frame: 'R003' },
+  { path: 'monthly', label: '저번 달 조약돌', frame: 'R003' },
   { path: 'category', label: '가장 바빴던 카테고리', frame: 'R004' },
   { path: 'day', label: '가장 바빴던 하루', frame: 'R005' },
   { path: 'friends', label: '함께한 친구들', frame: 'R006' },

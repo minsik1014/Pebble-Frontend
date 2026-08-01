@@ -1,3 +1,5 @@
+import { useMemo, useState } from "react";
+
 import { type Category, type MilestoneItem, type TaskItem } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
@@ -12,6 +14,7 @@ import { MilestoneAccordion } from "@/features/milestone/components/MilestoneAcc
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
 import { CalendarSidebarListView } from "./CalendarSidebarListView";
+import { CalendarSidebarSelectedDateView } from "./CalendarSidebarSelectedDateView";
 import { useCalendarSidebarModals } from "@/features/calendar/hooks/useCalendarSidebarModals";
 import { useCalendarSidebarState } from "@/features/calendar/hooks/useCalendarSidebarState";
 import { useSidebarButtonShadow } from "@/features/calendar/hooks/useSidebarButtonShadow";
@@ -26,23 +29,32 @@ export const CalendarSidebar = ({
   standaloneTasks,
   currentYear,
   currentMonth,
+  selectedDate,
   onSelectCategory,
   selectedCategoryId,
   onCreateCategory,
   onCreateMilestone,
   onCreateTask,
+  onUpdateMilestone,
+  onDeleteMilestone,
+  onUpdateCategoryTask,
+  onDeleteCategoryTask,
+  onUpdateTask,
+  onDeleteTask,
   onUpdateStandaloneTask,
   onDeleteStandaloneTask,
   onToggleMilestoneCompleted,
   onToggleCategoryTaskCompleted,
   onToggleTaskCompleted,
   onToggleStandaloneTaskCompleted,
+  onToggleCategoryVisibility,
 }: {
   isSidebarOpen?: boolean;
   categories: Category[];
   standaloneTasks: TaskItem[];
   currentYear: number;
   currentMonth: number;
+  selectedDate?: Date | null;
   onSelectCategory?: (categoryId: string) => void;
   selectedCategoryId?: string | null;
   onCreateCategory?: (input: CreateCategoryInput) => void | Promise<void>;
@@ -51,6 +63,35 @@ export const CalendarSidebar = ({
     input: CreateScheduleItemInput,
   ) => void | Promise<MilestoneItem[]>;
   onCreateTask?: (input: TaskFormSubmitInput) => void | Promise<void>;
+  onUpdateMilestone?: (
+    categoryId: string,
+    milestoneId: string,
+    input: CreateScheduleItemInput,
+  ) => void | Promise<void>;
+  onDeleteMilestone?: (
+    categoryId: string,
+    milestoneId: string,
+  ) => void | Promise<void>;
+  onUpdateCategoryTask?: (
+    categoryId: string,
+    taskId: string,
+    input: CreateScheduleItemInput,
+  ) => void | Promise<void>;
+  onDeleteCategoryTask?: (
+    categoryId: string,
+    taskId: string,
+  ) => void | Promise<void>;
+  onUpdateTask?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+    input: CreateScheduleItemInput,
+  ) => void | Promise<void>;
+  onDeleteTask?: (
+    categoryId: string,
+    milestoneId: string,
+    taskId: string,
+  ) => void | Promise<void>;
   onUpdateStandaloneTask?: (
     taskId: string,
     input: CreateScheduleItemInput,
@@ -70,6 +111,7 @@ export const CalendarSidebar = ({
     taskId: string,
   ) => void | Promise<void>;
   onToggleStandaloneTaskCompleted?: (taskId: string) => void | Promise<void>;
+  onToggleCategoryVisibility?: (categoryId: string) => void | Promise<void>;
 }): JSX.Element => {
   const {
     viewMode,
@@ -86,6 +128,9 @@ export const CalendarSidebar = ({
     currentYear,
     currentMonth,
   });
+  const sidebarTitle = selectedDate
+    ? `${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일`
+    : monthLabel;
   const { scrollContainerRef, hasHiddenContentUnderButton } =
     useSidebarButtonShadow({
       displayedCategories,
@@ -103,12 +148,68 @@ export const CalendarSidebar = ({
     openCategoryModal,
     openMilestoneModal,
     openTaskModal,
+    createDefaultCategoryId,
     closeCreateModal,
     editingStandaloneTaskId,
     editingStandaloneTask,
     openStandaloneTaskEditor,
     closeStandaloneTaskEditor,
   } = useCalendarSidebarModals({ standaloneTasks });
+  const [editingMilestoneTarget, setEditingMilestoneTarget] = useState<{
+    categoryId: string;
+    milestoneId: string;
+  } | null>(null);
+  const [editingCategoryTaskTarget, setEditingCategoryTaskTarget] = useState<{
+    categoryId: string;
+    taskId: string;
+  } | null>(null);
+  const [editingTaskTarget, setEditingTaskTarget] = useState<{
+    categoryId: string;
+    milestoneId: string;
+    taskId: string;
+  } | null>(null);
+  const editingMilestoneCategory = useMemo(
+    () =>
+      editingMilestoneTarget
+        ? categories.find(
+            (category) => category.id === editingMilestoneTarget.categoryId,
+          ) ?? null
+        : null,
+    [categories, editingMilestoneTarget],
+  );
+  const editingMilestone =
+    editingMilestoneCategory?.items.find(
+      (item) => item.id === editingMilestoneTarget?.milestoneId,
+    ) ?? null;
+  const editingCategoryTaskCategory = useMemo(
+    () =>
+      editingCategoryTaskTarget
+        ? categories.find(
+            (category) => category.id === editingCategoryTaskTarget.categoryId,
+          ) ?? null
+        : null,
+    [categories, editingCategoryTaskTarget],
+  );
+  const editingCategoryTask =
+    editingCategoryTaskCategory?.tasks?.find(
+      (task) => task.id === editingCategoryTaskTarget?.taskId,
+    ) ?? null;
+  const editingTaskCategory = useMemo(
+    () =>
+      editingTaskTarget
+        ? categories.find((category) => category.id === editingTaskTarget.categoryId) ??
+          null
+        : null,
+    [categories, editingTaskTarget],
+  );
+  const editingTaskMilestone =
+    editingTaskCategory?.items.find(
+      (item) => item.id === editingTaskTarget?.milestoneId,
+    ) ?? null;
+  const editingTask =
+    editingTaskMilestone?.tasks?.find(
+      (task) => task.id === editingTaskTarget?.taskId,
+    ) ?? null;
 
   return (
     <aside 
@@ -124,7 +225,7 @@ export const CalendarSidebar = ({
       >
         <div className="w-[392px] min-w-[392px] h-[1000px] flex flex-col">
           <CalendarSidebarHeader
-            monthLabel={monthLabel}
+            monthLabel={sidebarTitle}
             viewMode={viewMode}
             onChangeViewMode={setViewMode}
           />
@@ -134,7 +235,31 @@ export const CalendarSidebar = ({
               ref={scrollContainerRef}
               className="-mx-3 flex max-h-[calc(100%-56px)] w-[calc(100%+24px)] flex-col items-start gap-5 overflow-y-auto overflow-x-hidden px-3 py-3 custom-scrollbar"
             >
-              {viewMode === "list" ? (
+              {selectedDate ? (
+                <CalendarSidebarSelectedDateView
+                  categories={displayedCategories}
+                  standaloneTasks={displayedStandaloneTasks}
+                  currentYear={currentYear}
+                  currentMonth={currentMonth}
+                  selectedDate={selectedDate}
+                  viewMode={viewMode}
+                  onAddSchedule={openAddMenu}
+                  onToggleMilestoneCompleted={onToggleMilestoneCompleted}
+                  onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
+                  onToggleTaskCompleted={onToggleTaskCompleted}
+                  onToggleStandaloneTaskCompleted={onToggleStandaloneTaskCompleted}
+                  onEditStandaloneTask={openStandaloneTaskEditor}
+                  onEditCategoryTask={(categoryId, taskId) =>
+                    setEditingCategoryTaskTarget({ categoryId, taskId })
+                  }
+                  onEditMilestone={(categoryId, milestoneId) =>
+                    setEditingMilestoneTarget({ categoryId, milestoneId })
+                  }
+                  onEditTask={(categoryId, milestoneId, taskId) =>
+                    setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                  }
+                />
+              ) : viewMode === "list" ? (
                 <CalendarSidebarListView
                   categories={displayedCategories}
                   standaloneTasks={displayedStandaloneTasks}
@@ -144,6 +269,16 @@ export const CalendarSidebar = ({
                   onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
                   onToggleTaskCompleted={onToggleTaskCompleted}
                   onToggleStandaloneTaskCompleted={onToggleStandaloneTaskCompleted}
+                  onEditStandaloneTask={openStandaloneTaskEditor}
+                  onEditCategoryTask={(categoryId, taskId) =>
+                    setEditingCategoryTaskTarget({ categoryId, taskId })
+                  }
+                  onEditMilestone={(categoryId, milestoneId) =>
+                    setEditingMilestoneTarget({ categoryId, milestoneId })
+                  }
+                  onEditTask={(categoryId, milestoneId, taskId) =>
+                    setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                  }
                 />
               ) : (
                 <>
@@ -164,7 +299,18 @@ export const CalendarSidebar = ({
                       onToggleMilestoneCompleted={onToggleMilestoneCompleted}
                       onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
                       onToggleTaskCompleted={onToggleTaskCompleted}
+                      onEditCategoryTask={(categoryId, taskId) =>
+                        setEditingCategoryTaskTarget({ categoryId, taskId })
+                      }
+                      onEditMilestone={(categoryId, milestoneId) =>
+                        setEditingMilestoneTarget({ categoryId, milestoneId })
+                      }
+                      onEditTask={(categoryId, milestoneId, taskId) =>
+                        setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                      }
+                      onAddSchedule={(categoryId) => openAddMenu(categoryId)}
                       onSelectCategory={onSelectCategory}
+                      onToggleVisibility={onToggleCategoryVisibility}
                       isSelected={selectedCategoryId === category.id}
                     />
                   ))}
@@ -186,7 +332,7 @@ export const CalendarSidebar = ({
                 variant="primary"
                 className="w-[352px]"
                 showIcon={false}
-                onClick={openAddMenu}
+                onClick={() => openAddMenu()}
               />
             </div>
           </div>
@@ -196,9 +342,10 @@ export const CalendarSidebar = ({
       <AddMenuModal
         isOpen={isAddMenuOpen}
         onClose={closeAddMenu}
+        variant={createDefaultCategoryId ? "category" : "global"}
         onSelectCategory={openCategoryModal}
-        onSelectMilestone={openMilestoneModal}
-        onSelectTask={openTaskModal}
+        onSelectMilestone={() => openMilestoneModal(createDefaultCategoryId)}
+        onSelectTask={() => openTaskModal(createDefaultCategoryId)}
       />
 
       <CategoryFormModal
@@ -212,6 +359,7 @@ export const CalendarSidebar = ({
         isOpen={isMilestoneModalOpen}
         onClose={closeCreateModal}
         categories={categories}
+        defaultCategoryId={createDefaultCategoryId}
         onSubmit={async (categoryId, input) => {
           await onCreateMilestone?.(categoryId, input);
         }}
@@ -221,6 +369,7 @@ export const CalendarSidebar = ({
         isOpen={isTaskModalOpen}
         onClose={closeCreateModal}
         categories={categories}
+        defaultCategoryId={createDefaultCategoryId}
         onSubmit={onCreateTask}
       />
 
@@ -245,6 +394,105 @@ export const CalendarSidebar = ({
 
           await onDeleteStandaloneTask?.(editingStandaloneTaskId);
           closeStandaloneTaskEditor();
+        }}
+      />
+
+      <MilestoneFormModal
+        isOpen={Boolean(editingMilestone)}
+        onClose={() => setEditingMilestoneTarget(null)}
+        categories={categories}
+        mode="edit"
+        milestone={editingMilestone}
+        defaultCategoryId={editingMilestoneTarget?.categoryId ?? null}
+        onSubmit={async (categoryId, input) => {
+          if (!editingMilestoneTarget) {
+            return;
+          }
+
+          await onUpdateMilestone?.(
+            categoryId,
+            editingMilestoneTarget.milestoneId,
+            input,
+          );
+          setEditingMilestoneTarget(null);
+        }}
+        onRequestDelete={async () => {
+          if (!editingMilestoneTarget) {
+            return;
+          }
+
+          await onDeleteMilestone?.(
+            editingMilestoneTarget.categoryId,
+            editingMilestoneTarget.milestoneId,
+          );
+          setEditingMilestoneTarget(null);
+        }}
+      />
+
+      <TaskFormModal
+        isOpen={Boolean(editingCategoryTask)}
+        onClose={() => setEditingCategoryTaskTarget(null)}
+        categories={categories}
+        defaultCategoryId={editingCategoryTaskTarget?.categoryId ?? null}
+        task={editingCategoryTask}
+        mode="edit"
+        onSubmit={async ({ task }) => {
+          if (!editingCategoryTaskTarget) {
+            return;
+          }
+
+          await onUpdateCategoryTask?.(
+            editingCategoryTaskTarget.categoryId,
+            editingCategoryTaskTarget.taskId,
+            task,
+          );
+          setEditingCategoryTaskTarget(null);
+        }}
+        onRequestDelete={async () => {
+          if (!editingCategoryTaskTarget) {
+            return;
+          }
+
+          await onDeleteCategoryTask?.(
+            editingCategoryTaskTarget.categoryId,
+            editingCategoryTaskTarget.taskId,
+          );
+          setEditingCategoryTaskTarget(null);
+        }}
+      />
+
+      <TaskFormModal
+        isOpen={Boolean(editingTask)}
+        onClose={() => setEditingTaskTarget(null)}
+        categories={categories}
+        defaultCategoryId={editingTaskTarget?.categoryId ?? null}
+        defaultMilestoneId={editingTaskTarget?.milestoneId ?? null}
+        task={editingTask}
+        mode="edit"
+        onSubmit={async ({ task }) => {
+          if (!editingTaskTarget) {
+            return;
+          }
+
+          await onUpdateTask?.(
+            editingTaskTarget.categoryId,
+            editingTaskTarget.milestoneId,
+            editingTaskTarget.taskId,
+            task,
+          );
+          setEditingTaskTarget(null);
+        }}
+        onRequestDelete={async () => {
+          if (!editingTaskTarget) {
+            return;
+          }
+
+          await onDeleteTask?.(
+            editingTaskTarget.categoryId,
+            editingTaskTarget.milestoneId,
+            editingTaskTarget.taskId,
+          );
+          setEditingTaskTarget(null);
         }}
       />
     </aside>

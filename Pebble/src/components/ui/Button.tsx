@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'cancel' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'white' | 'cancel' | 'danger';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -8,10 +8,16 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClassNames: Record<ButtonVariant, string> = {
-  primary: 'bg-btn-primary text-text-onFill hover:brightness-95',
-  secondary: 'bg-btn-quaternary text-text-secondary hover:bg-btn-pressed',
-  cancel: 'bg-btn-pressed text-text-strong hover:brightness-95',
-  danger: 'bg-fill-danger text-text-onFill hover:brightness-95',
+  primary:
+    'bg-btn-primary text-text-onFill before:bg-transparent hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)]',
+  secondary:
+    'bg-btn-quaternary text-text-strong before:bg-transparent hover:before:bg-[rgba(23,23,23,0.05)] active:before:bg-[rgba(23,23,23,0.1)]',
+  white:
+    'bg-fill-inverse text-text-strong before:bg-transparent hover:before:bg-[rgba(23,23,23,0.05)] active:before:bg-[rgba(23,23,23,0.1)]',
+  cancel:
+    'bg-btn-pressed text-text-strong before:bg-transparent hover:before:bg-[rgba(250,250,250,0.18)] active:before:bg-[rgba(250,250,250,0.28)]',
+  danger:
+    'bg-fill-danger text-text-onFill before:bg-transparent hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)]',
 };
 
 export function Button({
@@ -25,12 +31,13 @@ export function Button({
     <button
       type={type}
       className={[
-        'inline-flex h-12 shrink-0 items-center justify-center',
-        'rounded-token-s px-token-l py-token-m',
+        'relative inline-flex h-11 shrink-0 items-center justify-center overflow-hidden',
+        'rounded-token-s px-token-l',
         'text-body-02-m tracking-[-0.01em]',
         'transition-colors focus-visible:outline-none',
         'focus-visible:ring-2 focus-visible:ring-border-primary',
-        'disabled:cursor-not-allowed disabled:opacity-50',
+        'before:pointer-events-none before:absolute before:inset-0 before:rounded-token-s before:transition-colors',
+        'disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:before:bg-transparent',
         variantClassNames[variant],
         className,
       ].join(' ')}

@@ -1,8 +1,14 @@
-import { useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
-import type { Alarm, FollowRequestAction } from "../types/alarm";
-import { AlarmItem } from "./AlarmItem";
+import { Toast } from '@/components/ui/Toast';
+
+import type {
+  Alarm,
+  CategoryInviteAction,
+  FollowRequestAction,
+} from '../types/alarm';
+import { AlarmItem } from './AlarmItem';
 
 interface AlarmPopoverProps {
   top: number;
@@ -14,6 +20,10 @@ interface AlarmPopoverProps {
     alarmId: number,
     action: FollowRequestAction,
   ) => Promise<void>;
+  onRespondCategoryInvite: (
+    alarmId: number,
+    action: CategoryInviteAction,
+  ) => Promise<void>;
 }
 
 export const AlarmPopover = ({
@@ -23,10 +33,20 @@ export const AlarmPopover = ({
   onDelete,
   onDeleteAll,
   onRespondFollowRequest,
+  onRespondCategoryInvite,
 }: AlarmPopoverProps) => {
-  const [toastMessage, setToastMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState('');
   const [isToastVisible, setIsToastVisible] = useState(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -49,17 +69,37 @@ export const AlarmPopover = ({
       await onRespondFollowRequest(alarm.id, action);
     } catch (error) {
       showToast(
-        error instanceof Error ? error.message : "요청을 처리하지 못했어요.",
+        error instanceof Error ? error.message : '요청을 처리하지 못했어요.',
       );
       return;
     }
 
-    const nickname = alarm.user?.nickname ?? "상대";
+    const nickname = alarm.user?.nickname ?? '상대';
 
     showToast(
-      action === "ACCEPT"
+      action === 'ACCEPT'
         ? `${nickname}님과 친구가 되었어요`
         : `${nickname}님의 요청을 거절했어요`,
+    );
+  };
+
+  const handleCategoryInviteResponse = async (
+    alarm: Alarm,
+    action: CategoryInviteAction,
+  ) => {
+    try {
+      await onRespondCategoryInvite(alarm.id, action);
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : '요청을 처리하지 못했어요.',
+      );
+      return;
+    }
+
+    showToast(
+      action === 'ACCEPT'
+        ? '공유 카테고리 초대를 수락했어요'
+        : '공유 카테고리 초대를 거절했어요',
     );
   };
 
@@ -68,7 +108,7 @@ export const AlarmPopover = ({
       data-alarm-popover
       className="relative z-[9999] flex h-[600px] w-[400px] flex-col rounded-[24px] bg-fill-inverse px-3 py-4 shadow-shadow-m animate-[popover-in_450ms_ease-in-out]"
       style={{
-        position: "fixed",
+        position: 'fixed',
         top,
         left,
       }}
@@ -97,6 +137,7 @@ export const AlarmPopover = ({
               alarm={alarm}
               onDelete={(alarmId) => void onDelete(alarmId)}
               onFollowRequestResponse={handleFollowRequestResponse}
+              onCategoryInviteResponse={handleCategoryInviteResponse}
             />
           ))
         ) : (
@@ -106,15 +147,11 @@ export const AlarmPopover = ({
         )}
       </div>
 
-      <div
-        className={`pointer-events-none absolute bottom-4 left-5 right-5 rounded-[16px] bg-btn-primary px-5 py-3 text-[14px] font-medium leading-[20px] text-text-onFill shadow-shadow-m transition-all duration-[450ms] ease-in-out ${
-          isToastVisible
-            ? "translate-y-0 opacity-100"
-            : "translate-y-3 opacity-0"
-        }`}
-      >
-        {toastMessage}
-      </div>
+      <Toast
+        message={toastMessage}
+        open={isToastVisible}
+        className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2"
+      />
     </div>,
     document.body,
   );

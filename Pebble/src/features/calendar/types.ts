@@ -10,11 +10,12 @@ export type CreateCategoryInput = Omit<Category, "id" | "items"> & {
   id?: string;
   items?: MilestoneItem[];
   tasks?: TaskItem[];
-  inviteUserIds?: number[];
+  previousMembers?: Category["members"];
 };
 
 export type UpdateCategoryInput = Partial<Omit<Category, "id" | "items">> & {
   items?: MilestoneItem[];
+  previousMembers?: Category["members"];
 };
 
 export type CreateScheduleItemInput = Omit<ScheduleEntityBase, "id"> &
@@ -26,6 +27,7 @@ export type CreateScheduleItemInput = Omit<ScheduleEntityBase, "id"> &
   };
 
 export type CalendarState = {
+  currentUserId: number | null;
   categories: Category[];
   standaloneTasks: TaskItem[];
   selectedCategory: Category | null;
@@ -39,6 +41,7 @@ export type CalendarActions = {
   replaceCategories: (categories: Category[]) => void;
   selectCategory: (categoryId: string) => void;
   clearSelectedCategory: () => void;
+  toggleCategoryVisibility: (categoryId: string) => Promise<void>;
   createCategory: (input: CreateCategoryInput) => Promise<Category | null>;
   updateCategory: (
     categoryId: string,

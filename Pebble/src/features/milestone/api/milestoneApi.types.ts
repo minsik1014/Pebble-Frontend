@@ -11,6 +11,7 @@ export type MilestoneResponse = {
   dateType: MilestoneDateType;
   startDate?: string | null;
   endDate?: string | null;
+  dates?: string[] | null;
   isCompleted?: boolean;
   displayOrder?: number;
   createdAt?: string;

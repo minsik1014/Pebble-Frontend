@@ -5,16 +5,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import BellOutlineIcon from '@/assets/icons/bell-outline no-dot.svg?react';
 import CalendarOutlineIcon from '@/assets/icons/calendar-nav-default.svg?react';
-import CalendarSolidIcon from '@/assets/icons/calendar-nav-selected.svg?react';
 import LogOutIcon from '@/assets/icons/Logout.svg?react';
 import MyOutlineIcon from '@/assets/icons/user-outline.svg?react';
-import MySolidIcon from '@/assets/icons/user-solid.svg?react';
 import SettingsOutlineIcon from '@/assets/icons/settings-outline.svg?react';
-import SettingsSolidIcon from '@/assets/icons/settings-solid.svg?react';
 import SidebarCloseIcon from '@/assets/icons/sidebar-close.svg?react';
 import SidebarOpenIcon from '@/assets/icons/sidebar-open.svg?react';
 import SocialOutlineIcon from '@/assets/icons/social-outline.svg?react';
-import SocialSolidIcon from '@/assets/icons/social-solid.svg?react';
 
 import { AlarmPopover } from '@/features/alarm/components/AlarmPopover';
 import { useAlarms } from '@/features/alarm/hooks/useAlarm';
@@ -49,7 +45,14 @@ export const GlobalNavigationBar = ({
     handleDeleteAlarm,
     handleDeleteAllAlarms,
     handleRespondFollowRequest,
+    handleRespondCategoryInvite,
   } = useAlarms();
+
+  const navigateIfNeeded = (targetPath: string) => {
+    if (pathname !== targetPath) {
+      navigate(targetPath);
+    }
+  };
 
   const openAlarmPopover = async () => {
     try {
@@ -187,6 +190,7 @@ export const GlobalNavigationBar = ({
                 onDelete={handleDeleteAlarm}
                 onDeleteAll={handleDeleteAllAlarms}
                 onRespondFollowRequest={handleRespondFollowRequest}
+                onRespondCategoryInvite={handleRespondCategoryInvite}
               />
             )}
           </div>
@@ -196,44 +200,32 @@ export const GlobalNavigationBar = ({
         <div className="flex flex-col justify-start items-center gap-10 w-full">
           <button
             type="button"
-            onClick={() => navigate('/friends')}
+            onClick={() => navigateIfNeeded('/friends')}
             className={getNavigationButtonClassName(isFriendsActive)}
             aria-label="소셜 페이지로 이동"
             aria-current={isFriendsActive ? 'page' : undefined}
           >
-            {isFriendsActive ? (
-              <SocialSolidIcon className="size-6" />
-            ) : (
-              <SocialOutlineIcon className="size-6" />
-            )}
+            <SocialOutlineIcon className="size-6" />
           </button>
 
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => navigateIfNeeded('/')}
             className={getNavigationButtonClassName(isCalendarActive)}
             aria-label="캘린더 페이지로 이동"
             aria-current={isCalendarActive ? 'page' : undefined}
           >
-            {isCalendarActive ? (
-              <CalendarSolidIcon className="size-6" />
-            ) : (
-              <CalendarOutlineIcon className="size-6" />
-            )}
+            <CalendarOutlineIcon className="size-6" />
           </button>
 
           <button
             type="button"
-            onClick={() => navigate('/my')}
+            onClick={() => navigateIfNeeded('/my')}
             className={getNavigationButtonClassName(isMyPageActive)}
             aria-label="마이페이지로 이동"
             aria-current={isMyPageActive ? 'page' : undefined}
           >
-            {isMyPageActive ? (
-              <MySolidIcon className="size-6" />
-            ) : (
-              <MyOutlineIcon className="size-6" />
-            )}
+            <MyOutlineIcon className="size-6" />
           </button>
         </div>
 
@@ -241,16 +233,12 @@ export const GlobalNavigationBar = ({
         <div className="flex flex-col justify-start items-center gap-10 w-full">
           <button
             type="button"
-            onClick={() => navigate('/settings')}
+            onClick={() => navigateIfNeeded('/settings')}
             className={getNavigationButtonClassName(isSettingsActive)}
             aria-label="설정 페이지로 이동"
             aria-current={isSettingsActive ? 'page' : undefined}
           >
-            {isSettingsActive ? (
-              <SettingsSolidIcon className="size-6" />
-            ) : (
-              <SettingsOutlineIcon className="size-6" />
-            )}
+            <SettingsOutlineIcon className="size-6" />
           </button>
 
           <button

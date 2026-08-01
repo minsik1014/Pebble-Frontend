@@ -1,5 +1,6 @@
-import DeleteIcon from "@/assets/icons/Delete.svg?react";
-import { Button } from "@/components/ui/Button";
+import DeleteIcon from '@/assets/icons/Delete.svg?react';
+
+import { Button } from '@/components/ui/Button';
 
 type ModalActionBarProps = {
   submitLabel: string;
@@ -16,19 +17,20 @@ export const ModalActionBar = ({
   onCancel,
   onSubmit,
   onDelete,
-  deleteLabel = "삭제",
+  deleteLabel = '삭제',
 }: ModalActionBarProps) => (
   <div className="flex w-full gap-3">
     {onDelete && (
       <button
         type="button"
         onClick={onDelete}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-token-s bg-fill-danger transition-opacity hover:opacity-90"
+        className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-token-s bg-fill-danger transition-colors before:pointer-events-none before:absolute before:inset-0 before:transition-colors hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)]"
         aria-label={deleteLabel}
       >
-        <DeleteIcon className="h-6 w-6 text-fill-inverse" />
+        <DeleteIcon className="relative z-10 h-6 w-6 text-fill-inverse" />
       </button>
     )}
+
     <Button
       type="button"
       variant="cancel"
@@ -37,13 +39,15 @@ export const ModalActionBar = ({
     >
       취소
     </Button>
-    <button
+
+    <Button
       type="button"
+      variant="primary"
       onClick={onSubmit}
-      className="h-11 flex-1 rounded-token-s bg-btn-primary font-medium text-text-onFill transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+      className="h-11 flex-1"
       disabled={disabled}
     >
       {submitLabel}
-    </button>
+    </Button>
   </div>
 );

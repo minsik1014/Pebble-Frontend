@@ -1,6 +1,8 @@
 export type Profile = {
+  id: number;
   email: string;
   nickname: string;
+  uniqueTag?: string;
   bio: string;
   imageUrl: string | null;
   lastNicknameChangedAt: string | null;

@@ -28,18 +28,21 @@ export function mapMilestoneResponseToMilestone(
   fallbackInput?: CreateScheduleItemInput,
 ): MilestoneItem {
   const fallbackStart = fallbackInput?.dates?.[0] ?? fallbackInput?.start ?? "";
+  const dates =
+    milestone.dates?.map((date) => normalizeApiDate(date) ?? date) ??
+    fallbackInput?.dates;
   const startDate = normalizeApiDate(milestone.startDate);
   const endDate = normalizeApiDate(milestone.endDate);
 
   return {
     id: String(milestone.id),
     title: milestone.name || fallbackInput?.title || "",
-    start: startDate ?? fallbackStart,
+    start: startDate ?? dates?.[0] ?? fallbackStart,
     end: endDate ?? fallbackInput?.end ?? undefined,
     itemType: "milestone",
     seriesId: milestone.seriesId ?? undefined,
     dateType: milestone.dateType,
-    dates: milestone.dateType === "MULTIPLE" ? undefined : fallbackInput?.dates,
+    dates,
     isCompleted: milestone.isCompleted ?? false,
     displayOrder: milestone.displayOrder,
     tasks: [],

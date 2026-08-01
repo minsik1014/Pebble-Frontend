@@ -12,17 +12,17 @@ export const monthlyReportMock: MonthlyReportResponse = {
   reportId: null,
   reportImageUrl: null,
   reportYear: 2026,
-  reportMonth: 6,
+  reportMonth: 7,
 
   monthlyPebbleCount: 64,
   recentMonths: [
-    { year: 2026, month: 4, count: 46 },
-    { year: 2026, month: 5, count: 36 },
-    { year: 2026, month: 6, count: 64 },
+    { year: 2026, month: 5, count: 46 },
+    { year: 2026, month: 6, count: 36 },
+    { year: 2026, month: 7, count: 64 },
   ],
   totalPebbleCount: 256,
   recordStartDate: '2025-12-24',
-  recordEndDate: '2026-06-30',
+  recordEndDate: '2026-07-31',
 
   busiestCategory: {
     name: '학교',
@@ -66,7 +66,7 @@ export const monthlyReportMock: MonthlyReportResponse = {
   },
 
   busiestDay: {
-    date: '2026-06-08',
+    date: '2026-07-08',
     schedules: [
       {
         id: 's1',
@@ -119,16 +119,16 @@ export const monthlyReportEmptyMock = {
   reportId: null,
   reportImageUrl: null,
   reportYear: 2026,
-  reportMonth: 6,
+  reportMonth: 7,
   monthlyPebbleCount: 0,
   recentMonths: [
-    { year: 2026, month: 4, count: 0 },
     { year: 2026, month: 5, count: 0 },
     { year: 2026, month: 6, count: 0 },
+    { year: 2026, month: 7, count: 0 },
   ],
   totalPebbleCount: 0,
-  recordStartDate: '2026-06-01',
-  recordEndDate: '2026-06-30',
+  recordStartDate: '2026-07-01',
+  recordEndDate: '2026-07-31',
   busiestCategory: null,
   busiestDay: null,
   sharedFriends: { sharedCategoryCount: 0, friends: [] },
@@ -142,7 +142,7 @@ export const monthlyReportPartialMock = {
   reportId: null,
   reportImageUrl: null,
   reportYear: 2026,
-  reportMonth: 6,
+  reportMonth: 7,
   monthlyPebbleCount: 64,
   recentMonths: monthlyReportMock.recentMonths,
 };

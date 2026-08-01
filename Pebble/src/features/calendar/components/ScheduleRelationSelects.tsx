@@ -23,6 +23,13 @@ type MilestoneSelectProps = {
   onSelectMilestone: (milestoneId: string | null) => void;
 };
 
+type DropdownOptionRowProps = {
+  label: string;
+  barColor: string;
+  isSelected?: boolean;
+  onClick: () => void;
+};
+
 const ChevronDownIcon = () => (
   <svg
     width="24"
@@ -35,13 +42,47 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
-const getButtonClassName = (variant: SelectButtonVariant) =>
+const getButtonClassName = (variant: SelectButtonVariant, isOpen: boolean) =>
   [
-    "flex h-12 w-full items-center justify-between rounded-[12px] border px-4",
-    variant === "surface"
-      ? "border-border-secondary bg-fill-surface px-5"
-      : "border-border-primary bg-fill-inverse",
+    "flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden rounded-token-s border pl-5 pr-3",
+    isOpen || variant === "inverse"
+      ? "border-border-primary bg-fill-inverse"
+      : "border-border-secondary bg-fill-surface",
   ].join(" ");
+
+const dropdownMenuClassName =
+  "absolute left-0 top-14 z-20 flex max-h-[600px] w-full flex-col gap-2 overflow-y-auto rounded-token-s border border-border-teritory bg-fill-inverse p-3 shadow-[0px_2px_10px_0px_rgba(23,23,23,0.1)]";
+
+const DropdownOptionRow = ({
+  label,
+  barColor,
+  isSelected = false,
+  onClick,
+}: DropdownOptionRowProps) => (
+  <button
+    type="button"
+    className={`relative flex h-12 w-full cursor-pointer items-start overflow-hidden rounded-token-s p-2 text-left transition-colors hover:bg-[rgba(23,23,23,0.05)] ${
+      isSelected ? "bg-[rgba(23,23,23,0.1)]" : ""
+    }`}
+    onClick={onClick}
+  >
+    <div className="relative flex w-full min-w-0 items-center gap-2">
+      <div
+        className="h-8 w-[6px] shrink-0 rounded-token-xs"
+        style={{ backgroundColor: barColor }}
+      />
+      <span className="min-w-0 truncate text-body-02-m text-text-strong">
+        {label}
+      </span>
+    </div>
+  </button>
+);
+
+const DropdownIconArea = () => (
+  <span className="flex size-11 shrink-0 items-center justify-center rounded-token-s">
+    <ChevronDownIcon />
+  </span>
+);
 
 export const CategorySelect = ({
   categories,
@@ -60,56 +101,49 @@ export const CategorySelect = ({
     <div className="relative">
       <button
         type="button"
-        className={getButtonClassName(variant)}
+        className={getButtonClassName(variant, isOpen)}
         onClick={onToggleOpen}
       >
-        {selectedCategory ? (
-          <div className="flex items-center gap-2">
-            <div
-              className="h-6 w-[6px] rounded-[4px]"
-              style={{ backgroundColor: selectedCategory.themeBase || "#171717" }}
-            />
-            <span className="text-[16px] font-medium text-text-strong">
-              {selectedCategory.title}
+        <div className="flex min-w-0 flex-1 items-center">
+          {selectedCategory ? (
+            <div className="flex min-w-0 items-center gap-2">
+              <div
+                className="h-8 w-[6px] shrink-0 rounded-token-xs"
+                style={{
+                  backgroundColor: selectedCategory.themeBase || "#171717",
+                }}
+              />
+              <span className="truncate text-body-02-m text-text-strong">
+                {selectedCategory.title}
+              </span>
+            </div>
+          ) : (
+            <span className="truncate text-body-02-m text-text-strong">
+              {placeholder}
             </span>
-          </div>
-        ) : (
-          <span className="text-[16px] font-medium text-text-strong">
-            {placeholder}
-          </span>
-        )}
-        <ChevronDownIcon />
+          )}
+        </div>
+        <DropdownIconArea />
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-[52px] z-20 flex max-h-[200px] w-full flex-col gap-1 overflow-y-auto rounded-[12px] border border-border-default bg-fill-inverse p-2 shadow-shadow-m">
+        <div className={dropdownMenuClassName}>
           {allowEmpty && (
-            <button
-              type="button"
-              className="flex items-center gap-2 rounded-[8px] p-2 text-left transition-colors hover:bg-fill-surface"
+            <DropdownOptionRow
+              label="선택 안 함"
+              barColor="#171717"
+              isSelected={selectedCategoryId === null}
               onClick={() => onSelectCategory(null)}
-            >
-              <div className="h-6 w-[6px] rounded-[4px] bg-text-strong" />
-              <span className="text-[16px] font-medium text-text-strong">
-                선택 안 함
-              </span>
-            </button>
+            />
           )}
           {categories.map((category) => (
-            <button
+            <DropdownOptionRow
               key={category.id}
-              type="button"
-              className="flex items-center gap-2 rounded-[8px] p-2 text-left transition-colors hover:bg-fill-surface"
+              label={category.title}
+              barColor={category.themeBase || "#171717"}
+              isSelected={category.id === selectedCategoryId}
               onClick={() => onSelectCategory(category.id)}
-            >
-              <div
-                className="h-6 w-[6px] rounded-[4px]"
-                style={{ backgroundColor: category.themeBase || "#171717" }}
-              />
-              <span className="text-[16px] font-medium text-text-strong">
-                {category.title}
-              </span>
-            </button>
+            />
           ))}
         </div>
       )}
@@ -133,56 +167,47 @@ export const MilestoneSelect = ({
     <div className="relative">
       <button
         type="button"
-        className={getButtonClassName("surface")}
+        className={getButtonClassName("surface", isOpen)}
         onClick={onToggleOpen}
         disabled={disabled}
       >
-        {selectedMilestone ? (
-          <div className="flex items-center gap-2">
-            <div
-              className="h-6 w-[6px] rounded-[4px]"
-              style={{ backgroundColor: themeColor }}
-            />
-            <span className="text-[16px] font-medium text-text-strong">
-              {selectedMilestone.title}
+        <div className="flex min-w-0 flex-1 items-center">
+          {selectedMilestone ? (
+            <div className="flex min-w-0 items-center gap-2">
+              <div
+                className="h-8 w-[6px] shrink-0 rounded-token-xs"
+                style={{ backgroundColor: themeColor }}
+              />
+              <span className="truncate text-body-02-m text-text-strong">
+                {selectedMilestone.title}
+              </span>
+            </div>
+          ) : (
+            <span className="truncate text-body-02-m text-text-strong">
+              마일스톤
             </span>
-          </div>
-        ) : (
-          <span className="text-[16px] font-medium text-text-strong">
-            마일스톤
-          </span>
-        )}
-        <ChevronDownIcon />
+          )}
+        </div>
+        <DropdownIconArea />
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-[52px] z-20 flex max-h-[200px] w-full flex-col gap-1 overflow-y-auto rounded-[12px] border border-border-default bg-fill-inverse p-2 shadow-shadow-m">
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-[8px] p-2 text-left transition-colors hover:bg-fill-surface"
+        <div className={dropdownMenuClassName}>
+          <DropdownOptionRow
+            label="선택 안 함"
+            barColor="#171717"
+            isSelected={selectedMilestoneId === null}
             onClick={() => onSelectMilestone(null)}
-          >
-            <div className="h-6 w-[6px] rounded-[4px] bg-text-strong" />
-            <span className="text-[16px] font-medium text-text-strong">
-              선택 안 함
-            </span>
-          </button>
+          />
           {milestones.length > 0 ? (
             milestones.map((milestone) => (
-              <button
+              <DropdownOptionRow
                 key={milestone.id}
-                type="button"
-                className="flex items-center gap-2 rounded-[8px] p-2 text-left transition-colors hover:bg-fill-surface"
+                label={milestone.title}
+                barColor={themeColor}
+                isSelected={milestone.id === selectedMilestoneId}
                 onClick={() => onSelectMilestone(milestone.id)}
-              >
-                <div
-                  className="h-6 w-[6px] rounded-[4px]"
-                  style={{ backgroundColor: themeColor }}
-                />
-                <span className="text-[16px] font-medium text-text-strong">
-                  {milestone.title}
-                </span>
-              </button>
+              />
             ))
           ) : (
             <div className="p-2 text-center text-sm text-text-teritary">
