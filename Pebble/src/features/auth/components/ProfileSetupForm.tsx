@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import uploadIcon from "@/assets/icons/Ic/Upload.svg";
 import { AuthErrorMessage } from "./AuthErrorMessage";
 
 interface ProfileOption {
@@ -68,41 +69,42 @@ export const ProfileSetupForm = ({
 
       {/* 선택한 프로필 이미지와 프로필 선택 목록 */}
       <div className="mt-[40px] flex flex-col items-center [@media(max-height:850px)]:mt-[16px]">
-        <div className="w-[200px] h-[200px] rounded-full overflow-hidden border border-[#F5F5F5] bg-white [@media(max-height:850px)]:w-[150px] [@media(max-height:850px)]:h-[150px]">
+        <div className="w-[200px] h-[200px] rounded-full overflow-hidden border border-[#F5F5F5] bg-white">
           <img src={selectedProfileSrc} alt="선택한 프로필 미리보기" className="w-full h-full object-cover" />
         </div>
 
-        <div className="mt-[16px] w-full flex items-center justify-between [@media(max-height:850px)]:mt-[12px]" aria-label="프로필 이미지 선택">
-          {profiles.map((profile) => {
-            const isSelected = profile.id === selectedProfileId;
+        <div className="mt-[20px] flex w-full items-start justify-between" aria-label="프로필 이미지 선택">
+          {/* 피그마 명세: 기본 이미지 5개는 12px 간격의 한 그룹으로 배치합니다. */}
+          <div className="flex shrink-0 items-center gap-[12px]">
+            {profiles.map((profile) => {
+              const isSelected = profile.id === selectedProfileId;
 
-            return (
-              <button
-                key={profile.id}
-                type="button"
-                aria-label={profile.alt}
-                aria-pressed={isSelected}
-                onClick={() => onSelectProfile(profile.id)}
-                className={`w-[68px] h-[68px] rounded-full overflow-hidden bg-white transition-shadow [@media(max-height:850px)]:w-[56px] [@media(max-height:850px)]:h-[56px] ${
-                  isSelected ? "ring-[3px] ring-[#404040] ring-offset-[3px]" : "border border-[#F5F5F5]"
-                }`}
-              >
-                <img src={profile.src} alt="" className="w-full h-full object-cover" />
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={profile.id}
+                  type="button"
+                  aria-label={profile.alt}
+                  aria-pressed={isSelected}
+                  onClick={() => onSelectProfile(profile.id)}
+                  className={`size-[72px] shrink-0 overflow-hidden rounded-full bg-white transition-shadow ${
+                    isSelected ? "ring-[3px] ring-[#171717] ring-offset-[1px]" : "border border-[#F5F5F5]"
+                  }`}
+                >
+                  <img src={profile.src} alt="" className="w-full h-full object-cover" />
+                </button>
+              );
+            })}
+          </div>
 
           <button
             type="button"
             aria-label="프로필 이미지 업로드"
             onClick={() => fileInputRef.current?.click()}
-            className={`w-[68px] h-[68px] rounded-full border flex items-center justify-center text-[#737373] bg-white [@media(max-height:850px)]:w-[56px] [@media(max-height:850px)]:h-[56px] ${
+            className={`size-[72px] shrink-0 rounded-full border flex items-center justify-center text-[#737373] bg-white ${
               selectedProfileId === "upload" ? "border-[#404040] ring-[3px] ring-[#404040] ring-offset-[3px]" : "border-[#D4D4D4]"
             }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-[24px] h-[24px]">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V3.75m0 0 4.5 4.5M12 3.75l-4.5 4.5M3.75 15v3.75A2.25 2.25 0 0 0 6 21h12a2.25 2.25 0 0 0 2.25-2.25V15" />
-            </svg>
+            <img src={uploadIcon} alt="" className="size-[24px]" />
           </button>
           <input
             ref={fileInputRef}

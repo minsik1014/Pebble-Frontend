@@ -58,18 +58,22 @@ export const LoginForm = ({
                 <label className="auth-label text-[16px] font-medium tracking-[-0.16px]">
                   이메일<span className="auth-required">*</span>
                 </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => onEmailChange(e.target.value)}
-                  onBlur={() => onFieldBlur("email")}
-                  placeholder="이메일을 입력해 주세요"
-                  className={`auth-input px-[12px] text-[16px] font-medium tracking-[-0.16px] placeholder:text-[16px] placeholder:font-medium ${
-                    errors.email || errorMessage
-                      ? "!border-[#FC4C46] focus:!border-[#FC4C46]"
-                      : ""
-                  }`}
-                />
+                <div className="relative w-full">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => onEmailChange(e.target.value)}
+                    onBlur={() => onFieldBlur("email")}
+                    placeholder="이메일을 입력해 주세요"
+                    className={`auth-input pl-[12px] pr-[48px] text-[16px] font-medium tracking-[-0.16px] placeholder:text-[16px] placeholder:font-medium ${
+                      errors.email || errorMessage
+                        ? "!border-[#FC4C46] focus:!border-[#FC4C46]"
+                        : ""
+                    }`}
+                  />
+                  {/* 피그마 Input Box의 아이콘 미사용 상태도 동일한 44px 영역을 유지합니다. */}
+                  <span aria-hidden="true" className="pointer-events-none absolute right-[4px] top-1/2 size-[44px] -translate-y-1/2" />
+                </div>
                 {errors.email && <AuthErrorMessage>{errors.email}</AuthErrorMessage>}
               </div>
 
