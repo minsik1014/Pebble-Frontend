@@ -94,8 +94,10 @@ export const CategorySelect = ({
   onToggleOpen,
   onSelectCategory,
 }: CategorySelectProps) => {
+  const visibleCategories = categories.filter((category) => !category.isHidden);
   const selectedCategory =
-    categories.find((category) => category.id === selectedCategoryId) ?? null;
+    visibleCategories.find((category) => category.id === selectedCategoryId) ??
+    null;
 
   return (
     <div className="relative">
@@ -136,7 +138,7 @@ export const CategorySelect = ({
               onClick={() => onSelectCategory(null)}
             />
           )}
-          {categories.map((category) => (
+          {visibleCategories.map((category) => (
             <DropdownOptionRow
               key={category.id}
               label={category.title}
