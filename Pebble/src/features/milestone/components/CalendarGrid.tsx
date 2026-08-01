@@ -38,8 +38,8 @@ export const CalendarGrid = ({ weeks, currentYear, currentMonth, todayDate }: Ca
         className="relative flex w-full flex-[0_0_auto] items-center self-stretch"
       >
         {dayLabels.map((day) => (
-          <div key={day.label} className="relative h-[45px] flex-1 grow">
-            <div className={`absolute left-2 top-2 text-body-01-m ${day.textClass}`}>
+          <div key={day.label} className="relative flex h-[45px] flex-1 grow justify-center">
+            <div className={`absolute top-2 text-body-01-m ${day.textClass}`}>
               {day.label}
             </div>
           </div>

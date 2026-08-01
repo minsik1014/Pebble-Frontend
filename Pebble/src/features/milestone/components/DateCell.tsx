@@ -34,14 +34,14 @@ export const DateCell = ({ day, columnIndex, isSelected }: DateCellProps) => {
       aria-selected={isSelected}
     >
       {isSelected ? (
-        <div className="relative left-[3px] top-1.5 flex h-8 w-8 flex-col items-center justify-center rounded-[16px] bg-fill-primary">
+        <div className="absolute left-1/2 top-1.5 flex h-8 w-8 -translate-x-1/2 flex-col items-center justify-center rounded-[16px] bg-fill-primary">
           <span className="text-body-01-sb text-text-onFill">
             {day.day}
           </span>
         </div>
       ) : (
         <div
-          className={`absolute left-2 top-2 text-body-01-sb ${getDayTextClass(
+          className={`absolute left-1/2 top-2 -translate-x-1/2 text-body-01-sb ${getDayTextClass(
             columnIndex,
             day.monthOffset,
             false
