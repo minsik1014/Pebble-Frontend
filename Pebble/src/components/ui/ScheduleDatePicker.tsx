@@ -87,17 +87,48 @@ export const ScheduleDatePicker = ({
     return `${baseClass} text-text-strong hover:bg-fill-surface`;
   };
 
-  const renderRangeBackground = (status: DayStatus) => {
+  const getRangeEdgeRadiusClass = (dayOfWeek: number) => {
+    if (dayOfWeek === 0) {
+      return "rounded-l-[12px]";
+    }
+
+    if (dayOfWeek === 6) {
+      return "rounded-r-[12px]";
+    }
+
+    return "";
+  };
+
+  const renderRangeBackground = (status: DayStatus, dayOfWeek: number) => {
     if (status === "range-start") {
-      return <div className="absolute right-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
+      return (
+        <div
+          className={`absolute right-0 top-0 h-full w-1/2 ${
+            dayOfWeek === 6 ? "rounded-r-[12px]" : ""
+          }`}
+          style={{ backgroundColor: themeLightColor }}
+        />
+      );
     }
 
     if (status === "range-end") {
-      return <div className="absolute left-0 top-0 h-full w-1/2" style={{ backgroundColor: themeLightColor }} />;
+      return (
+        <div
+          className={`absolute left-0 top-0 h-full w-1/2 ${
+            dayOfWeek === 0 ? "rounded-l-[12px]" : ""
+          }`}
+          style={{ backgroundColor: themeLightColor }}
+        />
+      );
     }
 
     if (status === "in-range") {
-      return <div className="absolute inset-0" style={{ backgroundColor: themeLightColor }} />;
+      return (
+        <div
+          className={`absolute inset-0 ${getRangeEdgeRadiusClass(dayOfWeek)}`}
+          style={{ backgroundColor: themeLightColor }}
+        />
+      );
     }
 
     return null;
@@ -225,10 +256,11 @@ export const ScheduleDatePicker = ({
           {Array.from({ length: daysInMonth }).map((_, index) => {
             const day = index + 1;
             const status = getDayStatus(day);
+            const dayOfWeek = (firstDay + index) % WEEK_DAYS.length;
 
             return (
               <div key={day} className={`w-full ${wrapperHeightClass} flex items-center justify-center relative overflow-hidden`}>
-                {renderRangeBackground(status)}
+                {renderRangeBackground(status, dayOfWeek)}
                 <button
                   onClick={() => onDateClick(day)}
                   className={getDayButtonClass(status)}
