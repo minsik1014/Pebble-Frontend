@@ -89,17 +89,34 @@ const withSharedOwnerIds = async (categories: Category[]) =>
     }),
   );
 
-const getSharedOwnerIds = (categories: Category[]) => [
-  ...new Set(
-    categories
-      .filter((category) => category.isShared && category.userId)
-      .map((category) => category.userId as number),
-  ),
-];
+const getSharedCategoryIdsByOwner = (categories: Category[]) => {
+  const categoryIdsByOwner = new Map<number, Set<string>>();
 
-const getAccessibleUserTasks = async (userId: number, baseDate: string) => {
+  categories.forEach((category) => {
+    if (!category.isShared || !category.userId) {
+      return;
+    }
+
+    const categoryIds = categoryIdsByOwner.get(category.userId) ?? new Set();
+
+    categoryIds.add(category.id);
+    categoryIdsByOwner.set(category.userId, categoryIds);
+  });
+
+  return categoryIdsByOwner;
+};
+
+const getAccessibleUserTasks = async (
+  userId: number,
+  baseDate: string,
+  allowedCategoryIds: Set<string>,
+) => {
   try {
-    return await getUserTasks(userId, baseDate);
+    const tasks = await getUserTasks(userId, baseDate);
+
+    return tasks.filter(
+      (task) => task.categoryId && allowedCategoryIds.has(task.categoryId),
+    );
   } catch (error) {
     if (
       error instanceof ApiRequestError &&
@@ -225,9 +242,12 @@ export const useCalendarState = ({
           getStandaloneTasks(baseDate),
         ]);
         const categoriesWithOwners = await withSharedOwnerIds(loadedCategories);
+        const sharedCategoryIdsByOwner =
+          getSharedCategoryIdsByOwner(categoriesWithOwners);
         const sharedTasks = await Promise.all(
-          getSharedOwnerIds(categoriesWithOwners).map((userId) =>
-            getAccessibleUserTasks(userId, baseDate),
+          [...sharedCategoryIdsByOwner.entries()].map(
+            ([userId, categoryIds]) =>
+              getAccessibleUserTasks(userId, baseDate, categoryIds),
           ),
         );
         const uniqueTasks = mergeUniqueTasks([loadedTasks, ...sharedTasks]);
