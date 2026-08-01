@@ -46,8 +46,8 @@ export const ScheduleDatePicker = ({
   themeLightColor = "rgba(23, 23, 23, 0.05)",
 }: ScheduleDatePickerProps) => {
   const isTaskVariant = variant === "task";
-  const daySizeClass = isTaskVariant ? "w-10 h-10" : "w-12 h-12";
-  const wrapperHeightClass = isTaskVariant ? "h-10" : "h-12";
+  const daySizeClass = "size-12";
+  const wrapperHeightClass = "h-14";
   const getSelectedColor = (type: DateType) =>
     type === "다중" ? themeMidColor : themeBaseColor;
   const getSelectedTextColor = (type: DateType) =>
@@ -70,7 +70,7 @@ export const ScheduleDatePicker = ({
   };
 
   const getDayButtonClass = (status: DayStatus) => {
-    const baseClass = `${daySizeClass} rounded-[12px] flex items-center justify-center text-[16px] font-medium transition-colors z-10 relative`;
+    const baseClass = `${daySizeClass} rounded-[12px] flex items-center justify-center text-body-01-m tracking-[-0.18px] transition-colors z-10 relative`;
 
     if (status === "selected" || status === "range-start" || status === "range-end") {
       return baseClass;
@@ -203,7 +203,7 @@ export const ScheduleDatePicker = ({
 
         <div className={`grid grid-cols-7 gap-y-4 w-full text-center ${isTaskVariant ? "px-4" : ""}`}>
           {WEEK_DAYS.map((day) => (
-            <span key={day} className="text-[14px] text-text-teritary font-medium">
+            <span key={day} className="text-body-02-m tracking-[-0.16px] text-text-teritary">
               {day}
             </span>
           ))}
