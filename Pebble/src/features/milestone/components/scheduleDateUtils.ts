@@ -102,12 +102,8 @@ export const filterCategoriesByMonth = (
           const filteredTasks = item.tasks?.filter((task) =>
             isScheduleItemInMonth(task, year, month),
           );
-          const shouldKeepMilestone = isScheduleItemInMonth(item, year, month);
 
-          if (
-            !shouldKeepMilestone &&
-            (!filteredTasks || filteredTasks.length === 0)
-          ) {
+          if (!filteredTasks || filteredTasks.length === 0) {
             return null;
           }
 
