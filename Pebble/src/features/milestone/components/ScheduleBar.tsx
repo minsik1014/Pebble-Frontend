@@ -1,3 +1,5 @@
+import CheckIcon from "@/assets/icons/Check.svg?react";
+
 import { type CalendarEvent } from "./types";
 
 type ScheduleBarProps = {
@@ -20,11 +22,20 @@ export const ScheduleBar = ({ event }: ScheduleBarProps) => {
         backgroundColor: event.backgroundColor,
       }}
     >
-      <div
-        className="flex-1 truncate text-body-04-m"
-        style={{ color: event.textColor }}
-      >
-        {event.title}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        {event.isCompleted && (
+          <CheckIcon
+            className="size-6 shrink-0"
+            style={{ color: event.textColor }}
+            aria-hidden="true"
+          />
+        )}
+        <span
+          className="min-w-0 flex-1 truncate text-body-04-m"
+          style={{ color: event.textColor }}
+        >
+          {event.title}
+        </span>
       </div>
       <div
         className="absolute bottom-[3px] left-0 top-[3px] w-1 rounded-[4px]"

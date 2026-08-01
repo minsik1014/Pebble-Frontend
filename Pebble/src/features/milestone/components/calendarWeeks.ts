@@ -1,5 +1,4 @@
 import { type Category, type ScheduleItem, type TaskItem } from "@/types";
-import { getScheduleTextColor } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { getReadableCategoryTextColor } from "@/utils/categoryColorTheme";
 import { type CalendarDay, type CalendarEvent, type CalendarWeek } from "./types";
 import { parseScheduleDate } from "./scheduleDateUtils";
@@ -145,16 +144,12 @@ const createCalendarEvent = (
       : datedItem.category?.themeLight ?? "#F4F4F5";
   const accentColor =
     datedItem.category?.themeBase ?? datedItem.item.accent ?? "#171717";
-  const activeTextColor =
+  const textColor =
     datedItem.variant === "milestone"
       ? datedItem.category?.themeTextOnMid ??
         getReadableCategoryTextColor(accentColor, backgroundColor)
       : datedItem.category?.themeTextOnLight ??
         getReadableCategoryTextColor(accentColor, backgroundColor);
-  const textColor = getScheduleTextColor(
-    datedItem.isCompleted,
-    activeTextColor,
-  );
 
   return {
     id: [
