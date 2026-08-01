@@ -9,11 +9,21 @@ export {
 } from './constants/activityPalettes';
 
 export {
+  notifyActivityLogsChanged,
+  subscribeActivityLogChanges,
+} from './utils/activityLogInvalidation';
+
+export {
   getRecentSevenDates,
   getSeoulBaseDate,
 } from './utils/activityDate';
 
 export { normalizeActivityLogsResponse } from './utils/normalizeActivityLogs';
+
+export type {
+  ActivityLogChangeEvent,
+  ActivityLogChangeReason,
+} from './utils/activityLogInvalidation';
 
 export type {
   ActivityColor,

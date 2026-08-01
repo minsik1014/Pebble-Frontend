@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ApiRequestError } from '@/services/api';
 
@@ -7,8 +7,11 @@ import type {
   ActivityLogsErrorState,
   NormalizedActivityLogs,
 } from '../types/activityLogs';
-import { getSeoulBaseDate } from '../utils/activityDate';
+import { getRecentSevenDates, getSeoulBaseDate } from '../utils/activityDate';
+import { subscribeActivityLogChanges } from '../utils/activityLogInvalidation';
 import { normalizeActivityLogsResponse } from '../utils/normalizeActivityLogs';
+
+const ACTIVITY_LOG_REFETCH_DEBOUNCE_MS = 350;
 
 interface UseActivityLogsParams {
   userId?: number | null;
@@ -48,14 +51,35 @@ function normalizeError(error: unknown): ActivityLogsErrorState {
   };
 }
 
+function hasOverlappingDate({
+  baseDate,
+  affectedDates,
+}: {
+  baseDate: string;
+  affectedDates?: string[];
+}) {
+  if (!affectedDates || affectedDates.length === 0) {
+    return true;
+  }
+
+  const visibleDates = new Set(getRecentSevenDates(baseDate));
+
+  return affectedDates.some((date) => visibleDates.has(date));
+}
+
 export function useActivityLogs({
   userId,
   baseDate,
   enabled = true,
 }: UseActivityLogsParams) {
+  const normalizedBaseDate = baseDate ?? getSeoulBaseDate();
+
   const [data, setData] = useState<NormalizedActivityLogs | null>(null);
   const [error, setError] = useState<ActivityLogsErrorState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requestIdRef = useRef(0);
 
   const loadActivityLogs = useCallback(async () => {
     if (!enabled || !userId) {
@@ -65,27 +89,70 @@ export function useActivityLogs({
       return;
     }
 
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await getActivityLogs({
         userId,
-        baseDate: baseDate ?? getSeoulBaseDate(),
+        baseDate: normalizedBaseDate,
       });
+
+      if (requestId !== requestIdRef.current) return;
 
       setData(normalizeActivityLogsResponse(response));
     } catch (requestError) {
+      if (requestId !== requestIdRef.current) return;
+
       setData(null);
       setError(normalizeError(requestError));
     } finally {
-      setIsLoading(false);
+      if (requestId === requestIdRef.current) {
+        setIsLoading(false);
+      }
     }
-  }, [baseDate, enabled, userId]);
+  }, [enabled, normalizedBaseDate, userId]);
+
+  const scheduleRefetch = useCallback(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      void loadActivityLogs();
+    }, ACTIVITY_LOG_REFETCH_DEBOUNCE_MS);
+  }, [loadActivityLogs]);
 
   useEffect(() => {
     void loadActivityLogs();
   }, [loadActivityLogs]);
+
+  useEffect(() => {
+    if (!enabled || !userId) return undefined;
+
+    return subscribeActivityLogChanges((event) => {
+      if (
+        hasOverlappingDate({
+          baseDate: normalizedBaseDate,
+          affectedDates: event.affectedDates,
+        })
+      ) {
+        scheduleRefetch();
+      }
+    });
+  }, [enabled, normalizedBaseDate, scheduleRefetch, userId]);
+
+  useEffect(
+    () => () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    },
+    [],
+  );
 
   return {
     data,
