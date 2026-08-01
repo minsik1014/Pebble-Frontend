@@ -207,8 +207,47 @@ export const MilestoneAccordion = ({
         </div>
       </div>
       {expanded && (
-        <div className="flex flex-col items-center gap-3 pt-0 pb-3 w-full relative">
-          <div className="flex flex-col items-end justify-start gap-2 pl-5 pr-3 w-full max-h-[216px] overflow-y-auto custom-scrollbar">
+        <div className="flex w-full flex-col items-center">
+          <div className="flex w-full max-h-[216px] flex-col items-end justify-center gap-2 overflow-y-auto pl-5 pr-3 custom-scrollbar">
+            {category.items.map((item) => (
+              <div key={item.id} className="flex w-full flex-col items-end gap-2">
+                <SidebarScheduleRow
+                  item={item}
+                  checked={Boolean(item.isCompleted)}
+                  onToggle={() =>
+                    onToggleMilestoneCompleted?.(category.id, item.id)
+                  }
+                  onEdit={() => onEditMilestone?.(category.id, item.id)}
+                  barColor={category.themeMid}
+                  widthClassName="w-80"
+                />
+                {Boolean(item.tasks?.length) && (
+                  <div className="flex w-80 flex-col items-end gap-2 pl-3">
+                    {item.tasks?.map((task) => (
+                      <SidebarScheduleRow
+                        key={task.id}
+                        item={task}
+                        checked={isTaskCompleted(task)}
+                        onToggle={(taskDateId) =>
+                          onToggleTaskCompleted?.(
+                            category.id,
+                            item.id,
+                            task.id,
+                            taskDateId,
+                          )
+                        }
+                        onEdit={() =>
+                          onEditTask?.(category.id, item.id, task.id)
+                        }
+                        barColor={category.themeLight}
+                        widthClassName="w-full"
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+
             {category.tasks?.map((task) => (
               <SidebarScheduleRow
                 key={task.id}
@@ -222,46 +261,15 @@ export const MilestoneAccordion = ({
                 widthClassName="w-80"
               />
             ))}
-
-            {category.items.map((item) => (
-              <div key={item.id} className="flex w-full flex-col items-end gap-2">
-                <SidebarScheduleRow
-                  item={item}
-                  checked={Boolean(item.isCompleted)}
-                  onToggle={() =>
-                    onToggleMilestoneCompleted?.(category.id, item.id)
-                  }
-                  onEdit={() => onEditMilestone?.(category.id, item.id)}
-                  barColor={category.themeMid}
-                  widthClassName="w-80"
-                />
-                {item.tasks?.map((task) => (
-                  <SidebarScheduleRow
-                    key={task.id}
-                    item={task}
-                    checked={isTaskCompleted(task)}
-                    onToggle={(taskDateId) =>
-                      onToggleTaskCompleted?.(
-                        category.id,
-                        item.id,
-                        task.id,
-                        taskDateId,
-                      )
-                    }
-                    onEdit={() => onEditTask?.(category.id, item.id, task.id)}
-                    barColor={category.themeLight}
-                    widthClassName="w-[308px]"
-                  />
-                ))}
-              </div>
-            ))}
           </div>
-          <AddButton 
-            label="일정 추가하기" 
-            variant="secondary" 
-            className="w-[312px]" 
-            onClick={() => onAddSchedule?.(category.id)}
-          />
+          <div className="flex w-full flex-col items-start px-5 py-3">
+            <AddButton
+              label="일정 추가하기"
+              variant="secondary"
+              className="w-[312px]"
+              onClick={() => onAddSchedule?.(category.id)}
+            />
+          </div>
         </div>
       )}
     </section>
