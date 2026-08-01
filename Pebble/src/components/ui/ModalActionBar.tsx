@@ -22,23 +22,23 @@ export const ModalActionBar = ({
       <button
         type="button"
         onClick={onDelete}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-token-s bg-fill-danger transition-opacity hover:opacity-90"
+        className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-token-s bg-fill-danger transition-colors before:pointer-events-none before:absolute before:inset-0 before:transition-colors hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)]"
         aria-label={deleteLabel}
       >
-        <DeleteIcon className="h-6 w-6 text-fill-inverse" />
+        <DeleteIcon className="relative z-10 h-6 w-6 text-fill-inverse" />
       </button>
     )}
     <button
       type="button"
       onClick={onCancel}
-      className="h-11 flex-1 rounded-token-s bg-btn-quaternary font-medium text-text-strong transition-colors hover:bg-btn-pressed"
+      className="relative h-11 flex-1 overflow-hidden rounded-token-s bg-btn-quaternary font-medium text-text-strong transition-colors before:pointer-events-none before:absolute before:inset-0 before:transition-colors hover:before:bg-[rgba(23,23,23,0.05)] active:before:bg-[rgba(23,23,23,0.1)]"
     >
       취소
     </button>
     <button
       type="button"
       onClick={onSubmit}
-      className="h-11 flex-1 rounded-token-s bg-btn-primary font-medium text-text-onFill transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+      className="relative h-11 flex-1 overflow-hidden rounded-token-s bg-btn-primary font-medium text-text-onFill transition-colors before:pointer-events-none before:absolute before:inset-0 before:transition-colors hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:before:bg-transparent"
       disabled={disabled}
     >
       {submitLabel}

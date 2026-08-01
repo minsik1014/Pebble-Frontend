@@ -56,9 +56,8 @@ export const ScheduleDatePicker = ({
       : "#ffffff";
 
   const getTypeButtonClass = (type: DateType) => {
-    const baseClass = isTaskVariant
-      ? "flex-[1] px-5 py-3 rounded-[12px] flex flex-col items-start justify-center gap-1 transition-colors"
-      : "flex-1 p-4 rounded-[12px] flex flex-col items-start gap-1 transition-colors";
+    const baseClass =
+      "group relative flex h-[73px] flex-1 flex-col items-start justify-center gap-1 overflow-hidden rounded-token-s px-5 py-3 transition-colors";
 
     const activeClass = "text-fill-inverse";
 
@@ -68,6 +67,11 @@ export const ScheduleDatePicker = ({
 
     return `${baseClass} ${dateType === type ? activeClass : inactiveClass}`;
   };
+
+  const getTypeButtonOverlayClass = (type: DateType) =>
+    dateType === type
+      ? "group-hover:bg-[rgba(250,250,250,0.25)] group-active:bg-[rgba(250,250,250,0.4)]"
+      : "group-hover:bg-[rgba(23,23,23,0.05)] group-active:bg-[rgba(23,23,23,0.1)]";
 
   const getDayButtonClass = (status: DayStatus) => {
     const baseClass = `${daySizeClass} rounded-[12px] flex items-center justify-center text-body-01-m tracking-[-0.18px] transition-colors z-10 relative`;
@@ -114,14 +118,20 @@ export const ScheduleDatePicker = ({
             }
           >
             <span
+              className={`pointer-events-none absolute inset-0 transition-colors ${getTypeButtonOverlayClass(
+                type,
+              )}`}
+              aria-hidden="true"
+            />
+            <span
               className={
                 isTaskVariant
-                  ? `text-[16px] font-medium tracking-[-0.16px] leading-[1.5] ${
+                  ? `relative z-10 text-[16px] font-medium tracking-[-0.16px] leading-[1.5] ${
                       dateType === type
                         ? ""
                         : "text-text-strong"
                     }`
-                  : `text-[16px] font-semibold ${
+                  : `relative z-10 text-body-02-m ${
                       dateType === type
                         ? ""
                         : "text-text-strong"
@@ -138,12 +148,12 @@ export const ScheduleDatePicker = ({
             <span
               className={
                 isTaskVariant
-                  ? `text-[14px] tracking-[-0.14px] leading-[1.5] ${
+                  ? `relative z-10 text-[14px] font-medium tracking-[-0.14px] leading-[1.5] ${
                       dateType === type
                         ? ""
                         : "text-text-secondary"
                     }`
-                  : `text-[13px] ${
+                  : `relative z-10 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] ${
                       dateType === type
                         ? ""
                         : "text-text-secondary"
