@@ -247,24 +247,23 @@ export const collectSidebarItemsByDate = ({
 export const collectSidebarItemsForDate = ({
   categories,
   standaloneTasks,
-  currentYear,
-  currentMonth,
   selectedDate,
 }: CalendarSidebarDateItemsParams & {
   selectedDate: Date;
 }) => {
+  const selectedYear = selectedDate.getFullYear();
+  const selectedMonth = selectedDate.getMonth() + 1;
   const selectedKey = [
-    selectedDate.getFullYear(),
-    selectedDate.getMonth() + 1,
+    selectedYear,
+    selectedMonth,
     selectedDate.getDate(),
   ].join("-");
   const selectedGroup = collectSidebarItemsByDate({
     categories,
     standaloneTasks,
-    currentYear,
-    currentMonth,
+    currentYear: selectedYear,
+    currentMonth: selectedMonth,
   }).find((group) => group.key === selectedKey);
 
   return selectedGroup?.items ?? [];
 };
-
