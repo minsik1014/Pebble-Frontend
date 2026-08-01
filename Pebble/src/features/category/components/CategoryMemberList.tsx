@@ -2,12 +2,16 @@ import type { Friend } from "@/features/category/types";
 
 type CategoryMemberListProps = {
   members: Friend[];
+  currentUserId?: number | null;
   onRemoveMember: (member: Friend) => void;
+  onLeaveCategory?: () => void | Promise<void>;
 };
 
 export const CategoryMemberList = ({
   members,
+  currentUserId,
   onRemoveMember,
+  onLeaveCategory,
 }: CategoryMemberListProps) => {
   const getMemberLabel = (member: Friend) =>
     member.uniqueTag ? `${member.name}#${member.uniqueTag}` : member.name;
@@ -20,6 +24,7 @@ export const CategoryMemberList = ({
     <div className="flex max-h-40 w-full flex-col items-start overflow-y-auto overflow-x-hidden rounded-token-s border border-border-secondary bg-fill-surface px-token-m py-token-s">
       {members.map((member) => {
         const canRemoveMember = member.role !== "OWNER";
+        const isCurrentUser = currentUserId === member.id;
 
         return (
           <div
@@ -46,7 +51,14 @@ export const CategoryMemberList = ({
               <button
                 type="button"
                 className="flex h-12 shrink-0 items-center justify-center rounded-token-s bg-fill-danger-bg px-token-xl py-token-m text-body-02-m tracking-[-0.16px] text-fill-danger"
-                onClick={() => onRemoveMember(member)}
+                onClick={() => {
+                  if (isCurrentUser && onLeaveCategory) {
+                    void onLeaveCategory();
+                    return;
+                  }
+
+                  onRemoveMember(member);
+                }}
                 aria-label={`${member.name} 구성원 탈퇴`}
               >
                 탈퇴

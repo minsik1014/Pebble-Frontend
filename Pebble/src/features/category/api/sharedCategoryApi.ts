@@ -107,6 +107,13 @@ export async function removeCategoryMember(
   });
 }
 
+export async function leaveSharedCategory(categoryId: string): Promise<void> {
+  await apiRequest({
+    method: "DELETE",
+    url: `/categories/${categoryId}/members/me`,
+  });
+}
+
 export async function respondCategoryInvite(
   categoryId: string,
   action: "ACCEPT" | "REJECT",

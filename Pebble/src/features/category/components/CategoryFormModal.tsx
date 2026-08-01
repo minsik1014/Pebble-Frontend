@@ -28,8 +28,10 @@ type CategoryFormModalProps = {
   isOpen: boolean;
   mode?: "create" | "edit";
   category?: Category;
+  currentUserId?: number | null;
   onClose: () => void;
   onRequestDelete?: () => void;
+  onLeaveCategory?: () => void | Promise<void>;
   onSubmit?: (input: CreateCategoryInput) => void | Promise<void>;
 };
 
@@ -59,8 +61,10 @@ export const CategoryFormModal = ({
   isOpen, 
   mode = "create", 
   category,
+  currentUserId,
   onClose,
   onRequestDelete,
+  onLeaveCategory,
   onSubmit,
 }: CategoryFormModalProps) => {
   const [selectedColor, setSelectedColor] = useState<string>(DEFAULT_CATEGORY_COLOR);
@@ -377,7 +381,9 @@ export const CategoryFormModal = ({
                 </h3>
                 <CategoryMemberList
                   members={selectedMembers}
+                  currentUserId={currentUserId}
                   onRemoveMember={toggleMember}
+                  onLeaveCategory={onLeaveCategory}
                 />
               </div>
             )}

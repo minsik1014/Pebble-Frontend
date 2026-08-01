@@ -15,6 +15,7 @@ import type {
   CreateScheduleItemInput,
   UpdateCategoryInput,
 } from "@/features/calendar/types";
+import { leaveSharedCategory } from "@/features/category/api/sharedCategoryApi";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
@@ -27,6 +28,7 @@ export const CategoryDetailSection = ({
   onUpdateCategoryTask,
   onDeleteCategoryTask,
   onDeleteCategory,
+  onReloadCalendarData,
   onUpdateMilestone,
   onDeleteMilestone,
   onUpdateTask,
@@ -52,6 +54,7 @@ export const CategoryDetailSection = ({
   ) => Promise<void>;
   onDeleteCategoryTask: (categoryId: string, taskId: string) => Promise<void>;
   onDeleteCategory: (categoryId: string) => Promise<void>;
+  onReloadCalendarData: () => Promise<void>;
   onUpdateMilestone: (
     categoryId: string,
     milestoneId: string,
@@ -105,7 +108,6 @@ export const CategoryDetailSection = ({
     (currentUserId !== null &&
       category.userId !== undefined &&
       category.userId === currentUserId);
-
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
       ...prev,
@@ -217,6 +219,13 @@ export const CategoryDetailSection = ({
               }
             : undefined
         }
+        currentUserId={currentUserId}
+        onLeaveCategory={async () => {
+          await leaveSharedCategory(category.id);
+          await onReloadCalendarData();
+          setIsEditModalOpen(false);
+          onBack();
+        }}
       />
 
       <DeleteCategoryModal

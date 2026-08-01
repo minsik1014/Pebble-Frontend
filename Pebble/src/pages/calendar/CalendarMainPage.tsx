@@ -48,6 +48,7 @@ export const CalendarMainPage = (): JSX.Element => {
       onUpdateCategoryTask={updateCategoryTask}
       onDeleteCategoryTask={deleteCategoryTask}
       onDeleteCategory={deleteCategory}
+      onReloadCalendarData={reloadCalendarData}
       onUpdateMilestone={updateMilestone}
       onDeleteMilestone={deleteMilestone}
       onUpdateTask={updateTask}
