@@ -146,6 +146,18 @@ export const useCalendarCategoryActions = ({
                     ...category,
                     items: previousCategory.items,
                     tasks: previousCategory.tasks,
+                    isPublic:
+                      input.isPublic ??
+                      category.isPublic ??
+                      previousCategory.isPublic,
+                    isCompleted:
+                      input.isCompleted ??
+                      category.isCompleted ??
+                      previousCategory.isCompleted,
+                    isHidden:
+                      input.isHidden ??
+                      category.isHidden ??
+                      previousCategory.isHidden,
                     isShared:
                       input.isShared ??
                       category.isShared ??

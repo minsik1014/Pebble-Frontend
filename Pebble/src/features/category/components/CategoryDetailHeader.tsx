@@ -8,6 +8,7 @@ type CategoryDetailHeaderProps = {
 
 export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderProps) => {
   const totalTasksCount = category.items.reduce((acc, item) => acc + (item.tasks?.length || 0), 0);
+  const visibilityLabel = category.isPublic ? "공개" : "비공개";
 
   return (
     <div className="absolute left-[72px] top-[112px] flex items-center gap-10">
@@ -54,7 +55,9 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
               className="px-3 py-1 rounded-token-infinite"
               style={{ backgroundColor: category.themeLight }}
             >
-              <span className="text-body-02-m text-text-primary">공개</span>
+              <span className="text-body-02-m text-text-primary">
+                {visibilityLabel}
+              </span>
             </div>
             <div className="px-3 py-1 bg-btn-quaternary rounded-token-infinite flex items-center gap-1">
               <span className="text-body-02-m text-text-primary">마일스톤</span>
