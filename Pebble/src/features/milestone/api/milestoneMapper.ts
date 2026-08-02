@@ -29,8 +29,12 @@ export function mapMilestoneResponseToMilestone(
 ): MilestoneItem {
   const fallbackStart = fallbackInput?.dates?.[0] ?? fallbackInput?.start ?? "";
   const dates =
-    milestone.dates?.map((date) => normalizeApiDate(date) ?? date) ??
-    fallbackInput?.dates;
+    milestone.dates
+      ?.map((date) => normalizeApiDate(date) ?? date)
+      .sort((a, b) => a.localeCompare(b)) ??
+    fallbackInput?.dates
+      ? [...fallbackInput.dates].sort((a, b) => a.localeCompare(b))
+      : undefined;
   const startDate = normalizeApiDate(milestone.startDate);
   const endDate = normalizeApiDate(milestone.endDate);
 

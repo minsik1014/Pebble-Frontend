@@ -6,7 +6,9 @@ import {
   type DatedSidebarItem,
 } from "@/features/calendar/components/sidebar/CalendarSidebarDateItems";
 import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
-import { formatScheduleDisplayLabel } from "@/utils/scheduleDate";
+
+const formatDatedItemLabel = (date: Date) =>
+  `${date.getMonth() + 1}/${date.getDate()}`;
 
 type CalendarSidebarListViewProps = {
   categories: Category[];
@@ -164,7 +166,7 @@ export const CalendarSidebarListView = ({
                     }}
                   >
                     <span className="whitespace-nowrap text-body-02-m text-text-teritary">
-                      {formatScheduleDisplayLabel(item)}
+                      {formatDatedItemLabel(datedItem.date)}
                     </span>
                     <SidebarScheduleCheckbox
                       checked={Boolean(datedItem.isCompleted)}
