@@ -13,3 +13,11 @@ export const isTaskCompleted = (task: TaskCompletionTarget) => {
 
   return Boolean(task.isCompleted);
 };
+
+export const getTaskCompletionTargets = (task: TaskCompletionTarget) => {
+  if (task.dateType === "MULTIPLE" && task.taskDates?.length) {
+    return task.taskDates.map((taskDate) => Boolean(taskDate.isCompleted));
+  }
+
+  return [Boolean(task.isCompleted)];
+};

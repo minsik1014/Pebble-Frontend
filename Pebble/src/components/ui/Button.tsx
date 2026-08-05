@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'white' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'white' | 'cancel' | 'danger';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -14,6 +14,8 @@ const variantClassNames: Record<ButtonVariant, string> = {
     'bg-btn-quaternary text-text-strong before:bg-transparent hover:before:bg-[rgba(23,23,23,0.05)] active:before:bg-[rgba(23,23,23,0.1)]',
   white:
     'bg-fill-inverse text-text-strong before:bg-transparent hover:before:bg-[rgba(23,23,23,0.05)] active:before:bg-[rgba(23,23,23,0.1)]',
+  cancel:
+    'bg-btn-pressed text-text-strong before:bg-transparent hover:before:bg-[rgba(250,250,250,0.18)] active:before:bg-[rgba(250,250,250,0.28)]',
   danger:
     'bg-fill-danger text-text-onFill before:bg-transparent hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)]',
 };

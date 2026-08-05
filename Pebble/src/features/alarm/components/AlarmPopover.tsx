@@ -1,14 +1,14 @@
-import { useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
-import { Toast } from "@/components/ui/Toast";
+import { Toast } from '@/components/ui/Toast';
 
 import type {
   Alarm,
   CategoryInviteAction,
   FollowRequestAction,
-} from "../types/alarm";
-import { AlarmItem } from "./AlarmItem";
+} from '../types/alarm';
+import { AlarmItem } from './AlarmItem';
 
 interface AlarmPopoverProps {
   top: number;
@@ -35,9 +35,18 @@ export const AlarmPopover = ({
   onRespondFollowRequest,
   onRespondCategoryInvite,
 }: AlarmPopoverProps) => {
-  const [toastMessage, setToastMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState('');
   const [isToastVisible, setIsToastVisible] = useState(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -60,15 +69,15 @@ export const AlarmPopover = ({
       await onRespondFollowRequest(alarm.id, action);
     } catch (error) {
       showToast(
-        error instanceof Error ? error.message : "요청을 처리하지 못했어요.",
+        error instanceof Error ? error.message : '요청을 처리하지 못했어요.',
       );
       return;
     }
 
-    const nickname = alarm.user?.nickname ?? "상대";
+    const nickname = alarm.user?.nickname ?? '상대';
 
     showToast(
-      action === "ACCEPT"
+      action === 'ACCEPT'
         ? `${nickname}님과 친구가 되었어요`
         : `${nickname}님의 요청을 거절했어요`,
     );
@@ -82,24 +91,24 @@ export const AlarmPopover = ({
       await onRespondCategoryInvite(alarm.id, action);
     } catch (error) {
       showToast(
-        error instanceof Error ? error.message : "요청을 처리하지 못했어요.",
+        error instanceof Error ? error.message : '요청을 처리하지 못했어요.',
       );
       return;
     }
 
     showToast(
-      action === "ACCEPT"
-        ? "공유 카테고리 초대를 수락했어요"
-        : "공유 카테고리 초대를 거절했어요",
+      action === 'ACCEPT'
+        ? '공유 카테고리 초대를 수락했어요'
+        : '공유 카테고리 초대를 거절했어요',
     );
   };
 
   return createPortal(
     <div
       data-alarm-popover
-      className="relative z-[9999] flex h-[600px] w-[400px] flex-col rounded-[24px] bg-white px-3 py-4 shadow-[4px_5px_20px_rgba(23,23,23,0.1)] animate-[popover-in_450ms_ease-in-out]"
+      className="relative z-[9999] flex h-[600px] w-[400px] flex-col rounded-[24px] bg-fill-inverse px-3 py-4 shadow-shadow-m animate-[popover-in_450ms_ease-in-out]"
       style={{
-        position: "fixed",
+        position: 'fixed',
         top,
         left,
       }}
@@ -113,7 +122,7 @@ export const AlarmPopover = ({
           <button
             type="button"
             onClick={() => void onDeleteAll()}
-            className="text-[14px] font-normal text-gray-500 hover:text-text-strong"
+            className="text-[14px] font-normal text-text-secondary hover:text-text-strong"
           >
             전체 삭제
           </button>
@@ -132,7 +141,7 @@ export const AlarmPopover = ({
             />
           ))
         ) : (
-          <div className="flex h-full items-center justify-center text-body-s text-text-tertiary">
+          <div className="flex h-full items-center justify-center text-body-s text-text-teritary">
             알림이 없습니다.
           </div>
         )}

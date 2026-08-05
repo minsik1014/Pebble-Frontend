@@ -16,6 +16,7 @@ import { AlarmPopover } from '@/features/alarm/components/AlarmPopover';
 import { useAlarms } from '@/features/alarm/hooks/useAlarm';
 import { logout } from '@/features/auth/api/authApi';
 import { clearAuthTokens } from '@/services/api';
+import { LogoutConfirmModal } from './LogoutConfirmModal';
 
 type GlobalNavigationBarProps = {
   variant?: 'embedded' | 'collapsed';
@@ -31,6 +32,8 @@ export const GlobalNavigationBar = ({
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [popoverPosition, setPopoverPosition] = useState({
     top: 0,
     left: 0,
@@ -90,11 +93,19 @@ export const GlobalNavigationBar = ({
   };
 
   const handleLogout = async () => {
+    if (isLoggingOut) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+
     try {
       await logout();
     } finally {
       // 서버 요청이 실패해도 기기에 남은 토큰은 제거해 로그아웃을 보장합니다.
       clearAuthTokens();
+      setIsLogoutModalOpen(false);
+      setIsLoggingOut(false);
       navigate('/login');
     }
   };
@@ -169,7 +180,7 @@ export const GlobalNavigationBar = ({
               onClick={toggleAlarmPopover}
               className={`size-11 relative flex items-center justify-center rounded-token-s cursor-pointer transition-colors duration-[450ms] ease-in-out ${
                 isAlarmOpen
-                  ? 'bg-black text-white'
+                  ? 'bg-btn-primary text-text-onFill'
                   : 'text-text-secondary hover:bg-fill-surface hover:text-text-strong'
               }`}
               aria-label="알림 목록 열기"
@@ -243,7 +254,7 @@ export const GlobalNavigationBar = ({
 
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => setIsLogoutModalOpen(true)}
             className={getNavigationButtonClassName(false)}
             aria-label="로그아웃"
           >
@@ -251,6 +262,12 @@ export const GlobalNavigationBar = ({
           </button>
         </div>
       </div>
+      <LogoutConfirmModal
+        isOpen={isLogoutModalOpen}
+        isSubmitting={isLoggingOut}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogout}
+      />
     </nav>
   );
 };

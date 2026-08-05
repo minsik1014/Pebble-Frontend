@@ -1,11 +1,13 @@
-import ReportIcon from "@/assets/icons/memo-outline.svg?react";
-import CalendarIcon from "@/assets/icons/calendar-nav-default.svg?react";
+import type { MouseEvent } from 'react';
+
+import CalendarIcon from '@/assets/icons/calendar-nav-default.svg?react';
+import ReportIcon from '@/assets/icons/memo-outline.svg?react';
 
 import type {
   Alarm,
   CategoryInviteAction,
   FollowRequestAction,
-} from "../types/alarm";
+} from '../types/alarm';
 
 interface AlarmItemProps {
   alarm: Alarm;
@@ -20,12 +22,12 @@ interface AlarmItemProps {
   ) => Promise<void>;
 }
 
-const getAlarmIcon = (type: Alarm["type"]) => {
+const getAlarmIcon = (type: Alarm['type']) => {
   switch (type) {
-    case "TASK_DUE":
-    case "MILESTONE_DUE":
+    case 'TASK_DUE':
+    case 'MILESTONE_DUE':
       return <CalendarIcon className="size-5" />;
-    case "REPORT":
+    case 'REPORT':
       return <ReportIcon className="size-5" />;
     default:
       return null;
@@ -33,23 +35,23 @@ const getAlarmIcon = (type: Alarm["type"]) => {
 };
 
 const getFollowMessageSuffix = (alarm: Alarm) => {
-  if (alarm.type === "FOLLOW_REQUEST") {
-    if (alarm.followStatus === "ACCEPTED") {
-      return "님의 팔로우 요청을 수락했어요";
+  if (alarm.type === 'FOLLOW_REQUEST') {
+    if (alarm.followStatus === 'ACCEPTED') {
+      return '님의 팔로우 요청을 수락했어요';
     }
 
-    if (alarm.followStatus === "REJECTED") {
-      return "님의 팔로우 요청을 거절했어요";
+    if (alarm.followStatus === 'REJECTED') {
+      return '님의 팔로우 요청을 거절했어요';
     }
 
-    return "님이 팔로우를 요청했어요";
+    return '님이 팔로우를 요청했어요';
   }
 
-  if (alarm.type === "FOLLOW_ACCEPTED") {
-    return "님이 팔로우를 수락했어요";
+  if (alarm.type === 'FOLLOW_ACCEPTED') {
+    return '님이 팔로우를 수락했어요';
   }
 
-  return "";
+  return '';
 };
 
 export const AlarmItem = ({
@@ -59,64 +61,73 @@ export const AlarmItem = ({
   onCategoryInviteResponse,
 }: AlarmItemProps) => {
   const isPendingFollowRequest =
-    alarm.type === "FOLLOW_REQUEST" &&
-    (alarm.followStatus ?? "PENDING") === "PENDING";
+    alarm.type === 'FOLLOW_REQUEST' &&
+    (alarm.followStatus ?? 'PENDING') === 'PENDING';
+
   const isPendingCategoryInvite =
-    alarm.type === "CATEGORY_INVITE" &&
-    (alarm.followStatus ?? "PENDING") === "PENDING";
+    alarm.type === 'CATEGORY_INVITE' &&
+    (alarm.followStatus ?? 'PENDING') === 'PENDING';
 
   const shouldShowActiveBackground =
-    alarm.type === "FOLLOW_REQUEST"
+    alarm.type === 'FOLLOW_REQUEST'
       ? isPendingFollowRequest
-      : alarm.type === "CATEGORY_INVITE"
+      : alarm.type === 'CATEGORY_INVITE'
         ? isPendingCategoryInvite
         : !alarm.isRead;
 
   const hasUserImage =
-    alarm.type === "FOLLOW_REQUEST" || alarm.type === "FOLLOW_ACCEPTED";
-  const isActionableAlarm = isPendingFollowRequest || isPendingCategoryInvite;
-  const overlayClass = shouldShowActiveBackground
-    ? "before:bg-[rgba(48,89,255,0.05)] hover:before:bg-[rgba(23,23,23,0.05)]"
-    : "before:bg-transparent hover:before:bg-[rgba(23,23,23,0.05)]";
+    alarm.type === 'FOLLOW_REQUEST' || alarm.type === 'FOLLOW_ACCEPTED';
 
-  const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const isActionableAlarm = isPendingFollowRequest || isPendingCategoryInvite;
+
+  const overlayClass = shouldShowActiveBackground
+    ? 'before:bg-[rgba(48,89,255,0.05)] hover:before:bg-[rgba(23,23,23,0.05)] dark:hover:before:bg-[rgba(250,250,250,0.08)]'
+    : 'before:bg-transparent hover:before:bg-[rgba(23,23,23,0.05)] dark:hover:before:bg-[rgba(250,250,250,0.08)]';
+
+  const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     onDelete(alarm.id);
   };
 
-  const handleAccept = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleAccept = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+
     if (isPendingCategoryInvite) {
-      void onCategoryInviteResponse?.(alarm, "ACCEPT");
+      void onCategoryInviteResponse?.(alarm, 'ACCEPT');
       return;
     }
 
-    void onFollowRequestResponse?.(alarm, "ACCEPT");
+    void onFollowRequestResponse?.(alarm, 'ACCEPT');
   };
 
-  const handleReject = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleReject = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+
     if (isPendingCategoryInvite) {
-      void onCategoryInviteResponse?.(alarm, "REJECT");
+      void onCategoryInviteResponse?.(alarm, 'REJECT');
       return;
     }
 
-    void onFollowRequestResponse?.(alarm, "REJECT");
+    void onFollowRequestResponse?.(alarm, 'REJECT');
   };
 
   return (
     <div
-      className={`relative mt-3 min-h-[81px] w-[376px] overflow-hidden rounded-token-s bg-fill-inverse px-3 py-5 transition-colors duration-150 before:pointer-events-none before:absolute before:inset-0 before:transition-colors ${overlayClass} ${
-        isActionableAlarm ? "min-h-[118px]" : ""
-      }`}
+      className={[
+        'relative mt-3 min-h-[81px] w-[376px] overflow-hidden rounded-token-s bg-fill-inverse px-3 py-5 transition-colors duration-150',
+        'before:pointer-events-none before:absolute before:inset-0 before:transition-colors',
+        overlayClass,
+        isActionableAlarm ? 'min-h-[118px]' : '',
+      ].join(' ')}
     >
       <div className="relative z-10 flex items-start gap-3">
         <div
-          className={`size-10 shrink-0 overflow-hidden rounded-full ${
+          className={[
+            'size-10 shrink-0 overflow-hidden rounded-full',
             hasUserImage
-              ? "border-[0.5px] border-border-secondary bg-fill-inverse"
-              : "bg-btn-quaternary"
-          }`}
+              ? 'border-[0.5px] border-border-secondary bg-fill-inverse'
+              : 'bg-btn-quaternary',
+          ].join(' ')}
         >
           {hasUserImage && alarm.user?.profileImageUrl ? (
             <img
@@ -156,14 +167,15 @@ export const AlarmItem = ({
               <button
                 type="button"
                 onClick={handleAccept}
-                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-primary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-onFill"
+                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-primary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-onFill transition-[filter] hover:brightness-95"
               >
                 수락
               </button>
+
               <button
                 type="button"
                 onClick={handleReject}
-                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-quaternary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-strong"
+                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-quaternary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-strong transition-colors hover:bg-btn-pressed"
               >
                 거절
               </button>

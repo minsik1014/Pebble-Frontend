@@ -6,7 +6,10 @@ import { AddButton } from "@/components/ui/AddButton";
 import { SidebarScheduleCheckbox } from "@/features/calendar/components/sidebar/SidebarScheduleCheckbox";
 import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
-import { getScheduleDisplayLabels } from "@/utils/scheduleDate";
+import {
+  formatScheduleDisplayDate,
+  getScheduleDisplayLabels,
+} from "@/utils/scheduleDate";
 
 type MilestoneAccordionProps = {
   category: Category;
@@ -19,11 +22,13 @@ type MilestoneAccordionProps = {
   onToggleCategoryTaskCompleted?: (
     categoryId: string,
     taskId: string,
+    taskDateId?: number,
   ) => void | Promise<void>;
   onToggleTaskCompleted?: (
     categoryId: string,
     milestoneId: string,
     taskId: string,
+    taskDateId?: number,
   ) => void | Promise<void>;
   onEditMilestone?: (categoryId: string, milestoneId: string) => void;
   onEditCategoryTask?: (categoryId: string, taskId: string) => void;
@@ -41,10 +46,33 @@ type MilestoneAccordionProps = {
 type SidebarScheduleRowProps = {
   item: ScheduleItem;
   checked: boolean;
-  onToggle: () => void;
+  onToggle: (taskDateId?: number) => void;
   onEdit: () => void;
   barColor: string;
   widthClassName: string;
+};
+
+const SCHEDULE_LEVEL_CLASS = {
+  child: "box-border w-full pl-3",
+  grandchild: "box-border w-full pl-6",
+} as const;
+
+const getScheduleRows = (item: ScheduleItem, checked: boolean) => {
+  if ("taskDates" in item && item.taskDates?.length) {
+    return item.taskDates.map((taskDate) => ({
+      key: String(taskDate.taskDateId),
+      dateLabel: formatScheduleDisplayDate(taskDate.date.slice(0, 10)),
+      checked: Boolean(taskDate.isCompleted),
+      taskDateId: taskDate.taskDateId,
+    }));
+  }
+
+  return getScheduleDisplayLabels(item).map((dateLabel) => ({
+    key: dateLabel,
+    dateLabel,
+    checked,
+    taskDateId: undefined,
+  }));
 };
 
 const SidebarScheduleRow = ({
@@ -55,54 +83,59 @@ const SidebarScheduleRow = ({
   barColor,
   widthClassName,
 }: SidebarScheduleRowProps) => {
-  const dateLabels = getScheduleDisplayLabels(item);
-  const titleColorClass = getScheduleTextColorClass(checked);
+  const rows = getScheduleRows(item, checked);
 
   return (
     <>
-      {dateLabels.map((dateLabel) => (
-        <div
-          key={`${item.id}-${dateLabel}`}
-          className={`${widthClassName} flex shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface`}
-        >
-          <button
-            type="button"
-            className="flex min-w-0 flex-1 items-center gap-2 text-left"
-            onClick={onEdit}
-          >
-            <div
-              className="h-8 w-2 shrink-0 rounded"
-              style={{ backgroundColor: barColor }}
-            />
-            <span className={`min-w-0 max-w-[190px] flex-1 truncate text-body-02-m ${titleColorClass}`}>
-              {item.title}
-            </span>
-          </button>
+      {rows.map((row) => {
+        const titleColorClass = getScheduleTextColorClass(row.checked);
 
+        return (
           <div
-            role="button"
-            tabIndex={0}
-            className="flex shrink-0 cursor-pointer items-center justify-end gap-3"
-            onClick={onToggle}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                onToggle();
-              }
-            }}
+            key={`${item.id}-${row.key}`}
+            className={`${widthClassName} flex shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface`}
           >
-            <span className="whitespace-nowrap text-body-02-m text-text-teritary">
-              {dateLabel}
-            </span>
-            <SidebarScheduleCheckbox
-              checked={checked}
-              ariaLabel={`${item.title} 일정 완료`}
-              onChange={onToggle}
-              stopPropagation
-            />
+            <button
+              type="button"
+              className="flex min-w-0 flex-1 items-center gap-2 text-left"
+              onClick={onEdit}
+            >
+              <div
+                className="h-8 w-2 shrink-0 rounded"
+                style={{ backgroundColor: barColor }}
+              />
+              <span
+                className={`min-w-0 max-w-[190px] flex-1 truncate text-body-02-m ${titleColorClass}`}
+              >
+                {item.title}
+              </span>
+            </button>
+
+            <div
+              role="button"
+              tabIndex={0}
+              className="flex shrink-0 cursor-pointer items-center justify-end gap-3"
+              onClick={() => onToggle(row.taskDateId)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onToggle(row.taskDateId);
+                }
+              }}
+            >
+              <span className="whitespace-nowrap text-body-02-m text-text-teritary">
+                {row.dateLabel}
+              </span>
+              <SidebarScheduleCheckbox
+                checked={row.checked}
+                ariaLabel={`${item.title} 일정 완료`}
+                onChange={() => onToggle(row.taskDateId)}
+                stopPropagation
+              />
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </>
   );
 };
@@ -132,7 +165,7 @@ export const MilestoneAccordion = ({
           : "border-transparent shadow-shadow-s"
       }`}
     >
-      <div 
+      <div
         className="flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-[22px] overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors"
         onClick={() => onSelectCategory?.(category.id)}
       >
@@ -181,54 +214,84 @@ export const MilestoneAccordion = ({
         </div>
       </div>
       {expanded && (
-        <div className="flex flex-col items-center gap-3 pt-0 pb-3 w-full relative">
-          <div className="flex flex-col items-end justify-start gap-2 pl-5 pr-3 w-full max-h-[216px] overflow-y-auto custom-scrollbar">
-            {category.tasks?.map((task) => (
-              <SidebarScheduleRow
-                key={task.id}
-                item={task}
-                checked={isTaskCompleted(task)}
-                onToggle={() => onToggleCategoryTaskCompleted?.(category.id, task.id)}
-                onEdit={() => onEditCategoryTask?.(category.id, task.id)}
-                barColor={category.themeLight}
-                widthClassName="w-80"
-              />
+        <div className="flex w-full flex-col items-center">
+          <div className="flex w-full max-h-[216px] flex-col items-end justify-start gap-2 overflow-y-auto pl-5 pr-3 custom-scrollbar">
+            {category.items.map((item) => (
+              <div
+                key={item.id}
+                className="flex w-full flex-col items-end gap-2"
+              >
+                <div className={SCHEDULE_LEVEL_CLASS.child}>
+                  <SidebarScheduleRow
+                    item={item}
+                    checked={Boolean(item.isCompleted)}
+                    onToggle={() =>
+                      onToggleMilestoneCompleted?.(category.id, item.id)
+                    }
+                    onEdit={() => onEditMilestone?.(category.id, item.id)}
+                    barColor={category.themeMid}
+                    widthClassName="w-full"
+                  />
+                </div>
+
+                {Boolean(item.tasks?.length) && (
+                  <div className="flex w-full flex-col items-end gap-2">
+                    {item.tasks?.map((task) => (
+                      <div
+                        key={task.id}
+                        className={SCHEDULE_LEVEL_CLASS.grandchild}
+                      >
+                        <SidebarScheduleRow
+                          item={task}
+                          checked={isTaskCompleted(task)}
+                          onToggle={(taskDateId) =>
+                            onToggleTaskCompleted?.(
+                              category.id,
+                              item.id,
+                              task.id,
+                              taskDateId,
+                            )
+                          }
+                          onEdit={() =>
+                            onEditTask?.(category.id, item.id, task.id)
+                          }
+                          barColor={category.themeLight}
+                          widthClassName="w-full"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
 
-            {category.items.map((item) => (
-              <div key={item.id} className="flex w-full flex-col items-end gap-2">
+            {category.tasks?.map((task) => (
+              <div key={task.id} className={SCHEDULE_LEVEL_CLASS.child}>
                 <SidebarScheduleRow
-                  item={item}
-                  checked={Boolean(item.isCompleted)}
-                  onToggle={() =>
-                    onToggleMilestoneCompleted?.(category.id, item.id)
+                  item={task}
+                  checked={isTaskCompleted(task)}
+                  onToggle={(taskDateId) =>
+                    onToggleCategoryTaskCompleted?.(
+                      category.id,
+                      task.id,
+                      taskDateId,
+                    )
                   }
-                  onEdit={() => onEditMilestone?.(category.id, item.id)}
-                  barColor={category.themeMid}
-                  widthClassName="w-80"
+                  onEdit={() => onEditCategoryTask?.(category.id, task.id)}
+                  barColor={category.themeLight}
+                  widthClassName="w-full"
                 />
-                {item.tasks?.map((task) => (
-                  <SidebarScheduleRow
-                    key={task.id}
-                    item={task}
-                    checked={isTaskCompleted(task)}
-                    onToggle={() =>
-                      onToggleTaskCompleted?.(category.id, item.id, task.id)
-                    }
-                    onEdit={() => onEditTask?.(category.id, item.id, task.id)}
-                    barColor={category.themeLight}
-                    widthClassName="w-[308px]"
-                  />
-                ))}
               </div>
             ))}
           </div>
-          <AddButton 
-            label="일정 추가하기" 
-            variant="secondary" 
-            className="w-[312px]" 
-            onClick={() => onAddSchedule?.(category.id)}
-          />
+          <div className="flex w-full flex-col items-start px-5 py-3">
+            <AddButton
+              label="일정 추가하기"
+              variant="secondary"
+              className="w-[312px]"
+              onClick={() => onAddSchedule?.(category.id)}
+            />
+          </div>
         </div>
       )}
     </section>
