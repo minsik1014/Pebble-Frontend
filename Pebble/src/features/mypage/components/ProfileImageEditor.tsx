@@ -9,8 +9,8 @@ export const ProfileImageEditor = (): JSX.Element => {
   const imageUrl = useProfileStore(
     (state) => state.pendingImageUrl ?? state.profile.imageUrl,
   );
-  const setPendingProfileImage = useProfileStore(
-    (state) => state.setPendingProfileImage,
+  const updateProfileImage = useProfileStore(
+    (state) => state.updateProfileImage,
   );
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
 
@@ -50,8 +50,8 @@ export const ProfileImageEditor = (): JSX.Element => {
         cropShape="round"
         onClose={() => setIsCropModalOpen(false)}
         onChangeImage={(croppedImageUrl) => {
-          setPendingProfileImage(croppedImageUrl);
           setIsCropModalOpen(false);
+          void updateProfileImage(croppedImageUrl).catch(() => undefined);
         }}
       />
     </>
