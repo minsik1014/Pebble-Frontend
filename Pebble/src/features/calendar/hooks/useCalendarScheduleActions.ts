@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, type Dispatch, type SetStateAction } from "react";
 
 import type { Category, TaskItem } from "@/types";
 import type { CreateScheduleItemInput } from "@/features/calendar/types";
@@ -22,6 +22,7 @@ import {
 type UseCalendarScheduleActionsParams = {
   categories: Category[];
   reloadCalendarData: () => Promise<void>;
+  setCategories: Dispatch<SetStateAction<Category[]>>;
   standaloneTasks: TaskItem[];
 };
 
@@ -95,8 +96,33 @@ const splitMultipleScheduleInput = (
 export const useCalendarScheduleActions = ({
   categories,
   reloadCalendarData,
+  setCategories,
   standaloneTasks,
 }: UseCalendarScheduleActionsParams) => {
+  const markCategoryAsEmptyIfNoLoadedSchedules = useCallback(
+    (categoryId: string) => {
+      setCategories((previousCategories) =>
+        previousCategories.map((category) => {
+          const hasLoadedSchedules =
+            category.items.length > 0 || (category.tasks?.length ?? 0) > 0;
+
+          if (category.id !== categoryId || hasLoadedSchedules) {
+            return category;
+          }
+
+          return {
+            ...category,
+            hasSchedules: false,
+            milestoneCount: 0,
+            taskCount: 0,
+            sharedTaskCount: 0,
+          };
+        }),
+      );
+    },
+    [setCategories],
+  );
+
   const createMilestone = useCallback(
     async (categoryId: string, input: CreateScheduleItemInput) => {
       const splitInputs = splitMultipleScheduleInput(input);
@@ -186,16 +212,26 @@ export const useCalendarScheduleActions = ({
 
   const deleteCategoryTask = useCallback(
     async (categoryId: string, taskId: string) => {
+      const category =
+        categories.find((previousCategory) => previousCategory.id === categoryId) ??
+        null;
       const task =
-        categories
-          .find((category) => category.id === categoryId)
-          ?.tasks?.find((categoryTask) => categoryTask.id === taskId) ?? null;
+        category?.tasks?.find((categoryTask) => categoryTask.id === taskId) ??
+        null;
+      const willBeEmptyCategory =
+        Boolean(category) &&
+        category.items.length === 0 &&
+        (category.tasks?.filter((categoryTask) => categoryTask.id !== taskId)
+          .length ?? 0) === 0;
 
       await deleteTaskWithScope(taskId, task);
 
       await reloadCalendarData();
+      if (willBeEmptyCategory) {
+        markCategoryAsEmptyIfNoLoadedSchedules(categoryId);
+      }
     },
-    [categories, reloadCalendarData],
+    [categories, markCategoryAsEmptyIfNoLoadedSchedules, reloadCalendarData],
   );
 
   const createStandaloneTask = useCallback(

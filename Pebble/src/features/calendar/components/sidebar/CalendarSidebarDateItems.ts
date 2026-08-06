@@ -52,11 +52,20 @@ const getDatesInRange = (startDate: Date, endDate: Date) => {
   return dates;
 };
 
+const sortDatesAscending = (dates: Date[]) =>
+  [...dates].sort((a, b) => a.getTime() - b.getTime());
+
+const sortTaskDateOccurrencesAscending = (
+  occurrences: TaskDateOccurrence[],
+) => [...occurrences].sort((a, b) => a.date.getTime() - b.date.getTime());
+
 const getItemDates = (item: ScheduleItem, fallbackYear: number) => {
   if (item.dates && item.dates.length > 0) {
-    return item.dates
-      .map((date) => parseScheduleDate(date, fallbackYear))
-      .filter((date): date is Date => Boolean(date));
+    return sortDatesAscending(
+      item.dates
+        .map((date) => parseScheduleDate(date, fallbackYear))
+        .filter((date): date is Date => Boolean(date)),
+    );
   }
 
   const startDate = parseScheduleDate(item.start, fallbackYear);
@@ -66,7 +75,7 @@ const getItemDates = (item: ScheduleItem, fallbackYear: number) => {
     return [];
   }
 
-  return getDatesInRange(startDate, endDate);
+  return sortDatesAscending(getDatesInRange(startDate, endDate));
 };
 
 const getTaskDateOccurrences = (
@@ -88,13 +97,15 @@ const getTaskDateOccurrences = (
       }
     });
 
-    return occurrences;
+    return sortTaskDateOccurrencesAscending(occurrences);
   }
 
-  return getItemDates(task, fallbackYear).map((date) => ({
-    date,
-    isCompleted: task.isCompleted,
-  }));
+  return sortTaskDateOccurrencesAscending(
+    getItemDates(task, fallbackYear).map((date) => ({
+      date,
+      isCompleted: task.isCompleted,
+    })),
+  );
 };
 
 const isSameMonth = (date: Date, year: number, month: number) =>
