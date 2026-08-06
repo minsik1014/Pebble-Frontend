@@ -3,25 +3,20 @@ import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
 type MyProfileSectionProps = {
   isCompact: boolean;
-  scrollOffset: number;
   onEditProfile: () => void;
 };
 
 export const MyProfileSection = ({
   isCompact,
-  scrollOffset,
   onEditProfile,
 }: MyProfileSectionProps): JSX.Element => {
   const profile = useProfileStore((state) => state.profile);
 
   return (
     <header
-      className={`sticky top-0 z-10 bg-fill-inverse transition-[height] duration-[220ms] ease-out ${
-        isCompact ? "h-[260px]" : "h-[340px]"
+      className={`sticky top-0 z-40 bg-fill-inverse transition-[height] duration-[220ms] ease-out ${
+        isCompact ? "h-[220px]" : "h-[340px]"
       }`}
-      style={{
-        transform: `translateY(-${scrollOffset}px)`,
-      }}
     >
       <div
         className={`absolute inset-0 transition-[opacity,transform] duration-[220ms] ease-out ${

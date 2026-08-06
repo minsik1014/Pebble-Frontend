@@ -16,12 +16,12 @@ export const CompletedCategoryGrid = ({
     <section
       className={`relative z-20 mx-auto w-[640px] bg-fill-inverse transition-[margin] duration-500 ease-in-out ${
         isCompact ? "mt-16" : "mt-12"
-      }`}
+      } ${categories.length <= 6 ? "min-h-[800px]" : ""}`}
       aria-labelledby="my-category-heading"
     >
       <div
-        className={`sticky top-0 z-30 bg-fill-inverse pb-3 transition-[padding] duration-500 ease-in-out ${
-          isCompact ? "pt-8" : "pt-0"
+        className={`sticky z-30 bg-fill-inverse pb-3 ${
+          isCompact ? "top-[220px] pt-8" : "top-0 pt-0"
         }`}
       >
         <h2
