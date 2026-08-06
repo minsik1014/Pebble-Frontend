@@ -128,7 +128,7 @@ export const GlobalNavigationBar = ({
     ].join(' ');
 
   const isCalendarActive = pathname === '/';
-  const isFriendsActive = pathname.startsWith('/friends');
+  const isHomeActive = pathname.startsWith('/home');
   const isMyPageActive = pathname.startsWith('/my');
   const isSettingsActive = pathname.startsWith('/settings');
 
@@ -196,12 +196,12 @@ export const GlobalNavigationBar = ({
         <div className="flex flex-col justify-start items-center gap-10 w-full">
           <button
             type="button"
-            onClick={() => navigate('/friends')}
-            className={getNavigationButtonClassName(isFriendsActive)}
-            aria-label="소셜 페이지로 이동"
-            aria-current={isFriendsActive ? 'page' : undefined}
+            onClick={() => navigate('/home')}
+            className={getNavigationButtonClassName(isHomeActive)}
+            aria-label="홈 페이지로 이동"
+            aria-current={isHomeActive ? 'page' : undefined}
           >
-            {isFriendsActive ? (
+            {isHomeActive ? (
               <SocialSolidIcon className="size-6" />
             ) : (
               <SocialOutlineIcon className="size-6" />
