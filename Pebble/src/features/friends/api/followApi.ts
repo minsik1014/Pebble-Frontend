@@ -16,6 +16,7 @@ export type SearchedUser = FollowUser & {
 
 export type FollowListItem = FollowUser & {
   followId: number;
+  bio: string | null;
   hasTodaySchedule: boolean;
 };
 
