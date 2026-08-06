@@ -2,16 +2,63 @@ import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import { MyCategoryDetailHeader } from "@/features/mypage/components/MyCategoryDetailHeader";
 import { MyCategoryMilestoneItem } from "@/features/mypage/components/MyCategoryMilestoneItem";
-import { completedCategoryMocks } from "@/features/mypage/mock/completedCategoryMock";
+import { getCompletedOwnedCategories } from "@/features/category/api/categoryApi";
+import { getMilestones } from "@/features/milestone/api/milestoneApi";
+import type { CompletedCategoryDetail } from "@/features/mypage/types/completedCategory";
 import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function MyCategoryDetailPage(): JSX.Element {
   const navigate = useNavigate();
   const { categoryId } = useParams();
   const { isSidebarOpen } = useCalendarLayoutContext();
-  const detail = completedCategoryMocks.find(
-    ({ category }) => category.id === categoryId,
-  );
+  const [detail, setDetail] = useState<CompletedCategoryDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!categoryId) {
+      setIsLoading(false);
+      return;
+    }
+
+    let isActive = true;
+
+    void Promise.all([
+      getCompletedOwnedCategories(),
+      getMilestones(categoryId),
+    ])
+      .then(([categories, milestones]) => {
+        if (!isActive) {
+          return;
+        }
+
+        const category = categories.find(({ id }) => id === categoryId);
+
+        setDetail(
+          category
+            ? {
+                category: { ...category, items: milestones },
+                isPrivate: !category.isPublic,
+                progress: 100,
+              }
+            : null,
+        );
+      })
+      .catch(() => {
+        if (isActive) {
+          setDetail(null);
+        }
+      })
+      .finally(() => {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [categoryId]);
 
   return (
     <section
@@ -31,7 +78,11 @@ export default function MyCategoryDetailPage(): JSX.Element {
 
       <div className="h-full overflow-y-auto px-[72px] pb-12 custom-scrollbar">
         <div className="mx-auto w-[780px] pt-[110px]">
-          {detail ? (
+          {isLoading ? (
+            <div className="flex h-[700px] items-center justify-center text-body-02-m text-text-teritary">
+              카테고리를 불러오는 중이에요...
+            </div>
+          ) : detail ? (
             <>
               <MyCategoryDetailHeader detail={detail} />
 

@@ -60,6 +60,10 @@ export type Category = {
   isCompleted?: boolean;
   isShared?: boolean;
   displayOrder?: number;
+  milestoneCount?: number;
+  taskCount?: number;
+  sharedTaskCount?: number;
+  hasSchedules?: boolean;
   items: MilestoneItem[];
   tasks?: TaskItem[];
 };

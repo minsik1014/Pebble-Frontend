@@ -6,6 +6,8 @@ import { MyProfileSection } from "@/features/mypage/components/MyProfileSection"
 import { MonthlyReportBanner } from "@/features/mypage/components/MonthlyReportBanner";
 import { useNavigate } from "react-router-dom";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
+import { getCompletedOwnedCategories } from "@/features/category/api/categoryApi";
+import type { Category } from "@/types";
 
 const PROFILE_SCROLL_START = 80;
 const COMPACT_PROFILE_SCROLL_TOP = 64;
@@ -19,6 +21,7 @@ export default function MyPage() {
   const isLoaded = useProfileStore((state) => state.isLoaded);
   const [isCompact, setIsCompact] = useState(false);
   const [scrollTop, setScrollTop] = useState(0);
+  const [completedCategories, setCompletedCategories] = useState<Category[]>([]);
   const isWheelGestureLockedRef = useRef(false);
   const wheelUnlockTimerRef = useRef<number | null>(null);
 
@@ -27,6 +30,26 @@ export default function MyPage() {
       void loadProfile();
     }
   }, [isLoaded, loadProfile]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    void getCompletedOwnedCategories()
+      .then((categories) => {
+        if (isActive) {
+          setCompletedCategories(categories);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setCompletedCategories([]);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const currentScrollTop = event.currentTarget.scrollTop;
@@ -115,9 +138,13 @@ export default function MyPage() {
             onEditProfile={() => navigate("/my/profile")}
           />
           <MonthlyReportBanner onOpenReport={() => navigate("/report/monthly")} />
-          <MyPageStats isCompact={isCompact} />
+          <MyPageStats
+            isCompact={isCompact}
+            completedCategoryCount={completedCategories.length}
+          />
           <CompletedCategoryGrid
             isCompact={isCompact}
+            categories={completedCategories}
             onSelectCategory={(categoryId) =>
               navigate(`/my/categories/${categoryId}`)
             }

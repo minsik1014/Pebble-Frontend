@@ -1,21 +1,31 @@
 type CompletedCategoryCardProps = {
   title: string;
-  backgroundClassName: string;
+  imageUrl: string | null;
+  color: string;
   onClick?: () => void;
 };
 
 export const CompletedCategoryCard = ({
   title,
-  backgroundClassName,
+  imageUrl,
+  color,
   onClick,
 }: CompletedCategoryCardProps): JSX.Element => {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`relative h-[298px] overflow-hidden rounded-token-s text-left transition-transform duration-200 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-border-primary ${backgroundClassName}`}
+      className="relative h-[298px] overflow-hidden rounded-token-s text-left transition-transform duration-200 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-border-primary"
+      style={{ backgroundColor: color }}
       aria-label={`${title} 상세 보기`}
     >
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt=""
+          className="absolute inset-0 size-full object-cover"
+        />
+      )}
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/45 to-transparent px-4 pb-4 pt-16">
         <h3 className="text-body-01-sb text-text-onFill">{title}</h3>
       </div>

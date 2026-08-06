@@ -7,18 +7,25 @@ type MyCategoryDetailHeaderProps = {
 export const MyCategoryDetailHeader = ({
   detail,
 }: MyCategoryDetailHeaderProps): JSX.Element => {
-  const { category, cardBackgroundClassName, isPrivate, progress } = detail;
-  const taskCount = category.items.reduce(
-    (total, milestone) => total + (milestone.tasks?.length ?? 0),
-    0,
-  );
+  const { category, isPrivate, progress } = detail;
+  const taskCount = category.taskCount ?? 0;
+  const milestoneCount = category.milestoneCount ?? category.items.length;
 
   return (
     <header className="flex items-center gap-10">
       <div
-        className={`h-[188px] w-[142px] shrink-0 rounded-token-s ${cardBackgroundClassName}`}
+        className="relative h-[188px] w-[142px] shrink-0 overflow-hidden rounded-token-s"
+        style={{ backgroundColor: category.accent }}
         aria-hidden="true"
-      />
+      >
+        {category.imageUrl && (
+          <img
+            src={category.imageUrl}
+            alt=""
+            className="absolute inset-0 size-full object-cover"
+          />
+        )}
+      </div>
 
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-6">
@@ -42,7 +49,7 @@ export const MyCategoryDetailHeader = ({
                 {isPrivate ? "비공개" : "공개"}
               </span>
               <span className="rounded-token-infinite bg-btn-quaternary px-3 py-1 text-body-03-r text-text-primary">
-                마일스톤 {category.items.length}개
+                마일스톤 {milestoneCount}개
               </span>
               <span className="rounded-token-infinite bg-btn-quaternary px-3 py-1 text-body-03-r text-text-primary">
                 태스크 {taskCount}개

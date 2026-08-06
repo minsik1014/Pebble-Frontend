@@ -1,13 +1,15 @@
 import { CompletedCategoryCard } from "./CompletedCategoryCard";
-import { completedCategoryMocks } from "@/features/mypage/mock/completedCategoryMock";
+import type { Category } from "@/types";
 
 type CompletedCategoryGridProps = {
   isCompact: boolean;
+  categories: Category[];
   onSelectCategory: (categoryId: string) => void;
 };
 
 export const CompletedCategoryGrid = ({
   isCompact,
+  categories,
   onSelectCategory,
 }: CompletedCategoryGridProps): JSX.Element => {
   return (
@@ -31,11 +33,12 @@ export const CompletedCategoryGrid = ({
       </div>
 
       <div className="grid grid-cols-3 gap-5">
-        {completedCategoryMocks.map(({ category, cardBackgroundClassName }) => (
+        {categories.map((category) => (
           <CompletedCategoryCard
             key={category.id}
             title={category.title}
-            backgroundClassName={cardBackgroundClassName}
+            imageUrl={category.imageUrl ?? null}
+            color={category.accent}
             onClick={() => onSelectCategory(category.id)}
           />
         ))}

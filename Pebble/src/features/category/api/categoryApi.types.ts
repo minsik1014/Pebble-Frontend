@@ -9,6 +9,10 @@ export type CategoryResponse = {
   isCompleted?: boolean;
   isShared?: boolean;
   displayOrder?: number;
+  milestoneCount?: number;
+  taskCount?: number;
+  sharedTaskCount?: number;
+  hasSchedules?: boolean;
   createdAt?: string;
   updatedAt?: string;
 };

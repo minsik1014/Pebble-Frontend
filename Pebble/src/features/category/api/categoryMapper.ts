@@ -35,6 +35,10 @@ export function mapCategoryResponseToCategory(
     isCompleted: category.isCompleted,
     isShared: category.isShared,
     displayOrder: category.displayOrder,
+    milestoneCount: category.milestoneCount,
+    taskCount: category.taskCount,
+    sharedTaskCount: category.sharedTaskCount,
+    hasSchedules: category.hasSchedules,
     items: [],
     tasks: [],
   };
