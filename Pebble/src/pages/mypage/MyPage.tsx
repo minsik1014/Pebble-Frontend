@@ -61,7 +61,7 @@ export default function MyPage() {
 
   return (
     <section
-      className={`relative h-[1000px] shrink-0 rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
+      className={`relative h-[1000px] shrink-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
         isSidebarOpen ? "w-[924px]" : "w-[1316px]"
       }`}
     >
@@ -72,6 +72,7 @@ export default function MyPage() {
         <div className="relative mx-auto flex w-full max-w-[780px] flex-col">
           <MyProfileSection
             isCompact={isCompact}
+            completedCategoryCount={completedCategories.length}
             onEditProfile={() => navigate("/my/profile")}
           />
           <MonthlyReportBanner onOpenReport={() => navigate("/report/monthly")} />
@@ -83,7 +84,7 @@ export default function MyPage() {
             isCompact={isCompact}
             categories={completedCategories}
             onSelectCategory={(categoryId) =>
-              navigate(`/my/categories/${categoryId}`)
+              navigate(`/?category=${categoryId}&from=my`)
             }
           />
         </div>

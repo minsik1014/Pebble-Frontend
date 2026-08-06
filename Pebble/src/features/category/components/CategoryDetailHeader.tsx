@@ -70,7 +70,7 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
         </div>
 
         <ProgressBar 
-          progress={0} 
+          progress={category.isCompleted ? 100 : 0}
           themeBaseColor={category.themeBase}
         />
       </div>

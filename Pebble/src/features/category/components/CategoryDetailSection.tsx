@@ -19,6 +19,7 @@ import type {
 export const CategoryDetailSection = ({
   isSidebarOpen,
   category,
+  backLabel = "캘린더",
   onBack,
   categories,
   onUpdateCategory,
@@ -36,6 +37,7 @@ export const CategoryDetailSection = ({
 }: {
   isSidebarOpen: boolean;
   category: Category;
+  backLabel?: string;
   onBack: () => void;
   categories: Category[];
   onUpdateCategory: (
@@ -112,17 +114,17 @@ export const CategoryDetailSection = ({
         isSidebarOpen ? "w-[898px]" : "w-[1290px]"
       }`}
     >
-      {/* 캘린더 돌아가기 버튼 */}
+      {/* 이전 화면으로 돌아가기 버튼 */}
       <button
         onClick={onBack}
         className="absolute left-[20px] top-[36px] flex items-center gap-2 hover:opacity-80 transition-opacity"
-        aria-label="캘린더로 돌아가기"
+        aria-label={`${backLabel}로 돌아가기`}
       >
         <div className="w-11 h-11 flex items-center justify-center rounded-xl relative">
           <ChevronLeftIcon className="w-6 h-6 text-text-strong" />
         </div>
         <span className="text-[24px] font-medium leading-8 text-text-strong">
-          캘린더
+          {backLabel}
         </span>
       </button>
 
