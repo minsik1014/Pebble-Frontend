@@ -4,9 +4,9 @@ import DesktopIcon from '@/assets/icons/Desktop.svg?react';
 
 import { Button } from '@/components/ui/Button';
 import { Divider } from '@/components/ui/Divider';
+import type { NormalizedActivityLog } from '@/features/activity';
 
 import type { SettingsTheme } from '../types/settings';
-import type { DailyBridgeActivity } from '../utils/bridgeActivity';
 import { BridgeColorModal } from './BridgeColorModal';
 import { SettingsRow } from './SettingsRow';
 import { SettingsSection } from './SettingsSection';
@@ -16,19 +16,27 @@ import { ThemeSegmentControl, type ThemeMode } from './ThemeSegmentControl';
 interface DisplaySettingsSectionProps {
   theme: SettingsTheme;
   selectedBridgePaletteId: string;
-  activities: DailyBridgeActivity[];
+  activityLogs: NormalizedActivityLog[];
+  isActivityLoading: boolean;
+  isActivityError: boolean;
+  activityErrorMessage?: string;
   isUpdating: boolean;
   onThemeChange: (theme: SettingsTheme) => Promise<void>;
   onBridgePaletteChange: (paletteId: string) => Promise<void>;
+  onActivityRetry: () => void;
 }
 
 export function DisplaySettingsSection({
   theme,
   selectedBridgePaletteId,
-  activities,
+  activityLogs,
+  isActivityLoading,
+  isActivityError,
+  activityErrorMessage,
   isUpdating,
   onThemeChange,
   onBridgePaletteChange,
+  onActivityRetry,
 }: DisplaySettingsSectionProps) {
   const [isBridgeColorModalOpen, setIsBridgeColorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -94,7 +102,11 @@ export function DisplaySettingsSection({
       <BridgeColorModal
         open={isBridgeColorModalOpen}
         selectedPaletteId={selectedBridgePaletteId}
-        activities={activities}
+        activityLogs={activityLogs}
+        isActivityLoading={isActivityLoading}
+        isActivityError={isActivityError}
+        activityErrorMessage={activityErrorMessage}
+        onActivityRetry={onActivityRetry}
         onOpenChange={setIsBridgeColorModalOpen}
         onConfirm={onBridgePaletteChange}
       />

@@ -6,9 +6,7 @@ import { useCalendarCategoryActions } from "@/features/calendar/hooks/useCalenda
 import { useCalendarScheduleActions } from "@/features/calendar/hooks/useCalendarScheduleActions";
 import { getCategories } from "@/features/category/api/categoryApi";
 import { getCategoryMembers } from "@/features/category/api/sharedCategoryApi";
-import {
-  getMonthlyMilestones,
-} from "@/features/milestone/api/milestoneApi";
+import { getMonthlyMilestones } from "@/features/milestone/api/milestoneApi";
 import { getMyProfile } from "@/features/mypage/api/profileApi";
 import { getStandaloneTasks, getUserTasks } from "@/features/task/api/taskApi";
 import { ApiRequestError, getAccessToken } from "@/services/api";
@@ -317,12 +315,14 @@ export const useCalendarState = ({
     setCategories,
     setSelectedCategoryId,
   });
+
   const scheduleActions = useCalendarScheduleActions({
     categories,
     reloadCalendarData: () => loadCalendarData(),
     setCategories,
     standaloneTasks,
   });
+
   return {
     currentUserId,
     categories,

@@ -1,7 +1,7 @@
-
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
+import { useActivityLogs } from '@/features/activity';
 import { useCalendarLayoutContext } from '@/features/calendar/context/useCalendarLayoutContext';
 
 import {
@@ -40,7 +40,6 @@ export function SettingsView() {
   const {
     currentUser,
     settings,
-    activities,
 
     isLoading,
     loadError,
@@ -52,6 +51,17 @@ export function SettingsView() {
     changeActivityColor,
     markPasswordChanged,
   } = useSettings();
+
+  const {
+    logs: activityLogs,
+    isLoading: isActivityLoading,
+    isError: isActivityError,
+    error: activityError,
+    refetch: refetchActivityLogs,
+  } = useActivityLogs({
+    userId: currentUser?.id,
+    enabled: Boolean(currentUser),
+  });
 
   const [failedAction, setFailedAction] =
     useState<FailedSettingsAction | null>(null);
@@ -126,6 +136,7 @@ export function SettingsView() {
 
     try {
       await changeActivityColor(palette.activityColor);
+      void refetchActivityLogs();
     } catch {
       setFailedAction({
         type: 'activityColor',
@@ -153,12 +164,13 @@ export function SettingsView() {
 
         case 'activityColor':
           await changeActivityColor(failedAction.value);
+          void refetchActivityLogs();
           break;
       }
 
       setFailedAction(null);
     } catch {
-      // 다시 실패하면 토스트와 실패 액션을 유지합니다.
+      // 다시 실패하면 토스트는 열린 상태로 유지합니다.
     } finally {
       setIsRetrying(false);
     }
@@ -170,10 +182,14 @@ export function SettingsView() {
         <DisplaySettingsSection
           theme={settings.theme}
           selectedBridgePaletteId={selectedPalette.id}
-          activities={activities}
+          activityLogs={activityLogs}
+          isActivityLoading={isActivityLoading}
+          isActivityError={isActivityError}
+          activityErrorMessage={activityError?.message}
           isUpdating={updatingField !== null}
           onThemeChange={handleThemeChange}
           onBridgePaletteChange={handleBridgePaletteChange}
+          onActivityRetry={() => void refetchActivityLogs()}
         />
 
         <NotificationSettingsSection
