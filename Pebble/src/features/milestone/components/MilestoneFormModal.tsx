@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 
 import { ScheduleDatePicker } from '@/components/ui/ScheduleDatePicker';
-import {
-  CategorySelect,
-} from '@/features/calendar/components/ScheduleRelationSelects';
+import { CategorySelect } from '@/features/calendar/components/ScheduleRelationSelects';
 import { ScheduleFormModalFrame } from '@/features/calendar/components/ScheduleFormModalFrame';
 import { ScheduleNameInput } from '@/features/calendar/components/ScheduleNameInput';
 import type { CreateScheduleItemInput } from '@/features/calendar/types';
@@ -29,7 +30,9 @@ type MilestoneFormModalProps = {
     categoryId: string,
     input: CreateScheduleItemInput,
   ) => void | Promise<void>;
-  onRequestDelete?: () => void | Promise<void>;
+  onRequestDelete?: () =>
+    | void
+    | Promise<void>;
 };
 
 export const MilestoneFormModal = ({
@@ -42,22 +45,39 @@ export const MilestoneFormModal = ({
   onSubmit,
   onRequestDelete,
 }: MilestoneFormModalProps) => {
-  const [milestoneName, setMilestoneName] =
-    useState('');
+  const [
+    milestoneName,
+    setMilestoneName,
+  ] = useState('');
+
   const [
     selectedCategory,
     setSelectedCategory,
   ] = useState<string | null>(
     defaultCategoryId,
   );
+
   const [
     isCategoryDropdownOpen,
     setIsCategoryDropdownOpen,
   ] = useState(false);
-  const [errorMessage, setErrorMessage] =
-    useState('');
 
-  const datePicker = useScheduleDatePicker();
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('');
+
+  const datePicker =
+    useScheduleDatePicker();
+
+  const {
+    reset: resetDatePicker,
+    setDateType,
+    setMultiDates,
+    setDateRange,
+    setSelectedDate,
+  } = datePicker;
+
   const { isRunning, run } =
     useRetryableAction();
 
@@ -70,11 +90,14 @@ export const MilestoneFormModal = ({
     if (!isOpen) return;
 
     setErrorMessage('');
-    setSelectedCategory(defaultCategoryId);
+    setSelectedCategory(
+      defaultCategoryId,
+    );
+    setIsCategoryDropdownOpen(false);
 
     if (!milestone) {
       setMilestoneName('');
-      datePicker.reset();
+      resetDatePicker();
       return;
     }
 
@@ -84,8 +107,9 @@ export const MilestoneFormModal = ({
       milestone.dates &&
       milestone.dates.length > 0
     ) {
-      datePicker.setDateType('다중');
-      datePicker.setMultiDates(
+      setDateType('다중');
+
+      setMultiDates(
         milestone.dates
           .map(parseIsoScheduleDate)
           .filter(
@@ -93,12 +117,14 @@ export const MilestoneFormModal = ({
               Boolean(date),
           ),
       );
+
       return;
     }
 
     if (milestone.end) {
-      datePicker.setDateType('기간');
-      datePicker.setDateRange({
+      setDateType('기간');
+
+      setDateRange({
         start: parseIsoScheduleDate(
           milestone.start,
         ),
@@ -106,23 +132,36 @@ export const MilestoneFormModal = ({
           milestone.end,
         ),
       });
+
       return;
     }
 
-    datePicker.setDateType('하루');
-    datePicker.setSelectedDate(
-      parseIsoScheduleDate(milestone.start),
+    setDateType('하루');
+
+    setSelectedDate(
+      parseIsoScheduleDate(
+        milestone.start,
+      ),
     );
   }, [
     defaultCategoryId,
     isOpen,
     milestone,
+    resetDatePicker,
+    setDateType,
+    setMultiDates,
+    setDateRange,
+    setSelectedDate,
   ]);
 
   const handleSubmit = async () => {
     const scheduleRange =
-      getScheduleRangeFromSelection(datePicker);
-    const trimmedName = milestoneName.trim();
+      getScheduleRangeFromSelection(
+        datePicker,
+      );
+
+    const trimmedName =
+      milestoneName.trim();
 
     if (
       !selectedCategory ||
@@ -135,17 +174,24 @@ export const MilestoneFormModal = ({
 
     setErrorMessage('');
 
+    /*
+     * 실패한 요청을 다시 시도할 때도 동일한
+     * 카테고리와 입력값을 사용할 수 있도록
+     * 요청 시점의 값을 복사합니다.
+     */
     const categoryIdSnapshot =
       selectedCategory;
 
-    const inputSnapshot: CreateScheduleItemInput = {
-      title: trimmedName,
-      start: scheduleRange.start,
-      end: scheduleRange.end,
-      dates: scheduleRange.dates,
-      accent:
-        activeCategory?.accent ?? '#171717',
-    };
+    const inputSnapshot: CreateScheduleItemInput =
+      {
+        title: trimmedName,
+        start: scheduleRange.start,
+        end: scheduleRange.end,
+        dates: scheduleRange.dates,
+        accent:
+          activeCategory?.accent ??
+          '#171717',
+      };
 
     await run(
       async () => {
@@ -154,6 +200,10 @@ export const MilestoneFormModal = ({
           inputSnapshot,
         );
 
+        /*
+         * 요청 성공 후에만 입력값을 초기화하고
+         * 모달을 닫습니다.
+         */
         setMilestoneName('');
         onClose();
       },
@@ -170,7 +220,10 @@ export const MilestoneFormModal = ({
   };
 
   const handleDelete = async () => {
-    if (!onRequestDelete || isRunning) {
+    if (
+      !onRequestDelete ||
+      isRunning
+    ) {
       return;
     }
 
@@ -202,7 +255,9 @@ export const MilestoneFormModal = ({
           : '마일스톤 추가하기'
       }
       submitLabel={
-        mode === 'edit' ? '수정' : '추가'
+        mode === 'edit'
+          ? '수정'
+          : '추가'
       }
       disabled={
         !selectedCategory ||
@@ -227,16 +282,26 @@ export const MilestoneFormModal = ({
             selectedCategoryId={
               selectedCategory
             }
-            isOpen={isCategoryDropdownOpen}
-            variant="inverse"
-            onToggleOpen={() =>
-              setIsCategoryDropdownOpen(
-                (value) => !value,
-              )
+            isOpen={
+              isCategoryDropdownOpen
             }
-            onSelectCategory={(categoryId) => {
-              setSelectedCategory(categoryId);
-              setIsCategoryDropdownOpen(false);
+            variant="inverse"
+            onToggleOpen={() => {
+              setIsCategoryDropdownOpen(
+                (previousValue) =>
+                  !previousValue,
+              );
+            }}
+            onSelectCategory={(
+              categoryId,
+            ) => {
+              setSelectedCategory(
+                categoryId,
+              );
+              setIsCategoryDropdownOpen(
+                false,
+              );
+              setErrorMessage('');
             }}
           />
         </div>
@@ -257,19 +322,37 @@ export const MilestoneFormModal = ({
       <ScheduleDatePicker
         variant="milestone"
         dateType={datePicker.dateType}
-        onDateTypeChange={datePicker.setDateType}
-        currentYear={datePicker.currentYear}
-        currentMonth={datePicker.currentMonth}
-        daysInMonth={datePicker.daysInMonth}
+        onDateTypeChange={
+          datePicker.setDateType
+        }
+        currentYear={
+          datePicker.currentYear
+        }
+        currentMonth={
+          datePicker.currentMonth
+        }
+        daysInMonth={
+          datePicker.daysInMonth
+        }
         firstDay={datePicker.firstDay}
-        onPrevMonth={datePicker.handlePrevMonth}
-        onNextMonth={datePicker.handleNextMonth}
-        onDateClick={datePicker.handleDateClick}
-        getDayStatus={datePicker.getDayStatus}
+        onPrevMonth={
+          datePicker.handlePrevMonth
+        }
+        onNextMonth={
+          datePicker.handleNextMonth
+        }
+        onDateClick={
+          datePicker.handleDateClick
+        }
+        getDayStatus={
+          datePicker.getDayStatus
+        }
         themeBaseColor={
           activeCategory?.themeBase
         }
-        themeMidColor={activeCategory?.themeMid}
+        themeMidColor={
+          activeCategory?.themeMid
+        }
         themeLightColor={
           activeCategory?.themeLight
         }
