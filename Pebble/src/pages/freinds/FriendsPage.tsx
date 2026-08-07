@@ -24,7 +24,6 @@ import {
   type SearchedUser,
 } from "@/features/friends/api/followApi";
 import {
-  FOLLOW_SYNC_INTERVAL_MS,
   FOLLOW_UPDATED_EVENT,
 } from "@/features/friends/utils/followSync";
 
@@ -115,15 +114,6 @@ export default function FriendsPage(): JSX.Element {
         refreshCurrentSearch(),
       ]).catch(() => undefined);
     };
-    const intervalId = window.setInterval(() => {
-      if (document.visibilityState === "visible") {
-        void Promise.all([
-          loadFollowLists(),
-          refreshCurrentSearch(),
-        ]).catch(() => undefined);
-      }
-    }, FOLLOW_SYNC_INTERVAL_MS);
-
     window.addEventListener("focus", refreshAllFollowData);
     document.addEventListener("visibilitychange", refreshAllFollowData);
     window.addEventListener(
@@ -132,7 +122,6 @@ export default function FriendsPage(): JSX.Element {
     );
 
     return () => {
-      window.clearInterval(intervalId);
       window.removeEventListener("focus", refreshAllFollowData);
       document.removeEventListener(
         "visibilitychange",
