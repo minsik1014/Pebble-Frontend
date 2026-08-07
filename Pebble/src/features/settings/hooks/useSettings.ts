@@ -1,13 +1,8 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   getCurrentUser,
   getMySettings,
-  getUserActivityLogs,
   updateMySettings,
 } from '../api/settingsApi';
 import type {
@@ -16,16 +11,12 @@ import type {
   UserSettings,
 } from '../types/settings';
 import { applyTheme } from '../utils/theme';
-import type { DailyBridgeActivity } from '../utils/bridgeActivity';
 
 export function useSettings() {
   const [currentUser, setCurrentUser] =
     useState<CurrentUser | null>(null);
   const [settings, setSettings] =
     useState<UserSettings | null>(null);
-  const [activities, setActivities] = useState<
-    DailyBridgeActivity[]
-  >([]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -47,31 +38,9 @@ export function useSettings() {
       setCurrentUser(user);
       setSettings(loadedSettings);
       applyTheme(loadedSettings.theme);
-
-      try {
-        const activityData =
-          await getUserActivityLogs({
-            userId: user.id,
-          });
-
-        setActivities(
-          activityData.logs.map((log) => ({
-            date: log.date,
-            completedTaskCount:
-              log.completedTaskCount,
-          })),
-        );
-      } catch {
-        /*
-         * 징검다리 미리보기 실패가 설정 페이지 전체를
-         * 막지 않도록 빈 배열로 처리합니다.
-         */
-        setActivities([]);
-      }
     } catch (error) {
       setCurrentUser(null);
       setSettings(null);
-      setActivities([]);
 
       setLoadError(
         error instanceof Error
@@ -87,9 +56,7 @@ export function useSettings() {
     void loadSettings();
   }, [loadSettings]);
 
-  const changeTheme = async (
-    nextTheme: SettingsTheme,
-  ) => {
+  const changeTheme = async (nextTheme: SettingsTheme) => {
     if (!settings || updatingField) return;
     if (settings.theme === nextTheme) return;
 
@@ -129,9 +96,7 @@ export function useSettings() {
     }
   };
 
-  const changeNotification = async (
-    notifyTaskDue: boolean,
-  ) => {
+  const changeNotification = async (notifyTaskDue: boolean) => {
     if (!settings || updatingField) return;
 
     const previousSettings = settings;
@@ -165,9 +130,7 @@ export function useSettings() {
     }
   };
 
-  const changeActivityColor = async (
-    activityColor: string,
-  ) => {
+  const changeActivityColor = async (activityColor: string) => {
     if (!settings || updatingField) return;
 
     if (
@@ -208,10 +171,20 @@ export function useSettings() {
     }
   };
 
+  const markPasswordChanged = useCallback(() => {
+    setSettings((current) =>
+      current
+        ? {
+            ...current,
+            isTempPassword: false,
+          }
+        : current,
+    );
+  }, []);
+
   return {
     currentUser,
     settings,
-    activities,
 
     isLoading,
     loadError,
@@ -221,5 +194,6 @@ export function useSettings() {
     changeTheme,
     changeNotification,
     changeActivityColor,
+    markPasswordChanged,
   };
 }

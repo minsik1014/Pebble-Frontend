@@ -28,8 +28,10 @@ export async function getMyProfile(): Promise<Profile> {
   }
 
   return {
+    id: data.id,
     email: data.email,
     nickname: data.nickname,
+    uniqueTag: data.uniqueTag,
     bio: data.bio ?? "",
     imageUrl: data.profileImageUrl ?? null,
     lastNicknameChangedAt: data.lastNicknameChangedAt ?? null,

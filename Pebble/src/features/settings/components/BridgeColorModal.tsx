@@ -3,21 +3,22 @@ import { useEffect, useId, useMemo, useState } from 'react';
 import CloseIcon from '@/assets/icons/Close.svg?react';
 
 import { Button } from '@/components/ui/Button';
+import type { NormalizedActivityLog } from '@/features/activity';
 
 import {
   BRIDGE_COLOR_PALETTES,
   getBridgePaletteById,
   getBridgePaletteColors,
 } from '../constants/bridgeColorPalettes';
-import {
-  getRecentSevenDayBridgeColors,
-  type DailyBridgeActivity,
-} from '../utils/bridgeActivity';
 
 interface BridgeColorModalProps {
   open: boolean;
   selectedPaletteId: string;
-  activities: DailyBridgeActivity[];
+  activityLogs: NormalizedActivityLog[];
+  isActivityLoading: boolean;
+  isActivityError: boolean;
+  activityErrorMessage?: string;
+  onActivityRetry: () => void;
   onOpenChange: (open: boolean) => void;
   onConfirm: (paletteId: string) => Promise<void>;
 }
@@ -43,10 +44,27 @@ function ColorChip({ color, size = 'card' }: ColorChipProps) {
   );
 }
 
+function PreviewSkeleton() {
+  return (
+    <div className="flex h-12 w-full gap-token-xs" aria-hidden="true">
+      {Array.from({ length: 7 }, (_, index) => (
+        <span
+          key={index}
+          className="h-12 w-[75.43px] shrink-0 animate-pulse rounded-token-s bg-fill-surface"
+        />
+      ))}
+    </div>
+  );
+}
+
 export function BridgeColorModal({
   open,
   selectedPaletteId,
-  activities,
+  activityLogs,
+  isActivityLoading,
+  isActivityError,
+  activityErrorMessage,
+  onActivityRetry,
   onOpenChange,
   onConfirm,
 }: BridgeColorModalProps) {
@@ -70,12 +88,8 @@ export function BridgeColorModal({
   );
 
   const previewColors = useMemo(
-    () =>
-      getRecentSevenDayBridgeColors({
-        activities,
-        palette: draftPalette,
-      }),
-    [activities, draftPalette],
+    () => activityLogs.map((log) => draftPalette.colors[log.intensity]),
+    [activityLogs, draftPalette],
   );
 
   const hasChanged = draftPaletteId !== selectedPaletteId;
@@ -145,15 +159,33 @@ export function BridgeColorModal({
             {draftPalette.name}
           </p>
 
-          <div className="flex h-12 w-full gap-token-xs">
-            {previewColors.map((color, index) => (
-              <ColorChip
-                key={`${draftPaletteId}-${color}-${index}`}
-                color={color}
-                size="preview"
-              />
-            ))}
-          </div>
+          {isActivityLoading ? (
+            <PreviewSkeleton />
+          ) : isActivityError ? (
+            <div className="flex h-12 items-center justify-between rounded-token-s bg-fill-surface px-token-m">
+              <p className="text-caption-01 text-fill-danger">
+                {activityErrorMessage || '활동기록을 불러오지 못했어요.'}
+              </p>
+
+              <button
+                type="button"
+                className="text-caption-01 font-semibold text-text-strong underline"
+                onClick={onActivityRetry}
+              >
+                다시 시도
+              </button>
+            </div>
+          ) : (
+            <div className="flex h-12 w-full gap-token-xs">
+              {previewColors.map((color, index) => (
+                <ColorChip
+                  key={`${draftPaletteId}-${color}-${index}`}
+                  color={color}
+                  size="preview"
+                />
+              ))}
+            </div>
+          )}
 
           <p className="text-body-02-m tracking-[-0.01em] text-text-teritary">
             최근 7일 미리보기
@@ -212,9 +244,9 @@ export function BridgeColorModal({
         <div className="mt-auto flex h-11 w-full gap-token-m">
           <Button
             type="button"
-            variant="secondary"
+            variant="cancel"
             disabled={isSubmitting}
-            className="h-11 w-[282px] !bg-btn-quaternary !text-text-strong"
+            className="h-11 w-[282px]"
             onClick={handleClose}
           >
             취소

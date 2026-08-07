@@ -89,27 +89,70 @@ export const filterCategoriesByMonth = (
   categories: Category[],
   year: number,
   month: number,
-): Category[] =>
-  categories.map((category) => ({
-    ...category,
-    tasks: category.tasks?.filter((task) =>
-      isScheduleItemInMonth(task, year, month),
-    ),
-    items: category.items
-      .map((item): MilestoneItem | null => {
-        const filteredTasks = item.tasks?.filter((task) =>
-          isScheduleItemInMonth(task, year, month),
-        );
-        const shouldKeepMilestone = isScheduleItemInMonth(item, year, month);
+): Category[] => {
+  const filteredCategories: Array<
+    Category & {
+      hasAnySchedule: boolean;
+      hasCurrentMonthSchedule: boolean;
+    }
+  > = categories.map((category) => {
+      const hasAnyLoadedSchedule =
+        category.items.length > 0 || (category.tasks?.length ?? 0) > 0;
+      const hasAnyCountedSchedule =
+        (category.milestoneCount ?? 0) > 0 ||
+        (category.taskCount ?? 0) > 0 ||
+        (category.sharedTaskCount ?? 0) > 0;
+      const hasAnySchedule =
+        Boolean(category.hasSchedules) ||
+        hasAnyLoadedSchedule ||
+        hasAnyCountedSchedule;
+      const tasks = category.tasks?.filter((task) =>
+        isScheduleItemInMonth(task, year, month),
+      );
+      const items = category.items
+        .map((item): MilestoneItem | null => {
+          const filteredTasks = item.tasks?.filter((task) =>
+            isScheduleItemInMonth(task, year, month),
+          );
+          const shouldKeepMilestone = isScheduleItemInMonth(item, year, month);
 
-        if (!shouldKeepMilestone && (!filteredTasks || filteredTasks.length === 0)) {
-          return null;
-        }
+          if (
+            !shouldKeepMilestone &&
+            (!filteredTasks || filteredTasks.length === 0)
+          ) {
+            return null;
+          }
 
-        return {
-          ...item,
-          tasks: filteredTasks,
-        };
-      })
-      .filter((item): item is MilestoneItem => Boolean(item)),
-  }));
+          return {
+            ...item,
+            tasks: filteredTasks,
+          };
+        })
+        .filter((item): item is MilestoneItem => Boolean(item));
+      const hasCurrentMonthSchedule =
+        items.length > 0 || (tasks?.length ?? 0) > 0;
+
+      return {
+        ...category,
+        tasks,
+        items,
+        hasAnySchedule,
+        hasCurrentMonthSchedule,
+      };
+    });
+
+  return filteredCategories
+    .filter(
+      (category) =>
+        !category.hasAnySchedule || category.hasCurrentMonthSchedule,
+    )
+    .map((category) => {
+      const {
+        hasAnySchedule: _hasAnySchedule,
+        hasCurrentMonthSchedule: _hasCurrentMonthSchedule,
+        ...visibleCategory
+      } = category;
+
+      return visibleCategory;
+    });
+};

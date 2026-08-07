@@ -4,43 +4,55 @@ import {
   type FormEvent,
 } from 'react';
 
+import { Toast } from '@/components/ui/Toast';
 import { useProfileStore } from '@/features/mypage/store/useProfileStore';
 import { useRetryableAction } from '@/hooks/useRetryableAction';
 
-const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const DAY_IN_MS =
+  24 * 60 * 60 * 1000;
 
-export const ProfileEditForm = (): JSX.Element => {
+export const ProfileEditForm = () => {
   const profile = useProfileStore(
     (state) => state.profile,
   );
+
   const hasPendingImage = useProfileStore(
     (state) =>
       state.pendingImageUrl !== null,
   );
+
   const updateProfile = useProfileStore(
     (state) => state.updateProfile,
   );
+
   const isSaving = useProfileStore(
     (state) => state.isSaving,
   );
+
   const error = useProfileStore(
     (state) => state.error,
   );
 
-  const [nickname, setNickname] = useState(
-    profile.nickname,
-  );
-  const [bio, setBio] = useState(profile.bio);
+  const [nickname, setNickname] =
+    useState(profile.nickname);
+
+  const [bio, setBio] =
+    useState(profile.bio);
+
   const [
     isToastMounted,
     setIsToastMounted,
   ] = useState(false);
+
   const [
     isToastVisible,
     setIsToastVisible,
   ] = useState(false);
-  const [toastMessage, setToastMessage] =
-    useState('');
+
+  const [
+    toastMessage,
+    setToastMessage,
+  ] = useState('');
 
   const { isRunning, run } =
     useRetryableAction();
@@ -55,18 +67,23 @@ export const ProfileEditForm = (): JSX.Element => {
   const remainingDays = Math.max(
     0,
     Math.ceil(
-      (nicknameAvailableAt - Date.now()) /
+      (nicknameAvailableAt -
+        Date.now()) /
         DAY_IN_MS,
     ),
   );
 
-  const isNicknameLocked = remainingDays > 0;
+  const isNicknameLocked =
+    remainingDays > 0;
 
-  const normalizedNickname = nickname.trim();
+  const normalizedNickname =
+    nickname.trim();
+
   const normalizedBio = bio.trim();
 
   const hasChanges =
-    normalizedNickname !== profile.nickname ||
+    normalizedNickname !==
+      profile.nickname ||
     normalizedBio !== profile.bio ||
     hasPendingImage;
 
@@ -79,31 +96,30 @@ export const ProfileEditForm = (): JSX.Element => {
   useEffect(() => {
     setNickname(profile.nickname);
     setBio(profile.bio);
-  }, [profile.nickname, profile.bio]);
+  }, [
+    profile.bio,
+    profile.nickname,
+  ]);
 
   useEffect(() => {
-    if (!isToastMounted) return;
+    if (!isToastMounted) {
+      return;
+    }
 
-    const showTimer = window.setTimeout(
-      () => {
+    const showTimer =
+      window.setTimeout(() => {
         setIsToastVisible(true);
-      },
-      150,
-    );
+      }, 150);
 
-    const hideTimer = window.setTimeout(
-      () => {
+    const hideTimer =
+      window.setTimeout(() => {
         setIsToastVisible(false);
-      },
-      2150,
-    );
+      }, 2150);
 
-    const removeTimer = window.setTimeout(
-      () => {
+    const removeTimer =
+      window.setTimeout(() => {
         setIsToastMounted(false);
-      },
-      2600,
-    );
+      }, 2600);
 
     return () => {
       window.clearTimeout(showTimer);
@@ -117,17 +133,29 @@ export const ProfileEditForm = (): JSX.Element => {
   ) => {
     event.preventDefault();
 
-    if (!canSave) return;
+    if (!canSave) {
+      return;
+    }
 
+    /*
+     * 재시도 시에도 처음 제출했던 값을 사용하도록
+     * 요청 시점의 입력값을 복사합니다.
+     */
     const nicknameSnapshot =
       normalizedNickname;
-    const bioSnapshot = normalizedBio;
+
+    const bioSnapshot =
+      normalizedBio;
 
     const nicknameChanged =
-      nicknameSnapshot !== profile.nickname;
+      nicknameSnapshot !==
+      profile.nickname;
+
     const bioChanged =
       bioSnapshot !== profile.bio;
-    const imageChanged = hasPendingImage;
+
+    const imageChanged =
+      hasPendingImage;
 
     await run(async () => {
       await updateProfile({
@@ -135,6 +163,10 @@ export const ProfileEditForm = (): JSX.Element => {
         bio: bioSnapshot,
       });
 
+      /*
+       * 요청이 성공한 경우에만 현재 입력값을
+       * 서버에 저장된 값으로 맞춥니다.
+       */
       setNickname(nicknameSnapshot);
       setBio(bioSnapshot);
 
@@ -150,14 +182,23 @@ export const ProfileEditForm = (): JSX.Element => {
         setToastMessage(
           '한 줄 소개가 변경되었어요.',
         );
+      } else {
+        setToastMessage(
+          '프로필이 변경되었어요.',
+        );
       }
 
       setIsToastMounted(true);
     });
   };
 
-  const inputClassName =
-    'h-12 w-full rounded-token-s border border-border-default bg-fill-inverse px-3 text-body-02-m text-text-strong placeholder:text-text-teritary';
+  const inputClassName = [
+    'h-12 w-full rounded-token-s',
+    'border border-border-default',
+    'bg-fill-inverse px-3',
+    'text-body-02-m text-text-strong',
+    'placeholder:text-text-teritary',
+  ].join(' ');
 
   return (
     <form
@@ -187,9 +228,16 @@ export const ProfileEditForm = (): JSX.Element => {
             isRunning
           }
           maxLength={20}
-          className={`${inputClassName} disabled:cursor-not-allowed disabled:bg-fill-surface disabled:text-text-secondary`}
+          className={[
+            inputClassName,
+            'disabled:cursor-not-allowed',
+            'disabled:bg-fill-surface',
+            'disabled:text-text-secondary',
+          ].join(' ')}
           onChange={(event) =>
-            setNickname(event.target.value)
+            setNickname(
+              event.target.value,
+            )
           }
         />
 
@@ -206,9 +254,16 @@ export const ProfileEditForm = (): JSX.Element => {
         <input
           type="text"
           value={bio}
-          disabled={isSaving || isRunning}
+          disabled={
+            isSaving || isRunning
+          }
           maxLength={50}
-          className={inputClassName}
+          className={[
+            inputClassName,
+            'disabled:cursor-not-allowed',
+            'disabled:bg-fill-surface',
+            'disabled:text-text-secondary',
+          ].join(' ')}
           onChange={(event) =>
             setBio(event.target.value)
           }
@@ -218,7 +273,12 @@ export const ProfileEditForm = (): JSX.Element => {
       <button
         type="submit"
         disabled={!canSave}
-        className="mt-3 h-12 rounded-token-s bg-btn-secondary text-body-02-m text-text-onFill transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
+        className={[
+          'mt-3 h-12 rounded-token-s',
+          'bg-btn-secondary text-body-02-m text-text-onFill',
+          'transition-opacity',
+          'disabled:cursor-not-allowed disabled:opacity-60',
+        ].join(' ')}
       >
         {isSaving || isRunning
           ? '저장 중...'
@@ -235,21 +295,11 @@ export const ProfileEditForm = (): JSX.Element => {
       ) : null}
 
       {isToastMounted ? (
-        <div
-          role="status"
-          aria-live="polite"
-          className={[
-            'pointer-events-none absolute bottom-4 right-5 z-30',
-            'rounded-[16px] bg-black px-5 py-3',
-            'text-[14px] font-medium leading-5 text-white shadow-lg',
-            'transition-all duration-[450ms] ease-in-out',
-            isToastVisible
-              ? 'translate-y-0 opacity-100'
-              : 'translate-y-3 opacity-0',
-          ].join(' ')}
-        >
-          {toastMessage}
-        </div>
+        <Toast
+          message={toastMessage}
+          open={isToastVisible}
+          className="absolute bottom-4 right-5 z-30"
+        />
       ) : null}
     </form>
   );

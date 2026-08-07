@@ -72,9 +72,9 @@ export const MilestoneFormModal = ({
 
   const {
     reset: resetDatePicker,
+    setDateRange,
     setDateType,
     setMultiDates,
-    setDateRange,
     setSelectedDate,
   } = datePicker;
 
@@ -87,13 +87,27 @@ export const MilestoneFormModal = ({
   );
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return;
+    }
 
     setErrorMessage('');
-    setSelectedCategory(
-      defaultCategoryId,
-    );
     setIsCategoryDropdownOpen(false);
+
+    const availableDefaultCategoryId =
+      defaultCategoryId &&
+      categories.some(
+        (category) =>
+          category.id ===
+            defaultCategoryId &&
+          !category.isHidden,
+      )
+        ? defaultCategoryId
+        : null;
+
+    setSelectedCategory(
+      availableDefaultCategoryId,
+    );
 
     if (!milestone) {
       setMilestoneName('');
@@ -144,13 +158,14 @@ export const MilestoneFormModal = ({
       ),
     );
   }, [
+    categories,
     defaultCategoryId,
     isOpen,
     milestone,
     resetDatePicker,
+    setDateRange,
     setDateType,
     setMultiDates,
-    setDateRange,
     setSelectedDate,
   ]);
 
@@ -175,23 +190,22 @@ export const MilestoneFormModal = ({
     setErrorMessage('');
 
     /*
-     * 실패한 요청을 다시 시도할 때도 동일한
-     * 카테고리와 입력값을 사용할 수 있도록
-     * 요청 시점의 값을 복사합니다.
+     * 재시도할 때도 동일한 카테고리와 입력값을
+     * 사용하도록 요청 시점의 값을 복사합니다.
      */
     const categoryIdSnapshot =
       selectedCategory;
 
-    const inputSnapshot: CreateScheduleItemInput =
-      {
-        title: trimmedName,
-        start: scheduleRange.start,
-        end: scheduleRange.end,
-        dates: scheduleRange.dates,
-        accent:
-          activeCategory?.accent ??
-          '#171717',
-      };
+    const inputSnapshot:
+      CreateScheduleItemInput = {
+      title: trimmedName,
+      start: scheduleRange.start,
+      end: scheduleRange.end,
+      dates: scheduleRange.dates,
+      accent:
+        activeCategory?.accent ??
+        '#171717',
+    };
 
     await run(
       async () => {
@@ -201,8 +215,8 @@ export const MilestoneFormModal = ({
         );
 
         /*
-         * 요청 성공 후에만 입력값을 초기화하고
-         * 모달을 닫습니다.
+         * 요청이 성공한 경우에만 입력 상태를
+         * 초기화하고 모달을 닫습니다.
          */
         setMilestoneName('');
         onClose();
@@ -245,7 +259,9 @@ export const MilestoneFormModal = ({
     );
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <ScheduleFormModalFrame

@@ -3,6 +3,7 @@ import {
   Navigate,
   Route,
   Routes,
+  useLocation,
 } from 'react-router-dom';
 
 import { GlobalErrorToast } from '@/components/feedback/GlobalErrorToast';
@@ -25,6 +26,7 @@ import { SharedFriendsStep } from '@/features/report/steps/SharedFriendsStep';
 import { SummaryStep } from '@/features/report/steps/SummaryStep';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
 import FriendsPage from '@/pages/freinds/FriendsPage';
+import HomePage from '@/pages/home/HomePage';
 import { LandingPage } from '@/pages/landing/LandingPage';
 import MyCategoryDetailPage from '@/pages/mypage/MyCategoryDetailPage';
 import MyPage from '@/pages/mypage/MyPage';
@@ -32,19 +34,6 @@ import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
 import { EmailVerifyPage } from '@/pages/settings/EmailVerifyPage';
 import SettingsPage from '@/pages/settings/SettingsPage';
 import { getAccessToken } from '@/services/api';
-
-function RootRoute() {
-  if (!getAccessToken()) {
-    return (
-      <Navigate
-        to="/landing"
-        replace
-      />
-    );
-  }
-
-  return <CalendarMainPage />;
-}
 
 function LandingRoute() {
   if (getAccessToken()) {
@@ -55,10 +44,12 @@ function LandingRoute() {
 }
 
 function ProtectedLayoutRoute() {
+  const { pathname } = useLocation();
+
   if (!getAccessToken()) {
     return (
       <Navigate
-        to="/login"
+        to={pathname === '/' ? '/landing' : '/login'}
         replace
       />
     );
@@ -74,49 +65,19 @@ function App() {
 
       <div className="min-h-screen bg-fill-surface font-sans text-text-strong">
         <Routes>
-          <Route
-            path="/landing"
-            element={<LandingRoute />}
-          />
+          <Route path="/landing" element={<LandingRoute />} />
 
-          <Route element={<MainLayout />}>
-            <Route
-              index
-              element={<RootRoute />}
-            />
-          </Route>
-
-          <Route
-            element={
-              <ProtectedLayoutRoute />
-            }
-          >
-            <Route
-              path="friends"
-              element={<FriendsPage />}
-            />
-
-            <Route
-              path="my"
-              element={<MyPage />}
-            />
-
-            <Route
-              path="my/profile"
-              element={<ProfileEditPage />}
-            />
-
+          <Route element={<ProtectedLayoutRoute />}>
+            <Route index element={<CalendarMainPage />} />
+            <Route path="home" element={<HomePage />} />
+            <Route path="friends" element={<FriendsPage />} />
+            <Route path="my" element={<MyPage />} />
+            <Route path="my/profile" element={<ProfileEditPage />} />
             <Route
               path="my/categories/:categoryId"
-              element={
-                <MyCategoryDetailPage />
-              }
+              element={<MyCategoryDetailPage />}
             />
-
-            <Route
-              path="settings"
-              element={<SettingsPage />}
-            />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           <Route
@@ -129,87 +90,38 @@ function App() {
           >
             <Route
               index
-              element={
-                <Navigate
-                  to={FIRST_STEP_PATH}
-                  replace
-                />
-              }
+              element={<Navigate to={FIRST_STEP_PATH} replace />}
             />
-
-            <Route
-              path="monthly"
-              element={<MonthlyPebbleStep />}
-            />
-
-            <Route
-              path="category"
-              element={<BusiestCategoryStep />}
-            />
-
-            <Route
-              path="day"
-              element={<BusiestDayStep />}
-            />
-
-            <Route
-              path="friends"
-              element={<SharedFriendsStep />}
-            />
-
-            <Route
-              path="summary"
-              element={<SummaryStep />}
-            />
-
+            <Route path="monthly" element={<MonthlyPebbleStep />} />
+            <Route path="category" element={<BusiestCategoryStep />} />
+            <Route path="day" element={<BusiestDayStep />} />
+            <Route path="friends" element={<SharedFriendsStep />} />
+            <Route path="summary" element={<SummaryStep />} />
             <Route
               path="*"
-              element={
-                <Navigate
-                  to={FIRST_STEP_PATH}
-                  replace
-                />
-              }
+              element={<Navigate to={FIRST_STEP_PATH} replace />}
             />
           </Route>
 
-          <Route
-            path="/email/verify"
-            element={<EmailVerifyPage />}
-          />
+          <Route path="/email/verify" element={<EmailVerifyPage />} />
 
-          <Route
-            path="/login"
-            element={<LoginPage />}
-          />
-
-          <Route
-            path="/signup"
-            element={<SignUpPage />}
-          />
-
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
           <Route
             path="/forgot-password"
-            element={
-              <ForgotPasswordPage />
-            }
+            element={<ForgotPasswordPage />}
           />
-
           <Route
             path="/profile-setup"
             element={<ProfileSetupPage />}
           />
-
           <Route
             path="/signup-complete"
             element={<SignUpCompletePage />}
           />
-
           <Route
             path="/oauth/callback/:provider"
-            element={
-              <SocialOAuthCallbackPage />
-            }
+            element={<SocialOAuthCallbackPage />}
           />
         </Routes>
       </div>

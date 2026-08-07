@@ -133,6 +133,18 @@
   --shadow-color: 0 0 0;
 }
 
+.schedule-date-range-segment {
+  background-color: var(--schedule-range-color);
+}
+
+:root[data-theme='dark'] .schedule-date-range-segment {
+  background-color: color-mix(
+    in srgb,
+    var(--schedule-range-color) 40%,
+    rgb(var(--fill-inverse))
+  );
+}
+
 .theme-popart {
   --color-1-base: #755ecc;
   --color-1-mid: #b3a6e3;

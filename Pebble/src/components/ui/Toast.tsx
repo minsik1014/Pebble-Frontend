@@ -1,42 +1,48 @@
 import type { ReactNode } from 'react';
 
-interface ToastProps {
-  open: boolean;
+type ToastProps = {
   message: string;
+  open?: boolean;
   actionLabel?: string;
   isActionLoading?: boolean;
   children?: ReactNode;
   className?: string;
+  role?: 'status' | 'alert';
+  'aria-live'?: 'polite' | 'assertive';
   onAction?: () => void;
   onClose?: () => void;
-}
+};
 
 export function Toast({
-  open,
   message,
+  open = true,
   actionLabel,
   isActionLoading = false,
   children,
   className = '',
+  role = 'status',
+  'aria-live': ariaLive = 'polite',
   onAction,
   onClose,
 }: ToastProps) {
   return (
     <div
-      role="status"
-      aria-live="polite"
+      role={role}
+      aria-live={ariaLive}
       aria-hidden={!open}
       className={[
-        'fixed bottom-8 left-1/2 z-[9999] w-[calc(100%-32px)] max-w-[520px] -translate-x-1/2',
-        'transition-[opacity,transform] duration-300 ease-out',
+        'w-[376px] overflow-hidden rounded-token-s',
+        'bg-fill-primary p-3 text-body-02-m text-text-onFill',
+        'shadow-shadow-m',
+        'transition-[opacity,transform] duration-[450ms] ease-in-out',
         open
           ? 'pointer-events-auto translate-y-0 opacity-100'
-          : 'pointer-events-none translate-y-4 opacity-0',
+          : 'pointer-events-none translate-y-3 opacity-0',
         className,
       ].join(' ')}
     >
-      <div className="flex min-h-[52px] items-center gap-token-m rounded-token-m bg-text-strong px-token-l py-token-m text-text-onFill shadow-shadow-m">
-        <p className="min-w-0 flex-1 text-body-02-m leading-[150%]">
+      <div className="flex min-h-7 items-center gap-token-m">
+        <p className="min-w-0 flex-1 leading-[150%]">
           {message}
         </p>
 
@@ -46,12 +52,15 @@ export function Toast({
           <button
             type="button"
             disabled={isActionLoading}
-            className="shrink-0 rounded-token-xs px-token-s py-token-xs text-body-02-sb text-text-onFill underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
+            className={[
+              'shrink-0 rounded-token-xs px-token-s py-token-xs',
+              'text-body-02-sb text-text-onFill underline-offset-2',
+              'hover:underline',
+              'disabled:cursor-not-allowed disabled:opacity-60',
+            ].join(' ')}
             onClick={onAction}
           >
-            {isActionLoading
-              ? '재시도 중...'
-              : actionLabel}
+            {isActionLoading ? '재시도 중...' : actionLabel}
           </button>
         ) : null}
 
@@ -60,7 +69,11 @@ export function Toast({
             type="button"
             aria-label="토스트 닫기"
             disabled={isActionLoading}
-            className="shrink-0 text-body-02-sb text-text-onFill opacity-80 transition-opacity hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-40"
+            className={[
+              'shrink-0 text-body-02-sb text-text-onFill',
+              'opacity-80 transition-opacity hover:opacity-100',
+              'disabled:cursor-not-allowed disabled:opacity-40',
+            ].join(' ')}
             onClick={onClose}
           >
             닫기

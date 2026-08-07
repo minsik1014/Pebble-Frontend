@@ -12,19 +12,73 @@ import {
   updateCategory as updateCategoryApi,
 } from "@/features/category/api/categoryApi";
 import {
+  inviteCategoryMember,
+  removeCategoryMember,
+  shareCategory,
+} from "@/features/category/api/sharedCategoryApi";
+import {
   replaceCategoryList,
-  updateCategoryInList,
 } from "@/features/calendar/utils/calendarStateUtils";
 
 type UseCalendarCategoryActionsParams = {
+  categories: Category[];
+  reloadCalendarData: () => Promise<void>;
   setCategories: Dispatch<SetStateAction<Category[]>>;
   setSelectedCategoryId: Dispatch<SetStateAction<string | null>>;
 };
 
 export const useCalendarCategoryActions = ({
+  categories,
+  reloadCalendarData,
   setCategories,
   setSelectedCategoryId,
 }: UseCalendarCategoryActionsParams) => {
+  const syncSharedCategoryMembers = useCallback(
+    async (
+      categoryId: string,
+      previousMembers: Category["members"] = [],
+      nextMembers: Category["members"] = [],
+      wasShared = false,
+      shouldBeShared = false,
+    ) => {
+      if (!shouldBeShared) {
+        return;
+      }
+
+      const previousEditableMembers = previousMembers.filter(
+        (member) => member.role !== "OWNER",
+      );
+      const nextEditableMembers = nextMembers.filter(
+        (member) => member.role !== "OWNER",
+      );
+      const membersToAdd = nextEditableMembers.filter(
+        (nextMember) =>
+          !previousEditableMembers.some(
+            (previousMember) => previousMember.id === nextMember.id,
+          ),
+      );
+      const membersToRemove = previousEditableMembers.filter(
+        (previousMember) =>
+          !nextEditableMembers.some(
+            (nextMember) => nextMember.id === previousMember.id,
+          ),
+      );
+
+      if (!wasShared) {
+        await shareCategory(categoryId, nextEditableMembers);
+        return;
+      }
+
+      await Promise.all([
+        ...membersToAdd.map((member) => inviteCategoryMember(categoryId, member)),
+        ...membersToRemove.map((member) =>
+          removeCategoryMember(categoryId, member.id),
+        ),
+      ]);
+    },
+    [],
+  );
+
   const replaceCategories = useCallback(
     (nextCategories: Category[]) => {
       setCategories(replaceCategoryList(nextCategories));
@@ -52,49 +106,71 @@ export const useCalendarCategoryActions = ({
         throw new Error("카테고리 생성 응답을 확인하지 못했어요.");
       }
 
-      setCategories((previousCategories) => [...previousCategories, category]);
       setSelectedCategoryId(null);
+      await reloadCalendarData();
 
       return category;
     },
-    [setCategories, setSelectedCategoryId],
+    [reloadCalendarData, setSelectedCategoryId],
   );
 
   const updateCategory = useCallback(
     async (categoryId: string, input: UpdateCategoryInput) => {
-      const category = await updateCategoryApi(categoryId, input);
-
-      setCategories((previousCategories) =>
-        category
-          ? previousCategories.map((previousCategory) =>
-              previousCategory.id === categoryId
-                ? {
-                    ...category,
-                    items: previousCategory.items,
-                    tasks: previousCategory.tasks,
-                  }
-                : previousCategory,
-            )
-          : updateCategoryInList(previousCategories, categoryId, input),
+      const previousCategory = categories.find(
+        (category) => category.id === categoryId,
       );
+      await updateCategoryApi(categoryId, input);
+      const nextMembers = input.isShared ? input.members ?? [] : [];
+
+      await syncSharedCategoryMembers(
+        categoryId,
+        input.previousMembers ?? previousCategory?.members,
+        nextMembers,
+        Boolean(previousCategory?.isShared),
+        Boolean(input.isShared),
+      );
+
+      await reloadCalendarData();
     },
-    [setCategories],
+    [categories, reloadCalendarData, syncSharedCategoryMembers],
+  );
+
+  const toggleCategoryVisibility = useCallback(
+    async (categoryId: string) => {
+      const category = categories.find((category) => category.id === categoryId);
+
+      if (!category) {
+        return;
+      }
+
+      if (category.isShared) {
+        setCategories((previousCategories) =>
+          previousCategories.map((previousCategory) =>
+            previousCategory.id === categoryId
+              ? { ...previousCategory, isHidden: !previousCategory.isHidden }
+              : previousCategory,
+          ),
+        );
+        return;
+      }
+
+      await updateCategory(categoryId, { isHidden: !category.isHidden });
+    },
+    [categories, setCategories, updateCategory],
   );
 
   const deleteCategory = useCallback(
     async (categoryId: string) => {
       await deleteCategoryApi(categoryId);
 
-      setCategories((previousCategories) =>
-        previousCategories.filter((category) => category.id !== categoryId),
-      );
       setSelectedCategoryId((previousSelectedCategoryId) =>
         previousSelectedCategoryId === categoryId
           ? null
           : previousSelectedCategoryId,
       );
+      await reloadCalendarData();
     },
-    [setCategories, setSelectedCategoryId],
+    [reloadCalendarData, setSelectedCategoryId],
   );
 
   return {
@@ -103,6 +179,7 @@ export const useCalendarCategoryActions = ({
     clearSelectedCategory,
     createCategory,
     updateCategory,
+    toggleCategoryVisibility,
     deleteCategory,
   };
 };

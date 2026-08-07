@@ -1,80 +1,238 @@
-import { useCallback } from "react";
-import type { Dispatch, SetStateAction } from "react";
+import { useCallback, type Dispatch, type SetStateAction } from "react";
 
-import type { Category, TaskItem } from "@/types";
+import { notifyActivityLogsChanged } from "@/features/activity";
 import type { CreateScheduleItemInput } from "@/features/calendar/types";
+import { createTaskEntity } from "@/features/calendar/utils/calendarStateUtils";
 import {
   createMilestone as createMilestoneApi,
   deleteMilestone as deleteMilestoneApi,
   toggleMilestoneComplete as toggleMilestoneCompleteApi,
   updateMilestone as updateMilestoneApi,
 } from "@/features/milestone/api/milestoneApi";
+import type { MilestoneDeleteScope } from "@/features/milestone/api/milestoneApi.types";
 import {
   createTask as createTaskApi,
   deleteTask as deleteTaskApi,
   toggleTaskComplete as toggleTaskCompleteApi,
   updateTask as updateTaskApi,
 } from "@/features/task/api/taskApi";
-import {
-  appendMilestoneToCategory,
-  appendMilestonesToCategory,
-  appendTaskToCategory,
-  appendTaskToMilestone,
-  createMilestoneEntity,
-  createTaskEntity,
-  removeCategoryTaskFromList,
-  removeMilestoneFromCategory,
-  removeTaskFromMilestone,
-  replaceStandaloneTaskInList,
-  toggleCategoryTaskCompletedInList,
-  toggleMilestoneCompletedInCategory,
-  toggleStandaloneTaskCompletedInList,
-  toggleTaskCompletedInMilestone,
-  updateCategoryTaskInList,
-  updateMilestoneInCategory,
-  updateTaskInMilestone,
-} from "@/features/calendar/utils/calendarStateUtils";
+import type { Category, TaskItem } from "@/types";
 
 type UseCalendarScheduleActionsParams = {
   categories: Category[];
+  reloadCalendarData: () => Promise<void>;
   setCategories: Dispatch<SetStateAction<Category[]>>;
-  setStandaloneTasks: Dispatch<SetStateAction<TaskItem[]>>;
+  standaloneTasks: TaskItem[];
 };
 
-const getScheduleDateType = (input: CreateScheduleItemInput) => {
-  if (input.dates && input.dates.length > 0) {
-    return "MULTIPLE";
+type ScheduleDateSource =
+  | Pick<TaskItem, "start" | "end" | "dates">
+  | CreateScheduleItemInput;
+
+const normalizeScheduleDate = (date?: string | null) => {
+  if (!date) return undefined;
+
+  return date.slice(0, 10);
+};
+
+const normalizeScheduleDates = (dates?: string[]) =>
+  dates
+    ?.map(normalizeScheduleDate)
+    .filter((date): date is string => Boolean(date));
+
+const getMilestoneDeleteScope = (
+  dateType?: string,
+): MilestoneDeleteScope | undefined =>
+  dateType === "MULTIPLE" ? "ALL" : undefined;
+
+const isMultipleTask = (task?: TaskItem | null) => {
+  const hasMultipleDates =
+    (task?.dates?.length ?? 0) > 1 || (task?.taskDates?.length ?? 0) > 1;
+
+  return task?.dateType === "MULTIPLE" || hasMultipleDates;
+};
+
+const deleteTaskWithScope = async (taskId: string, task?: TaskItem | null) => {
+  if (!isMultipleTask(task)) {
+    await deleteTaskApi({ taskId });
+    return;
   }
 
-  if (input.end) {
-    return "RANGE";
+  const taskDateIds =
+    task?.taskDates
+      ?.map((taskDate) => taskDate.taskDateId)
+      .filter((taskDateId): taskDateId is number => Boolean(taskDateId)) ?? [];
+
+  if (taskDateIds.length === 0) {
+    await deleteTaskApi({ taskId, deleteScope: "ALL" });
+    return;
   }
 
-  return "SINGLE";
+  for (const taskDateId of taskDateIds) {
+    await deleteTaskApi({
+      taskId,
+      deleteScope: "THIS_ONLY",
+      taskDateId,
+    });
+  }
+};
+
+const getTaskCompleteTargetIds = (
+  task?: TaskItem | null,
+  taskDateId?: number,
+) => {
+  if (taskDateId) {
+    return [taskDateId];
+  }
+
+  if (task?.dateType !== "MULTIPLE" || !task.taskDates?.length) {
+    return [undefined];
+  }
+
+  return [];
+};
+
+const splitMultipleScheduleInput = (
+  input: CreateScheduleItemInput,
+): CreateScheduleItemInput[] => {
+  if (!input.dates?.length) {
+    return [input];
+  }
+
+  return input.dates.map((date) => ({
+    ...input,
+    start: date,
+    end: undefined,
+    dates: undefined,
+  }));
+};
+
+const getScheduleAffectedDates = (schedule?: ScheduleDateSource | null) => {
+  if (!schedule) return undefined;
+
+  if (schedule.dates && schedule.dates.length > 0) {
+    return normalizeScheduleDates(schedule.dates);
+  }
+
+  /*
+   * 기간 일정은 중간 날짜까지 모두 포함될 수 있으므로
+   * 특정 날짜 배열로 제한하지 않고 최근 7일을 재조회합니다.
+   */
+  if (schedule.end) {
+    return undefined;
+  }
+
+  const startDate = normalizeScheduleDate(schedule.start);
+
+  return startDate ? [startDate] : undefined;
+};
+
+const mergeAffectedDates = (
+  previousSchedule?: ScheduleDateSource | null,
+  nextSchedule?: ScheduleDateSource | null,
+) => {
+  const previousDates = getScheduleAffectedDates(previousSchedule);
+  const nextDates = getScheduleAffectedDates(nextSchedule);
+
+  if (!previousDates || !nextDates) {
+    return undefined;
+  }
+
+  return Array.from(new Set([...previousDates, ...nextDates]));
+};
+
+const findCategoryTask = (
+  categories: Category[],
+  categoryId: string,
+  taskId: string,
+) =>
+  categories
+    .find((category) => category.id === categoryId)
+    ?.tasks?.find((task) => task.id === taskId) ?? null;
+
+const findMilestoneTask = (
+  categories: Category[],
+  categoryId: string,
+  milestoneId: string,
+  taskId: string,
+) =>
+  categories
+    .find((category) => category.id === categoryId)
+    ?.items.find((item) => item.id === milestoneId)
+    ?.tasks?.find((task) => task.id === taskId) ?? null;
+
+const findStandaloneTask = (standaloneTasks: TaskItem[], taskId: string) =>
+  standaloneTasks.find((task) => task.id === taskId) ?? null;
+
+const getTaskCompletionChange = (
+  task?: TaskItem | null,
+  taskDateId?: number,
+) => {
+  const targetTaskDate = taskDateId
+    ? task?.taskDates?.find((taskDate) => taskDate.taskDateId === taskDateId)
+    : null;
+
+  const previousIsCompleted =
+    targetTaskDate?.isCompleted ?? task?.isCompleted ?? false;
+
+  const targetTaskDateDate = normalizeScheduleDate(targetTaskDate?.date);
+
+  const affectedDates = targetTaskDateDate
+    ? [targetTaskDateDate]
+    : getScheduleAffectedDates(task);
+
+  return {
+    reason: previousIsCompleted ? "taskUncompleted" : "taskCompleted",
+    affectedDates,
+  } as const;
 };
 
 export const useCalendarScheduleActions = ({
   categories,
+  reloadCalendarData,
   setCategories,
-  setStandaloneTasks,
+  standaloneTasks,
 }: UseCalendarScheduleActionsParams) => {
+  const markCategoryAsEmptyIfNoLoadedSchedules = useCallback(
+    (categoryId: string) => {
+      setCategories((previousCategories) =>
+        previousCategories.map((category) => {
+          const hasLoadedSchedules =
+            category.items.length > 0 || (category.tasks?.length ?? 0) > 0;
+
+          if (category.id !== categoryId || hasLoadedSchedules) {
+            return category;
+          }
+
+          return {
+            ...category,
+            hasSchedules: false,
+            milestoneCount: 0,
+            taskCount: 0,
+            sharedTaskCount: 0,
+          };
+        }),
+      );
+    },
+    [setCategories],
+  );
+
   const createMilestone = useCallback(
     async (categoryId: string, input: CreateScheduleItemInput) => {
-      const milestones = await createMilestoneApi(categoryId, input);
+      const splitInputs = splitMultipleScheduleInput(input);
+      const milestones = (
+        await Promise.all(
+          splitInputs.map((splitInput) =>
+            createMilestoneApi(categoryId, splitInput),
+          ),
+        )
+      ).flat();
 
-      setCategories((previousCategories) =>
-        milestones.length > 0
-          ? appendMilestonesToCategory(previousCategories, categoryId, milestones)
-          : appendMilestoneToCategory(
-              previousCategories,
-              categoryId,
-              createMilestoneEntity(input),
-            ),
-      );
+      await reloadCalendarData();
 
       return milestones;
     },
-    [setCategories],
+    [reloadCalendarData],
   );
 
   const updateMilestone = useCallback(
@@ -83,52 +241,10 @@ export const useCalendarScheduleActions = ({
       milestoneId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const previousMilestone =
-        categories
-          .find((category) => category.id === categoryId)
-          ?.items.find((item) => item.id === milestoneId) ?? null;
-      const nextDateType = getScheduleDateType(input);
-
-      if (
-        previousMilestone?.dateType &&
-        previousMilestone.dateType !== nextDateType
-      ) {
-        const milestones = await createMilestoneApi(categoryId, input);
-        await deleteMilestoneApi(milestoneId);
-
-        setCategories((previousCategories) =>
-          appendMilestonesToCategory(
-            removeMilestoneFromCategory(
-              previousCategories,
-              categoryId,
-              milestoneId,
-            ),
-            categoryId,
-            milestones.length > 0
-              ? milestones
-              : [createMilestoneEntity(input)],
-          ),
-        );
-
-        return;
-      }
-
-      const milestone = await updateMilestoneApi(
-        milestoneId,
-        input,
-        previousMilestone,
-      );
-
-      setCategories((previousCategories) =>
-        updateMilestoneInCategory(
-          previousCategories,
-          categoryId,
-          milestoneId,
-          milestone ?? createMilestoneEntity({ ...input, id: milestoneId }),
-        ),
-      );
+      await updateMilestoneApi(milestoneId, categoryId, input);
+      await reloadCalendarData();
     },
-    [categories, setCategories],
+    [reloadCalendarData],
   );
 
   const createTask = useCallback(
@@ -137,134 +253,187 @@ export const useCalendarScheduleActions = ({
       milestoneId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const task =
-        (await createTaskApi({ categoryId, milestoneId, input })) ??
-        createTaskEntity({ ...input, categoryId, milestoneId });
-
-      setCategories((previousCategories) =>
-        appendTaskToMilestone(
-          previousCategories,
-          categoryId,
-          milestoneId,
-          task,
+      const splitInputs = splitMultipleScheduleInput(input);
+      const tasks = await Promise.all(
+        splitInputs.map(async (splitInput) =>
+          (await createTaskApi({
+            categoryId,
+            milestoneId,
+            input: splitInput,
+          })) ?? createTaskEntity({ ...splitInput, categoryId, milestoneId }),
         ),
       );
 
-      return task;
+      await reloadCalendarData();
+
+      return tasks[0];
     },
-    [setCategories],
+    [reloadCalendarData],
   );
 
   const createCategoryTask = useCallback(
     async (categoryId: string, input: CreateScheduleItemInput) => {
-      const task =
-        (await createTaskApi({ categoryId, input })) ??
-        createTaskEntity({ ...input, categoryId });
-
-      setCategories((previousCategories) =>
-        appendTaskToCategory(previousCategories, categoryId, task),
+      const splitInputs = splitMultipleScheduleInput(input);
+      const tasks = await Promise.all(
+        splitInputs.map(async (splitInput) =>
+          (await createTaskApi({ categoryId, input: splitInput })) ??
+          createTaskEntity({ ...splitInput, categoryId }),
+        ),
       );
 
-      return task;
+      await reloadCalendarData();
+
+      return tasks[0];
     },
-    [setCategories],
+    [reloadCalendarData],
   );
 
   const updateCategoryTask = useCallback(
     async (categoryId: string, taskId: string, input: CreateScheduleItemInput) => {
-      const task = await updateTaskApi({
+      const previousTask = findCategoryTask(categories, categoryId, taskId);
+
+      const nextCategoryId =
+        "categoryId" in input ? input.categoryId ?? null : categoryId;
+      const nextMilestoneId =
+        "milestoneId" in input ? input.milestoneId ?? null : null;
+
+      await updateTaskApi({
         taskId,
         input,
-        isChildTask: true,
+        categoryId: nextCategoryId,
+        milestoneId: nextMilestoneId,
       });
 
-      setCategories((previousCategories) =>
-        updateCategoryTaskInList(
-          previousCategories,
-          categoryId,
-          taskId,
-          task ?? input,
-        ),
-      );
+      await reloadCalendarData();
+
+      notifyActivityLogsChanged({
+        reason: "taskUpdated",
+        affectedDates: mergeAffectedDates(previousTask, input),
+      });
     },
-    [setCategories],
+    [categories, reloadCalendarData],
   );
 
   const deleteCategoryTask = useCallback(
     async (categoryId: string, taskId: string) => {
-      await deleteTaskApi({ taskId });
+      const category =
+        categories.find((previousCategory) => previousCategory.id === categoryId) ??
+        null;
+      const task =
+        category?.tasks?.find((categoryTask) => categoryTask.id === taskId) ??
+        null;
+      const willBeEmptyCategory =
+        Boolean(category) &&
+        category.items.length === 0 &&
+        (category.tasks?.filter((categoryTask) => categoryTask.id !== taskId)
+          .length ?? 0) === 0;
 
-      setCategories((previousCategories) =>
-        removeCategoryTaskFromList(previousCategories, categoryId, taskId),
-      );
+      await deleteTaskWithScope(taskId, task);
+
+      await reloadCalendarData();
+
+      if (willBeEmptyCategory) {
+        markCategoryAsEmptyIfNoLoadedSchedules(categoryId);
+      }
+
+      notifyActivityLogsChanged({
+        reason: "taskDeleted",
+        affectedDates: getScheduleAffectedDates(task),
+      });
     },
-    [setCategories],
+    [categories, markCategoryAsEmptyIfNoLoadedSchedules, reloadCalendarData],
   );
 
   const createStandaloneTask = useCallback(
     async (input: CreateScheduleItemInput) => {
-      const task =
-        (await createTaskApi({ input })) ?? createTaskEntity(input);
+      const splitInputs = splitMultipleScheduleInput(input);
+      const tasks = await Promise.all(
+        splitInputs.map(async (splitInput) =>
+          (await createTaskApi({ input: splitInput })) ??
+          createTaskEntity(splitInput),
+        ),
+      );
 
-      setStandaloneTasks((previousTasks) => [...previousTasks, task]);
+      await reloadCalendarData();
 
-      return task;
+      return tasks[0];
     },
-    [setStandaloneTasks],
+    [reloadCalendarData],
   );
 
   const updateStandaloneTask = useCallback(
     async (taskId: string, input: CreateScheduleItemInput) => {
-      const task =
-        (await updateTaskApi({
-          taskId,
-          input,
-          isChildTask: false,
-        })) ?? createTaskEntity({ ...input, id: taskId });
+      const previousTask = findStandaloneTask(standaloneTasks, taskId);
 
-      setStandaloneTasks((previousTasks) =>
-        replaceStandaloneTaskInList(previousTasks, taskId, task),
-      );
+      await updateTaskApi({
+        taskId,
+        input,
+        categoryId: input.categoryId ?? null,
+        milestoneId: input.milestoneId ?? null,
+      });
+
+      await reloadCalendarData();
+
+      notifyActivityLogsChanged({
+        reason: "taskUpdated",
+        affectedDates: mergeAffectedDates(previousTask, input),
+      });
     },
-    [setStandaloneTasks],
+    [reloadCalendarData, standaloneTasks],
   );
 
   const deleteStandaloneTask = useCallback(
     async (taskId: string) => {
-      await deleteTaskApi({ taskId });
+      const task = findStandaloneTask(standaloneTasks, taskId);
 
-      setStandaloneTasks((previousTasks) =>
-        previousTasks.filter((task) => task.id !== taskId),
-      );
+      await deleteTaskWithScope(taskId, task);
+
+      await reloadCalendarData();
+
+      notifyActivityLogsChanged({
+        reason: "taskDeleted",
+        affectedDates: getScheduleAffectedDates(task),
+      });
     },
-    [setStandaloneTasks],
+    [reloadCalendarData, standaloneTasks],
   );
 
   const deleteMilestone = useCallback(
     async (categoryId: string, milestoneId: string) => {
-      await deleteMilestoneApi(milestoneId);
+      const milestone =
+        categories
+          .find((category) => category.id === categoryId)
+          ?.items.find((item) => item.id === milestoneId) ?? null;
 
-      setCategories((previousCategories) =>
-        removeMilestoneFromCategory(previousCategories, categoryId, milestoneId),
+      await deleteMilestoneApi(
+        milestoneId,
+        getMilestoneDeleteScope(milestone?.dateType),
       );
+
+      await reloadCalendarData();
     },
-    [setCategories],
+    [categories, reloadCalendarData],
   );
 
   const deleteTask = useCallback(
     async (categoryId: string, milestoneId: string, taskId: string) => {
-      await deleteTaskApi({ taskId });
-
-      setCategories((previousCategories) =>
-        removeTaskFromMilestone(
-          previousCategories,
-          categoryId,
-          milestoneId,
-          taskId,
-        ),
+      const task = findMilestoneTask(
+        categories,
+        categoryId,
+        milestoneId,
+        taskId,
       );
+
+      await deleteTaskWithScope(taskId, task);
+
+      await reloadCalendarData();
+
+      notifyActivityLogsChanged({
+        reason: "taskDeleted",
+        affectedDates: getScheduleAffectedDates(task),
+      });
     },
-    [setCategories],
+    [categories, reloadCalendarData],
   );
 
   const updateTask = useCallback(
@@ -274,24 +443,33 @@ export const useCalendarScheduleActions = ({
       taskId: string,
       input: CreateScheduleItemInput,
     ) => {
-      const task =
-        (await updateTaskApi({
-          taskId,
-          input,
-          isChildTask: true,
-        })) ?? createTaskEntity({ ...input, id: taskId });
-
-      setCategories((previousCategories) =>
-        updateTaskInMilestone(
-          previousCategories,
-          categoryId,
-          milestoneId,
-          taskId,
-          task,
-        ),
+      const previousTask = findMilestoneTask(
+        categories,
+        categoryId,
+        milestoneId,
+        taskId,
       );
+
+      const nextCategoryId =
+        "categoryId" in input ? input.categoryId ?? null : categoryId;
+      const nextMilestoneId =
+        "milestoneId" in input ? input.milestoneId ?? null : milestoneId;
+
+      await updateTaskApi({
+        taskId,
+        input,
+        categoryId: nextCategoryId,
+        milestoneId: nextMilestoneId,
+      });
+
+      await reloadCalendarData();
+
+      notifyActivityLogsChanged({
+        reason: "taskUpdated",
+        affectedDates: mergeAffectedDates(previousTask, input),
+      });
     },
-    [setCategories],
+    [categories, reloadCalendarData],
   );
 
   const toggleMilestoneCompleted = useCallback(
@@ -302,96 +480,77 @@ export const useCalendarScheduleActions = ({
           ?.items.find((item) => item.id === milestoneId) ?? null;
       const nextIsCompleted = !milestone?.isCompleted;
 
-      setCategories((previousCategories) =>
-        toggleMilestoneCompletedInCategory(
-          previousCategories,
-          categoryId,
-          milestoneId,
-        ),
-      );
-
-      try {
-        await toggleMilestoneCompleteApi(milestoneId, nextIsCompleted);
-      } catch (error) {
-        setCategories((previousCategories) =>
-          toggleMilestoneCompletedInCategory(
-            previousCategories,
-            categoryId,
-            milestoneId,
-          ),
-        );
-        throw error;
-      }
+      await toggleMilestoneCompleteApi(milestoneId, nextIsCompleted);
+      await reloadCalendarData();
     },
-    [categories, setCategories],
+    [categories, reloadCalendarData],
   );
 
   const toggleCategoryTaskCompleted = useCallback(
-    async (categoryId: string, taskId: string) => {
-      setCategories((previousCategories) =>
-        toggleCategoryTaskCompletedInList(previousCategories, categoryId, taskId),
-      );
+    async (categoryId: string, taskId: string, taskDateId?: number) => {
+      const task = findCategoryTask(categories, categoryId, taskId);
+      const targetTaskDateIds = getTaskCompleteTargetIds(task, taskDateId);
+      const changeEvent = getTaskCompletionChange(task, taskDateId);
 
-      try {
-        await toggleTaskCompleteApi(taskId);
-      } catch (error) {
-        setCategories((previousCategories) =>
-          toggleCategoryTaskCompletedInList(
-            previousCategories,
-            categoryId,
-            taskId,
-          ),
-        );
-        throw error;
-      }
-    },
-    [setCategories],
-  );
-
-  const toggleTaskCompleted = useCallback(
-    async (categoryId: string, milestoneId: string, taskId: string) => {
-      setCategories((previousCategories) =>
-        toggleTaskCompletedInMilestone(
-          previousCategories,
-          categoryId,
-          milestoneId,
-          taskId,
+      await Promise.all(
+        targetTaskDateIds.map((targetTaskDateId) =>
+          toggleTaskCompleteApi(taskId, targetTaskDateId),
         ),
       );
 
-      try {
-        await toggleTaskCompleteApi(taskId);
-      } catch (error) {
-        setCategories((previousCategories) =>
-          toggleTaskCompletedInMilestone(
-            previousCategories,
-            categoryId,
-            milestoneId,
-            taskId,
-          ),
-        );
-        throw error;
-      }
+      await reloadCalendarData();
+
+      notifyActivityLogsChanged(changeEvent);
     },
-    [setCategories],
+    [categories, reloadCalendarData],
+  );
+
+  const toggleTaskCompleted = useCallback(
+    async (
+      categoryId: string,
+      milestoneId: string,
+      taskId: string,
+      taskDateId?: number,
+    ) => {
+      const task = findMilestoneTask(
+        categories,
+        categoryId,
+        milestoneId,
+        taskId,
+      );
+      const targetTaskDateIds = getTaskCompleteTargetIds(task, taskDateId);
+      const changeEvent = getTaskCompletionChange(task, taskDateId);
+
+      await Promise.all(
+        targetTaskDateIds.map((targetTaskDateId) =>
+          toggleTaskCompleteApi(taskId, targetTaskDateId),
+        ),
+      );
+
+      await reloadCalendarData();
+
+      notifyActivityLogsChanged(changeEvent);
+    },
+    [categories, reloadCalendarData],
   );
 
   const toggleStandaloneTaskCompleted = useCallback(
-    async (taskId: string) => {
-      setStandaloneTasks((previousTasks) =>
-        toggleStandaloneTaskCompletedInList(previousTasks, taskId),
+    async (taskId: string, taskDateId?: number) => {
+      const task = findStandaloneTask(standaloneTasks, taskId);
+      const targetTaskDateIds = getTaskCompleteTargetIds(task, taskDateId);
+      const changeEvent = getTaskCompletionChange(task, taskDateId);
+
+      await Promise.all(
+        targetTaskDateIds.map((targetTaskDateId) =>
+          toggleTaskCompleteApi(taskId, targetTaskDateId),
+        ),
       );
 
-      try {
-        await toggleTaskCompleteApi(taskId);
-      } catch (error) {
-        setStandaloneTasks((previousTasks) =>
-          toggleStandaloneTaskCompletedInList(previousTasks, taskId),
-        );
-        throw error;
-      }
+      await reloadCalendarData();
+
+      notifyActivityLogsChanged(changeEvent);
     },
-    [setStandaloneTasks],
+    [reloadCalendarData, standaloneTasks],
   );
 
   return {

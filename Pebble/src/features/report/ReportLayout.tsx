@@ -69,15 +69,15 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
         className="pointer-events-none absolute left-[332px] top-[489px] z-0 h-[702px] w-[1491px] object-fill"
       />
 
-      <header className="absolute right-[64px] top-[clamp(32px,9.76vh,100px)] z-20">
+      <header className="absolute right-[clamp(32px,6.94vw,100px)] top-[clamp(32px,9.76vh,100px)] z-20">
         <button
           type="button"
           onClick={handleClose}
-          className="flex items-center gap-[6px] text-[18px] font-medium leading-[130%] tracking-[-0.18px] text-[#171717] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#171717]"
+          className="flex items-center gap-[8px] text-[24px] font-medium leading-[130%] tracking-[-0.24px] text-[#171717] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#171717]"
         >
           리포트 닫기
-          <span className="flex size-[32px] items-center justify-center rounded-[10px]">
-            <img src={reportCloseIcon} alt="" className="size-[18px]" />
+          <span className="flex size-[44px] items-center justify-center rounded-[12px]">
+            <img src={reportCloseIcon} alt="" className="size-[24px]" />
           </span>
         </button>
       </header>

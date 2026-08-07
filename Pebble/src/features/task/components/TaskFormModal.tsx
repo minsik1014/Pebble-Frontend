@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 
 import { ScheduleDatePicker } from '@/components/ui/ScheduleDatePicker';
 import {
@@ -28,7 +31,9 @@ type TaskFormModalProps = {
   onSubmit?: (
     input: TaskFormSubmitInput,
   ) => void | Promise<void>;
-  onRequestDelete?: () => void | Promise<void>;
+  onRequestDelete?: () =>
+    | void
+    | Promise<void>;
 };
 
 export type TaskFormSubmitInput = {
@@ -48,31 +53,41 @@ export const TaskFormModal = ({
   onSubmit,
   onRequestDelete,
 }: TaskFormModalProps) => {
-  const [taskName, setTaskName] = useState('');
+  const [taskName, setTaskName] =
+    useState('');
+
   const [
     selectedCategory,
     setSelectedCategory,
   ] = useState<string | null>(
     defaultCategoryId,
   );
+
   const [
     selectedMilestone,
     setSelectedMilestone,
   ] = useState<string | null>(
     defaultMilestoneId,
   );
+
   const [
     isCategoryDropdownOpen,
     setIsCategoryDropdownOpen,
   ] = useState(false);
+
   const [
     isMilestoneDropdownOpen,
     setIsMilestoneDropdownOpen,
   ] = useState(false);
-  const [errorMessage, setErrorMessage] =
-    useState('');
 
-  const datePicker = useScheduleDatePicker();
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('');
+
+  const datePicker =
+    useScheduleDatePicker();
+
   const { isRunning, run } =
     useRetryableAction();
 
@@ -83,33 +98,73 @@ export const TaskFormModal = ({
   });
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return;
+    }
 
-    setSelectedCategory(defaultCategoryId);
-    setSelectedMilestone(defaultMilestoneId);
+    const nextCategory =
+      defaultCategoryId
+        ? categories.find(
+            (category) =>
+              category.id ===
+                defaultCategoryId &&
+              !category.isHidden,
+          )
+        : undefined;
+
+    const nextCategoryId =
+      nextCategory?.id ?? null;
+
+    const nextMilestoneId =
+      nextCategory &&
+      defaultMilestoneId &&
+      nextCategory.items.some(
+        (milestone) =>
+          milestone.id ===
+          defaultMilestoneId,
+      )
+        ? defaultMilestoneId
+        : null;
+
+    setSelectedCategory(nextCategoryId);
+    setSelectedMilestone(
+      nextMilestoneId,
+    );
     setTaskName(task?.title ?? '');
     setErrorMessage('');
+    setIsCategoryDropdownOpen(false);
+    setIsMilestoneDropdownOpen(false);
   }, [
-    isOpen,
+    categories,
     defaultCategoryId,
     defaultMilestoneId,
+    isOpen,
     task,
   ]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
-  const activeCategory = categories.find(
-    (category) =>
-      category.id === selectedCategory,
-  );
+  const activeCategory =
+    categories.find(
+      (category) =>
+        category.id ===
+          selectedCategory &&
+        !category.isHidden,
+    );
 
   const availableMilestones =
     activeCategory?.items ?? [];
 
   const handleSubmit = async () => {
     const scheduleRange =
-      getScheduleRangeFromSelection(datePicker);
-    const trimmedName = taskName.trim();
+      getScheduleRangeFromSelection(
+        datePicker,
+      );
+
+    const trimmedName =
+      taskName.trim();
 
     if (
       !trimmedName ||
@@ -121,23 +176,38 @@ export const TaskFormModal = ({
 
     setErrorMessage('');
 
-    const inputSnapshot: TaskFormSubmitInput = {
+    /*
+     * 재시도 시에도 처음 제출했던 관계와 날짜 정보를
+     * 사용하도록 요청 시점의 값을 복사합니다.
+     */
+    const inputSnapshot:
+      TaskFormSubmitInput = {
       categoryId: selectedCategory,
-      milestoneId: selectedMilestone,
+      milestoneId:
+        selectedCategory
+          ? selectedMilestone
+          : null,
       task: {
         title: trimmedName,
         start: scheduleRange.start,
         end: scheduleRange.end,
         dates: scheduleRange.dates,
         accent:
-          activeCategory?.accent ?? '#171717',
+          activeCategory?.accent ??
+          '#171717',
       },
     };
 
     await run(
       async () => {
-        await onSubmit?.(inputSnapshot);
+        await onSubmit?.(
+          inputSnapshot,
+        );
 
+        /*
+         * 요청 성공 후에만 입력값을 초기화하고
+         * 모달을 닫습니다.
+         */
         setTaskName('');
         onClose();
       },
@@ -154,7 +224,10 @@ export const TaskFormModal = ({
   };
 
   const handleDelete = async () => {
-    if (!onRequestDelete || isRunning) {
+    if (
+      !onRequestDelete ||
+      isRunning
+    ) {
       return;
     }
 
@@ -184,7 +257,9 @@ export const TaskFormModal = ({
           : '태스크 추가하기'
       }
       submitLabel={
-        mode === 'edit' ? '수정' : '추가'
+        mode === 'edit'
+          ? '수정'
+          : '추가'
       }
       disabled={
         !taskName.trim() ||
@@ -209,25 +284,40 @@ export const TaskFormModal = ({
               selectedCategoryId={
                 selectedCategory
               }
-              isOpen={isCategoryDropdownOpen}
+              isOpen={
+                isCategoryDropdownOpen
+              }
               allowEmpty
               onToggleOpen={() => {
                 setIsCategoryDropdownOpen(
                   (value) => !value,
                 );
-                setIsMilestoneDropdownOpen(false);
+                setIsMilestoneDropdownOpen(
+                  false,
+                );
               }}
-              onSelectCategory={(categoryId) => {
-                setSelectedCategory(categoryId);
-                setSelectedMilestone(null);
-                setIsCategoryDropdownOpen(false);
+              onSelectCategory={(
+                categoryId,
+              ) => {
+                setSelectedCategory(
+                  categoryId,
+                );
+                setSelectedMilestone(
+                  null,
+                );
+                setIsCategoryDropdownOpen(
+                  false,
+                );
+                setErrorMessage('');
               }}
             />
           </div>
 
           <div className="flex-[1]">
             <MilestoneSelect
-              milestones={availableMilestones}
+              milestones={
+                availableMilestones
+              }
               selectedMilestoneId={
                 selectedMilestone
               }
@@ -235,7 +325,9 @@ export const TaskFormModal = ({
                 activeCategory?.themeMid
               }
               disabled={!activeCategory}
-              isOpen={isMilestoneDropdownOpen}
+              isOpen={
+                isMilestoneDropdownOpen
+              }
               onToggleOpen={() => {
                 if (activeCategory) {
                   setIsMilestoneDropdownOpen(
@@ -243,7 +335,9 @@ export const TaskFormModal = ({
                   );
                 }
 
-                setIsCategoryDropdownOpen(false);
+                setIsCategoryDropdownOpen(
+                  false,
+                );
               }}
               onSelectMilestone={(
                 milestoneId,
@@ -254,6 +348,7 @@ export const TaskFormModal = ({
                 setIsMilestoneDropdownOpen(
                   false,
                 );
+                setErrorMessage('');
               }}
             />
           </div>
@@ -272,19 +367,37 @@ export const TaskFormModal = ({
       <ScheduleDatePicker
         variant="task"
         dateType={datePicker.dateType}
-        onDateTypeChange={datePicker.setDateType}
-        currentYear={datePicker.currentYear}
-        currentMonth={datePicker.currentMonth}
-        daysInMonth={datePicker.daysInMonth}
+        onDateTypeChange={
+          datePicker.setDateType
+        }
+        currentYear={
+          datePicker.currentYear
+        }
+        currentMonth={
+          datePicker.currentMonth
+        }
+        daysInMonth={
+          datePicker.daysInMonth
+        }
         firstDay={datePicker.firstDay}
-        onPrevMonth={datePicker.handlePrevMonth}
-        onNextMonth={datePicker.handleNextMonth}
-        onDateClick={datePicker.handleDateClick}
-        getDayStatus={datePicker.getDayStatus}
+        onPrevMonth={
+          datePicker.handlePrevMonth
+        }
+        onNextMonth={
+          datePicker.handleNextMonth
+        }
+        onDateClick={
+          datePicker.handleDateClick
+        }
+        getDayStatus={
+          datePicker.getDayStatus
+        }
         themeBaseColor={
           activeCategory?.themeBase
         }
-        themeMidColor={activeCategory?.themeMid}
+        themeMidColor={
+          activeCategory?.themeMid
+        }
         themeLightColor={
           activeCategory?.themeLight
         }

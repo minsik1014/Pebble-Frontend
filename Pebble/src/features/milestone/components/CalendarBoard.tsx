@@ -12,6 +12,9 @@ type CalendarBoardProps = {
   currentYear: number;
   currentMonth: number;
   onChangeCalendarMonth: (year: number, month: number) => void;
+  selectedDate?: Date | null;
+  onSelectDate?: (date: Date) => void;
+  onClearSelectedDate?: () => void;
   isLoading?: boolean;
   errorMessage?: string | null;
   onRetry?: () => void;
@@ -24,6 +27,9 @@ export const CalendarBoard = ({
   currentYear,
   currentMonth,
   onChangeCalendarMonth,
+  selectedDate = null,
+  onSelectDate,
+  onClearSelectedDate,
   isLoading = false,
   errorMessage = null,
   onRetry,
@@ -31,9 +37,19 @@ export const CalendarBoard = ({
   const todayDate = useMemo(() => new Date(), []);
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
+  const visibleCategories = useMemo(
+    () => categories.filter((category) => !category.isHidden),
+    [categories],
+  );
   const weeks = useMemo(
-    () => generateWeeks(currentYear, currentMonth, categories, standaloneTasks),
-    [currentYear, currentMonth, categories, standaloneTasks],
+    () =>
+      generateWeeks(
+        currentYear,
+        currentMonth,
+        visibleCategories,
+        standaloneTasks,
+      ),
+    [currentYear, currentMonth, visibleCategories, standaloneTasks],
   );
   const hasVisibleScheduleItems = useMemo(
     () => weeks.some((week) => (week.events?.length ?? 0) > 0),
@@ -92,6 +108,9 @@ export const CalendarBoard = ({
             currentYear={currentYear}
             currentMonth={currentMonth}
             todayDate={todayDate}
+            selectedDate={selectedDate}
+            onSelectDate={onSelectDate}
+            onClearSelectedDate={onClearSelectedDate}
           />
           {(isLoading || errorMessage || !hasVisibleScheduleItems) && (
             <div className="absolute inset-[45px_0_0_0] rounded-token-m bg-fill-inverse/80 backdrop-blur-[1px]">
@@ -109,8 +128,10 @@ export const CalendarBoard = ({
                 />
               ) : (
                 <CalendarStatusView
-                  title="이번 달 일정이 없어요"
-                  description="왼쪽 추가하기 버튼으로 카테고리, 마일스톤, 태스크를 만들어보세요."
+                  title={"왼쪽 추가하기 버튼으로\n카테고리, 마일스톤, 태스크를 만들어 보세요."}
+                  showIcon={false}
+                  contentClassName="max-w-[360px]"
+                  titleClassName="whitespace-pre-line text-title-03-sb text-text-strong"
                 />
               )}
             </div>

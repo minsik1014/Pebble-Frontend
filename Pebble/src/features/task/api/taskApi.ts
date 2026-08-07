@@ -18,6 +18,19 @@ export async function getStandaloneTasks(baseDate?: string): Promise<TaskItem[]>
   return data?.tasks.map(mapTaskResponseToTask) ?? [];
 }
 
+export async function getUserTasks(
+  userId: number,
+  baseDate?: string,
+): Promise<TaskItem[]> {
+  const data = await apiRequest<GetTasksResponse>({
+    method: "GET",
+    url: `/tasks/users/${userId}`,
+    params: baseDate ? { baseDate } : undefined,
+  });
+
+  return data?.tasks.map(mapTaskResponseToTask) ?? [];
+}
+
 type TaskMutationResponse =
   | TaskResponse
   | {
@@ -73,16 +86,22 @@ export async function createTask({
 export async function updateTask({
   taskId,
   input,
-  isChildTask,
+  categoryId,
+  milestoneId,
 }: {
   taskId: string;
   input: CreateScheduleItemInput;
-  isChildTask: boolean;
+  categoryId?: string | null;
+  milestoneId?: string | null;
 }): Promise<TaskItem | null> {
   const data = await apiRequest<TaskMutationResponse>({
     method: "PATCH",
     url: `/tasks/${taskId}`,
-    data: mapScheduleInputToUpdateTaskRequest({ input, isChildTask }),
+    data: mapScheduleInputToUpdateTaskRequest({
+      input,
+      categoryId,
+      milestoneId,
+    }),
   });
 
   return mapTaskMutationResponse(data);
@@ -91,20 +110,29 @@ export async function updateTask({
 export async function deleteTask({
   taskId,
   deleteScope,
+  taskDateId,
 }: {
   taskId: string;
   deleteScope?: TaskDeleteScope;
+  taskDateId?: number;
 }): Promise<void> {
   await apiRequest({
     method: "DELETE",
     url: `/tasks/${taskId}`,
-    params: deleteScope ? { deleteScope } : undefined,
+    params: {
+      ...(deleteScope ? { deleteScope } : {}),
+      ...(taskDateId ? { taskDateId } : {}),
+    },
   });
 }
 
-export async function toggleTaskComplete(taskId: string): Promise<void> {
+export async function toggleTaskComplete(
+  taskId: string,
+  taskDateId?: number,
+): Promise<void> {
   await apiRequest({
     method: "PATCH",
     url: `/tasks/${taskId}/complete`,
+    params: taskDateId ? { taskDateId } : undefined,
   });
 }

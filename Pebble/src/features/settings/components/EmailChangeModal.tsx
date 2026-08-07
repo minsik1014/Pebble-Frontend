@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 
 import { Button } from '@/components/ui/Button';
 import { useRetryableAction } from '@/hooks/useRetryableAction';
@@ -18,7 +21,7 @@ function validateEmail(
   const trimmedEmail = email.trim();
 
   if (!trimmedEmail) {
-    return '새 이메일을 입력해 주세요.';
+    return '이메일을 입력해 주세요.';
   }
 
   const emailRegex =
@@ -28,7 +31,10 @@ function validateEmail(
     return '올바른 이메일 형식으로 입력해 주세요.';
   }
 
-  if (trimmedEmail === currentEmail) {
+  if (
+    trimmedEmail.toLowerCase() ===
+    currentEmail.trim().toLowerCase()
+  ) {
     return '현재 이메일과 다른 이메일을 입력해 주세요.';
   }
 
@@ -40,11 +46,18 @@ export function EmailChangeModal({
   currentEmail,
   onOpenChange,
 }: EmailChangeModalProps) {
-  const [email, setEmail] = useState('');
-  const [errorMessage, setErrorMessage] =
+  const [email, setEmail] =
     useState('');
-  const [successMessage, setSuccessMessage] =
-    useState('');
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('');
+
+  const [
+    successMessage,
+    setSuccessMessage,
+  ] = useState('');
 
   const { isRunning, run } =
     useRetryableAction();
@@ -57,26 +70,39 @@ export function EmailChangeModal({
     }
   }, [open]);
 
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
 
   const canSubmit =
-    email.trim().length > 0 && !isRunning;
+    email.trim().length > 0 &&
+    !isRunning;
 
   const handleClose = () => {
-    if (isRunning) return;
+    if (isRunning) {
+      return;
+    }
 
     onOpenChange(false);
   };
 
   const handleSubmit = async () => {
-    const trimmedEmail = email.trim();
-    const validationError = validateEmail(
-      trimmedEmail,
-      currentEmail,
-    );
+    const trimmedEmail =
+      email.trim();
 
-    if (validationError || isRunning) {
-      setErrorMessage(validationError);
+    const validationError =
+      validateEmail(
+        trimmedEmail,
+        currentEmail,
+      );
+
+    if (
+      validationError ||
+      isRunning
+    ) {
+      setErrorMessage(
+        validationError,
+      );
       setSuccessMessage('');
       return;
     }
@@ -84,11 +110,18 @@ export function EmailChangeModal({
     setErrorMessage('');
     setSuccessMessage('');
 
-    const emailSnapshot = trimmedEmail;
+    /*
+     * 다시 시도할 때도 동일한 이메일로 요청하도록
+     * 제출 시점의 값을 저장합니다.
+     */
+    const emailSnapshot =
+      trimmedEmail;
 
     await run(
       async () => {
-        await requestEmailChange(emailSnapshot);
+        await requestEmailChange(
+          emailSnapshot,
+        );
 
         setSuccessMessage(
           '인증 링크를 발송했어요. 새 이메일에서 인증을 완료해 주세요.',
@@ -106,15 +139,20 @@ export function EmailChangeModal({
     );
   };
 
-  const submitButtonText = isRunning
-    ? '요청 중...'
-    : successMessage
-      ? '인증 메일 재전송'
-      : '인증 메일 보내기';
+  const submitButtonText =
+    isRunning
+      ? '요청 중...'
+      : successMessage
+        ? '인증 메일 재전송'
+        : '인증 메일 보내기';
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow/30 backdrop-blur-[3px]"
+      className={[
+        'fixed inset-0 z-50',
+        'flex items-center justify-center overflow-hidden',
+        'bg-fill-shadow/30 backdrop-blur-[3px]',
+      ].join(' ')}
       onClick={handleClose}
     >
       <section
@@ -131,8 +169,7 @@ export function EmailChangeModal({
         </h2>
 
         <p className="mt-token-xs text-body-02-m text-text-secondary">
-          새 이메일로 인증을 완료해야 변경이
-          적용돼요.
+          새 이메일로 인증을 완료해야 변경이 적용돼요.
         </p>
 
         <label className="mt-token-l block">
@@ -141,6 +178,7 @@ export function EmailChangeModal({
           </span>
 
           <input
+            type="email"
             value={email}
             disabled={isRunning}
             placeholder="새 이메일을 입력해 주세요"
@@ -148,12 +186,15 @@ export function EmailChangeModal({
               'mt-token-s h-12 w-full rounded-token-s border px-token-m',
               'bg-fill-inverse text-body-02-m text-text-strong outline-none',
               'placeholder:text-text-teritary',
+              'disabled:cursor-not-allowed disabled:opacity-60',
               errorMessage
                 ? 'border-fill-danger focus:border-fill-danger'
                 : 'border-border-teritory focus:border-border-primary',
             ].join(' ')}
             onChange={(event) => {
-              setEmail(event.target.value);
+              setEmail(
+                event.target.value,
+              );
               setErrorMessage('');
               setSuccessMessage('');
             }}
@@ -170,14 +211,18 @@ export function EmailChangeModal({
         ) : null}
 
         {successMessage ? (
-          <p className="mt-token-s text-caption-01 text-text-primary">
+          <p
+            role="status"
+            className="mt-token-s text-caption-01 text-text-primary"
+          >
             {successMessage}
           </p>
         ) : null}
 
         <div className="mt-token-xl grid grid-cols-2 gap-token-m">
           <Button
-            variant="secondary"
+            type="button"
+            variant="cancel"
             disabled={isRunning}
             className="h-11 w-full text-text-strong"
             onClick={handleClose}
@@ -186,6 +231,7 @@ export function EmailChangeModal({
           </Button>
 
           <Button
+            type="button"
             variant="primary"
             disabled={!canSubmit}
             className={[

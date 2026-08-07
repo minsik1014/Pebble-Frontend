@@ -8,11 +8,16 @@ import {
 
 import { reportInitialNetworkFailure } from '@/components/feedback/networkRecoveryStore';
 import { getCategories } from '@/features/category/api/categoryApi';
+import { getCategoryMembers } from '@/features/category/api/sharedCategoryApi';
 import { useCalendarCategoryActions } from '@/features/calendar/hooks/useCalendarCategoryActions';
 import { useCalendarScheduleActions } from '@/features/calendar/hooks/useCalendarScheduleActions';
 import type { CalendarStateModel } from '@/features/calendar/types';
-import { getMilestones } from '@/features/milestone/api/milestoneApi';
-import { getStandaloneTasks } from '@/features/task/api/taskApi';
+import { getMonthlyMilestones } from '@/features/milestone/api/milestoneApi';
+import { getMyProfile } from '@/features/mypage/api/profileApi';
+import {
+  getStandaloneTasks,
+  getUserTasks,
+} from '@/features/task/api/taskApi';
 import {
   ApiRequestError,
   getAccessToken,
@@ -40,8 +45,169 @@ type UseCalendarStateParams = {
 const formatBaseDate = (
   year: number,
   month: number,
+) => `${year}-${String(month).padStart(2, '0')}-01`;
+
+const getSharedOwnerId = async (category: Category) => {
+  if (category.userId) {
+    return category.userId;
+  }
+
+  if (!category.isShared) {
+    return undefined;
+  }
+
+  const members = await getCategoryMembers(category.id);
+
+  return members.find(
+    (member) => member.role === 'OWNER',
+  )?.userId;
+};
+
+const withSharedOwnerIds = async (
+  categories: Category[],
 ) =>
-  `${year}-${String(month).padStart(2, '0')}-01`;
+  Promise.all(
+    categories.map(async (category) => {
+      if (!category.isShared || category.userId) {
+        return category;
+      }
+
+      return {
+        ...category,
+        userId: await getSharedOwnerId(category),
+      };
+    }),
+  );
+
+const getSharedCategoryIdsByOwner = (
+  categories: Category[],
+  currentUserId: number | null,
+) => {
+  const categoryIdsByOwner = new Map<
+    number,
+    Set<string>
+  >();
+
+  categories.forEach((category) => {
+    if (
+      !category.isShared ||
+      !category.userId ||
+      category.userId === currentUserId
+    ) {
+      return;
+    }
+
+    const categoryIds =
+      categoryIdsByOwner.get(category.userId) ??
+      new Set<string>();
+
+    categoryIds.add(category.id);
+    categoryIdsByOwner.set(
+      category.userId,
+      categoryIds,
+    );
+  });
+
+  return categoryIdsByOwner;
+};
+
+const getAccessibleUserTasks = async (
+  userId: number,
+  baseDate: string,
+  allowedCategoryIds: Set<string>,
+) => {
+  try {
+    const tasks = await getUserTasks(
+      userId,
+      baseDate,
+    );
+
+    return tasks.filter(
+      (task) =>
+        task.categoryId &&
+        allowedCategoryIds.has(task.categoryId),
+    );
+  } catch (error) {
+    if (
+      error instanceof ApiRequestError &&
+      (error.status === 403 ||
+        error.status === 404)
+    ) {
+      return [];
+    }
+
+    throw error;
+  }
+};
+
+const getTaskKey = (task: TaskItem) =>
+  [
+    task.id,
+    task.categoryId ?? 'standalone',
+    task.milestoneId ?? 'none',
+    task.taskDates
+      ?.map(
+        (taskDate) => taskDate.taskDateId,
+      )
+      .join(',') ??
+      task.dates?.join(',') ??
+      task.start,
+  ].join('-');
+
+const mergeUniqueTasks = (
+  taskGroups: TaskItem[][],
+) => {
+  const taskMap = new Map<string, TaskItem>();
+
+  taskGroups.flat().forEach((task) => {
+    taskMap.set(getTaskKey(task), task);
+  });
+
+  return [...taskMap.values()];
+};
+
+const attachMilestonesToCategories = (
+  categories: Category[],
+  milestones: MilestoneItem[],
+) => {
+  const categoryMap = new Map<
+    string,
+    Category
+  >(
+    categories.map((category) => [
+      category.id,
+      {
+        ...category,
+        items: [],
+        tasks: category.tasks ?? [],
+      },
+    ]),
+  );
+
+  milestones.forEach((milestone) => {
+    if (!milestone.categoryId) {
+      return;
+    }
+
+    const category = categoryMap.get(
+      milestone.categoryId,
+    );
+
+    if (!category) {
+      return;
+    }
+
+    category.items = [
+      ...category.items,
+      {
+        ...milestone,
+        tasks: [],
+      },
+    ];
+  });
+
+  return [...categoryMap.values()];
+};
 
 const attachTasksToCategories = (
   categories: Category[],
@@ -125,35 +291,43 @@ export const useCalendarState = ({
   currentYear,
   currentMonth,
 }: UseCalendarStateParams): CalendarStateModel => {
-  const [categories, setCategories] =
-    useState<Category[]>([]);
+  const [categories, setCategories] = useState<
+    Category[]
+  >([]);
+
+  const [currentUserId, setCurrentUserId] =
+    useState<number | null>(null);
+
   const [
     standaloneTasks,
     setStandaloneTasks,
   ] = useState<TaskItem[]>([]);
+
   const [
     selectedCategoryId,
     setSelectedCategoryId,
   ] = useState<string | null>(null);
+
   const [
     isCalendarLoading,
     setIsCalendarLoading,
   ] = useState(false);
+
   const [
     calendarErrorMessage,
     setCalendarErrorMessage,
   ] = useState<string | null>(null);
 
   /*
-   * 한 번이라도 필수 초기 조회가 성공했다면 이후 오류는
-   * 전체 화면이 아니라 기존 화면 오류/토스트로 처리합니다.
+   * 최초 필수 조회가 한 번이라도 성공하면 이후 오류는
+   * 전체 화면이 아닌 기존 화면의 오류 상태로 처리합니다.
    */
   const hasCompletedInitialLoadRef =
     useRef(false);
 
   /*
-   * 네트워크 복구 화면에서 가장 최근의 월 정보를
-   * 기준으로 다시 조회할 수 있도록 사용합니다.
+   * 네트워크 복구 화면에서 최신 캘린더 조회 함수를
+   * 다시 호출하기 위해 ref로 보관합니다.
    */
   const retryCalendarLoadRef = useRef<
     (() => Promise<boolean>) | null
@@ -170,13 +344,14 @@ export const useCalendarState = ({
 
   const loadCalendarData = useCallback(
     async (
-      canUpdate: () => boolean = () =>
-        true,
+      canUpdate: () => boolean = () => true,
     ): Promise<boolean> => {
       if (!getAccessToken()) {
         if (canUpdate()) {
+          setCurrentUserId(null);
           setCategories([]);
           setStandaloneTasks([]);
+          setSelectedCategoryId(null);
           setCalendarErrorMessage(null);
           setIsCalendarLoading(false);
         }
@@ -190,39 +365,68 @@ export const useCalendarState = ({
       }
 
       try {
+        const baseDate = formatBaseDate(
+          currentYear,
+          currentMonth,
+        );
+
         const [
           loadedCategories,
           loadedTasks,
+          loadedMilestones,
+          loadedProfile,
         ] = await Promise.all([
           getCategories(),
-          getStandaloneTasks(
-            formatBaseDate(
-              currentYear,
-              currentMonth,
+          getStandaloneTasks(baseDate),
+          getMonthlyMilestones(baseDate),
+          getMyProfile().catch(() => null),
+        ]);
+
+        const nextCurrentUserId =
+          loadedProfile?.id ?? null;
+
+        const categoriesWithOwners =
+          await withSharedOwnerIds(
+            loadedCategories,
+          );
+
+        const sharedCategoryIdsByOwner =
+          getSharedCategoryIdsByOwner(
+            categoriesWithOwners,
+            nextCurrentUserId,
+          );
+
+        const sharedTasks = await Promise.all(
+          [
+            ...sharedCategoryIdsByOwner.entries(),
+          ].map(([userId, categoryIds]) =>
+            getAccessibleUserTasks(
+              userId,
+              baseDate,
+              categoryIds,
             ),
           ),
+        );
+
+        const uniqueTasks = mergeUniqueTasks([
+          loadedTasks,
+          ...sharedTasks,
         ]);
 
         const categoriesWithMilestones =
-          await Promise.all(
-            loadedCategories.map(
-              async (category) => ({
-                ...category,
-                items: await getMilestones(
-                  category.id,
-                ),
-                tasks: [],
-              }),
-            ),
+          attachMilestonesToCategories(
+            categoriesWithOwners,
+            loadedMilestones,
           );
 
         const nextCalendarState =
           attachTasksToCategories(
             categoriesWithMilestones,
-            loadedTasks,
+            uniqueTasks,
           );
 
         if (canUpdate()) {
+          setCurrentUserId(nextCurrentUserId);
           setCategories(
             nextCalendarState.categories,
           );
@@ -282,13 +486,13 @@ export const useCalendarState = ({
     [currentMonth, currentYear],
   );
 
-  /*
-   * 네트워크 복구 요청이 오래된 월 정보를 캡처하지 않도록
-   * 렌더링마다 최신 loadCalendarData를 저장합니다.
-   */
   useEffect(() => {
     retryCalendarLoadRef.current = () =>
       loadCalendarData();
+
+    return () => {
+      retryCalendarLoadRef.current = null;
+    };
   }, [loadCalendarData]);
 
   useEffect(() => {
@@ -303,6 +507,9 @@ export const useCalendarState = ({
 
   const categoryActions =
     useCalendarCategoryActions({
+      categories,
+      reloadCalendarData: () =>
+        loadCalendarData(),
       setCategories,
       setSelectedCategoryId,
     });
@@ -310,11 +517,14 @@ export const useCalendarState = ({
   const scheduleActions =
     useCalendarScheduleActions({
       categories,
+      reloadCalendarData: () =>
+        loadCalendarData(),
       setCategories,
-      setStandaloneTasks,
+      standaloneTasks,
     });
 
   return {
+    currentUserId,
     categories,
     standaloneTasks,
     selectedCategory,

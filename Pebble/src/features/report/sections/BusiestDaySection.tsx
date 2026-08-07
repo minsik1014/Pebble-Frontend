@@ -55,7 +55,7 @@ function ScheduleRow({ schedule }: { schedule: DaySchedule }) {
 /** R005 — 이번 달 가장 바빴던 하루 */
 export function BusiestDaySection({ day }: BusiestDaySectionProps) {
   if (!day) {
-    return <EmptyState message="이번 달에는 기록한 일정이 없어요." />;
+    return <EmptyState message="저번 달에는 기록한 일정이 없어요." />;
   }
 
   const { date, schedules } = day;
@@ -64,7 +64,7 @@ export function BusiestDaySection({ day }: BusiestDaySectionProps) {
     <div className="flex h-full w-full flex-col gap-[20px]">
       <div className="flex flex-col gap-[8px]">
         <p className="text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-[#A3A3A3]">
-          이번 달 가장 바빴던 하루
+          저번 달 가장 바빴던 하루
         </p>
 
         <h2 className="flex items-baseline text-[#404040]">

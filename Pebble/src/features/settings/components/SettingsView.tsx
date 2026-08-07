@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/Button';
+import { useActivityLogs } from '@/features/activity';
 import { useCalendarLayoutContext } from '@/features/calendar/context/useCalendarLayoutContext';
 import { useRetryableAction } from '@/hooks/useRetryableAction';
 
@@ -15,12 +16,12 @@ import { SettingsContent } from './SettingsContent';
 import { WithdrawalSection } from './WithdrawalSection';
 
 export function SettingsView() {
-  const { isSidebarOpen } = useCalendarLayoutContext();
+  const { isSidebarOpen } =
+    useCalendarLayoutContext();
 
   const {
     currentUser,
     settings,
-    activities,
 
     isLoading,
     loadError,
@@ -30,7 +31,19 @@ export function SettingsView() {
     changeTheme,
     changeNotification,
     changeActivityColor,
+    markPasswordChanged,
   } = useSettings();
+
+  const {
+    logs: activityLogs,
+    isLoading: isActivityLoading,
+    isError: isActivityError,
+    error: activityError,
+    refetch: refetchActivityLogs,
+  } = useActivityLogs({
+    userId: currentUser?.id,
+    enabled: Boolean(currentUser),
+  });
 
   const {
     isRunning: isRetryingAction,
@@ -39,7 +52,9 @@ export function SettingsView() {
 
   if (isLoading) {
     return (
-      <SettingsContent isSidebarOpen={isSidebarOpen}>
+      <SettingsContent
+        isSidebarOpen={isSidebarOpen}
+      >
         <div className="flex min-h-[284px] items-center justify-center rounded-token-m bg-fill-surface shadow-shadow-m">
           <p className="text-body-02-m text-text-secondary">
             설정을 불러오는 중이에요.
@@ -51,13 +66,20 @@ export function SettingsView() {
 
   if (!currentUser || !settings) {
     return (
-      <SettingsContent isSidebarOpen={isSidebarOpen}>
+      <SettingsContent
+        isSidebarOpen={isSidebarOpen}
+      >
         <div className="flex min-h-[284px] flex-col items-center justify-center gap-token-l rounded-token-m bg-fill-surface shadow-shadow-m">
-          <p className="text-body-02-m text-fill-danger">
-            {loadError || '설정 정보를 불러오지 못했어요.'}
+          <p
+            role="alert"
+            className="text-body-02-m text-fill-danger"
+          >
+            {loadError ||
+              '설정 정보를 불러오지 못했어요.'}
           </p>
 
           <Button
+            type="button"
             variant="primary"
             onClick={() => void reload()}
           >
@@ -73,48 +95,65 @@ export function SettingsView() {
       settings.activityColor,
     );
 
-  const executeRetryableChange = async (
-    action: () => Promise<void>,
-  ) => {
-    const result = await run(action);
+  /*
+   * 설정 전용 재시도 상태를 별도로 만들지 않고
+   * 공통 전역 오류 토스트의 다시 시도 흐름을 사용합니다.
+   */
+  const executeRetryableChange =
+    async (
+      action: () => Promise<void>,
+    ) => {
+      const result = await run(action);
 
-    /*
-     * 하위 모달과 설정 섹션에서도 실패를 인식해야
-     * 입력값과 열린 상태를 유지할 수 있습니다.
-     */
-    if (result.success === false) {
-      throw result.error;
-    }
-  };
+      /*
+       * 하위 설정 컴포넌트에서도 요청 실패를 확인해야
+       * 현재 선택값과 오류 상태를 유지할 수 있습니다.
+       */
+      if ('error' in result) {
+        throw result.error;
+      }
+    };
 
   const handleThemeChange = async (
     nextTheme: SettingsTheme,
   ) => {
-    await executeRetryableChange(async () => {
-      await changeTheme(nextTheme);
-    });
+    await executeRetryableChange(
+      async () => {
+        await changeTheme(nextTheme);
+      },
+    );
   };
 
-  const handleNotificationChange = async (
-    nextEnabled: boolean,
-  ) => {
-    await executeRetryableChange(async () => {
-      await changeNotification(nextEnabled);
-    });
-  };
-
-  const handleBridgePaletteChange = async (
-    paletteId: string,
-  ) => {
-    const palette =
-      getBridgePaletteById(paletteId);
-
-    await executeRetryableChange(async () => {
-      await changeActivityColor(
-        palette.activityColor,
+  const handleNotificationChange =
+    async (nextEnabled: boolean) => {
+      await executeRetryableChange(
+        async () => {
+          await changeNotification(
+            nextEnabled,
+          );
+        },
       );
-    });
-  };
+    };
+
+  const handleBridgePaletteChange =
+    async (paletteId: string) => {
+      const palette =
+        getBridgePaletteById(paletteId);
+
+      await executeRetryableChange(
+        async () => {
+          await changeActivityColor(
+            palette.activityColor,
+          );
+
+          /*
+           * 색상 변경 성공 후 활동기록을 다시 조회해
+           * 미리보기와 서버 상태를 동기화합니다.
+           */
+          void refetchActivityLogs();
+        },
+      );
+    };
 
   const isUpdating =
     updatingField !== null ||
@@ -129,18 +168,34 @@ export function SettingsView() {
         selectedBridgePaletteId={
           selectedPalette.id
         }
-        activities={activities}
+        activityLogs={activityLogs}
+        isActivityLoading={
+          isActivityLoading
+        }
+        isActivityError={
+          isActivityError
+        }
+        activityErrorMessage={
+          activityError?.message
+        }
         isUpdating={isUpdating}
-        onThemeChange={handleThemeChange}
+        onThemeChange={
+          handleThemeChange
+        }
         onBridgePaletteChange={
           handleBridgePaletteChange
+        }
+        onActivityRetry={() =>
+          void refetchActivityLogs()
         }
       />
 
       <NotificationSettingsSection
         enabled={settings.notifyTaskDue}
         isUpdating={isUpdating}
-        onChange={handleNotificationChange}
+        onChange={
+          handleNotificationChange
+        }
       />
 
       <AccountSettingsSection
@@ -150,6 +205,9 @@ export function SettingsView() {
         }
         isTempPassword={
           settings.isTempPassword
+        }
+        onPasswordChanged={
+          markPasswordChanged
         }
       />
 

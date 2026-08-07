@@ -3,25 +3,22 @@ import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
 type MyProfileSectionProps = {
   isCompact: boolean;
-  scrollOffset: number;
+  completedCategoryCount: number;
   onEditProfile: () => void;
 };
 
 export const MyProfileSection = ({
   isCompact,
-  scrollOffset,
+  completedCategoryCount,
   onEditProfile,
 }: MyProfileSectionProps): JSX.Element => {
   const profile = useProfileStore((state) => state.profile);
 
   return (
     <header
-      className={`sticky top-0 z-10 bg-fill-inverse transition-[height] duration-[220ms] ease-out ${
-        isCompact ? "h-[260px]" : "h-[340px]"
+      className={`sticky top-0 z-40 bg-fill-inverse transition-[height] duration-[220ms] ease-out ${
+        isCompact ? "h-[220px]" : "h-[340px]"
       }`}
-      style={{
-        transform: `translateY(-${scrollOffset}px)`,
-      }}
     >
       <div
         className={`absolute inset-0 transition-[opacity,transform] duration-[220ms] ease-out ${
@@ -93,13 +90,22 @@ export const MyProfileSection = ({
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={onEditProfile}
-            className="ml-6 h-12 shrink-0 rounded-token-s border border-border-default px-5 text-body-02-m text-text-secondary hover:bg-fill-surface"
-          >
-            프로필 편집
-          </button>
+          <div className="ml-6 flex h-16 shrink-0 items-center rounded-[20px] bg-btn-quaternary px-6 shadow-shadow-m">
+            <div className="flex items-center gap-2">
+              <span className="text-body-02-m text-text-secondary">조약돌</span>
+              <strong className="text-title-03-sb text-text-strong">82</strong>
+            </div>
+            <div
+              className="mx-4 h-8 w-px bg-border-default"
+              aria-hidden="true"
+            />
+            <div className="flex items-center gap-2">
+              <span className="text-body-02-m text-text-secondary">카테고리</span>
+              <strong className="text-title-03-sb text-text-strong">
+                {completedCategoryCount}
+              </strong>
+            </div>
+          </div>
         </div>
       </div>
     </header>

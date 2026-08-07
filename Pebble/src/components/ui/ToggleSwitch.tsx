@@ -17,7 +17,7 @@ export const ToggleSwitch = ({
   checked,
   checkedLabel,
   uncheckedLabel,
-  checkedClassName = "bg-fill-primary",
+  checkedClassName = "bg-btn-primary",
   uncheckedClassName = "bg-border-default",
   disabled = false,
   className = "",
