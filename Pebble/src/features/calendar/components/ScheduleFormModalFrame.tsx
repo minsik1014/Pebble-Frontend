@@ -7,6 +7,7 @@ type ScheduleFormModalFrameProps = {
   children: ReactNode;
   submitLabel: string;
   disabled: boolean;
+  disabledReason?: string;
   onCancel: () => void;
   onSubmit: () => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
@@ -19,6 +20,7 @@ export const ScheduleFormModalFrame = ({
   children,
   submitLabel,
   disabled,
+  disabledReason,
   onCancel,
   onSubmit,
   onDelete,
@@ -41,6 +43,7 @@ export const ScheduleFormModalFrame = ({
           <ModalActionBar
             submitLabel={submitLabel}
             disabled={disabled}
+            disabledReason={disabledReason}
             onCancel={onCancel}
             onSubmit={onSubmit}
             onDelete={onDelete}

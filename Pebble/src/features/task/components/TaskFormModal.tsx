@@ -79,6 +79,11 @@ export const TaskFormModal = ({
     (category) => category.id === selectedCategory,
   );
   const availableMilestones = activeCategory?.items || [];
+  const submitDisabledReason = !taskName.trim()
+    ? "제목을 입력해 주세요"
+    : !datePicker.isDateSelectionComplete
+      ? "날짜를 선택해 주세요"
+      : undefined;
 
   const handleSubmit = async () => {
     const scheduleRange = getScheduleRangeFromSelection(datePicker);
@@ -114,7 +119,8 @@ export const TaskFormModal = ({
     <ScheduleFormModalFrame
       title={mode === "edit" ? "태스크 편집" : "태스크 추가하기"}
       submitLabel={mode === "edit" ? "수정" : "추가"}
-      disabled={!taskName || !datePicker.isDateSelectionComplete || isSubmitting}
+      disabled={Boolean(submitDisabledReason) || isSubmitting}
+      disabledReason={isSubmitting ? undefined : submitDisabledReason}
       titleClassName="leading-[1.3]"
       onCancel={onClose}
       onSubmit={handleSubmit}
