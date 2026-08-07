@@ -51,6 +51,38 @@ export async function getMilestones(categoryId: string): Promise<MilestoneItem[]
   );
 }
 
+export async function getUserCategoryMilestones(
+  userId: number,
+  categoryId: string,
+): Promise<MilestoneItem[]> {
+  const data = await apiRequest<GetMilestonesResponse>({
+    method: "GET",
+    url: `/users/${userId}/categories/${categoryId}/milestones`,
+  });
+
+  return (
+    data?.milestones.map((milestone) =>
+      mapMilestoneResponseToMilestone(milestone),
+    ) ?? []
+  );
+}
+
+export async function getMonthlyMilestones(
+  baseDate?: string,
+): Promise<MilestoneItem[]> {
+  const data = await apiRequest<GetMilestonesResponse>({
+    method: "GET",
+    url: "/milestones",
+    params: baseDate ? { baseDate } : undefined,
+  });
+
+  return (
+    data?.milestones.map((milestone) =>
+      mapMilestoneResponseToMilestone(milestone),
+    ) ?? []
+  );
+}
+
 export async function createMilestone(
   categoryId: string,
   input: CreateScheduleItemInput,
@@ -66,13 +98,13 @@ export async function createMilestone(
 
 export async function updateMilestone(
   milestoneId: string,
+  categoryId: string,
   input: CreateScheduleItemInput,
-  previousMilestone?: MilestoneItem | null,
 ): Promise<MilestoneItem | null> {
   const data = await apiRequest<MilestoneResponse>({
     method: "PATCH",
     url: `/milestones/${milestoneId}`,
-    data: mapScheduleInputToUpdateMilestoneRequest(input, previousMilestone),
+    data: mapScheduleInputToUpdateMilestoneRequest(input, categoryId),
   });
 
   return data ? mapMilestoneResponseToMilestone(data) : null;

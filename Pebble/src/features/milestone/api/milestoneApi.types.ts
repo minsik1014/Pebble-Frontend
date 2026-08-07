@@ -6,10 +6,12 @@ export type MilestoneResponse = {
   id: number;
   categoryId?: number;
   seriesId?: number | null;
+  series?: MilestoneResponse[];
   name: string;
   dateType: MilestoneDateType;
   startDate?: string | null;
   endDate?: string | null;
+  dates?: string[] | null;
   isCompleted?: boolean;
   displayOrder?: number;
   createdAt?: string;
@@ -35,8 +37,11 @@ export type CreateMilestoneRequest = {
 
 export type UpdateMilestoneRequest = {
   name?: string;
+  categoryId?: number;
+  dateType?: MilestoneDateType;
   startDate?: string | null;
   endDate?: string | null;
+  dates?: string[] | null;
   isCompleted?: boolean;
   editScope?: MilestoneEditScope;
 };

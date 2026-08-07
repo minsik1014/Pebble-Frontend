@@ -13,7 +13,11 @@ export type CalendarLayoutContextValue = {
   currentYear: number;
   currentMonth: number;
   onChangeCalendarMonth: (year: number, month: number) => void;
+  selectedCalendarDate: Date | null;
+  onSelectCalendarDate: (date: Date) => void;
+  onClearSelectedCalendarDate: () => void;
   selectedCategoryId: string | null;
+  currentUserId: number | null;
   categories: Category[];
   standaloneTasks: CalendarStateModel["standaloneTasks"];
   isCalendarLoading: boolean;
@@ -21,6 +25,7 @@ export type CalendarLayoutContextValue = {
   reloadCalendarData: CalendarStateModel["reloadCalendarData"];
   replaceCategories: CalendarStateModel["replaceCategories"];
   selectCategory: (categoryId: string) => void;
+  toggleCategoryVisibility: CalendarStateModel["toggleCategoryVisibility"];
   createCategory: (input: CreateCategoryInput) => Promise<void>;
   createMilestone: (
     categoryId: string,

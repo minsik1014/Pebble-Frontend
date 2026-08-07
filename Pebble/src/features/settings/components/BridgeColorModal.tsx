@@ -1,5 +1,3 @@
-// src/features/settings/components/BridgeColorModal.tsx
-
 import { useEffect, useId, useMemo, useState } from 'react';
 
 import CloseIcon from '@/assets/icons/Close.svg?react';
@@ -13,14 +11,15 @@ import {
 } from '../constants/bridgeColorPalettes';
 import {
   getRecentSevenDayBridgeColors,
-  MOCK_RECENT_BRIDGE_ACTIVITIES,
+  type DailyBridgeActivity,
 } from '../utils/bridgeActivity';
 
 interface BridgeColorModalProps {
   open: boolean;
   selectedPaletteId: string;
+  activities: DailyBridgeActivity[];
   onOpenChange: (open: boolean) => void;
-  onConfirm: (paletteId: string) => void;
+  onConfirm: (paletteId: string) => Promise<void>;
 }
 
 interface ColorChipProps {
@@ -36,7 +35,7 @@ function ColorChip({ color, size = 'card' }: ColorChipProps) {
       className={[
         'shrink-0 rounded-token-s',
         size === 'preview' ? 'h-12 w-[75.43px]' : 'h-8 w-[33px]',
-        isEmptyChip ? 'border border-[#D4D4D4]' : '',
+        isEmptyChip ? 'border border-border-secondary' : '',
       ].join(' ')}
       style={{ backgroundColor: color }}
       aria-hidden="true"
@@ -47,15 +46,21 @@ function ColorChip({ color, size = 'card' }: ColorChipProps) {
 export function BridgeColorModal({
   open,
   selectedPaletteId,
+  activities,
   onOpenChange,
   onConfirm,
 }: BridgeColorModalProps) {
   const titleId = useId();
+
   const [draftPaletteId, setDraftPaletteId] = useState(selectedPaletteId);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (open) {
       setDraftPaletteId(selectedPaletteId);
+      setIsSubmitting(false);
+      setErrorMessage('');
     }
   }, [open, selectedPaletteId]);
 
@@ -67,30 +72,45 @@ export function BridgeColorModal({
   const previewColors = useMemo(
     () =>
       getRecentSevenDayBridgeColors({
-        activities: MOCK_RECENT_BRIDGE_ACTIVITIES,
+        activities,
         palette: draftPalette,
       }),
-    [draftPalette],
+    [activities, draftPalette],
   );
 
   const hasChanged = draftPaletteId !== selectedPaletteId;
 
   const handleClose = () => {
+    if (isSubmitting) return;
+
     onOpenChange(false);
   };
 
-  const handleConfirm = () => {
-    if (!hasChanged) return;
+  const handleConfirm = async () => {
+    if (!hasChanged || isSubmitting) return;
 
-    onConfirm(draftPaletteId);
-    onOpenChange(false);
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      await onConfirm(draftPaletteId);
+      onOpenChange(false);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : '징검다리 색상을 변경하지 못했어요.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!open) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/45"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow/30 backdrop-blur-[3px]"
       role="presentation"
       onMouseDown={handleClose}
     >
@@ -111,8 +131,9 @@ export function BridgeColorModal({
 
           <button
             type="button"
+            disabled={isSubmitting}
             aria-label="징검다리 색상 모달 닫기"
-            className="flex size-11 items-start justify-end text-text-secondary transition-colors hover:text-text-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary"
+            className="flex size-11 items-start justify-end text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary disabled:cursor-not-allowed disabled:opacity-50"
             onClick={handleClose}
           >
             <CloseIcon className="size-6" aria-hidden="true" />
@@ -127,7 +148,7 @@ export function BridgeColorModal({
           <div className="flex h-12 w-full gap-token-xs">
             {previewColors.map((color, index) => (
               <ColorChip
-                key={`${draftPaletteId}-preview-${color}-${index}`}
+                key={`${draftPaletteId}-${color}-${index}`}
                 color={color}
                 size="preview"
               />
@@ -148,14 +169,16 @@ export function BridgeColorModal({
               <button
                 key={palette.id}
                 type="button"
+                disabled={isSubmitting}
                 aria-pressed={isSelected}
                 aria-label={`${palette.name} ${palette.tone} 색상 선택`}
                 className={[
-                  'flex h-[108px] w-[184px] flex-col gap-token-m rounded-token-s bg-fill-surface p-token-l text-left transition-colors',
+                  'flex h-[108px] w-[184px] flex-col gap-token-m rounded-token-s bg-fill-surface p-token-l text-left',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary',
+                  'disabled:cursor-not-allowed',
                   isSelected
                     ? 'border-2 border-border-primary'
-                    : 'border-2 border-transparent hover:border-border-secondary',
+                    : 'border-2 border-transparent',
                 ].join(' ')}
                 onClick={() => setDraftPaletteId(palette.id)}
               >
@@ -182,11 +205,16 @@ export function BridgeColorModal({
           })}
         </div>
 
-        <div className="flex h-11 w-full gap-token-m">
+        {errorMessage ? (
+          <p className="text-caption-01 text-fill-danger">{errorMessage}</p>
+        ) : null}
+
+        <div className="mt-auto flex h-11 w-full gap-token-m">
           <Button
             type="button"
-            variant="secondary"
-            className="h-11 w-[282px] !bg-btn-quaternary !text-text-strong hover:!bg-btn-pressed"
+            variant="cancel"
+            disabled={isSubmitting}
+            className="h-11 w-[282px]"
             onClick={handleClose}
           >
             취소
@@ -194,16 +222,16 @@ export function BridgeColorModal({
 
           <Button
             type="button"
-            disabled={!hasChanged}
+            disabled={!hasChanged || isSubmitting}
             className={[
               'h-11 w-[282px] disabled:opacity-100',
-              hasChanged
+              hasChanged && !isSubmitting
                 ? '!bg-btn-primary !text-text-onFill'
-                : '!bg-text-secondary !text-text-teritary',
+                : '!bg-btn-teritary !text-text-teritary',
             ].join(' ')}
-            onClick={handleConfirm}
+            onClick={() => void handleConfirm()}
           >
-            변경
+            {isSubmitting ? '변경 중...' : '변경'}
           </Button>
         </div>
       </section>

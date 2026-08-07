@@ -86,7 +86,7 @@ export function WithdrawalConfirmModal({
           </button>
         </div>
 
-        <div className="flex h-[100px] w-full flex-col justify-center gap-token-m rounded-token-s bg-[#FEE7DA] p-token-l">
+        <div className="flex h-[100px] w-full flex-col justify-center gap-token-m rounded-token-s bg-fill-danger-bg p-token-l">
           <p className="flex h-6 w-full items-center gap-token-m">
             <DeleteIcon
               className="size-6 shrink-0 text-fill-danger"
@@ -153,7 +153,8 @@ export function WithdrawalConfirmModal({
         <div className="mt-auto grid h-11 w-full grid-cols-2 gap-token-m">
           <Button
             type="button"
-            className="h-11 bg-btn-quaternary text-text-strong disabled:opacity-100"
+            variant="cancel"
+            className="h-11 disabled:opacity-100"
             disabled={isSubmitting}
             onClick={() => onOpenChange(false)}
           >

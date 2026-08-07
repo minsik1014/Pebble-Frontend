@@ -9,6 +9,10 @@ export const CalendarMainPage = (): JSX.Element => {
     currentYear,
     currentMonth,
     onChangeCalendarMonth,
+    selectedCalendarDate,
+    onSelectCalendarDate,
+    onClearSelectedCalendarDate,
+    currentUserId,
     categories,
     standaloneTasks,
     isCalendarLoading,
@@ -39,6 +43,7 @@ export const CalendarMainPage = (): JSX.Element => {
       isSidebarOpen={isSidebarOpen}
       category={selectedCategory}
       backLabel={isFromMyPage ? "마이페이지" : "캘린더"}
+      currentUserId={currentUserId}
       onBack={() => {
         if (isFromMyPage) {
           navigate("/my");
@@ -59,6 +64,7 @@ export const CalendarMainPage = (): JSX.Element => {
           navigate("/my");
         }
       }}
+      onReloadCalendarData={reloadCalendarData}
       onUpdateMilestone={updateMilestone}
       onDeleteMilestone={deleteMilestone}
       onUpdateTask={updateTask}
@@ -75,6 +81,9 @@ export const CalendarMainPage = (): JSX.Element => {
       currentYear={currentYear}
       currentMonth={currentMonth}
       onChangeCalendarMonth={onChangeCalendarMonth}
+      selectedDate={selectedCalendarDate}
+      onSelectDate={onSelectCalendarDate}
+      onClearSelectedDate={onClearSelectedCalendarDate}
       isLoading={isCalendarLoading}
       errorMessage={calendarErrorMessage}
       onRetry={reloadCalendarData}

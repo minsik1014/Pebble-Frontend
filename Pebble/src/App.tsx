@@ -1,5 +1,13 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
+
 import { MainLayout } from '@/components/layout/MainLayout';
+import { ThemeInitializer } from '@/components/theme/ThemeInitializer';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { ProfileSetupPage } from '@/features/auth/pages/ProfileSetupPage';
@@ -23,14 +31,7 @@ import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
 import { getAccessToken } from '@/services/api';
 
 import SettingsPage from './pages/settings/SettingsPage';
-
-function RootRoute() {
-  if (!getAccessToken()) {
-    return <Navigate to="/landing" replace />;
-  }
-
-  return <CalendarMainPage />;
-}
+import { EmailVerifyPage } from './pages/settings/EmailVerifyPage';
 
 function LandingRoute() {
   if (getAccessToken()) {
@@ -41,8 +42,10 @@ function LandingRoute() {
 }
 
 function ProtectedLayoutRoute() {
+  const { pathname } = useLocation();
+
   if (!getAccessToken()) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={pathname === '/' ? '/landing' : '/login'} replace />;
   }
 
   return <MainLayout />;
@@ -51,17 +54,16 @@ function ProtectedLayoutRoute() {
 function App() {
   return (
     <BrowserRouter>
+      <ThemeInitializer />
+
       {/* 테마 스위칭을 테스트하려면 아래 div에 className="theme-popart" 등을 추가하세요 */}
-      <div className="min-h-screen font-sans">
+      <div className="min-h-screen bg-fill-surface font-sans text-text-strong">
         <Routes>
           <Route path="/landing" element={<LandingRoute />} />
 
-          <Route element={<MainLayout />}>
-            <Route index element={<RootRoute />} />
-          </Route>
-
           <Route element={<ProtectedLayoutRoute />}>
             <Route path="home" element={<HomePage />} />
+            <Route index element={<CalendarMainPage />} />
             <Route path="friends" element={<FriendsPage />} />
             <Route path="my" element={<MyPage />} />
             <Route path="my/profile" element={<ProfileEditPage />} />
@@ -90,6 +92,9 @@ function App() {
               element={<Navigate to={FIRST_STEP_PATH} replace />}
             />
           </Route>
+
+          {/* 로그인 여부와 관계없이 접근 가능한 이메일 인증 경로 */}
+          <Route path="/email/verify" element={<EmailVerifyPage />} />
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />

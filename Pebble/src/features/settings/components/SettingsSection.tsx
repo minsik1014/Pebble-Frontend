@@ -14,7 +14,8 @@ export function SettingsSection({
       className={[
         'w-full rounded-token-m bg-fill-surface',
         'px-[58px] py-token-xxl',
-        'shadow-[0px_0px_28px_rgba(23,23,23,0.03)]',
+        'shadow-shadow-m',
+        'transition-colors duration-200',
         className,
       ].join(' ')}
       {...props}

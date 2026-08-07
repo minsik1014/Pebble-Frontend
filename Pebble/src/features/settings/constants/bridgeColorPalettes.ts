@@ -1,9 +1,8 @@
-// src/features/settings/constants/bridgeColorPalettes.ts
-
 export interface BridgeColorPalette {
   id: string;
   name: string;
   tone: string;
+  activityColor: string;
   colors: {
     empty: string;
     level1: string;
@@ -19,6 +18,7 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     id: 'pebble',
     name: '조약돌',
     tone: '기본',
+    activityColor: '#A3A3A3',
     colors: {
       empty: '#FAFAFA',
       level1: '#E5E5E5',
@@ -30,6 +30,7 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     id: 'stream',
     name: '시냇물',
     tone: '파랑',
+    activityColor: '#82A0FF',
     colors: {
       empty: '#FAFAFA',
       level1: '#D5E1FF',
@@ -41,6 +42,7 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     id: 'sprout',
     name: '새싹',
     tone: '초록',
+    activityColor: '#ABE692',
     colors: {
       empty: '#FAFAFA',
       level1: '#D2F2C4',
@@ -52,6 +54,7 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     id: 'sunshine',
     name: '햇살',
     tone: '노랑',
+    activityColor: '#FFE48B',
     colors: {
       empty: '#FAFAFA',
       level1: '#FFF1C1',
@@ -63,6 +66,7 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     id: 'sunset',
     name: '노을',
     tone: '주황',
+    activityColor: '#FFB67A',
     colors: {
       empty: '#FAFAFA',
       level1: '#FFD7B8',
@@ -74,6 +78,7 @@ export const BRIDGE_COLOR_PALETTES: BridgeColorPalette[] = [
     id: 'flower',
     name: '꽃',
     tone: '분홍',
+    activityColor: '#FFB4B4',
     colors: {
       empty: '#FAFAFA',
       level1: '#FFD6D6',
@@ -87,6 +92,16 @@ export function getBridgePaletteById(paletteId: string) {
   return (
     BRIDGE_COLOR_PALETTES.find((palette) => palette.id === paletteId) ??
     BRIDGE_COLOR_PALETTES[0]
+  );
+}
+
+export function getBridgePaletteByActivityColor(activityColor: string) {
+  const normalizedColor = activityColor.toUpperCase();
+
+  return (
+    BRIDGE_COLOR_PALETTES.find(
+      (palette) => palette.activityColor.toUpperCase() === normalizedColor,
+    ) ?? BRIDGE_COLOR_PALETTES[0]
   );
 }
 

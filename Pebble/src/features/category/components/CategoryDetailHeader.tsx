@@ -1,6 +1,6 @@
 import { type Category } from "@/types";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import UploadIcon from "@/assets/icons/Upload.svg?react";
+import { getTaskCompletionTargets } from "@/features/task/utils/taskCompletion";
 
 type CategoryDetailHeaderProps = {
   category: Category;
@@ -8,7 +8,20 @@ type CategoryDetailHeaderProps = {
 };
 
 export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderProps) => {
-  const totalTasksCount = category.items.reduce((acc, item) => acc + (item.tasks?.length || 0), 0);
+  const categoryTasks = category.tasks ?? [];
+  const milestoneTasks = category.items.flatMap((item) => item.tasks ?? []);
+  const totalTasksCount = categoryTasks.length + milestoneTasks.length;
+  const progressTargets = [
+    ...category.items.map((item) => Boolean(item.isCompleted)),
+    ...categoryTasks.flatMap(getTaskCompletionTargets),
+    ...milestoneTasks.flatMap(getTaskCompletionTargets),
+  ];
+  const completedTargetsCount = progressTargets.filter(Boolean).length;
+  const progress =
+    progressTargets.length > 0
+      ? Math.round((completedTargetsCount / progressTargets.length) * 100)
+      : 0;
+  const visibilityLabel = category.isPublic ? "공개" : "비공개";
 
   return (
     <div className="absolute left-[72px] top-[112px] flex items-center gap-10">
@@ -21,10 +34,11 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
             alt={`${category.title} 썸네일`}
           />
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-text-teritary">
-            <UploadIcon className="h-8 w-8" />
-            <span className="text-body-03-r">대표 이미지 없음</span>
-          </div>
+          <div
+            className="h-full w-full"
+            style={{ backgroundColor: category.themeBase }}
+            aria-label={`${category.title} 대표 색상`}
+          />
         )}
       </div>
 
@@ -54,7 +68,9 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
               className="px-3 py-1 rounded-token-infinite"
               style={{ backgroundColor: category.themeLight }}
             >
-              <span className="text-body-02-m text-text-primary">공개</span>
+              <span className="text-body-02-m text-text-primary">
+                {visibilityLabel}
+              </span>
             </div>
             <div className="px-3 py-1 bg-btn-quaternary rounded-token-infinite flex items-center gap-1">
               <span className="text-body-02-m text-text-primary">마일스톤</span>
@@ -69,8 +85,8 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
           </div>
         </div>
 
-        <ProgressBar 
-          progress={category.isCompleted ? 100 : 0}
+        <ProgressBar
+          progress={category.isCompleted ? 100 : progress}
           themeBaseColor={category.themeBase}
         />
       </div>

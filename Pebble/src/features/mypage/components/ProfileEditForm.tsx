@@ -1,4 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
+
+import { Toast } from "@/components/ui/Toast";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -156,17 +158,11 @@ export const ProfileEditForm = (): JSX.Element => {
       )}
 
       {isToastMounted && (
-        <div
-          role="status"
-          aria-live="polite"
-          className={`pointer-events-none absolute bottom-4 right-5 z-30 rounded-[16px] bg-black px-5 py-3 text-[14px] font-medium leading-5 text-white shadow-lg transition-all duration-[450ms] ease-in-out ${
-            isToastVisible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-3 opacity-0"
-          }`}
-        >
-          {toastMessage}
-        </div>
+        <Toast
+          message={toastMessage}
+          open={isToastVisible}
+          className="absolute bottom-4 right-5 z-30"
+        />
       )}
     </form>
   );

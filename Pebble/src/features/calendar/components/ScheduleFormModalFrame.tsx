@@ -25,7 +25,7 @@ export const ScheduleFormModalFrame = ({
   gapClassName = "gap-5",
   titleClassName = "leading-[1.4]",
 }: ScheduleFormModalFrameProps) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(44,44,44,0.3)] backdrop-blur-[4px]">
     <div
       className={`w-[640px] p-8 bg-fill-inverse rounded-[32px] flex flex-col ${gapClassName} shadow-shadow-m relative`}
     >

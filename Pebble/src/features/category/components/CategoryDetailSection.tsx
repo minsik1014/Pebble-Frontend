@@ -15,11 +15,13 @@ import type {
   CreateScheduleItemInput,
   UpdateCategoryInput,
 } from "@/features/calendar/types";
+import { leaveSharedCategory } from "@/features/category/api/sharedCategoryApi";
 
 export const CategoryDetailSection = ({
   isSidebarOpen,
   category,
   backLabel = "캘린더",
+  currentUserId,
   onBack,
   categories,
   onUpdateCategory,
@@ -27,6 +29,7 @@ export const CategoryDetailSection = ({
   onUpdateCategoryTask,
   onDeleteCategoryTask,
   onDeleteCategory,
+  onReloadCalendarData,
   onUpdateMilestone,
   onDeleteMilestone,
   onUpdateTask,
@@ -38,6 +41,7 @@ export const CategoryDetailSection = ({
   isSidebarOpen: boolean;
   category: Category;
   backLabel?: string;
+  currentUserId: number | null;
   onBack: () => void;
   categories: Category[];
   onUpdateCategory: (
@@ -49,9 +53,10 @@ export const CategoryDetailSection = ({
     categoryId: string,
     taskId: string,
     input: CreateScheduleItemInput,
-  ) => void;
-  onDeleteCategoryTask: (categoryId: string, taskId: string) => void;
+  ) => Promise<void>;
+  onDeleteCategoryTask: (categoryId: string, taskId: string) => Promise<void>;
   onDeleteCategory: (categoryId: string) => Promise<void>;
+  onReloadCalendarData: () => Promise<void>;
   onUpdateMilestone: (
     categoryId: string,
     milestoneId: string,
@@ -76,6 +81,7 @@ export const CategoryDetailSection = ({
   onToggleCategoryTaskCompleted: (
     categoryId: string,
     taskId: string,
+    taskDateId?: number,
   ) => Promise<void>;
   onToggleTaskCompleted: (
     categoryId: string,
@@ -100,7 +106,11 @@ export const CategoryDetailSection = ({
     category.items
       .find((item) => item.id === selectedMilestoneForTask)
       ?.tasks?.find((task) => task.id === editingTaskId) ?? null;
-
+  const canDeleteCategory =
+    !category.isShared ||
+    (currentUserId !== null &&
+      category.userId !== undefined &&
+      category.userId === currentUserId);
   const toggleMilestone = (id: string) => {
     setExpandedMilestones((prev) => ({
       ...prev,
@@ -156,8 +166,8 @@ export const CategoryDetailSection = ({
                   key={task.id}
                   task={task}
                   themeLightColor={category.themeLight}
-                  onToggleCompleted={() =>
-                    onToggleCategoryTaskCompleted(category.id, task.id)
+                  onToggleCompleted={(taskDateId) =>
+                    onToggleCategoryTaskCompleted(category.id, task.id, taskDateId)
                   }
                   onEdit={() => setEditingCategoryTaskId(task.id)}
                 />
@@ -204,9 +214,20 @@ export const CategoryDetailSection = ({
           await onUpdateCategory(category.id, input);
         }}
         onClose={() => setIsEditModalOpen(false)} 
-        onRequestDelete={() => {
+        onRequestDelete={
+          canDeleteCategory
+            ? () => {
+                setIsEditModalOpen(false);
+                setIsDeleteModalOpen(true);
+              }
+            : undefined
+        }
+        currentUserId={currentUserId}
+        onLeaveCategory={async () => {
+          await leaveSharedCategory(category.id);
+          await onReloadCalendarData();
           setIsEditModalOpen(false);
-          setIsDeleteModalOpen(true);
+          onBack();
         }}
       />
 
@@ -264,7 +285,11 @@ export const CategoryDetailSection = ({
               category.id,
               selectedMilestoneForTask,
               editingTaskId,
-              input.task,
+              {
+                ...input.task,
+                categoryId: input.categoryId ?? null,
+                milestoneId: input.milestoneId ?? null,
+              },
             );
             return;
           }
@@ -287,20 +312,24 @@ export const CategoryDetailSection = ({
         defaultCategoryId={category.id}
         task={editingCategoryTask}
         mode="edit"
-        onSubmit={({ task }) => {
+        onSubmit={async ({ categoryId, milestoneId, task }) => {
           if (!editingCategoryTaskId) {
             return;
           }
 
-          onUpdateCategoryTask(category.id, editingCategoryTaskId, task);
+          await onUpdateCategoryTask(category.id, editingCategoryTaskId, {
+            ...task,
+            categoryId: categoryId ?? null,
+            milestoneId: milestoneId ?? null,
+          });
           setEditingCategoryTaskId(null);
         }}
-        onRequestDelete={() => {
+        onRequestDelete={async () => {
           if (!editingCategoryTaskId) {
             return;
           }
 
-          onDeleteCategoryTask(category.id, editingCategoryTaskId);
+          await onDeleteCategoryTask(category.id, editingCategoryTaskId);
           setEditingCategoryTaskId(null);
         }}
       />

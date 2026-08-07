@@ -2,7 +2,7 @@
 
 import { Link, useNavigate } from 'react-router-dom';
 
-import pebbleLogo from '@/assets/icons/Logo_Pebble3-1.png';
+import pebbleLogo from '@/assets/icons/Logo_Pebble 3.svg';
 import { Button } from '@/components/ui/Button';
 
 type PublicHeaderVariant = 'landing' | 'auth';
@@ -19,8 +19,8 @@ export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
     <header className="h-[95px] w-full bg-transparent [font-family:'Pretendard',sans-serif]">
       <div className="flex h-full w-full items-center justify-between px-[64px]">
         <Link
-          to="/"
-          aria-label="Pebble 홈으로 이동"
+          to="/landing"
+          aria-label="Pebble 랜딩 페이지로 이동"
           className="flex h-[44px] w-[122px] shrink-0 cursor-pointer select-none items-center gap-[4px]"
         >
           <img

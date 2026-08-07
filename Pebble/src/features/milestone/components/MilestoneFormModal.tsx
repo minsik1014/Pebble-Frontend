@@ -42,6 +42,13 @@ export const MilestoneFormModal = ({
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const datePicker = useScheduleDatePicker();
+  const {
+    reset,
+    setDateRange,
+    setDateType,
+    setMultiDates,
+    setSelectedDate,
+  } = datePicker;
   const activeCategory = categories.find(
     (category) => category.id === selectedCategory,
   );
@@ -51,19 +58,26 @@ export const MilestoneFormModal = ({
       return;
     }
 
-    setSelectedCategory(defaultCategoryId);
+    setSelectedCategory(
+      defaultCategoryId &&
+        categories.some(
+          (category) => category.id === defaultCategoryId && !category.isHidden,
+        )
+        ? defaultCategoryId
+        : null,
+    );
 
     if (!milestone) {
       setMilestoneName("");
-      datePicker.reset();
+      reset();
       return;
     }
 
     setMilestoneName(milestone.title);
 
     if (milestone.dates && milestone.dates.length > 0) {
-      datePicker.setDateType("다중");
-      datePicker.setMultiDates(
+      setDateType("다중");
+      setMultiDates(
         milestone.dates
           .map(parseIsoScheduleDate)
           .filter((date): date is Date => Boolean(date)),
@@ -72,17 +86,27 @@ export const MilestoneFormModal = ({
     }
 
     if (milestone.end) {
-      datePicker.setDateType("기간");
-      datePicker.setDateRange({
+      setDateType("기간");
+      setDateRange({
         start: parseIsoScheduleDate(milestone.start),
         end: parseIsoScheduleDate(milestone.end),
       });
       return;
     }
 
-    datePicker.setDateType("하루");
-    datePicker.setSelectedDate(parseIsoScheduleDate(milestone.start));
-  }, [defaultCategoryId, isOpen, milestone]);
+    setDateType("하루");
+    setSelectedDate(parseIsoScheduleDate(milestone.start));
+  }, [
+    defaultCategoryId,
+    categories,
+    isOpen,
+    milestone,
+    reset,
+    setDateRange,
+    setDateType,
+    setMultiDates,
+    setSelectedDate,
+  ]);
 
   const handleSubmit = async () => {
     const scheduleRange = getScheduleRangeFromSelection(datePicker);
@@ -133,7 +157,6 @@ export const MilestoneFormModal = ({
             categories={categories}
             selectedCategoryId={selectedCategory}
             isOpen={isCategoryDropdownOpen}
-            variant="inverse"
             onToggleOpen={() =>
               setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
             }

@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+
+import { useEffect, useRef, useState } from 'react';
 
 import CheckIcon from '@/assets/icons/Check.svg?react';
 
@@ -10,23 +11,49 @@ import {
   REPORT_SECTION_COPY,
   type ReportScheduleItem,
 } from '@/features/landing/constants/reportSectionData';
-import { useInViewOnce } from '@/features/landing/hooks/useInViewOnce';
+import { useInView } from '@/features/landing/hooks/useInView';
 
 import '../styles/reportAnimation.css';
 
 interface ReportRevealProps {
   isVisible: boolean;
+  revealDelay: number;
 }
 
-function getRevealClassName(isVisible: boolean) {
+const CARD_REVEAL_DELAY = {
+  left: 150,
+  right: 400,
+  center: 650,
+} as const;
+
+function getTextRevealClassName(isVisible: boolean) {
   return [
-    'landing-report-reveal',
+    'landing-report-text-reveal',
     isVisible ? 'is-visible' : '',
   ].join(' ');
 }
 
+function getCardRevealClassName(isVisible: boolean) {
+  return [
+    'landing-report-card-reveal',
+    isVisible ? 'is-visible' : '',
+  ].join(' ');
+}
+
+function getCardRevealStyle(
+  isVisible: boolean,
+  revealDelay: number,
+) {
+  return {
+    transitionDelay: isVisible
+      ? `${revealDelay}ms`
+      : '0ms',
+  };
+}
+
 function MonthlyPebbleCountCard({
   isVisible,
+  revealDelay,
 }: ReportRevealProps) {
   return (
     <article
@@ -35,11 +62,9 @@ function MonthlyPebbleCountCard({
         'flex h-[242.36px] w-[311px] items-center justify-center',
         'rounded-token-m bg-fill-surface px-[64px] py-[54px]',
         'shadow-shadow-m',
-        getRevealClassName(isVisible),
+        getCardRevealClassName(isVisible),
       ].join(' ')}
-      style={{
-        transitionDelay: isVisible ? '1000ms' : '0ms',
-      }}
+      style={getCardRevealStyle(isVisible, revealDelay)}
     >
       <div className="flex h-[134.36px] w-[183px] flex-col gap-[6.36px]">
         <p className="h-[68px] w-[183px] text-[28px] font-bold leading-[120%] tracking-[-0.01em] text-text-primary">
@@ -64,6 +89,7 @@ function MonthlyPebbleCountCard({
 
 function BusiestCategoryCard({
   isVisible,
+  revealDelay,
 }: ReportRevealProps) {
   return (
     <article
@@ -72,11 +98,9 @@ function BusiestCategoryCard({
         'flex h-[316px] w-[386px] flex-col gap-[24px]',
         'rounded-token-m bg-fill-surface px-[40px] py-[32px]',
         'shadow-shadow-m',
-        getRevealClassName(isVisible),
+        getCardRevealClassName(isVisible),
       ].join(' ')}
-      style={{
-        transitionDelay: isVisible ? '1000ms' : '0ms',
-      }}
+      style={getCardRevealStyle(isVisible, revealDelay)}
     >
       <div className="flex h-[69px] w-[219px] flex-col gap-[8px]">
         <p className="text-[14px] font-medium leading-[150%] tracking-[-0.01em] text-text-teritary">
@@ -85,11 +109,11 @@ function BusiestCategoryCard({
 
         <div className="flex h-[40px] items-center gap-[12px]">
           <span
+            aria-hidden="true"
             className="h-[40px] w-[8px] rounded-token-s"
             style={{
               backgroundColor: BUSIEST_CATEGORY.color,
             }}
-            aria-hidden="true"
           />
 
           <h3 className="text-[32px] font-bold leading-[120%] tracking-[-0.01em] text-text-primary">
@@ -137,11 +161,11 @@ function ReportScheduleRow({
       <div className="flex h-[24px] w-full items-center justify-between">
         <div className="flex items-center gap-[5.86px]">
           <span
+            aria-hidden="true"
             className="h-[24px] w-[5.86px] rounded-[2.93px]"
             style={{
               backgroundColor: item.barColor,
             }}
-            aria-hidden="true"
           />
 
           <span className="text-[16px] font-medium leading-[150%] tracking-[-0.01em] text-text-primary">
@@ -151,8 +175,8 @@ function ReportScheduleRow({
 
         <span className="flex size-5 items-center justify-center rounded-full bg-btn-primary text-text-onFill">
           <CheckIcon
-            className="size-[12px]"
             aria-hidden="true"
+            className="size-[12px]"
           />
         </span>
       </div>
@@ -162,6 +186,7 @@ function ReportScheduleRow({
 
 function BusiestDayCard({
   isVisible,
+  revealDelay,
 }: ReportRevealProps) {
   return (
     <article
@@ -170,11 +195,9 @@ function BusiestDayCard({
         'flex h-[377.5px] w-[394px] flex-col gap-[12px]',
         'rounded-token-m bg-fill-surface px-[40px] py-[32px]',
         'shadow-shadow-m',
-        getRevealClassName(isVisible),
+        getCardRevealClassName(isVisible),
       ].join(' ')}
-      style={{
-        transitionDelay: isVisible ? '1000ms' : '0ms',
-      }}
+      style={getCardRevealStyle(isVisible, revealDelay)}
     >
       <div className="flex h-[60px] w-[314px] flex-col gap-[6px]">
         <p className="text-[12px] font-medium leading-[150%] tracking-[-0.01em] text-text-teritary">
@@ -217,28 +240,73 @@ function BusiestDayCard({
 export function ReportSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  /*
-   * 리포트 섹션의 약 22%가 화면에 들어오면
-   * 타이틀 애니메이션을 시작합니다.
-   */
-  const hasEntered = useInViewOnce(sectionRef, {
-    threshold: 0.22,
-    rootMargin: '0px 0px -8% 0px',
+  const isInView = useInView(sectionRef, {
+    threshold: 0.45,
   });
+  const [hasEntered, setHasEntered] = useState(false);
+
+  const lastScrollYRef = useRef(0);
+  const scrollDirectionRef = useRef<'up' | 'down'>('down');
+
+  useEffect(() => {
+    lastScrollYRef.current = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollYRef.current) {
+        scrollDirectionRef.current = 'down';
+      } else if (currentScrollY < lastScrollYRef.current) {
+        scrollDirectionRef.current = 'up';
+      }
+
+      lastScrollYRef.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isInView) {
+      /*
+       * 아래로 처음 진입하면 false → true로 변경되어
+       * 등장 애니메이션이 실행됩니다.
+       *
+       * 아래쪽에서 위로 재진입할 때는 이미 true 상태이므로
+       * 애니메이션 없이 기존 콘텐츠가 그대로 표시됩니다.
+       */
+      setHasEntered(true);
+      return;
+    }
+
+    /*
+     * 위로 스크롤하며 섹션의 위쪽으로 완전히 벗어났을 때만
+     * 다음 하향 진입을 위해 애니메이션 상태를 초기화합니다.
+     *
+     * 아래로 섹션을 벗어날 때는 true 상태를 유지하므로
+     * 다시 위로 올라와도 퇴장·재등장 애니메이션이 없습니다.
+     */
+    if (scrollDirectionRef.current === 'up') {
+      setHasEntered(false);
+    }
+  }, [isInView]);
 
   return (
     <div
       ref={sectionRef}
-      className="relative h-full w-full overflow-hidden bg-[linear-gradient(116.7deg,#FAFAFA_3.1%,#E5E5E5_99.9%)]"
+      className="relative h-full w-full overflow-hidden bg-transparent"
     >
       <div
         className={[
           'absolute left-[100px] top-[160px]',
-          getRevealClassName(hasEntered),
+          getTextRevealClassName(hasEntered),
         ].join(' ')}
-        style={{
-          transitionDelay: '0ms',
-        }}
       >
         <h2 className="h-[70px] w-[662px] text-[54px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
           {REPORT_SECTION_COPY.title}
@@ -249,9 +317,21 @@ export function ReportSection() {
         </p>
       </div>
 
-      <MonthlyPebbleCountCard isVisible={hasEntered} />
-      <BusiestCategoryCard isVisible={hasEntered} />
-      <BusiestDayCard isVisible={hasEntered} />
+      {/* 왼쪽 → 오른쪽 → 가운데 순서로 등장합니다. */}
+      <MonthlyPebbleCountCard
+        isVisible={hasEntered}
+        revealDelay={CARD_REVEAL_DELAY.left}
+      />
+
+      <BusiestCategoryCard
+        isVisible={hasEntered}
+        revealDelay={CARD_REVEAL_DELAY.center}
+      />
+
+      <BusiestDayCard
+        isVisible={hasEntered}
+        revealDelay={CARD_REVEAL_DELAY.right}
+      />
     </div>
   );
 }

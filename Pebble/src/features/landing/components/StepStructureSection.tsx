@@ -1,13 +1,14 @@
-// src/features/landing/components/StepStructureSection.tsx
 
 import { STEP_STRUCTURE_STAGES } from '@/features/landing/constants/stepStructureData';
 
 interface StepStructureSectionProps {
   activeStep?: number;
+  isTextVisible?: boolean;
 }
 
 export function StepStructureSection({
   activeStep = 0,
+  isTextVisible = false,
 }: StepStructureSectionProps) {
   const normalizedActiveStep = Math.min(
     Math.max(activeStep, 0),
@@ -15,14 +16,31 @@ export function StepStructureSection({
   );
 
   return (
-    <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-[linear-gradient(116.82deg,#FFFFFF_0%,#FAFAFA_100%)]">
-      <p className="absolute left-[510px] top-[240px] z-40 w-[421px] text-center text-[32px] font-medium leading-[130%] tracking-[-0.01em] text-text-secondary">
-        목표를 놓치지 않는 가장 쉬운 방법
-      </p>
+    <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-transparent">
+      {/* 두 번째 섹션 상단 텍스트 등장 애니메이션 */}
+      <div
+        aria-hidden={!isTextVisible}
+        className={[
+          'pointer-events-none absolute inset-0 z-40',
+          'transition-[opacity,transform] duration-[1300ms]',
+          'ease-[cubic-bezier(0.22,1,0.36,1)]',
+          'will-change-[opacity,transform]',
+          'motion-reduce:translate-y-0',
+          'motion-reduce:opacity-100',
+          'motion-reduce:transition-none',
+          isTextVisible
+            ? 'translate-y-0 opacity-100'
+            : 'translate-y-12 opacity-0',
+        ].join(' ')}
+      >
+        <p className="absolute left-[510px] top-[240px] w-[421px] text-center text-[32px] font-medium leading-[130%] tracking-[-0.01em] text-text-secondary">
+          목표를 놓치지 않는 가장 쉬운 방법
+        </p>
 
-      <h2 className="absolute left-[274px] top-[298px] z-40 w-[893px] text-center text-[64px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
-        큰 목표부터 오늘 할 일까지, 3단계로
-      </h2>
+        <h2 className="absolute left-[274px] top-[298px] w-[893px] text-center text-[64px] font-bold leading-[130%] tracking-[-0.01em] text-text-strong">
+          큰 목표부터 오늘 할 일까지, 3단계로
+        </h2>
+      </div>
 
       {STEP_STRUCTURE_STAGES.map((stage, stageIndex) => {
         const isActive = stageIndex === normalizedActiveStep;
@@ -40,8 +58,17 @@ export function StepStructureSection({
             aria-hidden={!isActive}
             className={[
               'pointer-events-none absolute inset-0',
-              'transition-[opacity,transform] duration-700',
+              /*
+               * 단계 간 스크롤 거리는 늘리고 전환 시간은 줄여
+               * 이전 단계와 다음 단계의 애니메이션이 겹치는 현상을 줄입니다.
+               */
+              'transition-[opacity,transform] duration-[800ms]',
               'ease-[cubic-bezier(0.22,1,0.36,1)]',
+              'will-change-[opacity,transform]',
+              'motion-reduce:translate-y-0',
+              'motion-reduce:scale-100',
+              'motion-reduce:opacity-100',
+              'motion-reduce:transition-none',
               transitionClassName,
             ].join(' ')}
           >
@@ -56,7 +83,7 @@ export function StepStructureSection({
                   zIndex: card.zIndex,
                 }}
               >
-                {card.title && card.description && (
+                {card.title && card.description ? (
                   <div className="flex w-full min-w-0 items-center">
                     <strong
                       className={[
@@ -76,7 +103,7 @@ export function StepStructureSection({
                       {card.description}
                     </span>
                   </div>
-                )}
+                ) : null}
               </div>
             ))}
 
@@ -95,7 +122,7 @@ export function StepStructureSection({
           <span
             key={stage.id}
             className={[
-              'h-2 rounded-full transition-[width,background-color] duration-500',
+              'h-2 rounded-full transition-[width,background-color] duration-[600ms]',
               index === normalizedActiveStep
                 ? 'w-8 bg-text-strong'
                 : 'w-2 bg-border-secondary',

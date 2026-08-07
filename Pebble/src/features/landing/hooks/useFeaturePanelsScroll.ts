@@ -1,5 +1,7 @@
+
 import type { RefObject } from 'react';
-import { useEffect, useState } from 'react';
+
+import { useLockedStepScroll } from './useLockedStepScroll';
 
 interface UseFeaturePanelsScrollParams {
   sectionRef: RefObject<HTMLElement>;
@@ -7,56 +9,22 @@ interface UseFeaturePanelsScrollParams {
   stepScrollDistance: number;
 }
 
+/*
+ * 미리보기 애니메이션은 delay를 포함해 약 1380ms입니다.
+ * 끝나기 약 180ms 전부터 다음 스크롤 입력을 허용합니다.
+ */
+const FEATURE_PANEL_TRANSITION_LOCK_DURATION =
+  800;
+
 export function useFeaturePanelsScroll({
   sectionRef,
   stepCount,
   stepScrollDistance,
 }: UseFeaturePanelsScrollParams) {
-  const [activeStep, setActiveStep] = useState(0);
-
-  useEffect(() => {
-    let animationFrameId = 0;
-
-    const updateActiveStep = () => {
-      animationFrameId = 0;
-
-      const section = sectionRef.current;
-
-      if (!section) return;
-
-      const sectionRect = section.getBoundingClientRect();
-      const passedDistance = Math.max(-sectionRect.top, 0);
-
-      const nextStep = Math.min(
-        stepCount - 1,
-        Math.floor(passedDistance / stepScrollDistance),
-      );
-
-      setActiveStep((previousStep) =>
-        previousStep === nextStep ? previousStep : nextStep,
-      );
-    };
-
-    const handleScroll = () => {
-      if (animationFrameId !== 0) return;
-
-      animationFrameId = window.requestAnimationFrame(updateActiveStep);
-    };
-
-    updateActiveStep();
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-
-      if (animationFrameId !== 0) {
-        window.cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [sectionRef, stepCount, stepScrollDistance]);
-
-  return activeStep;
+  return useLockedStepScroll({
+    sectionRef,
+    stepCount,
+    stepScrollDistance,
+    transitionDuration: FEATURE_PANEL_TRANSITION_LOCK_DURATION,
+  });
 }

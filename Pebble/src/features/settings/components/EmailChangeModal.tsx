@@ -1,9 +1,8 @@
-// src/features/settings/components/EmailChangeModal.tsx
-
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
-import { requestEmailChange } from '@/features/settings/api/mockSettingsApi';
+
+import { requestEmailChange } from '../api/settingsApi';
 
 interface EmailChangeModalProps {
   open: boolean;
@@ -50,16 +49,17 @@ export function EmailChangeModal({
 
   if (!open) return null;
 
-  const hasEmailValue = email.trim().length > 0;
-  const canSubmit = hasEmailValue && !isSubmitting;
+  const canSubmit = email.trim().length > 0 && !isSubmitting;
 
   const handleClose = () => {
     if (isSubmitting) return;
+
     onOpenChange(false);
   };
 
   const handleSubmit = async () => {
-    const validationError = validateEmail(email, currentEmail);
+    const trimmedEmail = email.trim();
+    const validationError = validateEmail(trimmedEmail, currentEmail);
 
     if (validationError) {
       setErrorMessage(validationError);
@@ -67,14 +67,16 @@ export function EmailChangeModal({
       return;
     }
 
+    setIsSubmitting(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
     try {
-      setIsSubmitting(true);
-      setErrorMessage('');
-      setSuccessMessage('');
+      await requestEmailChange(trimmedEmail);
 
-      const result = await requestEmailChange(email.trim());
-
-      setSuccessMessage(result.message);
+      setSuccessMessage(
+        '인증 링크를 발송했어요. 새 이메일에서 인증을 완료해 주세요.',
+      );
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -94,7 +96,7 @@ export function EmailChangeModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow/30 backdrop-blur-[3px]"
       onClick={handleClose}
     >
       <section
@@ -117,7 +119,14 @@ export function EmailChangeModal({
             value={email}
             disabled={isSubmitting}
             placeholder="새 이메일을 입력해 주세요"
-            className="mt-token-s h-12 w-full rounded-token-s border border-border-teritory px-token-m text-body-02-m text-text-strong outline-none placeholder:text-text-teritary focus:border-border-primary disabled:cursor-not-allowed disabled:bg-btn-quaternary"
+            className={[
+              'mt-token-s h-12 w-full rounded-token-s border px-token-m',
+              'text-body-02-m text-text-strong outline-none',
+              'placeholder:text-text-teritary',
+              errorMessage
+                ? 'border-fill-danger focus:border-fill-danger'
+                : 'border-border-teritory focus:border-border-primary',
+            ].join(' ')}
             onChange={(event) => {
               setEmail(event.target.value);
               setErrorMessage('');
@@ -126,40 +135,38 @@ export function EmailChangeModal({
           />
         </label>
 
-        {errorMessage && (
-          <p className="mt-token-s text-caption-01-r text-fill-danger">
+        {errorMessage ? (
+          <p className="mt-token-s text-caption-01 text-fill-danger">
             {errorMessage}
           </p>
-        )}
+        ) : null}
 
-        {successMessage && (
-          <p className="mt-token-s text-caption-01-r text-text-primary">
+        {successMessage ? (
+          <p className="mt-token-s text-caption-01 text-text-primary">
             {successMessage}
           </p>
-        )}
+        ) : null}
 
         <div className="mt-token-xl grid grid-cols-2 gap-token-m">
           <Button
-            type="button"
-            variant="secondary"
+            variant="cancel"
             disabled={isSubmitting}
-            className="h-11 w-full text-text-strong disabled:cursor-not-allowed disabled:!opacity-100"
+            className="h-11 w-full text-text-strong"
             onClick={handleClose}
           >
             취소
           </Button>
 
           <Button
-            type="button"
             variant="primary"
             disabled={!canSubmit}
             className={[
-              'h-11 w-full disabled:cursor-not-allowed disabled:!opacity-100',
+              'h-11 w-full disabled:opacity-100',
               canSubmit
                 ? ''
-                : '!bg-[#737373] !text-[#A3A3A3]',
+                : '!bg-btn-teritary !text-text-teritary',
             ].join(' ')}
-            onClick={handleSubmit}
+            onClick={() => void handleSubmit()}
           >
             {submitButtonText}
           </Button>

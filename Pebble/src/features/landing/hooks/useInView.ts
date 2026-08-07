@@ -1,36 +1,35 @@
+// src/features/landing/hooks/useInView.ts
+
 import type { RefObject } from 'react';
 import { useEffect, useState } from 'react';
 
-interface UseInViewOnceOptions {
+interface UseInViewOptions {
   threshold?: number;
   rootMargin?: string;
 }
 
-export function useInViewOnce<T extends Element>(
+export function useInView<T extends Element>(
   targetRef: RefObject<T | null>,
   {
     threshold = 0.25,
     rootMargin = '0px',
-  }: UseInViewOnceOptions = {},
+  }: UseInViewOptions = {},
 ) {
-  const [hasEntered, setHasEntered] = useState(false);
+  const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
     const target = targetRef.current;
 
-    if (!target || hasEntered) return;
+    if (!target) return;
 
     if (!('IntersectionObserver' in window)) {
-      setHasEntered(true);
+      setIsInView(true);
       return;
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
-
-        setHasEntered(true);
-        observer.disconnect();
+        setIsInView(entry.isIntersecting);
       },
       {
         threshold,
@@ -40,8 +39,10 @@ export function useInViewOnce<T extends Element>(
 
     observer.observe(target);
 
-    return () => observer.disconnect();
-  }, [hasEntered, rootMargin, targetRef, threshold]);
+    return () => {
+      observer.disconnect();
+    };
+  }, [rootMargin, targetRef, threshold]);
 
-  return hasEntered;
+  return isInView;
 }
