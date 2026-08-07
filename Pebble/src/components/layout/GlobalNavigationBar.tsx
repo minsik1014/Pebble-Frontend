@@ -128,7 +128,8 @@ export const GlobalNavigationBar = ({
     ].join(' ');
 
   const isCalendarActive = pathname === '/';
-  const isHomeActive = pathname.startsWith('/home');
+  const isHomeActive =
+    pathname.startsWith('/home') || pathname.startsWith('/friends');
   const isMyPageActive = pathname.startsWith('/my');
   const isSettingsActive = pathname.startsWith('/settings');
 
