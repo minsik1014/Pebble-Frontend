@@ -450,9 +450,9 @@ export const CategoryDetailSection = ({
               {
                 ...input.task,
                 categoryId:
-                  input.categoryId ?? null,
+                  input.categoryId ?? undefined,
                 milestoneId:
-                  input.milestoneId ?? null,
+                  input.milestoneId ?? undefined,
               },
             );
 
@@ -504,9 +504,9 @@ export const CategoryDetailSection = ({
             {
               ...task,
               categoryId:
-                categoryId ?? null,
+                categoryId ?? undefined,
               milestoneId:
-                milestoneId ?? null,
+                milestoneId ?? undefined,
             },
           );
 

@@ -219,7 +219,7 @@ export const useCalendarScheduleActions = ({
         category?.tasks?.find((categoryTask) => categoryTask.id === taskId) ??
         null;
       const willBeEmptyCategory =
-        Boolean(category) &&
+        category !== null &&
         category.items.length === 0 &&
         (category.tasks?.filter((categoryTask) => categoryTask.id !== taskId)
           .length ?? 0) === 0;
