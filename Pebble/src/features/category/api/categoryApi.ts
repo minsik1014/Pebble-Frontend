@@ -45,6 +45,15 @@ export async function getCategories(): Promise<Category[]> {
   return data?.categories.map(mapCategoryResponseToCategory) ?? [];
 }
 
+export async function getUserCategories(userId: number): Promise<Category[]> {
+  const data = await apiRequest<GetCategoriesResponse>({
+    method: "GET",
+    url: `/users/${userId}/categories`,
+  });
+
+  return data?.categories.map(mapCategoryResponseToCategory) ?? [];
+}
+
 export async function createCategory(
   input: CreateCategoryInput,
 ): Promise<Category | null> {

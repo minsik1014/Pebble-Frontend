@@ -235,22 +235,24 @@ export const MilestoneAccordion = ({
               }`}
             />
           </button>
-          <button
-            type="button"
-            aria-label={`${category.title} ${isVisible ? "숨기기" : "보이기"}`}
-            aria-pressed={!isVisible}
-            onClick={(e) => {
-              e.stopPropagation();
-              void onToggleVisibility?.(category.id);
-            }}
-            className="relative flex items-center justify-center w-11 h-11 rounded-token-s hover:bg-fill-surface-hover transition-colors"
-          >
-            {isVisible ? (
-              <EyeOnIcon className="w-6 h-6 text-text-secondary" />
-            ) : (
-              <EyeOffIcon className="w-6 h-6 text-text-secondary" />
-            )}
-          </button>
+          {onToggleVisibility && (
+            <button
+              type="button"
+              aria-label={`${category.title} ${isVisible ? "숨기기" : "보이기"}`}
+              aria-pressed={!isVisible}
+              onClick={(e) => {
+                e.stopPropagation();
+                void onToggleVisibility(category.id);
+              }}
+              className="relative flex items-center justify-center w-11 h-11 rounded-token-s hover:bg-fill-surface-hover transition-colors"
+            >
+              {isVisible ? (
+                <EyeOnIcon className="w-6 h-6 text-text-secondary" />
+              ) : (
+                <EyeOffIcon className="w-6 h-6 text-text-secondary" />
+              )}
+            </button>
+          )}
         </div>
       </div>
       {expanded && (
@@ -324,14 +326,16 @@ export const MilestoneAccordion = ({
               </div>
             ))}
           </div>
-          <div className="flex w-full flex-col items-start px-5 py-3">
-            <AddButton
-              label="일정 추가하기"
-              variant="secondary"
-              className="w-[312px]"
-              onClick={() => onAddSchedule?.(category.id)}
-            />
-          </div>
+          {onAddSchedule && (
+            <div className="flex w-full flex-col items-start px-5 py-3">
+              <AddButton
+                label="일정 추가하기"
+                variant="secondary"
+                className="w-[312px]"
+                onClick={() => onAddSchedule(category.id)}
+              />
+            </div>
+          )}
         </div>
       )}
     </section>

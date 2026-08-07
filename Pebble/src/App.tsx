@@ -23,6 +23,7 @@ import { MonthlyPebbleStep } from '@/features/report/steps/MonthlyPebbleStep';
 import { SharedFriendsStep } from '@/features/report/steps/SharedFriendsStep';
 import { SummaryStep } from '@/features/report/steps/SummaryStep';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
+import { HomePage } from '@/pages/home/HomePage';
 import { LandingPage } from '@/pages/landing/LandingPage';
 import FriendsPage from '@/pages/freinds/FriendsPage';
 import MyCategoryDetailPage from '@/pages/mypage/MyCategoryDetailPage';
@@ -62,7 +63,8 @@ function App() {
           <Route path="/landing" element={<LandingRoute />} />
 
           <Route element={<ProtectedLayoutRoute />}>
-            <Route index element={<CalendarMainPage />} />
+            <Route index element={<HomePage />} />
+            <Route path="calendar" element={<CalendarMainPage />} />
             <Route path="friends" element={<FriendsPage />} />
             <Route path="my" element={<MyPage />} />
             <Route path="my/profile" element={<ProfileEditPage />} />

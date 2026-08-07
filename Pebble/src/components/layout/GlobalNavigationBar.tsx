@@ -30,7 +30,7 @@ export const GlobalNavigationBar = ({
   onToggleSidebar,
 }: GlobalNavigationBarProps) => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -52,7 +52,7 @@ export const GlobalNavigationBar = ({
   } = useAlarms();
 
   const navigateIfNeeded = (targetPath: string) => {
-    if (pathname !== targetPath) {
+    if (pathname !== targetPath || search) {
       navigate(targetPath);
     }
   };
@@ -141,8 +141,8 @@ export const GlobalNavigationBar = ({
         : 'text-text-secondary hover:bg-fill-surface hover:text-text-strong',
     ].join(' ');
 
-  const isCalendarActive = pathname === '/';
-  const isFriendsActive = pathname.startsWith('/friends');
+  const isCalendarActive = pathname.startsWith('/calendar');
+  const isHomeActive = pathname === '/';
   const isMyPageActive = pathname.startsWith('/my');
   const isSettingsActive = pathname.startsWith('/settings');
 
@@ -211,17 +211,17 @@ export const GlobalNavigationBar = ({
         <div className="flex flex-col justify-start items-center gap-10 w-full">
           <button
             type="button"
-            onClick={() => navigateIfNeeded('/friends')}
-            className={getNavigationButtonClassName(isFriendsActive)}
-            aria-label="소셜 페이지로 이동"
-            aria-current={isFriendsActive ? 'page' : undefined}
+            onClick={() => navigateIfNeeded('/')}
+            className={getNavigationButtonClassName(isHomeActive)}
+            aria-label="홈 페이지로 이동"
+            aria-current={isHomeActive ? 'page' : undefined}
           >
             <SocialOutlineIcon className="size-6" />
           </button>
 
           <button
             type="button"
-            onClick={() => navigateIfNeeded('/')}
+            onClick={() => navigateIfNeeded('/calendar')}
             className={getNavigationButtonClassName(isCalendarActive)}
             aria-label="캘린더 페이지로 이동"
             aria-current={isCalendarActive ? 'page' : undefined}

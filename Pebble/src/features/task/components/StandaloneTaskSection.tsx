@@ -7,7 +7,7 @@ import { getScheduleDisplayLabels } from "@/utils/scheduleDate";
 type StandaloneTaskSectionProps = {
   tasks: TaskItem[];
   onToggleTaskCompleted?: (taskId: string) => void | Promise<void>;
-  onEditTask: (taskId: string) => void;
+  onEditTask?: (taskId: string) => void;
 };
 
 export const StandaloneTaskSection = ({
@@ -36,7 +36,7 @@ export const StandaloneTaskSection = ({
             <button
               type="button"
               className="flex min-w-0 flex-1 items-center gap-2 text-left"
-              onClick={() => onEditTask(task.id)}
+              onClick={() => onEditTask?.(task.id)}
             >
               <div
                 className="h-10 w-2 shrink-0 rounded"
