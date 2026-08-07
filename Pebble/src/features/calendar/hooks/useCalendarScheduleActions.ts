@@ -28,6 +28,17 @@ type ScheduleDateSource =
   | Pick<TaskItem, "start" | "end" | "dates">
   | CreateScheduleItemInput;
 
+const normalizeScheduleDate = (date?: string | null) => {
+  if (!date) return undefined;
+
+  return date.slice(0, 10);
+};
+
+const normalizeScheduleDates = (dates?: string[]) =>
+  dates
+    ?.map(normalizeScheduleDate)
+    .filter((date): date is string => Boolean(date));
+
 const getMilestoneDeleteScope = (
   dateType?: string,
 ): MilestoneDeleteScope | undefined =>
@@ -99,7 +110,7 @@ const getScheduleAffectedDates = (schedule?: ScheduleDateSource | null) => {
   if (!schedule) return undefined;
 
   if (schedule.dates && schedule.dates.length > 0) {
-    return schedule.dates;
+    return normalizeScheduleDates(schedule.dates);
   }
 
   /*
@@ -110,7 +121,9 @@ const getScheduleAffectedDates = (schedule?: ScheduleDateSource | null) => {
     return undefined;
   }
 
-  return [schedule.start];
+  const startDate = normalizeScheduleDate(schedule.start);
+
+  return startDate ? [startDate] : undefined;
 };
 
 const mergeAffectedDates = (
@@ -161,8 +174,10 @@ const getTaskCompletionChange = (
   const previousIsCompleted =
     targetTaskDate?.isCompleted ?? task?.isCompleted ?? false;
 
-  const affectedDates = targetTaskDate?.date
-    ? [targetTaskDate.date]
+  const targetTaskDateDate = normalizeScheduleDate(targetTaskDate?.date);
+
+  const affectedDates = targetTaskDateDate
+    ? [targetTaskDateDate]
     : getScheduleAffectedDates(task);
 
   return {

@@ -82,15 +82,15 @@ export function useActivityLogs({
   const requestIdRef = useRef(0);
 
   const loadActivityLogs = useCallback(async () => {
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
     if (!enabled || !userId) {
       setData(null);
       setError(null);
       setIsLoading(false);
       return;
     }
-
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
 
     setIsLoading(true);
     setError(null);
@@ -150,6 +150,8 @@ export function useActivityLogs({
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
+
+      requestIdRef.current += 1;
     },
     [],
   );
