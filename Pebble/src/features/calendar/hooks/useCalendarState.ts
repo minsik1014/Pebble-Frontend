@@ -368,6 +368,12 @@ export const useCalendarState = ({
         }
       } catch (error) {
         if (canUpdate()) {
+          if (viewedUserId !== undefined && viewedUserId !== null) {
+            setCategories([]);
+            setStandaloneTasks([]);
+            setSelectedCategoryId(null);
+          }
+
           setCalendarErrorMessage(
             error instanceof Error
               ? error.message

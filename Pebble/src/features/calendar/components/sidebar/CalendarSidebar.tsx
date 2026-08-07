@@ -113,7 +113,10 @@ export const CalendarSidebar = ({
     milestoneId: string,
     taskId: string,
   ) => void | Promise<void>;
-  onToggleStandaloneTaskCompleted?: (taskId: string) => void | Promise<void>;
+  onToggleStandaloneTaskCompleted?: (
+    taskId: string,
+    taskDateId?: number,
+  ) => void | Promise<void>;
   onToggleCategoryVisibility?: (categoryId: string) => void | Promise<void>;
 }): JSX.Element => {
   const canEdit = !isReadOnly;
