@@ -136,7 +136,7 @@ export const useCalendarCategoryActions = ({
   );
 
   const toggleCategoryVisibility = useCallback(
-    (categoryId: string) => {
+    async (categoryId: string) => {
       const category = categories.find((category) => category.id === categoryId);
 
       if (!category) {
