@@ -5,8 +5,6 @@ import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react";
 import reportPebble from "@/assets/mypage/report-banner/pebble.png";
 import reportPebbleShadow from "@/assets/mypage/report-banner/shadow.svg";
 import { getLatestReport } from "@/features/report/api/reportApi";
-import { REPORT_DEMO_MODE } from "@/features/report/constants/reportDemo";
-import { monthlyReportMock } from "@/features/report/mocks/monthlyReportMock";
 
 type MonthlyReportBannerProps = {
   onOpenReport: () => void;
@@ -37,12 +35,6 @@ const createPreviewReport = (): ReportBannerData => {
   };
 };
 
-const createDemoReport = (): ReportBannerData => ({
-  month: `${monthlyReportMock.reportYear}-${String(
-    monthlyReportMock.reportMonth,
-  ).padStart(2, "0")}`,
-});
-
 /**
  * 매월 1~7일 중 서버에 조회 가능한 최신 리포트가 있을 때만 노출됩니다.
  * 조회 실패나 리포트 미생성 상태에서는 기본 마이페이지 레이아웃을 그대로 유지합니다.
@@ -54,21 +46,10 @@ export const MonthlyReportBanner = ({
   const isPreview =
     import.meta.env.DEV && searchParams.get("reportPreview") === "true";
   const [report, setReport] = useState<ReportBannerData | null>(() =>
-    REPORT_DEMO_MODE
-      ? createDemoReport()
-      : isPreview
-        ? createPreviewReport()
-        : null,
+    isPreview ? createPreviewReport() : null,
   );
 
   useEffect(() => {
-    // [DEMO-ONLY] 발표 중에는 날짜 및 API 응답과 무관하게 /my에서 배너를 항상 노출합니다.
-    // REPORT_DEMO_MODE를 false로 바꾸면 기존 1~7일 노출 조건으로 즉시 복구됩니다.
-    if (REPORT_DEMO_MODE) {
-      setReport(createDemoReport());
-      return;
-    }
-
     if (isPreview) {
       setReport(createPreviewReport());
       return;
