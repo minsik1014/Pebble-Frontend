@@ -6,10 +6,11 @@ import {
 } from "@/features/friends/api/followApi";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 import {
-  getMySettings,
-  getUserActivityLogs,
-} from "@/features/settings/api/settingsApi";
-import type { ActivityLogItem } from "@/features/settings/types/settings";
+  getActivityLogs,
+  normalizeActivityLogsResponse,
+  type ActivityLogItem,
+} from "@/features/activity";
+import { getMySettings } from "@/features/settings/api/settingsApi";
 
 type HomeActivity = {
   color: string;
@@ -66,22 +67,24 @@ export const useHomeOverview = () => {
     let isActive = true;
 
     void Promise.allSettled([
-      getUserActivityLogs({ userId: profile.id }),
+      getActivityLogs({ userId: profile.id }),
       getMySettings(),
     ]).then(([activityResult, settingsResult]) => {
       if (!isActive) return;
+
+      const normalizedActivity =
+        activityResult.status === "fulfilled"
+          ? normalizeActivityLogsResponse(activityResult.value)
+          : null;
 
       setActivity({
         color:
           settingsResult.status === "fulfilled"
             ? settingsResult.value.activityColor
-            : activityResult.status === "fulfilled"
-              ? activityResult.value.activityColor
+            : normalizedActivity
+              ? normalizedActivity.activityColor
               : DEFAULT_ACTIVITY.color,
-        logs:
-          activityResult.status === "fulfilled"
-            ? activityResult.value.logs
-            : DEFAULT_ACTIVITY.logs,
+        logs: normalizedActivity?.logs ?? DEFAULT_ACTIVITY.logs,
       });
     });
 

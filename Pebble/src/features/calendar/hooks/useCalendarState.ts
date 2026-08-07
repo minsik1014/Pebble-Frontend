@@ -405,12 +405,14 @@ export const useCalendarState = ({
     setCategories,
     setSelectedCategoryId,
   });
+
   const scheduleActions = useCalendarScheduleActions({
     categories,
     reloadCalendarData: () => loadCalendarData(),
     setCategories,
     standaloneTasks,
   });
+
   return {
     currentUserId,
     categories,

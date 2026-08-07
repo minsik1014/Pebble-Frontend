@@ -1,7 +1,6 @@
 import { apiRequest } from '@/services/api';
 
 import type {
-  ActivityLogsResponse,
   CurrentUser,
   EmailConfirmResponse,
   UpdateSettingsRequest,
@@ -66,22 +65,6 @@ export async function confirmEmailChange(token: string) {
   });
 
   return requireData(data, '이메일 변경을 완료하지 못했어요.');
-}
-
-export async function getUserActivityLogs({
-  userId,
-  baseDate,
-}: {
-  userId: number;
-  baseDate?: string;
-}) {
-  const data = await apiRequest<ActivityLogsResponse>({
-    method: 'GET',
-    url: `/activity-logs/users/${userId}`,
-    params: baseDate ? { baseDate } : undefined,
-  });
-
-  return requireData(data, '징검다리 기록을 불러오지 못했어요.');
 }
 
 export async function deleteMyAccount() {
