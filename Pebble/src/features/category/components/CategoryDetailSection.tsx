@@ -42,19 +42,26 @@ export const CategoryDetailSection = ({
     categoryId: string,
     input: UpdateCategoryInput,
   ) => Promise<void>;
-  onCreateTask: (input: TaskFormSubmitInput) => void;
-  onUpdateCategoryTask: (
-    categoryId: string,
-    taskId: string,
-    input: CreateScheduleItemInput,
-  ) => void;
-  onDeleteCategoryTask: (categoryId: string, taskId: string) => void;
+  
   onDeleteCategory: (categoryId: string) => Promise<void>;
   onUpdateMilestone: (
     categoryId: string,
     milestoneId: string,
     input: CreateScheduleItemInput,
-  ) => Promise<void>;
+  ) => Promise<void>;onCreateTask: (
+  input: TaskFormSubmitInput,
+) => void | Promise<void>;
+
+onUpdateCategoryTask: (
+  categoryId: string,
+  taskId: string,
+  input: CreateScheduleItemInput,
+) => void | Promise<void>;
+
+onDeleteCategoryTask: (
+  categoryId: string,
+  taskId: string,
+) => void | Promise<void>;
   onDeleteMilestone: (categoryId: string, milestoneId: string) => Promise<void>;
   onUpdateTask: (
     categoryId: string,
@@ -241,67 +248,104 @@ export const CategoryDetailSection = ({
         }}
       />
 
-      <TaskFormModal 
-        isOpen={isTaskModalOpen}
-        onClose={() => {
-          setIsTaskModalOpen(false);
-          setEditingTaskId(null);
-        }}
-        categories={categories}
-        defaultCategoryId={category.id}
-        defaultMilestoneId={selectedMilestoneForTask}
-        task={editingTask}
-        mode={taskMode}
-        onSubmit={async (input) => {
-          if (
-            taskMode === "edit" &&
-            selectedMilestoneForTask &&
-            editingTaskId
-          ) {
-            await onUpdateTask(
+      <TaskFormModal
+          isOpen={isTaskModalOpen}
+          onClose={() => {
+            setIsTaskModalOpen(false);
+            setEditingTaskId(null);
+          }}
+          categories={categories}
+          defaultCategoryId={category.id}
+          defaultMilestoneId={selectedMilestoneForTask}
+          task={editingTask}
+          mode={taskMode}
+          onSubmit={async (input) => {
+            if (
+              taskMode === 'edit' &&
+              selectedMilestoneForTask &&
+              editingTaskId
+            ) {
+              await onUpdateTask(
+                category.id,
+                selectedMilestoneForTask,
+                editingTaskId,
+                input.task,
+              );
+
+              return;
+            }
+
+            await onCreateTask(input);
+          }}
+          onRequestDelete={async () => {
+            if (
+              !selectedMilestoneForTask ||
+              !editingTaskId
+            ) {
+              return;
+            }
+
+            await onDeleteTask(
               category.id,
               selectedMilestoneForTask,
               editingTaskId,
-              input.task,
             );
-            return;
-          }
 
-          await onCreateTask(input);
-        }}
-        onRequestDelete={async () => {
-          if (selectedMilestoneForTask && editingTaskId) {
-            await onDeleteTask(category.id, selectedMilestoneForTask, editingTaskId);
-          }
-          setIsTaskModalOpen(false);
-          setEditingTaskId(null);
-        }}
-      />
+            /*
+            * 삭제 성공 후에만 모달 상태를 초기화합니다.
+            * 실패하면 await 아래로 내려오지 않으므로 모달이 유지됩니다.
+            */
+            setIsTaskModalOpen(false);
+            setEditingTaskId(null);
+          }}
+        />
 
-      <TaskFormModal
-        isOpen={Boolean(editingCategoryTask)}
-        onClose={() => setEditingCategoryTaskId(null)}
-        categories={categories}
-        defaultCategoryId={category.id}
-        task={editingCategoryTask}
-        mode="edit"
-        onSubmit={({ task }) => {
-          if (!editingCategoryTaskId) {
-            return;
-          }
+        <TaskFormModal
+            isOpen={Boolean(editingCategoryTask)}
+            onClose={() =>
+              setEditingCategoryTaskId(null)
+            }
+            categories={categories}
+            defaultCategoryId={category.id}
+            task={editingCategoryTask}
+            mode="edit"
+            onSubmit={async ({ task }) => {
+              if (!editingCategoryTaskId) {
+                return;
+              }
 
-          onUpdateCategoryTask(category.id, editingCategoryTaskId, task);
-          setEditingCategoryTaskId(null);
-        }}
-        onRequestDelete={() => {
-          if (!editingCategoryTaskId) {
-            return;
-          }
+              await onUpdateCategoryTask(
+                category.id,
+                editingCategoryTaskId,
+                task,
+              );
 
-          onDeleteCategoryTask(category.id, editingCategoryTaskId);
-          setEditingCategoryTaskId(null);
-        }}
-      />
+              /*
+              * 여기에서는 직접 setEditingCategoryTaskId(null)을
+              * 호출하지 않습니다.
+              *
+              * TaskFormModal이 onSubmit 성공 후 onClose를 호출하고,
+              * 위의 onClose에서 editingCategoryTaskId를 초기화합니다.
+              */
+            }}
+            onRequestDelete={async () => {
+              if (!editingCategoryTaskId) {
+                return;
+              }
+
+              await onDeleteCategoryTask(
+                category.id,
+                editingCategoryTaskId,
+              );
+
+              /*
+              * 삭제 성공 후에만 닫습니다.
+              * 요청이 실패하면 이 코드는 실행되지 않습니다.
+              */
+              setEditingCategoryTaskId(null);
+            }}
+        />
+      
     </section>
   );
 };

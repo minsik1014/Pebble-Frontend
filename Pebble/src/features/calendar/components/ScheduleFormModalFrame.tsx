@@ -1,12 +1,13 @@
-import { type ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-import { ModalActionBar } from "@/components/ui/ModalActionBar";
+import { ModalActionBar } from '@/components/ui/ModalActionBar';
 
 type ScheduleFormModalFrameProps = {
   title: string;
   children: ReactNode;
   submitLabel: string;
   disabled: boolean;
+  isBusy?: boolean;
   onCancel: () => void;
   onSubmit: () => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
@@ -19,33 +20,42 @@ export const ScheduleFormModalFrame = ({
   children,
   submitLabel,
   disabled,
+  isBusy = false,
   onCancel,
   onSubmit,
   onDelete,
-  gapClassName = "gap-5",
-  titleClassName = "leading-[1.4]",
+  gapClassName = 'gap-5',
+  titleClassName = 'leading-[1.4]',
 }: ScheduleFormModalFrameProps) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
     <div
-      className={`w-[640px] p-8 bg-fill-inverse rounded-[32px] flex flex-col ${gapClassName} shadow-shadow-m relative`}
+      className={[
+        'relative flex w-[640px] flex-col',
+        'rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m',
+        gapClassName,
+      ].join(' ')}
     >
-        <h2
-          className={`text-[24px] font-semibold text-text-strong tracking-[-0.24px] ${titleClassName}`}
-        >
-          {title}
-        </h2>
+      <h2
+        className={[
+          'text-[24px] font-semibold tracking-[-0.24px] text-text-strong',
+          titleClassName,
+        ].join(' ')}
+      >
+        {title}
+      </h2>
 
-        {children}
+      {children}
 
-        <div className="mt-4">
-          <ModalActionBar
-            submitLabel={submitLabel}
-            disabled={disabled}
-            onCancel={onCancel}
-            onSubmit={onSubmit}
-            onDelete={onDelete}
-          />
-        </div>
+      <div className="mt-4">
+        <ModalActionBar
+          submitLabel={submitLabel}
+          disabled={disabled}
+          isBusy={isBusy}
+          onCancel={onCancel}
+          onSubmit={onSubmit}
+          onDelete={onDelete}
+        />
+      </div>
     </div>
   </div>
 );
