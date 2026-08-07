@@ -15,6 +15,7 @@ import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
 import { CalendarSidebarListView } from "./CalendarSidebarListView";
 import { CalendarSidebarSelectedDateView } from "./CalendarSidebarSelectedDateView";
+import { SidebarButtonArea } from "./SidebarButtonArea";
 import { useCalendarSidebarModals } from "@/features/calendar/hooks/useCalendarSidebarModals";
 import { useCalendarSidebarState } from "@/features/calendar/hooks/useCalendarSidebarState";
 import { useSidebarButtonShadow } from "@/features/calendar/hooks/useSidebarButtonShadow";
@@ -385,14 +386,9 @@ export const CalendarSidebar = ({
             </div>
 
             {canEdit && (
-              <div
-                className={`relative z-10 shrink-0 transition-shadow ${
-                  hasDisplayedSchedules ? "mt-2" : "mt-auto"
-                } ${
-                  hasHiddenContentUnderButton
-                    ? "shadow-[0_-12px_24px_rgba(33,37,41,0.08)]"
-                    : "shadow-none"
-                }`}
+              <SidebarButtonArea
+                hasContent={hasDisplayedSchedules}
+                hasHiddenContentUnderButton={hasHiddenContentUnderButton}
               >
                 <AddButton
                   label="추가하기"
@@ -401,7 +397,7 @@ export const CalendarSidebar = ({
                   showIcon={false}
                   onClick={() => openAddMenu()}
                 />
-              </div>
+              </SidebarButtonArea>
             )}
           </div>
         </div>

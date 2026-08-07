@@ -4,11 +4,15 @@ import { CATEGORY_PRESET_COLORS } from "@/utils/categoryColorTheme";
 type CategoryColorPickerProps = {
   selectedColor: string;
   onSelectColor: (color: string) => void;
+  onNativePickerOpen?: () => void;
+  onNativePickerClose?: () => void;
 };
 
 export const CategoryColorPicker = ({
   selectedColor,
   onSelectColor,
+  onNativePickerOpen,
+  onNativePickerClose,
 }: CategoryColorPickerProps) => {
   const colorInputId = useId();
   const colorInputRef = useRef<HTMLInputElement>(null);
@@ -49,7 +53,10 @@ export const CategoryColorPicker = ({
 
         <button
           type="button"
-          onClick={() => colorInputRef.current?.click()}
+          onClick={() => {
+            onNativePickerOpen?.();
+            colorInputRef.current?.click();
+          }}
           className="relative h-10 w-10 rounded-token-s bg-fill-inverse p-1 transition-transform hover:scale-105"
           style={
             isCustomColorSelected
@@ -82,6 +89,7 @@ export const CategoryColorPicker = ({
           type="color"
           value={selectedColor}
           onChange={(event) => onSelectColor(event.target.value)}
+          onBlur={onNativePickerClose}
           className="sr-only"
           aria-label="직접 색상 선택"
         />
