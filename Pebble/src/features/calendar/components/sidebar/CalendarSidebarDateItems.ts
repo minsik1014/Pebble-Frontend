@@ -111,8 +111,10 @@ const getTaskDateOccurrences = (
 const isSameMonth = (date: Date, year: number, month: number) =>
   date.getFullYear() === year && date.getMonth() + 1 === month;
 
+const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"] as const;
+
 const formatGroupTitle = (date: Date) =>
-  `${date.getMonth() + 1}월 ${date.getDate()}일`;
+  `${date.getMonth() + 1}월 ${date.getDate()}일 (${WEEKDAY_LABELS[date.getDay()]})`;
 
 export const getDatedItemKey = (
   groupKey: string,
