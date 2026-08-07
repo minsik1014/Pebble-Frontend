@@ -129,6 +129,20 @@ const mergeUniqueTasks = (taskGroups: TaskItem[][]) => {
   return [...taskMap.values()];
 };
 
+const filterPublicCategories = (categories: Category[]) =>
+  categories.filter((category) => category.isPublic !== false);
+
+const filterTasksByVisibleCategories = (
+  tasks: TaskItem[],
+  categories: Category[],
+) => {
+  const visibleCategoryIds = new Set(categories.map((category) => category.id));
+
+  return tasks.filter(
+    (task) => !task.categoryId || visibleCategoryIds.has(task.categoryId),
+  );
+};
+
 const attachTasksToCategories = (
   categories: Category[],
   tasks: TaskItem[],
@@ -285,10 +299,16 @@ export const useCalendarState = ({
             getUserCategories(viewedUserId),
             getUserTasks(viewedUserId, baseDate),
           ]);
-          const publicCategories = loadedCategories.map((category) => ({
-            ...category,
-            userId: category.userId ?? viewedUserId,
-          }));
+          const publicCategories = filterPublicCategories(loadedCategories).map(
+            (category) => ({
+              ...category,
+              userId: category.userId ?? viewedUserId,
+            }),
+          );
+          const publicTasks = filterTasksByVisibleCategories(
+            loadedTasks,
+            publicCategories,
+          );
           const loadedMilestones = await getPublicMilestones(
             viewedUserId,
             publicCategories,
@@ -299,7 +319,7 @@ export const useCalendarState = ({
           );
           const nextCalendarState = attachTasksToCategories(
             categoriesWithMilestones,
-            loadedTasks,
+            publicTasks,
           );
 
           if (canUpdate()) {
