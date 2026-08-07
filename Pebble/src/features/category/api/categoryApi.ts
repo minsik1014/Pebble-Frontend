@@ -36,13 +36,25 @@ const mapCategoryMutationResponse = (data: CategoryMutationResponse | null) => {
   return null;
 };
 
-export async function getCategories(): Promise<Category[]> {
+export type GetCategoriesParams = {
+  owned?: boolean;
+  isCompleted?: boolean;
+};
+
+export async function getCategories(
+  params?: GetCategoriesParams,
+): Promise<Category[]> {
   const data = await apiRequest<GetCategoriesResponse>({
     method: "GET",
     url: "/categories",
+    params,
   });
 
   return data?.categories.map(mapCategoryResponseToCategory) ?? [];
+}
+
+export function getCompletedOwnedCategories(): Promise<Category[]> {
+  return getCategories({ owned: true, isCompleted: true });
 }
 
 export async function createCategory(

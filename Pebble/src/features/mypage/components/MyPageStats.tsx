@@ -1,9 +1,11 @@
 type MyPageStatsProps = {
   isCompact: boolean;
+  completedCategoryCount: number;
 };
 
 export const MyPageStats = ({
   isCompact,
+  completedCategoryCount,
 }: MyPageStatsProps): JSX.Element => {
   return (
     <div
@@ -30,7 +32,9 @@ export const MyPageStats = ({
           <span className="text-body-01-m text-text-secondary">
             완료한 카테고리
           </span>
-          <strong className="text-title-01-sb text-text-strong">7</strong>
+          <strong className="text-title-01-sb text-text-strong">
+            {completedCategoryCount}
+          </strong>
         </div>
       </div>
     </div>

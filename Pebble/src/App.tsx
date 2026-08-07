@@ -25,7 +25,7 @@ import { SummaryStep } from '@/features/report/steps/SummaryStep';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
 import { LandingPage } from '@/pages/landing/LandingPage';
 import FriendsPage from '@/pages/freinds/FriendsPage';
-import MyCategoryDetailPage from '@/pages/mypage/MyCategoryDetailPage';
+import HomePage from '@/pages/home/HomePage';
 import MyPage from '@/pages/mypage/MyPage';
 import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
 import { getAccessToken } from '@/services/api';
@@ -62,14 +62,11 @@ function App() {
           <Route path="/landing" element={<LandingRoute />} />
 
           <Route element={<ProtectedLayoutRoute />}>
+            <Route path="home" element={<HomePage />} />
             <Route index element={<CalendarMainPage />} />
             <Route path="friends" element={<FriendsPage />} />
             <Route path="my" element={<MyPage />} />
             <Route path="my/profile" element={<ProfileEditPage />} />
-            <Route
-              path="my/categories/:categoryId"
-              element={<MyCategoryDetailPage />}
-            />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
 

@@ -19,7 +19,7 @@ type ProfileStore = {
   pendingImageUrl: string | null;
   loadProfile: () => Promise<void>;
   updateProfile: (profile: EditableProfile) => Promise<void>;
-  setPendingProfileImage: (imageUrl: string) => void;
+  updateProfileImage: (imageUrl: string) => Promise<void>;
 };
 
 export const useProfileStore = create<ProfileStore>((set) => ({
@@ -57,7 +57,39 @@ export const useProfileStore = create<ProfileStore>((set) => ({
       });
     }
   },
-  setPendingProfileImage: (imageUrl) => set({ pendingImageUrl: imageUrl }),
+  updateProfileImage: async (imageUrl) => {
+    set({ pendingImageUrl: imageUrl, isSaving: true, error: null });
+
+    try {
+      const uploadedImageUrl = await uploadImageDataUrl(
+        imageUrl,
+        "profile-image.jpg",
+      );
+
+      if (!uploadedImageUrl) {
+        throw new Error("프로필 이미지를 업로드하지 못했어요.");
+      }
+
+      await updateMyProfile({ profileImageUrl: uploadedImageUrl });
+      const profile = await getMyProfile();
+
+      set({
+        profile,
+        pendingImageUrl: null,
+        isSaving: false,
+      });
+    } catch (error) {
+      set({
+        pendingImageUrl: null,
+        isSaving: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "프로필 이미지를 저장하지 못했어요.",
+      });
+      throw error;
+    }
+  },
   updateProfile: async (updatedProfile) => {
     set({ isSaving: true, error: null });
 
