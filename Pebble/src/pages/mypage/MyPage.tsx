@@ -6,8 +6,8 @@ import { MyProfileSection } from "@/features/mypage/components/MyProfileSection"
 import { MonthlyReportBanner } from "@/features/mypage/components/MonthlyReportBanner";
 import { useNavigate } from "react-router-dom";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
-
-const PROFILE_SCROLL_START = 80;
+import { getCompletedOwnedCategories } from "@/features/category/api/categoryApi";
+import type { Category } from "@/types";
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function MyPage() {
   const loadProfile = useProfileStore((state) => state.loadProfile);
   const isLoaded = useProfileStore((state) => state.isLoaded);
   const [isCompact, setIsCompact] = useState(false);
-  const [scrollTop, setScrollTop] = useState(0);
+  const [completedCategories, setCompletedCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -23,10 +23,28 @@ export default function MyPage() {
     }
   }, [isLoaded, loadProfile]);
 
+  useEffect(() => {
+    let isActive = true;
+
+    void getCompletedOwnedCategories()
+      .then((categories) => {
+        if (isActive) {
+          setCompletedCategories(categories);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setCompletedCategories([]);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const currentScrollTop = event.currentTarget.scrollTop;
-
-    setScrollTop(currentScrollTop);
 
     setIsCompact((previous) => {
       if (!previous && currentScrollTop >= 48) {
@@ -40,9 +58,10 @@ export default function MyPage() {
       return previous;
     });
   };
+
   return (
     <section
-      className={`relative h-[1000px] shrink-0 rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
+      className={`relative h-[1000px] shrink-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
         isSidebarOpen ? "w-[924px]" : "w-[1316px]"
       }`}
     >
@@ -53,15 +72,19 @@ export default function MyPage() {
         <div className="relative mx-auto flex w-full max-w-[780px] flex-col">
           <MyProfileSection
             isCompact={isCompact}
-            scrollOffset={Math.max(0, scrollTop - PROFILE_SCROLL_START)}
+            completedCategoryCount={completedCategories.length}
             onEditProfile={() => navigate("/my/profile")}
           />
           <MonthlyReportBanner onOpenReport={() => navigate("/report/monthly")} />
-          <MyPageStats isCompact={isCompact} />
+          <MyPageStats
+            isCompact={isCompact}
+            completedCategoryCount={completedCategories.length}
+          />
           <CompletedCategoryGrid
             isCompact={isCompact}
+            categories={completedCategories}
             onSelectCategory={(categoryId) =>
-              navigate(`/my/categories/${categoryId}`)
+              navigate(`/?category=${categoryId}&from=my`)
             }
           />
         </div>

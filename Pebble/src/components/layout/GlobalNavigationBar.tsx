@@ -11,6 +11,7 @@ import SettingsOutlineIcon from '@/assets/icons/settings-outline.svg?react';
 import SidebarCloseIcon from '@/assets/icons/sidebar-close.svg?react';
 import SidebarOpenIcon from '@/assets/icons/sidebar-open.svg?react';
 import SocialOutlineIcon from '@/assets/icons/social-outline.svg?react';
+import SocialSolidIcon from '@/assets/icons/social-solid.svg?react';
 
 import { AlarmPopover } from '@/features/alarm/components/AlarmPopover';
 import { useAlarms } from '@/features/alarm/hooks/useAlarm';
@@ -142,7 +143,7 @@ export const GlobalNavigationBar = ({
     ].join(' ');
 
   const isCalendarActive = pathname.startsWith('/calendar');
-  const isHomeActive = pathname === '/';
+  const isHomeActive = pathname === '/' || pathname.startsWith('/home');
   const isMyPageActive = pathname.startsWith('/my');
   const isSettingsActive = pathname.startsWith('/settings');
 
@@ -216,7 +217,11 @@ export const GlobalNavigationBar = ({
             aria-label="홈 페이지로 이동"
             aria-current={isHomeActive ? 'page' : undefined}
           >
-            <SocialOutlineIcon className="size-6" />
+            {isHomeActive ? (
+              <SocialSolidIcon className="size-6" />
+            ) : (
+              <SocialOutlineIcon className="size-6" />
+            )}
           </button>
 
           <button

@@ -297,7 +297,11 @@ export default function FriendsPage(): JSX.Element {
                       count={pendingRequests.length}
                     >
                       {pendingRequests.map((request) => (
-                        <FollowRow key={request.followId} user={request}>
+                        <FollowRow
+                          key={request.followId}
+                          user={request}
+                          secondaryText={request.bio}
+                        >
                           <button
                             type="button"
                             disabled={processingId === request.followId}
@@ -332,7 +336,11 @@ export default function FriendsPage(): JSX.Element {
                       className="mt-12"
                     >
                       {sentRequests.map((request) => (
-                        <FollowRow key={request.followId} user={request}>
+                        <FollowRow
+                          key={request.followId}
+                          user={request}
+                          secondaryText={request.bio}
+                        >
                           <button
                             type="button"
                             disabled={processingId === request.followId}
@@ -362,7 +370,11 @@ export default function FriendsPage(): JSX.Element {
                     }
                   >
                     {friends.map((friend) => (
-                      <FollowRow key={friend.followId} user={friend}>
+                      <FollowRow
+                        key={friend.followId}
+                        user={friend}
+                        secondaryText={friend.bio}
+                      >
                         <button
                           type="button"
                           disabled={processingId === friend.followId}
@@ -426,11 +438,7 @@ export default function FriendsPage(): JSX.Element {
                     );
 
                     return (
-                      <FollowRow
-                        key={user.userId}
-                        user={user}
-                        showUniqueTag={false}
-                      >
+                      <FollowRow key={user.userId} user={user}>
                         {user.followStatus === "NONE" && (
                           <button
                             type="button"
@@ -514,11 +522,11 @@ function FollowSection({
 
 function FollowRow({
   user,
-  showUniqueTag = true,
+  secondaryText,
   children,
 }: {
   user: FollowUser;
-  showUniqueTag?: boolean;
+  secondaryText?: string | null;
   children: ReactNode;
 }) {
   return (
@@ -537,9 +545,9 @@ function FollowRow({
         </div>
         <div className="min-w-0">
           <p className="text-body-01-sb text-text-strong">{user.nickname}</p>
-          {showUniqueTag && (
-            <p className="mt-1 text-body-02-m text-text-secondary">
-              #{user.uniqueTag}
+          {secondaryText && (
+            <p className="mt-1 text-body-03-r text-text-teritary">
+              {secondaryText}
             </p>
           )}
         </div>
