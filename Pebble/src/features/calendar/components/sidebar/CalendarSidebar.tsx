@@ -420,7 +420,15 @@ export const CalendarSidebar = ({
       <CategoryFormModal
         isOpen={isCategoryModalOpen}
         mode="create"
-        onSubmit={onCreateCategory}
+        onSubmit={
+          onCreateCategory
+            ? async (input) => {
+                await onCreateCategory(
+                  input as CreateCategoryInput,
+                );
+              }
+            : undefined
+        }
         onClose={closeCreateModal}
       />
 
@@ -519,8 +527,8 @@ export const CalendarSidebar = ({
             editingCategoryTaskTarget.taskId,
             {
               ...task,
-              categoryId: categoryId ?? null,
-              milestoneId: milestoneId ?? null,
+              categoryId: categoryId ?? undefined,
+              milestoneId: milestoneId ?? undefined,
             },
           );
           setEditingCategoryTaskTarget(null);
@@ -557,8 +565,8 @@ export const CalendarSidebar = ({
             editingTaskTarget.taskId,
             {
               ...task,
-              categoryId: categoryId ?? null,
-              milestoneId: milestoneId ?? null,
+              categoryId: categoryId ?? undefined,
+              milestoneId: milestoneId ?? undefined,
             },
           );
           setEditingTaskTarget(null);
