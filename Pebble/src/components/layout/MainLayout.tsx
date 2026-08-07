@@ -158,7 +158,9 @@ const MobileMainLayout = (): JSX.Element => {
         }))
         .filter(
           ({ category, milestones, tasks }) =>
-            !category.isHidden && (milestones.length > 0 || tasks.length > 0),
+            !category.hasSchedules ||
+            milestones.length > 0 ||
+            tasks.length > 0,
         ),
     [categories, currentMonth, currentYear],
   );

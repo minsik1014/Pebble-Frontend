@@ -48,6 +48,7 @@ export const ProfileImageEditor = (): JSX.Element => {
         applyLabel="저장"
         changeImageLabel="이미지 다시 선택"
         cropShape="round"
+        minZoom={0.5}
         onClose={() => setIsCropModalOpen(false)}
         onChangeImage={(croppedImageUrl) => {
           setPendingProfileImage(croppedImageUrl);

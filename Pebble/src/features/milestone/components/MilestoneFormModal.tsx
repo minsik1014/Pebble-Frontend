@@ -60,9 +60,7 @@ export const MilestoneFormModal = ({
 
     setSelectedCategory(
       defaultCategoryId &&
-        categories.some(
-          (category) => category.id === defaultCategoryId && !category.isHidden,
-        )
+        categories.some((category) => category.id === defaultCategoryId)
         ? defaultCategoryId
         : null,
     );

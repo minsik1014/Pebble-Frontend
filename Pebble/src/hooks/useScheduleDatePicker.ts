@@ -106,8 +106,12 @@ export const useScheduleDatePicker = () => {
   };
 
   const reset = useCallback(() => {
+    const nextToday = new Date();
+
     setDateType("하루");
-    setSelectedDate(null);
+    setCurrentYear(nextToday.getFullYear());
+    setCurrentMonth(nextToday.getMonth());
+    setSelectedDate(nextToday);
     setDateRange({ start: null, end: null });
     setMultiDates([]);
   }, []);

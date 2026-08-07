@@ -22,6 +22,7 @@ type ImageCropModalProps = {
   changeImageLabel?: string;
   aspect?: number;
   cropShape?: ImageCropShape;
+  minZoom?: number;
   onClose: () => void;
   onChangeImage: (imageUrl: string) => void;
 };
@@ -45,6 +46,7 @@ export const ImageCropModal = ({
   changeImageLabel = "이미지 변경",
   aspect = 1,
   cropShape = "round",
+  minZoom: minimumZoom = 1,
   onClose,
   onChangeImage,
 }: ImageCropModalProps) => {
@@ -56,7 +58,7 @@ export const ImageCropModal = ({
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const minZoom = getRequiredZoomForRotation(rotation);
+  const minZoom = minimumZoom * getRequiredZoomForRotation(rotation);
 
   const revokeCreatedObjectUrl = useCallback(() => {
     if (createdObjectUrlRef.current) {
@@ -222,7 +224,7 @@ export const ImageCropModal = ({
             <span className="w-16 text-body-02-m text-text-secondary">확대</span>
             <input
               type="range"
-              min={1}
+              min={minimumZoom}
               max={3}
               step={0.01}
               value={zoom}

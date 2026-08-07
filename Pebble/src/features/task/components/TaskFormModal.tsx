@@ -63,9 +63,7 @@ export const TaskFormModal = ({
     if (isOpen) {
       const nextCategoryId =
         defaultCategoryId &&
-        categories.some(
-          (category) => category.id === defaultCategoryId && !category.isHidden,
-        )
+        categories.some((category) => category.id === defaultCategoryId)
           ? defaultCategoryId
           : null;
 
@@ -78,7 +76,7 @@ export const TaskFormModal = ({
   if (!isOpen) return null;
 
   const activeCategory = categories.find(
-    (category) => category.id === selectedCategory && !category.isHidden,
+    (category) => category.id === selectedCategory,
   );
   const availableMilestones = activeCategory?.items || [];
 
