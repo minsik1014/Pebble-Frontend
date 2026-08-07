@@ -4,9 +4,15 @@ import type { Category, MilestoneItem, TaskItem } from "@/types";
 import type { CalendarStateModel } from "@/features/calendar/types";
 import { useCalendarCategoryActions } from "@/features/calendar/hooks/useCalendarCategoryActions";
 import { useCalendarScheduleActions } from "@/features/calendar/hooks/useCalendarScheduleActions";
-import { getCategories } from "@/features/category/api/categoryApi";
+import {
+  getCategories,
+  getUserCategories,
+} from "@/features/category/api/categoryApi";
 import { getCategoryMembers } from "@/features/category/api/sharedCategoryApi";
-import { getMonthlyMilestones } from "@/features/milestone/api/milestoneApi";
+import {
+  getUserCategoryMilestones,
+  getMonthlyMilestones,
+} from "@/features/milestone/api/milestoneApi";
 import { getMyProfile } from "@/features/mypage/api/profileApi";
 import { getStandaloneTasks, getUserTasks } from "@/features/task/api/taskApi";
 import { ApiRequestError, getAccessToken } from "@/services/api";
@@ -23,6 +29,7 @@ export type {
 type UseCalendarStateParams = {
   currentYear: number;
   currentMonth: number;
+  viewedUserId?: number | null;
 };
 
 const formatBaseDate = (year: number, month: number) =>
@@ -122,6 +129,20 @@ const mergeUniqueTasks = (taskGroups: TaskItem[][]) => {
   return [...taskMap.values()];
 };
 
+const filterPublicCategories = (categories: Category[]) =>
+  categories.filter((category) => category.isPublic !== false);
+
+const filterTasksByVisibleCategories = (
+  tasks: TaskItem[],
+  categories: Category[],
+) => {
+  const visibleCategoryIds = new Set(categories.map((category) => category.id));
+
+  return tasks.filter(
+    (task) => !task.categoryId || visibleCategoryIds.has(task.categoryId),
+  );
+};
+
 const attachTasksToCategories = (
   categories: Category[],
   tasks: TaskItem[],
@@ -203,9 +224,31 @@ const attachMilestonesToCategories = (
   return [...categoryMap.values()];
 };
 
+const getPublicMilestones = async (userId: number, categories: Category[]) => {
+  const milestoneGroups = await Promise.all(
+    categories.map(async (category) => {
+      try {
+        return await getUserCategoryMilestones(userId, category.id);
+      } catch (error) {
+        if (
+          error instanceof ApiRequestError &&
+          (error.status === 403 || error.status === 404)
+        ) {
+          return [];
+        }
+
+        throw error;
+      }
+    }),
+  );
+
+  return milestoneGroups.flat();
+};
+
 export const useCalendarState = ({
   currentYear,
   currentMonth,
+  viewedUserId,
 }: UseCalendarStateParams): CalendarStateModel => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
@@ -244,18 +287,59 @@ export const useCalendarState = ({
 
       try {
         const baseDate = formatBaseDate(currentYear, currentMonth);
+        const loadedProfile = await getMyProfile().catch(() => null);
+        const nextCurrentUserId = loadedProfile?.id ?? null;
+        const shouldLoadFriendCalendar =
+          viewedUserId !== undefined &&
+          viewedUserId !== null &&
+          viewedUserId !== nextCurrentUserId;
+
+        if (shouldLoadFriendCalendar) {
+          const [loadedCategories, loadedTasks] = await Promise.all([
+            getUserCategories(viewedUserId),
+            getUserTasks(viewedUserId, baseDate),
+          ]);
+          const publicCategories = filterPublicCategories(loadedCategories).map(
+            (category) => ({
+              ...category,
+              userId: category.userId ?? viewedUserId,
+            }),
+          );
+          const publicTasks = filterTasksByVisibleCategories(
+            loadedTasks,
+            publicCategories,
+          );
+          const loadedMilestones = await getPublicMilestones(
+            viewedUserId,
+            publicCategories,
+          );
+          const categoriesWithMilestones = attachMilestonesToCategories(
+            publicCategories,
+            loadedMilestones,
+          );
+          const nextCalendarState = attachTasksToCategories(
+            categoriesWithMilestones,
+            publicTasks,
+          );
+
+          if (canUpdate()) {
+            setCurrentUserId(nextCurrentUserId);
+            setCategories(nextCalendarState.categories);
+            setStandaloneTasks(nextCalendarState.standaloneTasks);
+          }
+
+          return;
+        }
+
         const [
           loadedCategories,
           loadedTasks,
           loadedMilestones,
-          loadedProfile,
         ] = await Promise.all([
           getCategories(),
           getStandaloneTasks(baseDate),
           getMonthlyMilestones(baseDate),
-          getMyProfile().catch(() => null),
         ]);
-        const nextCurrentUserId = loadedProfile?.id ?? null;
         const categoriesWithOwners = await withSharedOwnerIds(loadedCategories);
         const sharedCategoryIdsByOwner = getSharedCategoryIdsByOwner(
           categoriesWithOwners,
@@ -284,6 +368,12 @@ export const useCalendarState = ({
         }
       } catch (error) {
         if (canUpdate()) {
+          if (viewedUserId !== undefined && viewedUserId !== null) {
+            setCategories([]);
+            setStandaloneTasks([]);
+            setSelectedCategoryId(null);
+          }
+
           setCalendarErrorMessage(
             error instanceof Error
               ? error.message
@@ -296,7 +386,7 @@ export const useCalendarState = ({
         }
       }
     },
-    [currentMonth, currentYear],
+    [currentMonth, currentYear, viewedUserId],
   );
 
   useEffect(() => {

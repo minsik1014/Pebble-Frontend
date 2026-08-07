@@ -178,6 +178,28 @@ export const CategoryFormModal = ({
   const shouldShowMemberList = mode === "edit" && selectedMembers.length > 0;
   const canToggleShared = !(mode === "edit" && category?.isShared && isShared);
   const canDeleteCategory = Boolean(onRequestDelete);
+  const changedCategoryInput =
+    mode === "edit" && category
+      ? buildChangedCategoryInput({
+          category,
+          categoryName,
+          selectedTheme,
+          imageUrl,
+          isPublic,
+          isCompleted,
+          isShared,
+          selectedMembers,
+          initialMembers,
+        })
+      : null;
+  const submitDisabledReason = !categoryName.trim()
+    ? "제목을 입력해 주세요"
+    : mode === "edit" &&
+        category &&
+        changedCategoryInput &&
+        Object.keys(changedCategoryInput).length === 0
+      ? "변경사항을 입력해 주세요"
+      : undefined;
 
   const toggleMember = (member: Friend) => {
     setSelectedMembers((prev) => {
@@ -346,17 +368,20 @@ export const CategoryFormModal = ({
           : imageUrl;
 
       if (mode === "edit" && category) {
-        const changedInput = buildChangedCategoryInput({
-          category,
-          categoryName,
-          selectedTheme,
-          imageUrl: uploadedImageUrl,
-          isPublic,
-          isCompleted,
-          isShared,
-          selectedMembers,
-          initialMembers,
-        });
+        const changedInput =
+          uploadedImageUrl === imageUrl && changedCategoryInput
+            ? changedCategoryInput
+            : buildChangedCategoryInput({
+                category,
+                categoryName,
+                selectedTheme,
+                imageUrl: uploadedImageUrl,
+                isPublic,
+                isCompleted,
+                isShared,
+                selectedMembers,
+                initialMembers,
+              });
 
         if (Object.keys(changedInput).length > 0) {
           await onSubmit?.(changedInput);
@@ -491,7 +516,8 @@ export const CategoryFormModal = ({
         <div className="flex w-full flex-col gap-5">
           <ModalActionBar
             submitLabel={mode === "create" ? "추가" : "수정"}
-            disabled={!categoryName.trim() || isSubmitting}
+            disabled={Boolean(submitDisabledReason) || isSubmitting}
+            disabledReason={isSubmitting ? undefined : submitDisabledReason}
             onCancel={onClose}
             onSubmit={handleSubmit}
             onDelete={mode === "edit" && canDeleteCategory ? onRequestDelete : undefined}

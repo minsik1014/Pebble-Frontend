@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { CalendarLayoutContext } from "@/features/calendar/context/calendarLayoutContext";
 import type { CalendarLayoutContextValue } from "@/features/calendar/context/calendarLayoutContext.types";
@@ -16,6 +16,7 @@ export const CalendarLayoutProvider = ({
   children,
 }: CalendarLayoutProviderProps): JSX.Element => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -27,6 +28,14 @@ export const CalendarLayoutProvider = ({
   );
   const [selectedCalendarDate, setSelectedCalendarDate] =
     useState<Date | null>(null);
+  const viewedUserIdParam = searchParams.get("friendId");
+  const parsedViewedUserId = viewedUserIdParam
+    ? Number(viewedUserIdParam)
+    : null;
+  const viewedUserId =
+    parsedViewedUserId !== null && Number.isFinite(parsedViewedUserId)
+      ? parsedViewedUserId
+      : null;
   const {
     currentUserId,
     categories,
@@ -56,7 +65,11 @@ export const CalendarLayoutProvider = ({
     isCalendarLoading,
     calendarErrorMessage,
     reloadCalendarData,
-  } = useCalendarState({ currentYear, currentMonth });
+  } = useCalendarState({
+    currentYear,
+    currentMonth,
+    viewedUserId,
+  });
   const selectedCategoryId = searchParams.get("category");
 
   const handleToggleSidebar = () => {
@@ -86,17 +99,20 @@ export const CalendarLayoutProvider = ({
 
   const handleSelectCategory = (categoryId: string) => {
     if (selectedCategoryId === categoryId) {
-      navigate("/");
+      navigate("/calendar");
       return;
     }
 
     selectCategory(categoryId);
-    navigate(`/?category=${categoryId}`);
+    navigate(`/calendar?category=${categoryId}`);
   };
 
   const handleCreateCategory = async (input: CreateCategoryInput) => {
     await createCategory(input);
-    navigate("/");
+
+    if (pathname.startsWith("/calendar")) {
+      navigate("/calendar");
+    }
   };
 
   useEffect(() => {
@@ -113,7 +129,7 @@ export const CalendarLayoutProvider = ({
 
   const handleDeleteCategory = async (categoryId: string) => {
     await deleteCategory(categoryId);
-    navigate("/");
+    navigate("/calendar");
   };
 
   const handleCreateTask = async ({
@@ -144,6 +160,7 @@ export const CalendarLayoutProvider = ({
     onSelectCalendarDate: handleSelectCalendarDate,
     onClearSelectedCalendarDate: () => setSelectedCalendarDate(null),
     selectedCategoryId,
+    viewedUserId,
     currentUserId,
     categories,
     standaloneTasks,

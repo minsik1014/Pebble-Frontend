@@ -1,142 +1,151 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import UserAddIcon from "@/assets/icons/User-Add.svg?react";
-import MySolidIcon from "@/assets/icons/user-solid.svg?react";
+import { HomeOverviewCards } from "@/features/home/components/HomeOverviewCards";
+import { HomeProfileStrip } from "@/features/home/components/HomeProfileStrip";
+import { useHomeOverview } from "@/features/home/hooks/useHomeOverview";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
-import {
-  getAllFollows,
-  type FollowListItem,
-} from "@/features/friends/api/followApi";
-import { FOLLOW_UPDATED_EVENT } from "@/features/friends/utils/followSync";
-import { useProfileStore } from "@/features/mypage/store/useProfileStore";
+import { CalendarBoard } from "@/features/milestone/components/CalendarBoard";
 
-const MAX_VISIBLE_FRIENDS = 6;
+const VIEWED_FRIEND_CALENDARS_STORAGE_KEY = "pebble:viewed-friend-calendars";
 
-export default function HomePage(): JSX.Element {
+const getStoredViewedFriendIds = () => {
+  if (typeof window === "undefined") {
+    return new Set<number>();
+  }
+
+  try {
+    const parsedValue = JSON.parse(
+      window.sessionStorage.getItem(VIEWED_FRIEND_CALENDARS_STORAGE_KEY) ??
+        "[]",
+    );
+
+    if (!Array.isArray(parsedValue)) {
+      return new Set<number>();
+    }
+
+    return new Set(
+      parsedValue.filter(
+        (value): value is number =>
+          typeof value === "number" && Number.isFinite(value),
+      ),
+    );
+  } catch {
+    return new Set<number>();
+  }
+};
+
+const storeViewedFriendIds = (viewedFriendIds: Set<number>) => {
+  window.sessionStorage.setItem(
+    VIEWED_FRIEND_CALENDARS_STORAGE_KEY,
+    JSON.stringify([...viewedFriendIds]),
+  );
+};
+
+export const HomePage = (): JSX.Element => {
   const navigate = useNavigate();
-  const { isSidebarOpen } = useCalendarLayoutContext();
-  const profile = useProfileStore((state) => state.profile);
-  const isProfileLoaded = useProfileStore((state) => state.isLoaded);
-  const loadProfile = useProfileStore((state) => state.loadProfile);
-  const [friends, setFriends] = useState<FollowListItem[]>([]);
-  const [pendingRequestCount, setPendingRequestCount] = useState(0);
-
-  const loadFriends = useCallback(async () => {
-    try {
-      const [friendList, pendingRequests] = await Promise.all([
-        getAllFollows("friends"),
-        getAllFollows("pending"),
-      ]);
-
-      setFriends(friendList);
-      setPendingRequestCount(pendingRequests.length);
-    } catch {
-      setFriends([]);
-      setPendingRequestCount(0);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isProfileLoaded) {
-      void loadProfile();
-    }
-  }, [isProfileLoaded, loadProfile]);
+  const { profile, friends, pendingCount, activity } = useHomeOverview();
+  const [viewedFriendIds, setViewedFriendIds] = useState<Set<number>>(
+    getStoredViewedFriendIds,
+  );
+  const {
+    isSidebarOpen,
+    currentYear,
+    currentMonth,
+    onChangeCalendarMonth,
+    selectedCalendarDate,
+    onSelectCalendarDate,
+    onClearSelectedCalendarDate,
+    categories,
+    currentUserId,
+    standaloneTasks,
+    viewedUserId,
+    isCalendarLoading,
+    calendarErrorMessage,
+    reloadCalendarData,
+  } = useCalendarLayoutContext();
+  const selectedUserId = viewedUserId ?? currentUserId ?? profile.id;
+  const isFriendCalendarView = viewedUserId !== null;
 
   useEffect(() => {
-    void loadFriends();
+    if (viewedUserId === null) {
+      return;
+    }
 
-    window.addEventListener(FOLLOW_UPDATED_EVENT, loadFriends);
-    return () => {
-      window.removeEventListener(FOLLOW_UPDATED_EVENT, loadFriends);
-    };
-  }, [loadFriends]);
+    setViewedFriendIds((previousIds) => {
+      if (previousIds.has(viewedUserId)) {
+        return previousIds;
+      }
+
+      const nextIds = new Set(previousIds).add(viewedUserId);
+
+      storeViewedFriendIds(nextIds);
+      return nextIds;
+    });
+  }, [viewedUserId]);
+
+  const handleOpenFriendCalendar = (friendId: number) => {
+    setViewedFriendIds((previousIds) => {
+      if (previousIds.has(friendId)) {
+        return previousIds;
+      }
+
+      const nextIds = new Set(previousIds).add(friendId);
+
+      storeViewedFriendIds(nextIds);
+      return nextIds;
+    });
+    navigate(`/?friendId=${friendId}`);
+  };
 
   return (
     <section
-      className={`relative h-[1000px] shrink-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
-        isSidebarOpen ? "w-[924px]" : "w-[1316px]"
+      className={`flex w-full shrink-0 flex-col transition-all duration-300 md:h-[1000px] ${
+        isSidebarOpen ? "md:w-[924px]" : "md:w-[1316px]"
       }`}
     >
-      <div className="mx-6 mt-6 flex h-[160px] items-center rounded-[20px] bg-fill-inverse px-5 shadow-shadow-m">
-        <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden">
-          <div className="flex h-[128px] w-[84px] shrink-0 flex-col items-center rounded-[42px] bg-fill-primary px-2 pt-2 text-text-onFill">
-            <ProfileAvatar
-              imageUrl={profile.imageUrl}
-              nickname={profile.nickname}
-              className="size-16 border-2 border-fill-primary"
-            />
-            <span className="mt-2 max-w-full truncate text-body-02-m">
-              {profile.nickname || "내 프로필"}
-            </span>
-          </div>
+      <HomeProfileStrip
+        profile={profile}
+        friends={friends}
+        pendingCount={pendingCount}
+        selectedUserId={selectedUserId}
+        isMyCalendarSelected={!isFriendCalendarView}
+        viewedFriendIds={viewedFriendIds}
+        onOpenMyCalendar={() => navigate("/")}
+        onOpenFriends={() => navigate("/friends")}
+        onOpenFriendCalendar={(friend) => handleOpenFriendCalendar(friend.userId)}
+      />
 
-          {friends.slice(0, MAX_VISIBLE_FRIENDS).map((friend) => (
-            <div
-              key={friend.followId}
-              className="flex w-[72px] shrink-0 flex-col items-center"
-            >
-              <ProfileAvatar
-                imageUrl={friend.profileImageUrl}
-                nickname={friend.nickname}
-                className={`size-16 border-[3px] ${
-                  friend.hasTodaySchedule
-                    ? "border-fill-primary"
-                    : "border-border-default"
-                }`}
-              />
-              <span className="mt-2 w-full truncate text-center text-body-02-m text-text-strong">
-                {friend.nickname}
-              </span>
-            </div>
-          ))}
-        </div>
+      <div className="mt-6">
+        <HomeOverviewCards
+          profile={profile}
+          activityColor={activity.color}
+          activities={activity.logs}
+        />
+      </div>
 
-        <div className="ml-5 flex h-[112px] w-[88px] shrink-0 items-center justify-end border-l border-border-default pl-5">
-          <button
-            type="button"
-            onClick={() => navigate("/friends")}
-            className="group relative flex flex-col items-center gap-3 text-text-strong"
-            aria-label="친구 페이지로 이동"
-          >
-            <span className="flex size-14 items-center justify-center rounded-full bg-fill-primary text-text-onFill transition-opacity group-hover:opacity-85">
-              <UserAddIcon className="size-6" />
-            </span>
-            {pendingRequestCount > 0 && (
-              <span className="absolute right-[-4px] top-[-4px] flex min-w-6 items-center justify-center rounded-full bg-fill-danger px-1.5 text-body-03-r text-text-onFill">
-                {pendingRequestCount > 99 ? "99+" : pendingRequestCount}
-              </span>
-            )}
-            <span className="text-body-02-m">친구</span>
-          </button>
-        </div>
+      <div className="mt-4">
+        <CalendarBoard
+          variant="home"
+          isSidebarOpen={isSidebarOpen}
+          categories={categories}
+          standaloneTasks={standaloneTasks}
+          currentYear={currentYear}
+          currentMonth={currentMonth}
+          onChangeCalendarMonth={onChangeCalendarMonth}
+          selectedDate={selectedCalendarDate}
+          onSelectDate={onSelectCalendarDate}
+          onClearSelectedDate={onClearSelectedCalendarDate}
+          isLoading={isCalendarLoading}
+          errorMessage={calendarErrorMessage}
+          emptyTitle={
+            isFriendCalendarView
+              ? "아직 친구가 일정을 생성하지 않았어요."
+              : undefined
+          }
+          onRetry={reloadCalendarData}
+        />
       </div>
     </section>
   );
-}
-
-function ProfileAvatar({
-  imageUrl,
-  nickname,
-  className,
-}: {
-  imageUrl: string | null;
-  nickname: string;
-  className: string;
-}): JSX.Element {
-  return (
-    <div
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-fill-surface text-text-secondary ${className}`}
-    >
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={`${nickname}님의 프로필`}
-          className="size-full object-cover"
-        />
-      ) : (
-        <MySolidIcon className="size-10" />
-      )}
-    </div>
-  );
-}
+};

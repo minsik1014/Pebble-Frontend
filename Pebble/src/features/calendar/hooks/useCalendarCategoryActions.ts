@@ -143,20 +143,15 @@ export const useCalendarCategoryActions = ({
         return;
       }
 
-      if (category.isShared) {
-        setCategories((previousCategories) =>
-          previousCategories.map((previousCategory) =>
-            previousCategory.id === categoryId
-              ? { ...previousCategory, isHidden: !previousCategory.isHidden }
-              : previousCategory,
-          ),
-        );
-        return;
-      }
-
-      await updateCategory(categoryId, { isHidden: !category.isHidden });
+      setCategories((previousCategories) =>
+        previousCategories.map((previousCategory) =>
+          previousCategory.id === categoryId
+            ? { ...previousCategory, isHidden: !previousCategory.isHidden }
+            : previousCategory,
+        ),
+      );
     },
-    [categories, setCategories, updateCategory],
+    [categories, setCategories],
   );
 
   const deleteCategory = useCallback(

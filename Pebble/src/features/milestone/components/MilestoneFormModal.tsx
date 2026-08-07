@@ -52,6 +52,13 @@ export const MilestoneFormModal = ({
   const activeCategory = categories.find(
     (category) => category.id === selectedCategory,
   );
+  const submitDisabledReason = !selectedCategory
+    ? "카테고리를 선택해 주세요"
+    : !milestoneName.trim()
+      ? "제목을 입력해 주세요"
+      : !datePicker.isDateSelectionComplete
+        ? "날짜를 선택해 주세요"
+        : undefined;
 
   useEffect(() => {
     if (!isOpen) {
@@ -60,9 +67,7 @@ export const MilestoneFormModal = ({
 
     setSelectedCategory(
       defaultCategoryId &&
-        categories.some(
-          (category) => category.id === defaultCategoryId && !category.isHidden,
-        )
+        categories.some((category) => category.id === defaultCategoryId)
         ? defaultCategoryId
         : null,
     );
@@ -140,12 +145,8 @@ export const MilestoneFormModal = ({
     <ScheduleFormModalFrame
       title={mode === "edit" ? "마일스톤 수정하기" : "마일스톤 추가하기"}
       submitLabel={mode === "edit" ? "수정" : "추가"}
-      disabled={
-        !selectedCategory ||
-        !milestoneName ||
-        !datePicker.isDateSelectionComplete ||
-        isSubmitting
-      }
+      disabled={Boolean(submitDisabledReason) || isSubmitting}
+      disabledReason={isSubmitting ? undefined : submitDisabledReason}
       gapClassName="gap-10"
       onCancel={onClose}
       onSubmit={handleSubmit}

@@ -98,11 +98,11 @@ export const CategoryMemberSelector = ({
       </div>
 
       {isDropdownOpen && filteredFriends.length > 0 && (
-        <div className="absolute top-full z-50 mt-2 max-h-48 w-full overflow-y-auto rounded-token-s border border-border-secondary bg-fill-inverse shadow-shadow-m">
+        <div className="absolute top-full z-50 mt-2 flex max-h-48 w-full flex-col gap-token-m overflow-y-auto rounded-token-s border border-border-teritory bg-fill-inverse p-token-s shadow-[0px_2px_10px_0px_rgba(23,23,23,0.1)]">
           {filteredFriends.map((friend) => (
             <div
               key={friend.id}
-              className="flex h-14 w-full items-center justify-between gap-5 overflow-hidden rounded-token-s px-token-s py-token-xs transition-colors hover:bg-btn-pressed"
+              className="flex min-h-[60px] w-full items-center justify-between gap-token-l overflow-hidden rounded-token-s p-token-s transition-colors hover:bg-btn-pressed"
             >
               <button
                 type="button"
