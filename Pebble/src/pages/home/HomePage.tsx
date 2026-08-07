@@ -109,6 +109,7 @@ export const HomePage = (): JSX.Element => {
         friends={friends}
         pendingCount={pendingCount}
         selectedUserId={selectedUserId}
+        isMyCalendarSelected={!isFriendCalendarView}
         viewedFriendIds={viewedFriendIds}
         onOpenMyCalendar={() => navigate("/")}
         onOpenFriends={() => navigate("/friends")}

@@ -8,6 +8,7 @@ type HomeProfileStripProps = {
   friends: FollowListItem[];
   pendingCount: number;
   selectedUserId: number | null;
+  isMyCalendarSelected: boolean;
   viewedFriendIds: Set<number>;
   onOpenMyCalendar: () => void;
   onOpenFriends: () => void;
@@ -53,14 +54,12 @@ export const HomeProfileStrip = ({
   friends,
   pendingCount,
   selectedUserId,
+  isMyCalendarSelected,
   viewedFriendIds,
   onOpenMyCalendar,
   onOpenFriends,
   onOpenFriendCalendar,
-}: HomeProfileStripProps): JSX.Element => {
-  const isMyCalendarSelected = selectedUserId === profile.id;
-
-  return (
+}: HomeProfileStripProps): JSX.Element => (
     <section className="flex h-[149px] w-full items-center justify-between rounded-token-m bg-fill-inverse p-token-l shadow-shadow-m">
       <div className="flex h-full min-w-0 flex-1 items-center gap-token-xl border-r border-border-teritory pr-token-l">
         <button
@@ -137,5 +136,4 @@ export const HomeProfileStrip = ({
         <span className="text-body-01-m">친구</span>
       </button>
     </section>
-  );
-};
+);
