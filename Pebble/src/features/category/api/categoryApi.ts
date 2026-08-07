@@ -53,6 +53,15 @@ export async function getCategories(
   return data?.categories.map(mapCategoryResponseToCategory) ?? [];
 }
 
+export async function getUserCategories(userId: number): Promise<Category[]> {
+  const data = await apiRequest<GetCategoriesResponse>({
+    method: "GET",
+    url: `/users/${userId}/categories`,
+  });
+
+  return data?.categories.map(mapCategoryResponseToCategory) ?? [];
+}
+
 export function getCompletedOwnedCategories(): Promise<Category[]> {
   return getCategories({ owned: true, isCompleted: true });
 }

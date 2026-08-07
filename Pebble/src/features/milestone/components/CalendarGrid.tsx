@@ -11,6 +11,7 @@ type CalendarGridProps = {
   selectedDate?: Date | null;
   onSelectDate?: (date: Date) => void;
   onClearSelectedDate?: () => void;
+  density?: "default" | "compact";
 };
 
 const dayLabels = [
@@ -26,9 +27,12 @@ const dayLabels = [
 const DEFAULT_WEEK_ROW_MIN_HEIGHT = 132;
 const EVENT_BOTTOM_PADDING = 12;
 
-const getWeekRowMinHeight = (eventCount: number) =>
+const getWeekRowMinHeight = (
+  eventCount: number,
+  density: CalendarGridProps["density"],
+) =>
   Math.max(
-    DEFAULT_WEEK_ROW_MIN_HEIGHT,
+    density === "compact" ? 88 : DEFAULT_WEEK_ROW_MIN_HEIGHT,
     EVENT_START_TOP_OFFSET + eventCount * EVENT_ROW_HEIGHT + EVENT_BOTTOM_PADDING,
   );
 
@@ -40,6 +44,7 @@ export const CalendarGrid = ({
   selectedDate = null,
   onSelectDate,
   onClearSelectedDate,
+  density = "default",
 }: CalendarGridProps) => {
   return (
     <div className="relative flex min-h-0 w-full flex-1 grow flex-col items-start gap-3 self-stretch">
@@ -66,7 +71,12 @@ export const CalendarGrid = ({
           <div
             key={`week-${weekIndex}`}
             className="relative flex w-full flex-1 grow items-center self-stretch"
-            style={{ minHeight: getWeekRowMinHeight(week.events?.length ?? 0) }}
+            style={{
+              minHeight: getWeekRowMinHeight(
+                week.events?.length ?? 0,
+                density,
+              ),
+            }}
             role="row"
           >
             {/* 각 일(Day) 셀 */}

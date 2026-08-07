@@ -64,15 +64,34 @@ function App() {
 
       <div className="min-h-screen bg-fill-surface font-sans text-text-strong">
         <Routes>
-          <Route path="/landing" element={<LandingRoute />} />
+          <Route
+            path="/landing"
+            element={<LandingRoute />}
+          />
 
           <Route element={<ProtectedLayoutRoute />}>
-            <Route index element={<CalendarMainPage />} />
-            <Route path="home" element={<HomePage />} />
-            <Route path="friends" element={<FriendsPage />} />
+            <Route index element={<HomePage />} />
+            <Route
+              path="home"
+              element={<HomePage />}
+            />
+            <Route
+              path="calendar"
+              element={<CalendarMainPage />}
+            />
+            <Route
+              path="friends"
+              element={<FriendsPage />}
+            />
             <Route path="my" element={<MyPage />} />
-            <Route path="my/profile" element={<ProfileEditPage />} />
-            <Route path="settings" element={<SettingsPage />} />
+            <Route
+              path="my/profile"
+              element={<ProfileEditPage />}
+            />
+            <Route
+              path="settings"
+              element={<SettingsPage />}
+            />
           </Route>
 
           <Route
@@ -85,23 +104,57 @@ function App() {
           >
             <Route
               index
-              element={<Navigate to={FIRST_STEP_PATH} replace />}
+              element={
+                <Navigate
+                  to={FIRST_STEP_PATH}
+                  replace
+                />
+              }
             />
-            <Route path="monthly" element={<MonthlyPebbleStep />} />
-            <Route path="category" element={<BusiestCategoryStep />} />
-            <Route path="day" element={<BusiestDayStep />} />
-            <Route path="friends" element={<SharedFriendsStep />} />
-            <Route path="summary" element={<SummaryStep />} />
+            <Route
+              path="monthly"
+              element={<MonthlyPebbleStep />}
+            />
+            <Route
+              path="category"
+              element={<BusiestCategoryStep />}
+            />
+            <Route
+              path="day"
+              element={<BusiestDayStep />}
+            />
+            <Route
+              path="friends"
+              element={<SharedFriendsStep />}
+            />
+            <Route
+              path="summary"
+              element={<SummaryStep />}
+            />
             <Route
               path="*"
-              element={<Navigate to={FIRST_STEP_PATH} replace />}
+              element={
+                <Navigate
+                  to={FIRST_STEP_PATH}
+                  replace
+                />
+              }
             />
           </Route>
 
-          <Route path="/email/verify" element={<EmailVerifyPage />} />
+          <Route
+            path="/email/verify"
+            element={<EmailVerifyPage />}
+          />
 
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
+          <Route
+            path="/login"
+            element={<LoginPage />}
+          />
+          <Route
+            path="/signup"
+            element={<SignUpPage />}
+          />
           <Route
             path="/forgot-password"
             element={<ForgotPasswordPage />}

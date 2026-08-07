@@ -7,6 +7,7 @@ import { CalendarStatusView } from "@/features/calendar/components/CalendarStatu
 
 type CalendarBoardProps = {
   isSidebarOpen?: boolean;
+  variant?: "default" | "home";
   categories?: Category[];
   standaloneTasks?: TaskItem[];
   currentYear: number;
@@ -17,11 +18,13 @@ type CalendarBoardProps = {
   onClearSelectedDate?: () => void;
   isLoading?: boolean;
   errorMessage?: string | null;
+  emptyTitle?: string;
   onRetry?: () => void;
 };
 
 export const CalendarBoard = ({
   isSidebarOpen = true,
+  variant = "default",
   categories = [],
   standaloneTasks = [],
   currentYear,
@@ -32,8 +35,28 @@ export const CalendarBoard = ({
   onClearSelectedDate,
   isLoading = false,
   errorMessage = null,
+  emptyTitle = "왼쪽 추가하기 버튼으로\n카테고리, 마일스톤, 태스크를 만들어 보세요.",
   onRetry,
 }: CalendarBoardProps): JSX.Element => {
+  const isHomeVariant = variant === "home";
+  const boardHeightClassName = isHomeVariant ? "h-[671px]" : "h-[1000px]";
+  const boardWidthClassName = isHomeVariant
+    ? isSidebarOpen
+      ? "w-full rounded-[20px] md:w-[924px]"
+      : "w-full rounded-token-l md:w-[1316px]"
+    : isSidebarOpen
+      ? "w-[924px] rounded-[20px]"
+      : "w-[1316px] rounded-token-l";
+  const contentClassName = isHomeVariant
+    ? "ml-6 mt-5 h-[631px] w-[calc(100%_-_48px)]"
+    : isSidebarOpen
+      ? "ml-6 mt-8 h-[936px]"
+      : "ml-[93px] mt-10 h-[920px]";
+  const contentWidth = isHomeVariant
+    ? undefined
+    : isSidebarOpen
+      ? 876
+      : 1130;
   const todayDate = useMemo(() => new Date(), []);
   const displayedYear = useMemo(() => currentYear, [currentYear]);
   const displayedMonth = useMemo(() => currentMonth, [currentMonth]);
@@ -82,15 +105,11 @@ export const CalendarBoard = ({
   return (
     <section
       aria-label="월간 캘린더"
-      className={`flex h-[1000px] shrink-0 flex-col overflow-hidden bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
-        isSidebarOpen ? "w-[924px] rounded-[20px]" : "w-[1316px] rounded-token-l"
-      }`}
+      className={`flex shrink-0 flex-col overflow-hidden bg-fill-inverse shadow-shadow-m transition-all duration-300 ${boardHeightClassName} ${boardWidthClassName}`}
     >
-      <div 
-        className={`relative flex flex-col items-start gap-token-l transition-all duration-300 ${
-          isSidebarOpen ? "ml-6 mt-8 h-[936px]" : "ml-[93px] mt-10 h-[920px]"
-        }`}
-        style={{ width: isSidebarOpen ? 876 : 1130 }}
+      <div
+        className={`relative flex flex-col items-start gap-token-l transition-all duration-300 ${contentClassName}`}
+        style={{ width: contentWidth }}
       >
         <header className="inline-flex items-end">
           <MonthSelector 
@@ -111,6 +130,7 @@ export const CalendarBoard = ({
             selectedDate={selectedDate}
             onSelectDate={onSelectDate}
             onClearSelectedDate={onClearSelectedDate}
+            density={isHomeVariant ? "compact" : "default"}
           />
           {(isLoading || errorMessage || !hasVisibleScheduleItems) && (
             <div className="absolute inset-[45px_0_0_0] rounded-token-m bg-fill-inverse/80 backdrop-blur-[1px]">
@@ -128,7 +148,7 @@ export const CalendarBoard = ({
                 />
               ) : (
                 <CalendarStatusView
-                  title={"왼쪽 추가하기 버튼으로\n카테고리, 마일스톤, 태스크를 만들어 보세요."}
+                  title={emptyTitle}
                   showIcon={false}
                   contentClassName="max-w-[360px]"
                   titleClassName="whitespace-pre-line text-title-03-sb text-text-strong"

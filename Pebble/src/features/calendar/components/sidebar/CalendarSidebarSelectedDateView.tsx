@@ -285,14 +285,16 @@ export const CalendarSidebarSelectedDateView = ({
                 />
               ))}
             </div>
-            <div className="px-5 pt-3">
-              <AddButton
-                label="일정 추가하기"
-                variant="secondary"
-                className="w-[312px]"
-                onClick={() => onAddSchedule?.(category.id)}
-              />
-            </div>
+            {onAddSchedule && (
+              <div className="px-5 pt-3">
+                <AddButton
+                  label="일정 추가하기"
+                  variant="secondary"
+                  className="w-[312px]"
+                  onClick={() => onAddSchedule(category.id)}
+                />
+              </div>
+            )}
           </div>
         </section>
       ))}

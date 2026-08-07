@@ -81,10 +81,21 @@ export const MilestoneFormModal = ({
   const { isRunning, run } =
     useRetryableAction();
 
-  const activeCategory = categories.find(
-    (category) =>
-      category.id === selectedCategory,
-  );
+  const activeCategory =
+    categories.find(
+      (category) =>
+        category.id ===
+        selectedCategory,
+    );
+
+  const submitDisabledReason =
+    !selectedCategory
+      ? '카테고리를 선택해 주세요'
+      : !milestoneName.trim()
+        ? '제목을 입력해 주세요'
+        : !datePicker.isDateSelectionComplete
+          ? '날짜를 선택해 주세요'
+          : undefined;
 
   useEffect(() => {
     if (!isOpen) {
@@ -99,8 +110,7 @@ export const MilestoneFormModal = ({
       categories.some(
         (category) =>
           category.id ===
-            defaultCategoryId &&
-          !category.isHidden,
+          defaultCategoryId,
       )
         ? defaultCategoryId
         : null;
@@ -115,7 +125,9 @@ export const MilestoneFormModal = ({
       return;
     }
 
-    setMilestoneName(milestone.title);
+    setMilestoneName(
+      milestone.title,
+    );
 
     if (
       milestone.dates &&
@@ -139,12 +151,14 @@ export const MilestoneFormModal = ({
       setDateType('기간');
 
       setDateRange({
-        start: parseIsoScheduleDate(
-          milestone.start,
-        ),
-        end: parseIsoScheduleDate(
-          milestone.end,
-        ),
+        start:
+          parseIsoScheduleDate(
+            milestone.start,
+          ),
+        end:
+          parseIsoScheduleDate(
+            milestone.end,
+          ),
       });
 
       return;
@@ -190,7 +204,7 @@ export const MilestoneFormModal = ({
     setErrorMessage('');
 
     /*
-     * 재시도할 때도 동일한 카테고리와 입력값을
+     * 다시 시도할 때도 동일한 카테고리와 입력값을
      * 사용하도록 요청 시점의 값을 복사합니다.
      */
     const categoryIdSnapshot =
@@ -275,12 +289,13 @@ export const MilestoneFormModal = ({
           ? '수정'
           : '추가'
       }
-      disabled={
-        !selectedCategory ||
-        !milestoneName.trim() ||
-        !datePicker.isDateSelectionComplete
-      }
+      disabled={Boolean(
+        submitDisabledReason,
+      )}
       isBusy={isRunning}
+      disabledReason={
+        submitDisabledReason
+      }
       gapClassName="gap-10"
       onCancel={onClose}
       onSubmit={handleSubmit}
@@ -314,9 +329,11 @@ export const MilestoneFormModal = ({
               setSelectedCategory(
                 categoryId,
               );
+
               setIsCategoryDropdownOpen(
                 false,
               );
+
               setErrorMessage('');
             }}
           />
@@ -337,7 +354,9 @@ export const MilestoneFormModal = ({
 
       <ScheduleDatePicker
         variant="milestone"
-        dateType={datePicker.dateType}
+        dateType={
+          datePicker.dateType
+        }
         onDateTypeChange={
           datePicker.setDateType
         }
@@ -350,7 +369,9 @@ export const MilestoneFormModal = ({
         daysInMonth={
           datePicker.daysInMonth
         }
-        firstDay={datePicker.firstDay}
+        firstDay={
+          datePicker.firstDay
+        }
         onPrevMonth={
           datePicker.handlePrevMonth
         }

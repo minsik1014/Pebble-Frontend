@@ -15,6 +15,7 @@ import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
 import { CalendarSidebarListView } from "./CalendarSidebarListView";
 import { CalendarSidebarSelectedDateView } from "./CalendarSidebarSelectedDateView";
+import { SidebarButtonArea } from "./SidebarButtonArea";
 import { useCalendarSidebarModals } from "@/features/calendar/hooks/useCalendarSidebarModals";
 import { useCalendarSidebarState } from "@/features/calendar/hooks/useCalendarSidebarState";
 import { useSidebarButtonShadow } from "@/features/calendar/hooks/useSidebarButtonShadow";
@@ -48,8 +49,10 @@ export const CalendarSidebar = ({
   onToggleTaskCompleted,
   onToggleStandaloneTaskCompleted,
   onToggleCategoryVisibility,
+  isReadOnly = false,
 }: {
   isSidebarOpen?: boolean;
+  isReadOnly?: boolean;
   categories: Category[];
   standaloneTasks: TaskItem[];
   currentYear: number;
@@ -110,9 +113,13 @@ export const CalendarSidebar = ({
     milestoneId: string,
     taskId: string,
   ) => void | Promise<void>;
-  onToggleStandaloneTaskCompleted?: (taskId: string) => void | Promise<void>;
+  onToggleStandaloneTaskCompleted?: (
+    taskId: string,
+    taskDateId?: number,
+  ) => void | Promise<void>;
   onToggleCategoryVisibility?: (categoryId: string) => void | Promise<void>;
 }): JSX.Element => {
+  const canEdit = !isReadOnly;
   const {
     viewMode,
     setViewMode,
@@ -243,20 +250,39 @@ export const CalendarSidebar = ({
                   currentMonth={currentMonth}
                   selectedDate={selectedDate}
                   viewMode={viewMode}
-                  onAddSchedule={openAddMenu}
-                  onToggleMilestoneCompleted={onToggleMilestoneCompleted}
-                  onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
-                  onToggleTaskCompleted={onToggleTaskCompleted}
-                  onToggleStandaloneTaskCompleted={onToggleStandaloneTaskCompleted}
-                  onEditStandaloneTask={openStandaloneTaskEditor}
-                  onEditCategoryTask={(categoryId, taskId) =>
-                    setEditingCategoryTaskTarget({ categoryId, taskId })
+                  onAddSchedule={canEdit ? openAddMenu : undefined}
+                  onToggleMilestoneCompleted={
+                    canEdit ? onToggleMilestoneCompleted : undefined
                   }
-                  onEditMilestone={(categoryId, milestoneId) =>
-                    setEditingMilestoneTarget({ categoryId, milestoneId })
+                  onToggleCategoryTaskCompleted={
+                    canEdit ? onToggleCategoryTaskCompleted : undefined
                   }
-                  onEditTask={(categoryId, milestoneId, taskId) =>
-                    setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                  onToggleTaskCompleted={
+                    canEdit ? onToggleTaskCompleted : undefined
+                  }
+                  onToggleStandaloneTaskCompleted={
+                    canEdit ? onToggleStandaloneTaskCompleted : undefined
+                  }
+                  onEditStandaloneTask={
+                    canEdit ? openStandaloneTaskEditor : undefined
+                  }
+                  onEditCategoryTask={
+                    canEdit
+                      ? (categoryId, taskId) =>
+                          setEditingCategoryTaskTarget({ categoryId, taskId })
+                      : undefined
+                  }
+                  onEditMilestone={
+                    canEdit
+                      ? (categoryId, milestoneId) =>
+                          setEditingMilestoneTarget({ categoryId, milestoneId })
+                      : undefined
+                  }
+                  onEditTask={
+                    canEdit
+                      ? (categoryId, milestoneId, taskId) =>
+                          setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                      : undefined
                   }
                 />
               ) : viewMode === "list" ? (
@@ -265,19 +291,38 @@ export const CalendarSidebar = ({
                   standaloneTasks={displayedStandaloneTasks}
                   currentYear={currentYear}
                   currentMonth={currentMonth}
-                  onToggleMilestoneCompleted={onToggleMilestoneCompleted}
-                  onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
-                  onToggleTaskCompleted={onToggleTaskCompleted}
-                  onToggleStandaloneTaskCompleted={onToggleStandaloneTaskCompleted}
-                  onEditStandaloneTask={openStandaloneTaskEditor}
-                  onEditCategoryTask={(categoryId, taskId) =>
-                    setEditingCategoryTaskTarget({ categoryId, taskId })
+                  onToggleMilestoneCompleted={
+                    canEdit ? onToggleMilestoneCompleted : undefined
                   }
-                  onEditMilestone={(categoryId, milestoneId) =>
-                    setEditingMilestoneTarget({ categoryId, milestoneId })
+                  onToggleCategoryTaskCompleted={
+                    canEdit ? onToggleCategoryTaskCompleted : undefined
                   }
-                  onEditTask={(categoryId, milestoneId, taskId) =>
-                    setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                  onToggleTaskCompleted={
+                    canEdit ? onToggleTaskCompleted : undefined
+                  }
+                  onToggleStandaloneTaskCompleted={
+                    canEdit ? onToggleStandaloneTaskCompleted : undefined
+                  }
+                  onEditStandaloneTask={
+                    canEdit ? openStandaloneTaskEditor : undefined
+                  }
+                  onEditCategoryTask={
+                    canEdit
+                      ? (categoryId, taskId) =>
+                          setEditingCategoryTaskTarget({ categoryId, taskId })
+                      : undefined
+                  }
+                  onEditMilestone={
+                    canEdit
+                      ? (categoryId, milestoneId) =>
+                          setEditingMilestoneTarget({ categoryId, milestoneId })
+                      : undefined
+                  }
+                  onEditTask={
+                    canEdit
+                      ? (categoryId, milestoneId, taskId) =>
+                          setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                      : undefined
                   }
                 />
               ) : (
@@ -285,8 +330,10 @@ export const CalendarSidebar = ({
                   {displayedStandaloneTasks.length > 0 && (
                     <StandaloneTaskSection
                       tasks={displayedStandaloneTasks}
-                      onToggleTaskCompleted={onToggleStandaloneTaskCompleted}
-                      onEditTask={openStandaloneTaskEditor}
+                      onToggleTaskCompleted={
+                        canEdit ? onToggleStandaloneTaskCompleted : undefined
+                      }
+                      onEditTask={canEdit ? openStandaloneTaskEditor : undefined}
                     />
                   )}
 
@@ -296,21 +343,44 @@ export const CalendarSidebar = ({
                       category={category}
                       expanded={Boolean(expandedCategories[category.id])}
                       onToggleExpanded={() => toggleCategory(category.id)}
-                      onToggleMilestoneCompleted={onToggleMilestoneCompleted}
-                      onToggleCategoryTaskCompleted={onToggleCategoryTaskCompleted}
-                      onToggleTaskCompleted={onToggleTaskCompleted}
-                      onEditCategoryTask={(categoryId, taskId) =>
-                        setEditingCategoryTaskTarget({ categoryId, taskId })
+                      onToggleMilestoneCompleted={
+                        canEdit ? onToggleMilestoneCompleted : undefined
                       }
-                      onEditMilestone={(categoryId, milestoneId) =>
-                        setEditingMilestoneTarget({ categoryId, milestoneId })
+                      onToggleCategoryTaskCompleted={
+                        canEdit ? onToggleCategoryTaskCompleted : undefined
                       }
-                      onEditTask={(categoryId, milestoneId, taskId) =>
-                        setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                      onToggleTaskCompleted={
+                        canEdit ? onToggleTaskCompleted : undefined
                       }
-                      onAddSchedule={(categoryId) => openAddMenu(categoryId)}
-                      onSelectCategory={onSelectCategory}
-                      onToggleVisibility={onToggleCategoryVisibility}
+                      onEditCategoryTask={
+                        canEdit
+                          ? (categoryId, taskId) =>
+                              setEditingCategoryTaskTarget({ categoryId, taskId })
+                          : undefined
+                      }
+                      onEditMilestone={
+                        canEdit
+                          ? (categoryId, milestoneId) =>
+                              setEditingMilestoneTarget({ categoryId, milestoneId })
+                          : undefined
+                      }
+                      onEditTask={
+                        canEdit
+                          ? (categoryId, milestoneId, taskId) =>
+                              setEditingTaskTarget({
+                                categoryId,
+                                milestoneId,
+                                taskId,
+                              })
+                          : undefined
+                      }
+                      onAddSchedule={
+                        canEdit ? (categoryId) => openAddMenu(categoryId) : undefined
+                      }
+                      onSelectCategory={canEdit ? onSelectCategory : undefined}
+                      onToggleVisibility={
+                        canEdit ? onToggleCategoryVisibility : undefined
+                      }
                       isSelected={selectedCategoryId === category.id}
                     />
                   ))}
@@ -318,35 +388,34 @@ export const CalendarSidebar = ({
               )}
             </div>
 
-            <div
-              className={`relative z-10 shrink-0 transition-shadow ${
-                hasDisplayedSchedules ? "mt-2" : "mt-auto"
-              } ${
-                hasHiddenContentUnderButton
-                  ? "shadow-[0_-12px_24px_rgba(33,37,41,0.08)]"
-                  : "shadow-none"
-              }`}
-            >
-              <AddButton
-                label="추가하기"
-                variant="primary"
-                className="w-[352px]"
-                showIcon={false}
-                onClick={() => openAddMenu()}
-              />
-            </div>
+            {canEdit && (
+              <SidebarButtonArea
+                hasContent={hasDisplayedSchedules}
+                hasHiddenContentUnderButton={hasHiddenContentUnderButton}
+              >
+                <AddButton
+                  label="추가하기"
+                  variant="primary"
+                  className="w-[352px]"
+                  showIcon={false}
+                  onClick={() => openAddMenu()}
+                />
+              </SidebarButtonArea>
+            )}
           </div>
         </div>
       </section>
       
-      <AddMenuModal
-        isOpen={isAddMenuOpen}
-        onClose={closeAddMenu}
-        variant={createDefaultCategoryId ? "category" : "global"}
-        onSelectCategory={openCategoryModal}
-        onSelectMilestone={() => openMilestoneModal(createDefaultCategoryId)}
-        onSelectTask={() => openTaskModal(createDefaultCategoryId)}
-      />
+      {canEdit && (
+        <AddMenuModal
+          isOpen={isAddMenuOpen}
+          onClose={closeAddMenu}
+          variant={createDefaultCategoryId ? "category" : "global"}
+          onSelectCategory={openCategoryModal}
+          onSelectMilestone={() => openMilestoneModal(createDefaultCategoryId)}
+          onSelectTask={() => openTaskModal(createDefaultCategoryId)}
+        />
+      )}
 
       <CategoryFormModal
         isOpen={isCategoryModalOpen}

@@ -27,7 +27,6 @@ import type {
   FollowRequestAction,
 } from "@/features/alarm/types/alarm";
 import {
-  FOLLOW_SYNC_INTERVAL_MS,
   notifyFollowUpdated,
 } from "@/features/friends/utils/followSync";
 
@@ -186,16 +185,10 @@ export const useAlarms = () => {
         void refreshAlarms().catch(() => undefined);
       }
     };
-    const intervalId = window.setInterval(
-      refreshWhenVisible,
-      FOLLOW_SYNC_INTERVAL_MS,
-    );
-
     window.addEventListener("focus", refreshWhenVisible);
     document.addEventListener("visibilitychange", refreshWhenVisible);
 
     return () => {
-      window.clearInterval(intervalId);
       window.removeEventListener("focus", refreshWhenVisible);
       document.removeEventListener("visibilitychange", refreshWhenVisible);
     };

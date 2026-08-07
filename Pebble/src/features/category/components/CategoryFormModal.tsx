@@ -39,17 +39,13 @@ type CategoryFormModalProps = {
   onRequestDelete?: () => void | Promise<void>;
   onLeaveCategory?: () => void | Promise<void>;
   onSubmit?: (
-    input:
-      | CreateCategoryInput
-      | UpdateCategoryInput,
+    input: CreateCategoryInput | UpdateCategoryInput,
   ) => void | Promise<void>;
 };
 
 const CATEGORY_IMAGE_ASPECT_RATIO = 175 / 234;
 
-const getEditableMembers = (
-  members: Friend[],
-) =>
+const getEditableMembers = (members: Friend[]) =>
   members.filter(
     (member) => member.role !== 'OWNER',
   );
@@ -115,7 +111,8 @@ const buildChangedCategoryInput = ({
     input.accent = selectedTheme.accent;
     input.themeBase =
       selectedTheme.themeBase;
-    input.themeMid = selectedTheme.themeMid;
+    input.themeMid =
+      selectedTheme.themeMid;
     input.themeLight =
       selectedTheme.themeLight;
     input.themeTextOnMid =
@@ -152,7 +149,8 @@ const buildChangedCategoryInput = ({
   if (isShared && hasMemberChanges) {
     input.isShared = true;
     input.members = nextMembers;
-    input.previousMembers = initialMembers;
+    input.previousMembers =
+      initialMembers;
   }
 
   return input;
@@ -188,26 +186,35 @@ export const CategoryFormModal = ({
   onLeaveCategory,
   onSubmit,
 }: CategoryFormModalProps) => {
-  const [selectedColor, setSelectedColor] =
-    useState<string>(
-      DEFAULT_CATEGORY_COLOR,
-    );
+  const [
+    selectedColor,
+    setSelectedColor,
+  ] = useState<string>(
+    DEFAULT_CATEGORY_COLOR,
+  );
 
   const [isPublic, setIsPublic] =
     useState(false);
 
-  const [isCompleted, setIsCompleted] =
-    useState(false);
+  const [
+    isCompleted,
+    setIsCompleted,
+  ] = useState(false);
 
   const [isShared, setIsShared] =
     useState(false);
 
-  const [categoryName, setCategoryName] =
-    useState(category?.title ?? '');
+  const [
+    categoryName,
+    setCategoryName,
+  ] = useState(
+    category?.title ?? '',
+  );
 
-  const [imageUrl, setImageUrl] = useState<
-    string | undefined
-  >(category?.imageUrl);
+  const [imageUrl, setImageUrl] =
+    useState<string | undefined>(
+      category?.imageUrl,
+    );
 
   const [
     cropSourceImageFile,
@@ -224,9 +231,8 @@ export const CategoryFormModal = ({
     setInitialMembers,
   ] = useState<Friend[]>([]);
 
-  const [friends, setFriends] = useState<
-    Friend[]
-  >([]);
+  const [friends, setFriends] =
+    useState<Friend[]>([]);
 
   const [
     isDropdownOpen,
@@ -238,33 +244,43 @@ export const CategoryFormModal = ({
     setHasLoadedFriends,
   ] = useState(false);
 
-  const [searchQuery, setSearchQuery] =
-    useState('');
+  const [
+    searchQuery,
+    setSearchQuery,
+  ] = useState('');
 
-  const [errorMessage, setErrorMessage] =
-    useState('');
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState('');
 
   const { isRunning, run } =
     useRetryableAction();
 
   const selectedTheme =
-    createCategoryColorTheme(selectedColor);
+    createCategoryColorTheme(
+      selectedColor,
+    );
 
-  const filteredFriends = friends.filter(
-    (friend) =>
-      [
-        friend.name,
-        friend.uniqueTag,
-        friend.email,
-      ]
-        .filter(Boolean)
-        .some((value) =>
-          value?.includes(searchQuery),
-        ) &&
-      !selectedMembers.some(
-        (member) => member.id === friend.id,
-      ),
-  );
+  const filteredFriends =
+    friends.filter(
+      (friend) =>
+        [
+          friend.name,
+          friend.uniqueTag,
+          friend.email,
+        ]
+          .filter(Boolean)
+          .some((value) =>
+            value?.includes(
+              searchQuery,
+            ),
+          ) &&
+        !selectedMembers.some(
+          (member) =>
+            member.id === friend.id,
+        ),
+    );
 
   const shouldShowMemberList =
     mode === 'edit' &&
@@ -280,6 +296,32 @@ export const CategoryFormModal = ({
     onRequestDelete,
   );
 
+  const changedCategoryInput =
+    mode === 'edit' && category
+      ? buildChangedCategoryInput({
+          category,
+          categoryName,
+          selectedTheme,
+          imageUrl,
+          isPublic,
+          isCompleted,
+          isShared,
+          selectedMembers,
+          initialMembers,
+        })
+      : null;
+
+  const submitDisabledReason =
+    !categoryName.trim()
+      ? '제목을 입력해 주세요'
+      : mode === 'edit' &&
+          changedCategoryInput &&
+          Object.keys(
+            changedCategoryInput,
+          ).length === 0
+        ? '변경사항을 입력해 주세요'
+        : undefined;
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -288,18 +330,24 @@ export const CategoryFormModal = ({
     setErrorMessage('');
     setCropSourceImageFile(null);
 
-    if (mode === 'edit' && category) {
+    if (
+      mode === 'edit' &&
+      category
+    ) {
       const displayMembers =
         category.members ?? [];
 
       setCategoryName(category.title);
-      setSelectedColor(category.accent);
+      setSelectedColor(
+        category.accent,
+      );
       setImageUrl(category.imageUrl);
       setIsPublic(
         category.isPublic ?? true,
       );
       setIsCompleted(
-        category.isCompleted ?? false,
+        category.isCompleted ??
+          false,
       );
       setIsShared(
         category.isShared ?? false,
@@ -309,8 +357,12 @@ export const CategoryFormModal = ({
        * API 조회 전에도 현재 카테고리에 들어 있는
        * 공유 멤버를 먼저 표시합니다.
        */
-      setSelectedMembers(displayMembers);
-      setInitialMembers(displayMembers);
+      setSelectedMembers(
+        displayMembers,
+      );
+      setInitialMembers(
+        displayMembers,
+      );
 
       setSearchQuery('');
       setIsDropdownOpen(false);
@@ -336,7 +388,10 @@ export const CategoryFormModal = ({
   }, [category, isOpen, mode]);
 
   useEffect(() => {
-    if (!isOpen || !isShared) {
+    if (
+      !isOpen ||
+      !isShared
+    ) {
       setFriends([]);
       setHasLoadedFriends(false);
     }
@@ -363,84 +418,92 @@ export const CategoryFormModal = ({
             myProfile,
           ] = await Promise.all([
             getFollowingFriends(),
-            getCategoryMembers(category.id),
+            getCategoryMembers(
+              category.id,
+            ),
             getMyProfile().catch(
               () => null,
             ),
           ]);
 
           const friendMap = new Map(
-            loadedFriends.map((friend) => [
-              friend.id,
-              friend,
-            ]),
+            loadedFriends.map(
+              (friend) => [
+                friend.id,
+                friend,
+              ],
+            ),
           );
 
           const categoryMemberMap =
             new Map(
-              (category.members ?? []).map(
-                (member) => [
-                  member.id,
-                  member,
-                ],
-              ),
+              (
+                category.members ?? []
+              ).map((member) => [
+                member.id,
+                member,
+              ]),
             );
 
-          const resolveMember = async (
-            member:
-              SharedCategoryMemberResponse,
-          ): Promise<Friend> => {
-            const friend = friendMap.get(
-              member.userId,
-            );
+          const resolveMember =
+            async (
+              member:
+                SharedCategoryMemberResponse,
+            ): Promise<Friend> => {
+              const friend =
+                friendMap.get(
+                  member.userId,
+                );
 
-            const categoryMember =
-              categoryMemberMap.get(
-                member.userId,
-              );
+              const categoryMember =
+                categoryMemberMap.get(
+                  member.userId,
+                );
 
-            if (friend) {
+              if (friend) {
+                return {
+                  ...friend,
+                  role: member.role,
+                };
+              }
+
+              if (
+                categoryMember?.name
+              ) {
+                return {
+                  ...categoryMember,
+                  role: member.role,
+                };
+              }
+
+              if (
+                myProfile?.id ===
+                member.userId
+              ) {
+                return mapProfileToFriend(
+                  myProfile,
+                  member.role,
+                );
+              }
+
+              const userProfile =
+                await getSharedCategoryUserProfile(
+                  member.userId,
+                ).catch(() => null);
+
+              if (userProfile) {
+                return {
+                  ...userProfile,
+                  role: member.role,
+                };
+              }
+
               return {
-                ...friend,
+                id: member.userId,
+                name: `사용자 ${member.userId}`,
                 role: member.role,
               };
-            }
-
-            if (categoryMember?.name) {
-              return {
-                ...categoryMember,
-                role: member.role,
-              };
-            }
-
-            if (
-              myProfile?.id ===
-              member.userId
-            ) {
-              return mapProfileToFriend(
-                myProfile,
-                member.role,
-              );
-            }
-
-            const userProfile =
-              await getSharedCategoryUserProfile(
-                member.userId,
-              ).catch(() => null);
-
-            if (userProfile) {
-              return {
-                ...userProfile,
-                role: member.role,
-              };
-            }
-
-            return {
-              id: member.userId,
-              name: `사용자 ${member.userId}`,
-              role: member.role,
             };
-          };
 
           const loadedMembers =
             await Promise.all(
@@ -491,7 +554,9 @@ export const CategoryFormModal = ({
     mode,
   ]);
 
-  const toggleMember = (member: Friend) => {
+  const toggleMember = (
+    member: Friend,
+  ) => {
     if (member.role === 'OWNER') {
       return;
     }
@@ -545,28 +610,30 @@ export const CategoryFormModal = ({
     }
   };
 
-  const handleMemberDropdownOpenChange = (
-    nextIsOpen: boolean,
-  ) => {
-    setIsDropdownOpen(nextIsOpen);
+  const handleMemberDropdownOpenChange =
+    (nextIsOpen: boolean) => {
+      setIsDropdownOpen(nextIsOpen);
 
-    if (nextIsOpen) {
-      void loadFriends();
-    }
-  };
+      if (nextIsOpen) {
+        void loadFriends();
+      }
+    };
 
   const handleSubmit = async () => {
     const trimmedName =
       categoryName.trim();
 
-    if (!trimmedName || isRunning) {
+    if (
+      !trimmedName ||
+      isRunning
+    ) {
       return;
     }
 
     setErrorMessage('');
 
     /*
-     * 재시도할 때도 처음 제출한 값과 동일한 요청을
+     * 다시 시도할 때도 처음 제출한 값과 동일한 요청을
      * 사용하도록 현재 입력값을 복사합니다.
      */
     const inputSnapshot = {
@@ -625,8 +692,9 @@ export const CategoryFormModal = ({
             });
 
           if (
-            Object.keys(changedInput)
-              .length > 0
+            Object.keys(
+              changedInput,
+            ).length > 0
           ) {
             await onSubmit?.(
               changedInput,
@@ -634,11 +702,14 @@ export const CategoryFormModal = ({
           }
         } else {
           await onSubmit?.({
-            title: inputSnapshot.title,
+            title:
+              inputSnapshot.title,
             accent: theme.accent,
-            themeBase: theme.themeBase,
+            themeBase:
+              theme.themeBase,
             themeMid: theme.themeMid,
-            themeLight: theme.themeLight,
+            themeLight:
+              theme.themeLight,
             themeTextOnMid:
               theme.themeTextOnMid,
             themeTextOnLight:
@@ -721,7 +792,9 @@ export const CategoryFormModal = ({
           <div className="flex w-full items-start gap-token-xxl">
             <CategoryImageUploader
               imageUrl={imageUrl}
-              onImageChange={setImageUrl}
+              onImageChange={
+                setImageUrl
+              }
               onSelectImageFile={
                 setCropSourceImageFile
               }
@@ -741,9 +814,12 @@ export const CategoryFormModal = ({
                   type="text"
                   value={categoryName}
                   disabled={isRunning}
-                  onChange={(event) => {
+                  onChange={(
+                    event,
+                  ) => {
                     setCategoryName(
-                      event.target.value,
+                      event.target
+                        .value,
                     );
                     setErrorMessage('');
                   }}
@@ -760,7 +836,9 @@ export const CategoryFormModal = ({
               </div>
 
               <CategoryColorPicker
-                selectedColor={selectedColor}
+                selectedColor={
+                  selectedColor
+                }
                 onSelectColor={
                   setSelectedColor
                 }
@@ -774,7 +852,9 @@ export const CategoryFormModal = ({
 
           <CategoryStatusOptions
             isPublic={isPublic}
-            isCompleted={isCompleted}
+            isCompleted={
+              isCompleted
+            }
             onTogglePublic={() =>
               setIsPublic(
                 (value) => !value,
@@ -792,7 +872,9 @@ export const CategoryFormModal = ({
           isShared={isShared}
           disabled={!canToggleShared}
           onToggleShared={() => {
-            if (!canToggleShared) {
+            if (
+              !canToggleShared
+            ) {
               return;
             }
 
@@ -816,7 +898,9 @@ export const CategoryFormModal = ({
                 filteredFriends={
                   filteredFriends
                 }
-                searchQuery={searchQuery}
+                searchQuery={
+                  searchQuery
+                }
                 isDropdownOpen={
                   isDropdownOpen
                 }
@@ -842,7 +926,9 @@ export const CategoryFormModal = ({
                 </h3>
 
                 <CategoryMemberList
-                  members={selectedMembers}
+                  members={
+                    selectedMembers
+                  }
                   currentUserId={
                     currentUserId
                   }
@@ -874,8 +960,13 @@ export const CategoryFormModal = ({
                 ? '추가'
                 : '수정'
             }
-            disabled={!categoryName.trim()}
+            disabled={Boolean(
+              submitDisabledReason,
+            )}
             isBusy={isRunning}
+            disabledReason={
+              submitDisabledReason
+            }
             onCancel={onClose}
             onSubmit={handleSubmit}
             onDelete={
@@ -893,7 +984,9 @@ export const CategoryFormModal = ({
             cropSourceImageFile,
           )}
           imageUrl={null}
-          imageFile={cropSourceImageFile}
+          imageFile={
+            cropSourceImageFile
+          }
           title="대표 이미지 편집"
           description="선택한 이미지를 드래그하고 확대해서 카테고리 대표 이미지 영역에 맞춰보세요."
           closeLabel="대표 이미지 편집 닫기"
@@ -904,7 +997,9 @@ export const CategoryFormModal = ({
           }
           cropShape="rect"
           onClose={() =>
-            setCropSourceImageFile(null)
+            setCropSourceImageFile(
+              null,
+            )
           }
           onChangeImage={(
             croppedImageUrl,

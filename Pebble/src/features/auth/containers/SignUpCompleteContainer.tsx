@@ -20,7 +20,7 @@ export const SignUpCompleteContainer = (): JSX.Element => {
     <SignUpCompleteContent
       nickname={nickname}
       profileSrc={profileSrc}
-      onGoToSchedule={() => navigate("/", { replace: true })}
+      onGoToSchedule={() => navigate("/calendar", { replace: true })}
     />
   );
 };

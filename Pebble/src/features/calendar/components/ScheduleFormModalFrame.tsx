@@ -8,6 +8,7 @@ type ScheduleFormModalFrameProps = {
   submitLabel: string;
   disabled: boolean;
   isBusy?: boolean;
+  disabledReason?: string;
   onCancel: () => void;
   onSubmit: () => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
@@ -21,6 +22,7 @@ export const ScheduleFormModalFrame = ({
   submitLabel,
   disabled,
   isBusy = false,
+  disabledReason,
   onCancel,
   onSubmit,
   onDelete,
@@ -51,6 +53,7 @@ export const ScheduleFormModalFrame = ({
           submitLabel={submitLabel}
           disabled={disabled}
           isBusy={isBusy}
+          disabledReason={disabledReason}
           onCancel={onCancel}
           onSubmit={onSubmit}
           onDelete={onDelete}

@@ -77,8 +77,8 @@ const MobileRouteNav = ({ activePath }: MobileRouteNavProps): JSX.Element => {
     <nav className="grid grid-cols-3 gap-2">
       <button
         type="button"
-        className={getButtonClassName(activePath === "/")}
-        onClick={() => navigate("/")}
+        className={getButtonClassName(activePath === "/calendar")}
+        onClick={() => navigate("/calendar")}
       >
         캘린더
       </button>
@@ -158,7 +158,9 @@ const MobileMainLayout = (): JSX.Element => {
         }))
         .filter(
           ({ category, milestones, tasks }) =>
-            !category.isHidden && (milestones.length > 0 || tasks.length > 0),
+            !category.hasSchedules ||
+            milestones.length > 0 ||
+            tasks.length > 0,
         ),
     [categories, currentMonth, currentYear],
   );
@@ -334,9 +336,13 @@ const MobileNestedPageLayout = (): JSX.Element => {
     <main className="min-h-screen bg-fill-surface px-4 py-5">
       <section className="mx-auto flex w-full max-w-[430px] flex-col gap-4">
         <MobileRouteNav activePath={pathname} />
-        <div className="overflow-hidden rounded-token-l bg-fill-inverse shadow-shadow-s">
+        {pathname === "/" ? (
           <Outlet />
-        </div>
+        ) : (
+          <div className="overflow-hidden rounded-token-l bg-fill-inverse shadow-shadow-s">
+            <Outlet />
+          </div>
+        )}
       </section>
     </main>
   );
@@ -351,6 +357,7 @@ const MainLayoutFrame = (): JSX.Element => {
     currentMonth,
     selectedCalendarDate,
     selectedCategoryId,
+    viewedUserId,
     categories,
     standaloneTasks,
     selectCategory,
@@ -373,6 +380,7 @@ const MainLayoutFrame = (): JSX.Element => {
   } = useCalendarLayoutContext();
   const [scale, setScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
+  const isFriendCalendarView = viewedUserId !== null;
 
   useEffect(() => {
     const handleResize = () => {
@@ -399,7 +407,7 @@ const MainLayoutFrame = (): JSX.Element => {
     };
   }, []);
 
-  if (isMobile && pathname === "/") {
+  if (isMobile && pathname === "/calendar") {
     return <MobileMainLayout />;
   }
 
@@ -436,6 +444,7 @@ const MainLayoutFrame = (): JSX.Element => {
               currentMonth={currentMonth}
               selectedDate={selectedCalendarDate}
               onSelectCategory={selectCategory}
+              isReadOnly={isFriendCalendarView}
               onToggleCategoryVisibility={toggleCategoryVisibility}
               selectedCategoryId={selectedCategoryId}
               onCreateCategory={createCategory}
