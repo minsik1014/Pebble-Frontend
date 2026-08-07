@@ -54,8 +54,8 @@ type SidebarScheduleRowProps = {
 };
 
 const SCHEDULE_LEVEL_CLASS = {
-  child: "box-border w-full pl-3",
-  grandchild: "box-border w-full pl-6",
+  child: "w-[320px]",
+  grandchild: "w-[308px]",
 } as const;
 
 const getScheduleSortTime = (item: ScheduleItem) => {
@@ -199,22 +199,22 @@ export const MilestoneAccordion = ({
 
   return (
     <section
-      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-[22px] overflow-hidden border-2 ${
+      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-token-m overflow-hidden ${
         isSelected
-          ? "border-border-selected shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_14px_0px_rgba(23,23,23,0.05)]"
-          : "border-transparent shadow-shadow-s"
+          ? "outline outline-2 -outline-offset-2 outline-border-selected shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_14px_0px_rgba(23,23,23,0.05)]"
+          : "shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)]"
       }`}
     >
       <div
-        className="flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-[22px] overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors"
+        className="flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-token-m overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors"
         onClick={() => onSelectCategory?.(category.id)}
       >
-        <div className="flex items-center gap-3 relative">
+        <div className="flex w-[232px] min-w-0 items-center gap-3 relative">
           <div
             className="relative w-2 h-10 rounded"
             style={{ backgroundColor: category.accent }}
           />
-          <h2 className="text-title-03-sb text-text-strong">
+          <h2 className="min-w-0 truncate text-title-03-sb text-text-strong">
             {category.title}
           </h2>
         </div>
