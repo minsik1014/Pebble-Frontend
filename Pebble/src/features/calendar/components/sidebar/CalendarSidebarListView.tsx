@@ -7,8 +7,10 @@ import {
 } from "@/features/calendar/components/sidebar/CalendarSidebarDateItems";
 import { getScheduleTextColorClass } from "@/features/calendar/utils/scheduleCompletionStyle";
 
+const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"] as const;
+
 const formatDatedItemLabel = (date: Date) =>
-  `${date.getMonth() + 1}/${date.getDate()}`;
+  `${date.getMonth() + 1}/${date.getDate()} (${WEEKDAY_LABELS[date.getDay()]})`;
 
 type CalendarSidebarListViewProps = {
   categories: Category[];
