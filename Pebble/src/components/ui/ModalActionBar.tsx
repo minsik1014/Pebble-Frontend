@@ -105,7 +105,7 @@ export const ModalActionBar = ({
         <Toast
           message={disabledReason}
           open={isToastVisible}
-          className="fixed bottom-8 left-1/2 z-[70] -translate-x-1/2"
+          className="fixed bottom-8 right-8 z-[70]"
           role="alert"
           aria-live="assertive"
         />
