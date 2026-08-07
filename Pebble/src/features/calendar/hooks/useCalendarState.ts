@@ -505,23 +505,25 @@ export const useCalendarState = ({
     };
   }, [loadCalendarData]);
 
-  const categoryActions =
-    useCalendarCategoryActions({
-      categories,
-      reloadCalendarData: () =>
-        loadCalendarData(),
-      setCategories,
-      setSelectedCategoryId,
-    });
+const categoryActions =
+  useCalendarCategoryActions({
+    categories,
+    reloadCalendarData: async () => {
+      await loadCalendarData();
+    },
+    setCategories,
+    setSelectedCategoryId,
+  });
 
-  const scheduleActions =
-    useCalendarScheduleActions({
-      categories,
-      reloadCalendarData: () =>
-        loadCalendarData(),
-      setCategories,
-      standaloneTasks,
-    });
+const scheduleActions =
+  useCalendarScheduleActions({
+    categories,
+    reloadCalendarData: async () => {
+      await loadCalendarData();
+    },
+    setCategories,
+    standaloneTasks,
+  });
 
   return {
     currentUserId,
