@@ -9,6 +9,7 @@ import { isTaskCompleted } from "@/features/task/utils/taskCompletion";
 import {
   formatScheduleDisplayDate,
   getScheduleDisplayLabels,
+  parseIsoScheduleDate,
 } from "@/utils/scheduleDate";
 
 type MilestoneAccordionProps = {
@@ -57,14 +58,53 @@ const SCHEDULE_LEVEL_CLASS = {
   grandchild: "box-border w-full pl-6",
 } as const;
 
+const getScheduleSortTime = (item: ScheduleItem) => {
+  const dateValues =
+    "taskDates" in item && item.taskDates?.length
+      ? item.taskDates.map((taskDate) => taskDate.date.slice(0, 10))
+      : item.dates?.length
+        ? item.dates
+        : [item.start];
+  const sortedTimes = dateValues
+    .map((date) => parseIsoScheduleDate(date)?.getTime())
+    .filter((time): time is number => time !== undefined)
+    .sort((a, b) => a - b);
+
+  return sortedTimes[0] ?? Number.MAX_SAFE_INTEGER;
+};
+
+const sortScheduleItemsByDate = <T extends ScheduleItem>(items: T[]) =>
+  [...items].sort((a, b) => {
+    const dateDiff = getScheduleSortTime(a) - getScheduleSortTime(b);
+
+    if (dateDiff !== 0) {
+      return dateDiff;
+    }
+
+    return a.title.localeCompare(b.title, "ko");
+  });
+
 const getScheduleRows = (item: ScheduleItem, checked: boolean) => {
   if ("taskDates" in item && item.taskDates?.length) {
-    return item.taskDates.map((taskDate) => ({
-      key: String(taskDate.taskDateId),
-      dateLabel: formatScheduleDisplayDate(taskDate.date.slice(0, 10)),
-      checked: Boolean(taskDate.isCompleted),
-      taskDateId: taskDate.taskDateId,
-    }));
+    return [...item.taskDates]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((taskDate) => ({
+        key: String(taskDate.taskDateId),
+        dateLabel: formatScheduleDisplayDate(taskDate.date.slice(0, 10)),
+        checked: Boolean(taskDate.isCompleted),
+        taskDateId: taskDate.taskDateId,
+      }));
+  }
+
+  if (item.dates && item.dates.length > 0) {
+    return [...item.dates]
+      .sort((a, b) => a.localeCompare(b))
+      .map((date) => ({
+        key: date,
+        dateLabel: formatScheduleDisplayDate(date),
+        checked,
+        taskDateId: undefined,
+      }));
   }
 
   return getScheduleDisplayLabels(item).map((dateLabel) => ({
@@ -216,7 +256,7 @@ export const MilestoneAccordion = ({
       {expanded && (
         <div className="flex w-full flex-col items-center">
           <div className="flex w-full max-h-[216px] flex-col items-end justify-start gap-2 overflow-y-auto pl-5 pr-3 custom-scrollbar">
-            {category.items.map((item) => (
+            {sortScheduleItemsByDate(category.items).map((item) => (
               <div
                 key={item.id}
                 className="flex w-full flex-col items-end gap-2"
@@ -236,7 +276,7 @@ export const MilestoneAccordion = ({
 
                 {Boolean(item.tasks?.length) && (
                   <div className="flex w-full flex-col items-end gap-2">
-                    {item.tasks?.map((task) => (
+                    {sortScheduleItemsByDate(item.tasks ?? []).map((task) => (
                       <div
                         key={task.id}
                         className={SCHEDULE_LEVEL_CLASS.grandchild}
@@ -265,7 +305,7 @@ export const MilestoneAccordion = ({
               </div>
             ))}
 
-            {category.tasks?.map((task) => (
+            {sortScheduleItemsByDate(category.tasks ?? []).map((task) => (
               <div key={task.id} className={SCHEDULE_LEVEL_CLASS.child}>
                 <SidebarScheduleRow
                   item={task}

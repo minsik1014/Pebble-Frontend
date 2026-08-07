@@ -319,6 +319,7 @@ export const useCalendarState = ({
   const scheduleActions = useCalendarScheduleActions({
     categories,
     reloadCalendarData: () => loadCalendarData(),
+    setCategories,
     standaloneTasks,
   });
 

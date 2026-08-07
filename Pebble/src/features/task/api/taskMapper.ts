@@ -22,9 +22,17 @@ const getDateTypeFromInput = (input: CreateScheduleItemInput): TaskDateType => {
 const normalizeApiDate = (date?: string | null) => date?.slice(0, 10) ?? null;
 
 export function mapTaskResponseToTask(task: TaskResponse): TaskItem {
+  const taskDates = task.taskDates
+    ?.map((taskDate) => ({
+      ...taskDate,
+      date: normalizeApiDate(taskDate.date) ?? taskDate.date,
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
   const dates =
-    task.taskDates?.map((taskDate) => normalizeApiDate(taskDate.date) ?? taskDate.date) ??
-    task.dates?.map((date) => normalizeApiDate(date) ?? date) ??
+    taskDates?.map((taskDate) => taskDate.date) ??
+    task.dates
+      ?.map((date) => normalizeApiDate(date) ?? date)
+      .sort((a, b) => a.localeCompare(b)) ??
     undefined;
   const startDate = normalizeApiDate(task.startDate);
   const endDate = normalizeApiDate(task.endDate);
@@ -43,7 +51,7 @@ export function mapTaskResponseToTask(task: TaskResponse): TaskItem {
     isCompleted: task.isCompleted,
     completedAt: task.completedAt ?? undefined,
     displayOrder: task.displayOrder,
-    taskDates: task.taskDates,
+    taskDates,
   };
 }
 
