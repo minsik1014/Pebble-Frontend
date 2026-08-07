@@ -15,13 +15,18 @@ export type GlobalErrorToastState = {
   retry?: () => Promise<void> | void;
 };
 
-type GlobalErrorToastListener = (state: GlobalErrorToastState) => void;
+type GlobalErrorToastListener = (
+  state: GlobalErrorToastState,
+) => void;
 
 const DEFAULT_AUTO_CLOSE_MS = 4000;
 
-const listeners = new Set<GlobalErrorToastListener>();
+const listeners =
+  new Set<GlobalErrorToastListener>();
 
-let closeTimer: ReturnType<typeof setTimeout> | null = null;
+let closeTimer:
+  | ReturnType<typeof setTimeout>
+  | null = null;
 
 let state: GlobalErrorToastState = {
   open: false,
@@ -30,14 +35,26 @@ let state: GlobalErrorToastState = {
 };
 
 function emit() {
-  listeners.forEach((listener) => listener(state));
+  listeners.forEach((listener) =>
+    listener(state),
+  );
 }
 
 function clearCloseTimer() {
-  if (closeTimer) {
-    clearTimeout(closeTimer);
-    closeTimer = null;
-  }
+  if (!closeTimer) return;
+
+  clearTimeout(closeTimer);
+  closeTimer = null;
+}
+
+function createClosedState(): GlobalErrorToastState {
+  return {
+    open: false,
+    message: TEMPORARY_ERROR_MESSAGE,
+    retryLabel: undefined,
+    retry: undefined,
+    isRetrying: false,
+  };
 }
 
 export function subscribeGlobalErrorToast(
@@ -56,12 +73,18 @@ export function showGlobalErrorToast(
 ) {
   clearCloseTimer();
 
-  const hasRetry = Boolean(options.retry);
+  const hasRetry =
+    typeof options.retry === 'function';
 
   state = {
     open: true,
-    message: options.message ?? TEMPORARY_ERROR_MESSAGE,
-    retryLabel: hasRetry ? options.retryLabel ?? '다시 시도' : undefined,
+    message:
+      options.message ??
+      TEMPORARY_ERROR_MESSAGE,
+    retryLabel: hasRetry
+      ? options.retryLabel ??
+        '다시 시도'
+      : undefined,
     retry: options.retry,
     isRetrying: false,
   };
@@ -77,20 +100,16 @@ export function showGlobalErrorToast(
 
 export function closeGlobalErrorToast() {
   clearCloseTimer();
-
-  state = {
-    ...state,
-    open: false,
-    isRetrying: false,
-  };
-
+  state = createClosedState();
   emit();
 }
 
 export async function retryGlobalErrorToastAction() {
   const retry = state.retry;
 
-  if (!retry || state.isRetrying) return;
+  if (!retry || state.isRetrying) {
+    return;
+  }
 
   clearCloseTimer();
 
@@ -104,14 +123,13 @@ export async function retryGlobalErrorToastAction() {
   try {
     await retry();
 
-    state = {
-      ...state,
-      open: false,
-      isRetrying: false,
-    };
-
+    state = createClosedState();
     emit();
   } catch {
+    /*
+     * 재시도 함수가 새로운 토스트 상태를 등록했을 수
+     * 있으므로 현재 retry 값은 유지합니다.
+     */
     state = {
       ...state,
       open: true,

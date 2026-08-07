@@ -30,29 +30,27 @@ export function useRetryableAction() {
   const isMountedRef = useRef(false);
   const isRunningRef = useRef(false);
 
-  /*
-   * 전역 토스트에는 이 ref를 읽는 함수만 전달합니다.
-   * 컴포넌트가 제거되면 ref를 비워 입력값을 캡처한
-   * 실제 요청 함수가 남지 않도록 처리합니다.
-   */
   const retryActionRef = useRef<
     (() => Promise<void>) | null
   >(null);
 
-  const [isRunning, setIsRunning] = useState(false);
+  const [isRunning, setIsRunning] =
+    useState(false);
 
   useEffect(() => {
     isMountedRef.current = true;
 
     return () => {
       isMountedRef.current = false;
+      isRunningRef.current = false;
       retryActionRef.current = null;
     };
   }, []);
 
   const updateRunningState = useCallback(
     (nextIsRunning: boolean) => {
-      isRunningRef.current = nextIsRunning;
+      isRunningRef.current =
+        nextIsRunning;
 
       if (isMountedRef.current) {
         setIsRunning(nextIsRunning);
@@ -80,6 +78,61 @@ export function useRetryableAction() {
 
       updateRunningState(true);
 
+      /*
+       * 동일한 입력값을 사용하는 재시도 함수를
+       * 다시 등록합니다.
+       */
+      const registerRetryAction = (
+        currentError: unknown,
+      ) => {
+        retryActionRef.current =
+          async () => {
+            if (
+              !isMountedRef.current ||
+              isRunningRef.current
+            ) {
+              return;
+            }
+
+            updateRunningState(true);
+
+            try {
+              await action();
+              retryActionRef.current =
+                null;
+            } catch (retryError) {
+              onError?.(retryError);
+
+              /*
+               * 재시도가 다시 실패해도 버튼과
+               * 동일한 요청값을 유지합니다.
+               */
+              registerRetryAction(
+                retryError,
+              );
+
+              throw retryError;
+            } finally {
+              updateRunningState(false);
+            }
+          };
+
+        showGlobalErrorToast({
+          message:
+            currentError instanceof Error
+              ? currentError.message
+              : TEMPORARY_ERROR_MESSAGE,
+          retry: async () => {
+            const retryAction =
+              retryActionRef.current;
+
+            if (!retryAction) return;
+
+            await retryAction();
+          },
+        });
+      };
+
       try {
         const data = await action();
 
@@ -96,41 +149,7 @@ export function useRetryableAction() {
           enableRetry &&
           isCommonRetryableApiError(error)
         ) {
-          retryActionRef.current = async () => {
-            if (
-              !isMountedRef.current ||
-              isRunningRef.current
-            ) {
-              return;
-            }
-
-            updateRunningState(true);
-
-            try {
-              await action();
-              retryActionRef.current = null;
-            } catch (retryError) {
-              onError?.(retryError);
-              throw retryError;
-            } finally {
-              updateRunningState(false);
-            }
-          };
-
-          showGlobalErrorToast({
-            message:
-              error instanceof Error
-                ? error.message
-                : TEMPORARY_ERROR_MESSAGE,
-            retry: async () => {
-              const retryAction =
-                retryActionRef.current;
-
-              if (!retryAction) return;
-
-              await retryAction();
-            },
-          });
+          registerRetryAction(error);
         }
 
         return {

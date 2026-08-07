@@ -15,7 +15,8 @@ type NetworkRetryAction = () => Promise<void>;
 const listeners =
   new Set<NetworkRecoveryListener>();
 
-let retryAction: NetworkRetryAction | null = null;
+let retryAction: NetworkRetryAction | null =
+  null;
 
 let state: NetworkRecoveryState = {
   open: false,
@@ -49,16 +50,25 @@ export function subscribeNetworkRecovery(
 }
 
 export function initializeNetworkRecovery() {
-  const isOnline = getBrowserOnlineState();
+  const isOnline =
+    getBrowserOnlineState();
 
+  /*
+   * navigator.onLine 값만으로 전체 화면을 열지 않습니다.
+   *
+   * 필수 초기 API가 실제 네트워크 오류로 실패했을 때
+   * reportInitialNetworkFailure()에서 화면을 엽니다.
+   *
+   * 이미 초기 API 실패로 화면이 열린 상태라면
+   * 해당 상태는 유지합니다.
+   */
   state = {
     ...state,
     isOnline,
-    open: !isOnline,
     isRetrying: false,
   };
 
-  if (!isOnline) {
+  if (state.open) {
     closeGlobalErrorToast();
   }
 
@@ -99,7 +109,8 @@ export function isNetworkErrorScreenOpen() {
 export async function retryInitialNetworkRequest() {
   if (state.isRetrying) return;
 
-  const isOnline = getBrowserOnlineState();
+  const isOnline =
+    getBrowserOnlineState();
 
   if (!isOnline) {
     state = {
@@ -114,7 +125,7 @@ export async function retryInitialNetworkRequest() {
   }
 
   /*
-   * 앱이 처음부터 오프라인이어서 초기 요청이 아직
+   * 최초 오프라인 상태에서 아직 초기 요청이
    * 등록되지 않았다면 페이지를 다시 시작합니다.
    */
   if (!retryAction) {
@@ -145,7 +156,8 @@ export async function retryInitialNetworkRequest() {
   } catch {
     state = {
       open: true,
-      isOnline: getBrowserOnlineState(),
+      isOnline:
+        getBrowserOnlineState(),
       isRetrying: false,
     };
 
