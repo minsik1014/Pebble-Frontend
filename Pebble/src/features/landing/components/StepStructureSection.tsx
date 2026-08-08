@@ -16,7 +16,7 @@ export function StepStructureSection({
   );
 
   return (
-    <div className="relative h-[1024px] w-[1440px] overflow-hidden bg-transparent">
+    <div className="relative h-[1024px] w-[1440px] overflow-visible bg-transparent">
       {/* 두 번째 섹션 상단 텍스트 등장 애니메이션 */}
       <div
         aria-hidden={!isTextVisible}
@@ -107,7 +107,7 @@ export function StepStructureSection({
               </div>
             ))}
 
-            <span className="absolute left-[-60px] top-[622px] z-0 w-[1560px] select-none text-center text-[300px] font-semibold leading-[130%] tracking-[-0.01em] text-[#242424]/[0.02]">
+            <span className="absolute left-1/2 top-[622px] z-0 w-[max(1560px,100vw)] -translate-x-1/2 select-none whitespace-nowrap text-center text-[300px] font-semibold leading-[130%] tracking-[-0.01em] text-[#242424]/[0.02]">
               {stage.backgroundText}
             </span>
           </div>

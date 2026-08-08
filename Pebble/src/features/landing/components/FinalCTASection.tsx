@@ -1,9 +1,6 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import ellipse7 from '@/assets/images/landing/final-cta-ellipse-7.svg';
-import ellipse8 from '@/assets/images/landing/final-cta-ellipse-8.svg';
-
 import { Button } from '@/components/ui/Button';
 import { useInView } from '@/features/landing/hooks/useInView';
 
@@ -11,18 +8,16 @@ function FinalCTABackgroundShapes() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      className="pointer-events-none absolute left-1/2 top-0 z-0 h-full w-[max(1440px,100vw)] -translate-x-1/2 overflow-hidden"
     >
-      <img
-        src={ellipse8}
-        alt=""
-        className="absolute left-[-108px] top-[-277px] h-[1281px] w-[1031px] rotate-[180deg] object-contain opacity-[65%] blur-[60px]"
-      />
-
-      <img
-        src={ellipse7}
-        alt=""
-        className="absolute left-[628px] top-[201px] h-[1260px] w-[793px] rotate-[-180deg] object-contain"
+      <div
+        className="absolute inset-0"
+        style={{
+          background: [
+            'radial-gradient(ellipse 72% 92% at 4% 18%, rgba(250, 250, 250, 0.09) 0%, rgba(250, 250, 250, 0.04) 48%, transparent 76%)',
+            'radial-gradient(ellipse 58% 86% at 91% 82%, rgba(250, 250, 250, 0.06) 0%, rgba(250, 250, 250, 0.025) 52%, transparent 78%)',
+          ].join(', '),
+        }}
       />
     </div>
   );
@@ -43,7 +38,7 @@ export function FinalCTASection() {
   return (
     <div
       ref={sectionRef}
-      className="relative h-full w-full overflow-hidden bg-transparent"
+      className="relative h-full w-full overflow-visible bg-transparent"
     >
       <FinalCTABackgroundShapes />
 

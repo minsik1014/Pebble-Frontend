@@ -9,7 +9,7 @@ export function BridgePebbleRow() {
     <div
       role="img"
       aria-label="최근 7일의 징검다리 미리보기"
-      className="absolute left-0 top-[571px] z-10 h-[195px] w-full overflow-hidden"
+      className="absolute left-1/2 top-[571px] z-10 h-[195px] w-[max(1440px,100vw)] -translate-x-1/2 overflow-hidden"
     >
       <div className="landing-bridge-marquee absolute left-[-58px] top-0 flex w-max gap-[32px]">
         {[0, 1].map((groupIndex) => (
