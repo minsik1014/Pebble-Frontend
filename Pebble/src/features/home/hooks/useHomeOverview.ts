@@ -22,7 +22,7 @@ const DEFAULT_ACTIVITY: HomeActivity = {
   logs: [],
 };
 
-export const useHomeOverview = () => {
+export const useHomeOverview = (viewedUserId: number | null) => {
   const profile = useProfileStore((state) => state.profile);
   const isProfileLoaded = useProfileStore((state) => state.isLoaded);
   const loadProfile = useProfileStore((state) => state.loadProfile);
@@ -62,13 +62,17 @@ export const useHomeOverview = () => {
   }, []);
 
   useEffect(() => {
-    if (!profile.id) return;
+    const activityUserId = viewedUserId ?? profile.id;
+
+    if (!activityUserId) return;
 
     let isActive = true;
 
+    setActivity(DEFAULT_ACTIVITY);
+
     void Promise.allSettled([
-      getActivityLogs({ userId: profile.id }),
-      getMySettings(),
+      getActivityLogs({ userId: activityUserId }),
+      viewedUserId === null ? getMySettings() : Promise.resolve(null),
     ]).then(([activityResult, settingsResult]) => {
       if (!isActive) return;
 
@@ -79,7 +83,9 @@ export const useHomeOverview = () => {
 
       setActivity({
         color:
-          settingsResult.status === "fulfilled"
+          viewedUserId === null &&
+          settingsResult.status === "fulfilled" &&
+          settingsResult.value
             ? settingsResult.value.activityColor
             : normalizedActivity
               ? normalizedActivity.activityColor
@@ -91,7 +97,7 @@ export const useHomeOverview = () => {
     return () => {
       isActive = false;
     };
-  }, [profile.id]);
+  }, [profile.id, viewedUserId]);
 
   return {
     profile,
