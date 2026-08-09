@@ -44,7 +44,7 @@ export const LogoutConfirmModal = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="logout-confirm-title"
-        className="flex w-[400px] flex-col items-start justify-center gap-5 overflow-hidden rounded-token-l border-[0.5px] border-border-secondary bg-fill-inverse p-token-xl shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
+        className="flex w-[400px] flex-col items-start justify-center gap-5 overflow-hidden rounded-token-l bg-fill-inverse p-token-xl shadow-[0_0_28px_0_rgba(23,23,23,0.05)] dark:border-[0.5px] dark:border-border-secondary"
         onClick={(event) => event.stopPropagation()}
       >
         <header className="flex w-full items-start justify-between">
@@ -59,7 +59,7 @@ export const LogoutConfirmModal = ({
 
           <button
             type="button"
-            className="flex size-11 shrink-0 items-center justify-center rounded-token-s text-btn-secondary transition-colors hover:bg-fill-surface"
+            className="flex size-11 shrink-0 items-center justify-center rounded-token-s text-text-secondary transition-colors hover:bg-fill-surface dark:text-btn-secondary"
             aria-label="로그아웃 모달 닫기"
             onClick={onClose}
             disabled={isSubmitting}

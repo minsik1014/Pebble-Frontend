@@ -32,8 +32,7 @@ export function Toast({
       aria-hidden={!open}
       className={[
         'w-[376px] overflow-hidden rounded-token-s',
-        'bg-fill-primary p-3 text-body-02-m text-text-onFill',
-        'shadow-shadow-m',
+        'bg-fill-primary p-3 text-body-02-m text-text-onFill shadow-shadow-m dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.06)]',
         'transition-[opacity,transform] duration-[450ms] ease-in-out',
         open
           ? 'pointer-events-auto translate-y-0 opacity-100'

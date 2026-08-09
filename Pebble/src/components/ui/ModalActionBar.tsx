@@ -79,6 +79,11 @@ export const ModalActionBar = ({
     void onSubmit();
   };
 
+  const submitButtonStateClassName =
+    disabled || isBusy
+      ? '!bg-btn-primary !text-text-teritary'
+      : '!bg-btn-primary !text-text-onFill';
+
   return (
     <>
       <div className="flex w-full gap-3">
@@ -91,16 +96,18 @@ export const ModalActionBar = ({
             className={[
               'relative flex h-11 w-11 shrink-0 items-center justify-center',
               'overflow-hidden rounded-token-s bg-fill-danger',
-              'transition-colors',
+              'transition-colors dark:bg-fill-danger-bg',
               'before:pointer-events-none before:absolute before:inset-0',
               'before:transition-colors',
-              'hover:before:bg-[rgba(250,250,250,0.25)]',
-              'active:before:bg-[rgba(250,250,250,0.4)]',
+              'hover:before:bg-[rgba(23,23,23,0.15)]',
+              'active:before:bg-[rgba(23,23,23,0.3)]',
+              'dark:hover:before:bg-[rgba(23,23,23,0.7)]',
+              'dark:active:before:bg-[rgba(23,23,23,0.7)]',
               'disabled:cursor-not-allowed disabled:opacity-50',
               'disabled:hover:before:bg-transparent',
             ].join(' ')}
           >
-            <DeleteIcon className="relative z-10 h-6 w-6 text-fill-inverse" />
+            <DeleteIcon className="relative z-10 h-6 w-6 text-fill-inverse dark:text-[#242424]" />
           </button>
         ) : null}
 
@@ -109,7 +116,7 @@ export const ModalActionBar = ({
           variant="cancel"
           disabled={isBusy}
           onClick={onCancel}
-          className="h-11 flex-1"
+          className="h-11 flex-1 !bg-btn-quaternary !text-text-strong"
         >
           취소
         </Button>
@@ -121,9 +128,10 @@ export const ModalActionBar = ({
           aria-disabled={disabled || isBusy}
           onClick={handleSubmitClick}
           className={[
-            'h-11 flex-1',
+            'h-11 flex-1 disabled:opacity-100',
+            submitButtonStateClassName,
             isSubmitBlockedWithReason
-              ? 'cursor-not-allowed opacity-50 hover:before:bg-transparent'
+              ? 'cursor-not-allowed hover:before:bg-transparent'
               : '',
           ].join(' ')}
         >

@@ -59,6 +59,19 @@ export const ScheduleDatePicker = ({
       ? getReadableCategoryTextColor(themeBaseColor, getSelectedColor(type))
       : '#ffffff';
 
+  const isBlackCategoryColor =
+    themeBaseColor.trim().toLowerCase() === '#171717';
+
+  const getSelectedDateTypeButtonStyle = (type: DateType) =>
+    ({
+      backgroundColor: isBlackCategoryColor
+        ? 'rgb(var(--button-primary))'
+        : getSelectedColor(type),
+      color: isBlackCategoryColor
+        ? 'rgb(var(--text-on-fill))'
+        : getSelectedTextColor(type),
+    }) as CSSProperties;
+
   const rangeBackgroundStyle = {
     '--schedule-range-color': themeLightColor,
   } as CSSProperties;
@@ -67,7 +80,7 @@ export const ScheduleDatePicker = ({
     const baseClass =
       'group relative flex h-[73px] flex-1 flex-col items-start justify-center gap-1 overflow-hidden rounded-token-s px-5 py-3 transition-colors';
 
-    const activeClass = 'text-fill-inverse';
+    const activeClass = 'text-text-onFill';
 
     const inactiveClass = isTaskVariant
       ? 'bg-btn-quaternary text-text-strong'
@@ -141,7 +154,7 @@ export const ScheduleDatePicker = ({
             className={getTypeButtonClass(type)}
             style={
               dateType === type
-                ? { backgroundColor: getSelectedColor(type) }
+                ? getSelectedDateTypeButtonStyle(type)
                 : undefined
             }
           >
@@ -164,7 +177,7 @@ export const ScheduleDatePicker = ({
               }
               style={
                 dateType === type
-                  ? { color: getSelectedTextColor(type) }
+                  ? { color: getSelectedDateTypeButtonStyle(type).color }
                   : undefined
               }
             >
@@ -183,7 +196,7 @@ export const ScheduleDatePicker = ({
               }
               style={
                 dateType === type
-                  ? { color: getSelectedTextColor(type) }
+                  ? { color: getSelectedDateTypeButtonStyle(type).color }
                   : undefined
               }
             >
@@ -214,7 +227,7 @@ export const ScheduleDatePicker = ({
             onClick={onPrevMonth}
             className={`${
               isTaskVariant ? 'absolute left-[35%]' : ''
-            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 dark:bg-btn-primary dark:text-text-onFill dark:hover:brightness-90`}
+            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 dark:bg-btn-quaternary dark:text-text-secondary dark:hover:bg-btn-pressed`}
             aria-label="이전 달"
           >
             <svg
@@ -243,7 +256,7 @@ export const ScheduleDatePicker = ({
             onClick={onNextMonth}
             className={`${
               isTaskVariant ? 'absolute right-[35%]' : ''
-            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 dark:bg-btn-primary dark:text-text-onFill dark:hover:brightness-90`}
+            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 dark:bg-btn-quaternary dark:text-text-secondary dark:hover:bg-btn-pressed`}
             aria-label="다음 달"
           >
             <svg

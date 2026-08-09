@@ -120,7 +120,7 @@ export const HomeProfileStrip = ({
         className="relative ml-token-l flex shrink-0 flex-col items-center gap-token-xs rounded-token-infinite px-token-s py-token-m text-text-strong"
       >
         <span className="relative flex size-[54px] items-center justify-center">
-          <FriendIcon className="size-[54px]" aria-hidden="true" />
+          <FriendIcon className="size-[54px] text-fill-primary" aria-hidden="true" />
           {pendingCount > 0 && (
             <>
               <span

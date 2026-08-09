@@ -159,7 +159,7 @@ export function EmailChangeModal({
         role="dialog"
         aria-modal="true"
         aria-label="이메일 변경"
-        className="w-[480px] rounded-token-l border-[0.5px] border-border-secondary bg-fill-inverse p-token-xl shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
+        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) =>
           event.stopPropagation()
         }

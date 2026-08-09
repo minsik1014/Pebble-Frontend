@@ -89,7 +89,7 @@ export const MilestoneDetailItem = ({
                 />
               </div>
               <button
-                className="w-11 h-11 flex items-center justify-center rounded-token-s hover:bg-fill-surface transition-colors"
+                className="w-11 h-11 flex items-center justify-center rounded-token-s hover:bg-fill-surface transition-colors dark:hover:bg-btn-quaternary"
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggle();

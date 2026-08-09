@@ -56,7 +56,7 @@ export function WithdrawalConfirmModal({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="flex h-[359px] w-[640px] flex-col gap-token-l rounded-token-l border-[0.5px] border-border-secondary bg-fill-inverse p-token-xl shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
+        className="flex h-[359px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex h-[67px] w-full items-start justify-between">
@@ -79,7 +79,7 @@ export function WithdrawalConfirmModal({
             type="button"
             aria-label="회원탈퇴 확인 모달 닫기"
             disabled={isSubmitting}
-            className="flex size-8 shrink-0 items-center justify-center rounded-token-s text-btn-secondary hover:bg-btn-quaternary disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex size-8 shrink-0 items-center justify-center rounded-token-s text-text-secondary hover:bg-btn-quaternary disabled:cursor-not-allowed disabled:opacity-50 dark:text-btn-secondary"
             onClick={() => onOpenChange(false)}
           >
             <CloseIcon className="size-6" aria-hidden="true" />

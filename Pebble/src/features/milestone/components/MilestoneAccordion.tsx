@@ -199,10 +199,10 @@ export const MilestoneAccordion = ({
 
   return (
     <section
-      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-token-m overflow-hidden ${
+      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative overflow-visible rounded-token-m bg-fill-inverse ${
         isSelected
-          ? "outline outline-2 -outline-offset-2 outline-border-selected shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_14px_0px_rgba(23,23,23,0.05)]"
-          : "shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)]"
+          ? "outline outline-2 -outline-offset-2 outline-border-selected shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_14px_0px_rgba(23,23,23,0.05)] dark:shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_8px_0px_rgba(255,255,255,0.06)]"
+          : "shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.06)]"
       }`}
     >
       <div

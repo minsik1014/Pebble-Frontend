@@ -18,7 +18,7 @@ export const ToggleSwitch = ({
   checkedLabel,
   uncheckedLabel,
   checkedClassName = "bg-btn-primary",
-  uncheckedClassName = "bg-border-default",
+  uncheckedClassName = "bg-border-default dark:bg-fill-secondary",
   disabled = false,
   className = "",
   type = "button",
@@ -51,9 +51,13 @@ export const ToggleSwitch = ({
     >
       <span
         aria-hidden="true"
-        className={`absolute left-[3px] top-[3px] h-6 w-6 rounded-token-infinite bg-fill-inverse transition-transform ${
-          checked ? "translate-x-[22px]" : "translate-x-0"
-        }`}
+        className={[
+          "absolute left-[3px] top-[3px] h-6 w-6 rounded-token-infinite",
+          "transition-[background-color,transform]",
+          checked
+            ? "translate-x-[22px] bg-fill-inverse dark:bg-fill-inverse"
+            : "translate-x-0 bg-fill-inverse dark:bg-fill-primary",
+        ].join(" ")}
       />
     </button>
     {checkedLabel && uncheckedLabel && (

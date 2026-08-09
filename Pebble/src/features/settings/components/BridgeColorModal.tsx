@@ -245,7 +245,7 @@ export function BridgeColorModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="flex h-[547px] w-[640px] flex-col gap-token-l rounded-token-l border-[0.5px] border-border-secondary bg-fill-inverse p-token-xl shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
+        className="flex h-[547px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="flex h-11 w-full items-start justify-between">

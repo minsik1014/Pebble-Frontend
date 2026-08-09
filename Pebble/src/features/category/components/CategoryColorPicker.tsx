@@ -73,7 +73,7 @@ export const CategoryColorPicker = ({
             />
           )}
           {!isCustomColorSelected && (
-            <span className="relative block h-full w-full rounded-[8px] border border-border-default bg-fill-inverse" />
+            <span className="relative block h-full w-full rounded-[8px] border border-border-default bg-fill-inverse dark:border-border-teritory" />
           )}
         </button>
         <input

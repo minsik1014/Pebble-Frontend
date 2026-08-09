@@ -33,7 +33,7 @@ export const ScheduleFormModalFrame = ({
     <div
       className={[
         'relative flex w-[640px] flex-col',
-        'rounded-[32px] border-[0.5px] border-transparent bg-fill-inverse p-8 shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)] dark:border-border-secondary',
+        'rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]',
         gapClassName,
       ].join(' ')}
     >

@@ -45,7 +45,7 @@
   --text-strong: 23 23 23;
   --text-primary: 64 64 64;
   --text-secondary: 115 115 115;
-  --text-teritary: 143 143 143;
+  --text-teritary: 163 163 163;
   --text-quaternary: 212 212 212;
   --text-on-fill: 255 255 255;
   --text-sunday: 254 166 143;
@@ -59,7 +59,7 @@
 
   --button-primary: 23 23 23;
   --button-secondary: 64 64 64;
-  --button-teritory: 92 92 92;
+  --button-teritory: 115 115 115;
   --button-quaternary: 245 245 245;
   --button-pressed: 229 229 229;
 
@@ -116,8 +116,8 @@
   --text-teritary: 143 143 143;
   --text-quaternary: 92 92 92;
   --text-on-fill: 0 0 0;
-  --text-sunday: 254 166 143;
-  --text-saturday: 130 160 255;
+  --text-sunday: 125 37 31;
+  --text-saturday: 27 49 120;
 
   --border-primary: 250 250 250;
   --border-selected: 163 163 163;
@@ -179,6 +179,11 @@
     min-height: 100%;
   }
 
+  .theme-transition-blocked,
+  .theme-transition-blocked * {
+    transition: none !important;
+  }
+
   body {
     margin: 0;
     background-color: rgb(var(--fill-surface));
@@ -205,11 +210,18 @@
   textarea::placeholder {
     color: rgb(var(--text-teritary));
   }
+
+  :root[data-theme='dark'] input::placeholder,
+  :root[data-theme='dark'] textarea::placeholder,
+  [data-theme='dark'] input::placeholder,
+  [data-theme='dark'] textarea::placeholder {
+    color: rgb(var(--text-quaternary));
+  }
 }
 
 @layer components {
   /*
-   * 인증 화면은 상위 data-theme 값에 맞춰 라이트/다크 토큰으로 표시합니다.
+   * ?�증 ?�면?� ?�위 data-theme 값에 맞춰 ?�이???�크 ?�큰?�로 ?�시?�니??
    */
   .auth-title {
     @apply text-[23px] font-medium leading-[130%] tracking-[-0.23px] text-text-primary;
