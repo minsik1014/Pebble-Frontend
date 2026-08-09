@@ -207,14 +207,14 @@ export function PasswordChangeModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-fill-shadow/30 backdrop-blur-[3px]"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
       onClick={handleClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-label="비밀번호 변경"
-        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        className="w-[480px] rounded-token-l border-[0.5px] border-border-secondary bg-fill-inverse p-token-xl shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 className="text-title-02-sb text-text-strong">
@@ -355,7 +355,7 @@ export function PasswordChangeModal({
           <Button
             variant="cancel"
             disabled={isSubmitting}
-            className="h-11 w-full text-text-strong"
+            className="h-11 w-full !bg-btn-quaternary !text-text-strong"
             onClick={handleClose}
           >
             취소
@@ -367,8 +367,8 @@ export function PasswordChangeModal({
             className={[
               'h-11 w-full disabled:opacity-100',
               canSubmit
-                ? ''
-                : '!bg-btn-teritary !text-text-teritary',
+                ? '!bg-btn-primary !text-text-onFill'
+                : '!bg-btn-primary !text-text-teritary',
             ].join(' ')}
             onClick={() => void handleSubmit()}
           >

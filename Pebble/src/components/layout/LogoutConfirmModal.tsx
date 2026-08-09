@@ -37,14 +37,14 @@ export const LogoutConfirmModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(44,44,44,0.3)] backdrop-blur-[4px]"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
       onClick={onClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="logout-confirm-title"
-        className="flex w-[400px] flex-col items-start justify-center gap-5 overflow-hidden rounded-token-l bg-fill-inverse p-token-xl shadow-[0_0_28px_0_rgba(23,23,23,0.05)]"
+        className="flex w-[400px] flex-col items-start justify-center gap-5 overflow-hidden rounded-token-l border-[0.5px] border-border-secondary bg-fill-inverse p-token-xl shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) => event.stopPropagation()}
       >
         <header className="flex w-full items-start justify-between">
@@ -59,7 +59,7 @@ export const LogoutConfirmModal = ({
 
           <button
             type="button"
-            className="flex size-11 shrink-0 items-center justify-center rounded-token-s text-text-secondary transition-colors hover:bg-fill-surface"
+            className="flex size-11 shrink-0 items-center justify-center rounded-token-s text-btn-secondary transition-colors hover:bg-fill-surface"
             aria-label="로그아웃 모달 닫기"
             onClick={onClose}
             disabled={isSubmitting}
@@ -71,7 +71,7 @@ export const LogoutConfirmModal = ({
         <div className="flex w-full items-start gap-token-m">
           <button
             type="button"
-            className="flex h-11 min-w-0 flex-1 items-center justify-center rounded-token-s bg-btn-quaternary px-token-l text-body-02-m text-text-strong transition-colors hover:bg-btn-pressed disabled:cursor-not-allowed disabled:opacity-50"
+            className="relative flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-token-s bg-btn-quaternary px-token-l text-body-02-m text-text-strong transition-colors before:pointer-events-none before:absolute before:inset-0 before:rounded-token-s before:transition-colors hover:before:bg-[rgba(250,250,250,0.18)] active:before:bg-[rgba(250,250,250,0.28)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:before:bg-transparent"
             onClick={onClose}
             disabled={isSubmitting}
           >
@@ -79,7 +79,7 @@ export const LogoutConfirmModal = ({
           </button>
           <button
             type="button"
-            className="flex h-11 min-w-0 flex-1 items-center justify-center rounded-token-s bg-btn-primary px-token-l text-body-02-m text-text-onFill transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="relative flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-token-s bg-btn-primary px-token-l text-body-02-m text-text-onFill transition-colors before:pointer-events-none before:absolute before:inset-0 before:rounded-token-s before:transition-colors hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:before:bg-transparent"
             onClick={onConfirm}
             disabled={isSubmitting}
           >

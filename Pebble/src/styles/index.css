@@ -59,7 +59,7 @@
 
   --button-primary: 23 23 23;
   --button-secondary: 64 64 64;
-  --button-teritory: 115 115 115;
+  --button-teritory: 92 92 92;
   --button-quaternary: 245 245 245;
   --button-pressed: 229 229 229;
 
@@ -101,7 +101,7 @@
   --fill-inverse: 36 36 36;
 
   --fill-danger: 252 76 70;
-  --fill-danger-bg: 83 39 37;
+  --fill-danger-bg: 58 18 16;
 
   --fill-success: 50 200 145;
   --fill-success-bg: 30 74 56;
@@ -123,7 +123,7 @@
   --border-selected: 163 163 163;
   --border-default: 82 82 82;
   --border-secondary: 61 61 61;
-  --border-teritory: 64 64 64;
+  --border-teritory: 31 31 31;
 
   --button-primary: 248 248 248;
   --button-secondary: 229 229 229;
