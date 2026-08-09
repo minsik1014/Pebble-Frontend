@@ -75,7 +75,7 @@ const SelectedDateRow = ({
   return (
     <div
       className={`${widthClassName} flex h-12 shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface ${
-        hasShadow ? "shadow-shadow-s" : ""
+        hasShadow ? "shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)]" : ""
       }`}
     >
       <button
@@ -256,7 +256,7 @@ export const CalendarSidebarSelectedDateView = ({
       {categoryGroups.map(({ category, items }) => (
         <section
           key={category.id}
-          className="flex w-[352px] shrink-0 flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-s"
+          className="flex w-[352px] shrink-0 flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)]"
         >
           <div className="flex w-full items-center justify-between rounded-[20px] bg-fill-inverse py-3 pl-5 pr-3">
             <div className="flex min-w-0 items-center gap-3">

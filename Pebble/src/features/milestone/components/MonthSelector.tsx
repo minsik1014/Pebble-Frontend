@@ -29,7 +29,7 @@ export const MonthSelector = ({
       >
         <button
           aria-label="이전 달"
-          className="flex h-11 w-11 items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-strong transition-colors hover:bg-btn-pressed shrink-0"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-secondary transition-colors hover:bg-btn-pressed"
           onClick={onPrevious}
         >
           <ChevronLeftIcon className="h-6 w-6" />
@@ -42,7 +42,7 @@ export const MonthSelector = ({
         </button>
         <button
           aria-label="다음 달"
-          className="flex h-11 w-11 items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-strong transition-colors hover:bg-btn-pressed shrink-0"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-token-infinite bg-btn-quaternary text-text-secondary transition-colors hover:bg-btn-pressed"
           onClick={onNext}
         >
           <ChevronRightIcon className="h-6 w-6" />

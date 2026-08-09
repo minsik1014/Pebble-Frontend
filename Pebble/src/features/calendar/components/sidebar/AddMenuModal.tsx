@@ -18,8 +18,8 @@ export const AddMenuModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(44,44,44,0.3)] backdrop-blur-[4px]">
-      <div className="relative flex w-[359px] flex-col gap-[20px] rounded-[32px] bg-fill-inverse p-[32px] shadow-shadow-m">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]">
+      <div className="relative flex w-[359px] flex-col gap-[20px] rounded-[32px] border-[0.5px] border-transparent bg-fill-inverse p-[32px] shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)] dark:border-border-secondary">
         <header className="flex items-center justify-between">
           <h2 className="text-title-02-sb text-text-strong">추가하기</h2>
 
