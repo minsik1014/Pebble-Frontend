@@ -1,6 +1,9 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import ellipse7 from '@/assets/images/landing/final-cta-ellipse-7.svg';
+import ellipse8 from '@/assets/images/landing/final-cta-ellipse-8.svg';
+
 import { Button } from '@/components/ui/Button';
 import { useInView } from '@/features/landing/hooks/useInView';
 
@@ -10,14 +13,16 @@ function FinalCTABackgroundShapes() {
       aria-hidden="true"
       className="pointer-events-none absolute left-1/2 top-0 z-0 h-full w-[max(1440px,100vw)] -translate-x-1/2 overflow-hidden"
     >
-      <div
-        className="absolute inset-0"
-        style={{
-          background: [
-            'radial-gradient(ellipse 72% 92% at 4% 18%, rgba(250, 250, 250, 0.09) 0%, rgba(250, 250, 250, 0.04) 48%, transparent 76%)',
-            'radial-gradient(ellipse 58% 86% at 91% 82%, rgba(250, 250, 250, 0.06) 0%, rgba(250, 250, 250, 0.025) 52%, transparent 78%)',
-          ].join(', '),
-        }}
+      <img
+        src={ellipse8}
+        alt=""
+        className="absolute left-[-7.5%] top-[-277px] h-[max(1281px,88.9583vw)] w-[71.5972%] rotate-180 object-contain opacity-[65%] blur-[60px]"
+      />
+
+      <img
+        src={ellipse7}
+        alt=""
+        className="absolute left-[43.6111%] top-[201px] h-[max(1260px,87.5vw)] w-[55.0694%] -rotate-180 object-contain"
       />
     </div>
   );
