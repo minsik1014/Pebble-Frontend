@@ -55,7 +55,7 @@ export function SettingsView() {
       <SettingsContent
         isSidebarOpen={isSidebarOpen}
       >
-        <div className="flex min-h-[284px] items-center justify-center rounded-token-m bg-fill-surface shadow-shadow-m">
+        <div className="flex min-h-[284px] items-center justify-center rounded-token-m bg-fill-surface shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)] dark:bg-[#141414]">
           <p className="text-body-02-m text-text-secondary">
             설정을 불러오는 중이에요.
           </p>
@@ -69,7 +69,7 @@ export function SettingsView() {
       <SettingsContent
         isSidebarOpen={isSidebarOpen}
       >
-        <div className="flex min-h-[284px] flex-col items-center justify-center gap-token-l rounded-token-m bg-fill-surface shadow-shadow-m">
+        <div className="flex min-h-[284px] flex-col items-center justify-center gap-token-l rounded-token-m bg-fill-surface shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)] dark:bg-[#141414]">
           <p
             role="alert"
             className="text-body-02-m text-fill-danger"

@@ -12,9 +12,9 @@ export function SettingsSection({
   return (
     <section
       className={[
-        'w-full rounded-token-m bg-fill-surface',
+        'w-full rounded-token-m bg-fill-surface dark:bg-[#141414]',
         'px-[58px] py-token-xxl',
-        'shadow-shadow-m',
+        'shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]',
         'transition-colors duration-200',
         className,
       ].join(' ')}

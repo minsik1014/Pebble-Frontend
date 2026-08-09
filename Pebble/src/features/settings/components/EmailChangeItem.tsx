@@ -23,7 +23,11 @@ export function EmailChangeItem({
           >
             {currentEmail}
           </span>
-          <Button aria-label="이메일 변경" onClick={onOpen}>
+          <Button
+            aria-label="이메일 변경"
+            className="text-text-teritary"
+            onClick={onOpen}
+          >
             변경
           </Button>
         </>

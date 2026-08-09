@@ -25,6 +25,7 @@ export function PasswordChangeItem({
         <Button
           type="button"
           disabled={disabled}
+          className="text-text-teritary"
           aria-label={
             disabled
               ? '소셜 로그인 계정은 비밀번호를 변경할 수 없어요'

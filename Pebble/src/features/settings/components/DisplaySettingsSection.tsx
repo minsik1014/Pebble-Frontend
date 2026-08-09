@@ -85,6 +85,7 @@ export function DisplaySettingsSection({
                 type="button"
                 variant="secondary"
                 disabled={isUpdating}
+                className="text-text-teritary"
                 aria-label="징검다리 색상 변경"
                 onClick={() => setIsBridgeColorModalOpen(true)}
               >

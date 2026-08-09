@@ -45,7 +45,7 @@
   --text-strong: 23 23 23;
   --text-primary: 64 64 64;
   --text-secondary: 115 115 115;
-  --text-teritary: 163 163 163;
+  --text-teritary: 143 143 143;
   --text-quaternary: 212 212 212;
   --text-on-fill: 255 255 255;
   --text-sunday: 254 166 143;
@@ -112,7 +112,7 @@
 
   --text-strong: 248 248 248;
   --text-primary: 227 227 227;
-  --text-secondary: 163 163 163;
+  --text-secondary: 173 173 173;
   --text-teritary: 143 143 143;
   --text-quaternary: 92 92 92;
   --text-on-fill: 0 0 0;
@@ -128,7 +128,7 @@
   --button-primary: 248 248 248;
   --button-secondary: 229 229 229;
   --button-teritory: 115 115 115;
-  --button-quaternary: 38 38 38;
+  --button-quaternary: 61 61 61;
   --button-pressed: 64 64 64;
 
   --shadow-color: 0 0 0;
