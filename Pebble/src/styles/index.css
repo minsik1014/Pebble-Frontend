@@ -90,14 +90,15 @@
   --color-6-light: #ffd7e9;
 }
 
-:root[data-theme='dark'] {
+:root[data-theme='dark'],
+[data-theme='dark'] {
   color-scheme: dark;
 
-  --fill-primary: 250 250 250;
+  --fill-primary: 248 248 248;
   --fill-secondary: 115 115 115;
   --fill-teritory: 64 64 64;
   --fill-surface: 23 23 23;
-  --fill-inverse: 38 38 38;
+  --fill-inverse: 36 36 36;
 
   --fill-danger: 252 76 70;
   --fill-danger-bg: 83 39 37;
@@ -109,22 +110,22 @@
   --fill-info: 130 160 255;
   --fill-shadow: 44 44 44;
 
-  --text-strong: 250 250 250;
-  --text-primary: 229 229 229;
+  --text-strong: 248 248 248;
+  --text-primary: 227 227 227;
   --text-secondary: 163 163 163;
-  --text-teritary: 115 115 115;
-  --text-quaternary: 82 82 82;
-  --text-on-fill: 23 23 23;
+  --text-teritary: 143 143 143;
+  --text-quaternary: 92 92 92;
+  --text-on-fill: 0 0 0;
   --text-sunday: 254 166 143;
   --text-saturday: 130 160 255;
 
   --border-primary: 250 250 250;
   --border-selected: 163 163 163;
   --border-default: 82 82 82;
-  --border-secondary: 82 82 82;
+  --border-secondary: 61 61 61;
   --border-teritory: 64 64 64;
 
-  --button-primary: 250 250 250;
+  --button-primary: 248 248 248;
   --button-secondary: 229 229 229;
   --button-teritory: 115 115 115;
   --button-quaternary: 38 38 38;
@@ -208,22 +209,22 @@
 
 @layer components {
   /*
-   * 인증 화면은 비로그인 상태에서 항상 라이트 테마로 표시합니다.
+   * 인증 화면은 상위 data-theme 값에 맞춰 라이트/다크 토큰으로 표시합니다.
    */
   .auth-title {
-    @apply text-[23px] font-medium leading-[130%] tracking-[-0.23px] text-[#404040];
+    @apply text-[23px] font-medium leading-[130%] tracking-[-0.23px] text-text-primary;
   }
 
   .auth-label {
-    @apply text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-[#737373];
+    @apply text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-text-teritary;
   }
 
   .auth-required {
-    @apply ml-[2px] text-[#FC4C46];
+    @apply ml-[2px] text-fill-danger;
   }
 
   .auth-input {
-    @apply h-[52px] w-full rounded-[12px] border border-[#D4D4D4] bg-white text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-[#171717] outline-none transition-colors placeholder:text-[15px] placeholder:font-normal placeholder:tracking-[-0.16px] placeholder:text-[#D4D4D4] focus:border-[#171717];
+    @apply h-[52px] w-full rounded-[12px] border border-border-secondary bg-fill-inverse text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-text-primary outline-none transition-colors placeholder:text-[15px] placeholder:font-normal placeholder:tracking-[-0.16px] placeholder:text-text-quaternary focus:border-border-primary;
     font-family: 'Pretendard', sans-serif;
   }
 

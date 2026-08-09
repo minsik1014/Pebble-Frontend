@@ -5,8 +5,9 @@ import { LoginContainer } from "../containers/LoginContainer";
 export const LoginPage = (): JSX.Element => {
   return (
     <main
-      className="relative min-h-screen w-full overflow-x-hidden bg-white [font-family:'Pretendard',sans-serif]"
+      className="relative min-h-screen w-full overflow-x-hidden bg-fill-inverse [font-family:'Pretendard',sans-serif]"
       data-id="login-screen"
+      data-theme="dark"
     >
       {/* 로그인 화면에서는 상단 브랜드 로고만 노출합니다. */}
       <Header />

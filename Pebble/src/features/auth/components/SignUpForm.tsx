@@ -58,7 +58,7 @@ export const SignUpForm = ({
             onChange={(e) => onChange("email", e.target.value)}
             onBlur={() => onFieldBlur("email")}
             placeholder="이메일을 입력해 주세요"
-            className={`auth-input px-[12px] ${errors.email ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
+            className={`auth-input px-[12px] ${errors.email ? "!border-fill-danger focus:!border-fill-danger" : ""}`}
           />
           {errors.email && (
             <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
@@ -77,12 +77,12 @@ export const SignUpForm = ({
               onChange={(e) => onChange("password", e.target.value)}
               onBlur={() => onFieldBlur("password")}
               placeholder="비밀번호를 입력해 주세요"
-              className={`auth-input pl-[12px] pr-[48px] ${errors.password ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
+              className={`auth-input pl-[12px] pr-[48px] ${errors.password ? "!border-fill-danger focus:!border-fill-danger" : ""}`}
             />
             <button
               type="button"
               onClick={onTogglePw}
-              className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] transition-colors flex items-center justify-center"
+              className="absolute right-[16px] top-1/2 -translate-y-1/2 text-text-teritary hover:text-text-primary transition-colors flex items-center justify-center"
             >
               <EyeIcon open={showPw} />
             </button>
@@ -90,7 +90,7 @@ export const SignUpForm = ({
           {errors.password ? (
             <AuthErrorMessage className="mt-[8px]">{errors.password}</AuthErrorMessage>
           ) : (
-            <div className="mt-[8px] text-[12px] text-[#999999] text-left">8자 이상, 영문·숫자 포함</div>
+            <div className="mt-[8px] text-[12px] text-text-teritary text-left">8자 이상, 영문·숫자 포함</div>
           )}
         </div>
 
@@ -106,12 +106,12 @@ export const SignUpForm = ({
               onChange={(e) => onChange("passwordConfirm", e.target.value)}
               onBlur={() => onFieldBlur("passwordConfirm")}
               placeholder="비밀번호를 한 번 더 입력해 주세요"
-              className={`auth-input pl-[12px] pr-[48px] ${errors.passwordConfirm ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
+              className={`auth-input pl-[12px] pr-[48px] ${errors.passwordConfirm ? "!border-fill-danger focus:!border-fill-danger" : ""}`}
             />
             <button
               type="button"
               onClick={onTogglePwConfirm}
-              className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] transition-colors flex items-center justify-center"
+              className="absolute right-[16px] top-1/2 -translate-y-1/2 text-text-teritary hover:text-text-primary transition-colors flex items-center justify-center"
             >
               <EyeIcon open={showPwConfirm} />
             </button>
@@ -123,7 +123,7 @@ export const SignUpForm = ({
 
         {/* 4. 약관 동의 체크박스 영역 */}
         <div className="flex items-center mb-[32px] text-left">
-          <label className="auth-body flex items-center cursor-pointer select-none text-[#737373]">
+          <label className="auth-body flex items-center cursor-pointer select-none text-text-teritary">
             <input
               type="checkbox"
               checked={form.agreeTerms}
@@ -131,16 +131,16 @@ export const SignUpForm = ({
               className="hidden"
             />
             <div className={`w-[20px] h-[20px] rounded-[4px] border flex items-center justify-center mr-[8px] transition-colors
-              ${form.agreeTerms ? "bg-[#111111] border-[#111111]" : "bg-white border-[#D1D5DB]"}`}>
+              ${form.agreeTerms ? "bg-btn-primary border-btn-primary" : "bg-fill-inverse border-border-secondary"}`}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" 
-                className={`w-[12px] h-[12px] ${form.agreeTerms ? "text-white" : "text-transparent"}`}>
+                className={`w-[12px] h-[12px] ${form.agreeTerms ? "text-text-onFill" : "text-transparent"}`}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
             </div>
             <span>
               [필수]{" "}
-              <a href="#terms" className="underline text-[#666666] ml-[4px]">서비스 이용약관</a> 및{" "}
-              <a href="#privacy" className="underline text-[#666666]">개인정보 처리방침</a> 동의
+              <a href="#terms" className="underline text-text-secondary ml-[4px]">서비스 이용약관</a> 및{" "}
+              <a href="#privacy" className="underline text-text-secondary">개인정보 처리방침</a> 동의
             </span>
           </label>
         </div>
@@ -149,8 +149,8 @@ export const SignUpForm = ({
         <button
           type="submit"
           disabled={!isFormValid}
-          className={`w-full h-[52px] text-white rounded-[12px] auth-body transition-colors mb-[24px]
-            ${isFormValid ? "bg-[#111111] hover:bg-[#222222] cursor-pointer" : "bg-[#737373] cursor-not-allowed"}`}
+          className={`w-full h-[52px] rounded-[12px] auth-body transition-colors mb-[24px]
+            ${isFormValid ? "bg-btn-primary text-text-onFill hover:brightness-95 cursor-pointer" : "bg-[#171717B2] text-text-teritary cursor-not-allowed"}`}
         >
           다음
         </button>
@@ -158,8 +158,8 @@ export const SignUpForm = ({
 
       {/* 💡 <a> 태그를 <Link> 컴포넌트로 깔끔하게 변경 완료 */}
       <div className="auth-body flex justify-center gap-[8px]">
-        <span className="text-[#A3A3A3]">이미 계정이 있으신가요?</span>
-        <Link to="/login" className="text-[#171717] hover:underline">
+        <span className="text-text-teritary">이미 계정이 있으신가요?</span>
+        <Link to="/login" className="text-text-strong hover:underline">
           로그인
         </Link>
       </div>
