@@ -29,7 +29,7 @@ function BridgeBackgroundLayer({
       src={src}
       alt=""
       className={[
-        'absolute object-fill',
+        'absolute object-contain',
         'will-change-[opacity,transform]',
         className,
       ].join(' ')}
@@ -63,21 +63,21 @@ function BridgeBackgroundImages({
         src={bridgePebble1}
         isVisible={isVisible}
         delay={1400}
-        className="left-[59.5139%] top-[-57px] h-[499px] w-[40.625%]"
+        className="left-[59.5139%] top-[-57px] h-[max(499px,34.6528vw)] w-[40.625%]"
       />
 
       <BridgeBackgroundLayer
         src={bridgePebble2}
         isVisible={isVisible}
         delay={2200}
-        className="left-[29.3056%] top-[361px] h-[534px] w-[22.5694%]"
+        className="left-[29.3056%] top-[361px] h-[max(534px,37.0833vw)] w-[22.5694%]"
       />
 
       <BridgeBackgroundLayer
         src={bridgePebble3}
         isVisible={isVisible}
         delay={3000}
-        className="left-[-4.3056%] top-[649px] h-[273px] w-[28.6806%]"
+        className="left-[-4.3056%] top-[649px] h-[max(273px,18.9583vw)] w-[28.6806%]"
       />
     </div>
   );
