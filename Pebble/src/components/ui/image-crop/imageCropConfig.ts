@@ -6,7 +6,8 @@ export const ACCEPTED_IMAGE_TYPE_LIST = [
 
 export const ACCEPTED_IMAGE_TYPES = ACCEPTED_IMAGE_TYPE_LIST.join(",");
 
-export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+export const MAX_IMAGE_SIZE_MB = 5;
+export const MAX_IMAGE_SIZE = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
 export const validateImageFile = (file: File) => {
   if (
@@ -18,7 +19,7 @@ export const validateImageFile = (file: File) => {
   }
 
   if (file.size > MAX_IMAGE_SIZE) {
-    return "이미지는 최대 5MB까지 업로드할 수 있습니다.";
+    return `이미지는 최대 ${MAX_IMAGE_SIZE_MB}MB까지 업로드할 수 있습니다.`;
   }
 
   return null;

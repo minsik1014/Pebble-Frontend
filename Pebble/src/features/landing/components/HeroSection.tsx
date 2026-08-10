@@ -13,7 +13,7 @@ export function HeroSection() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative h-[1474px] w-[1440px] overflow-hidden bg-transparent">
+    <div className="relative h-[1474px] w-[1440px] overflow-visible bg-transparent">
       <HeroBackgroundShapes />
 
       <div

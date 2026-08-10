@@ -1,10 +1,11 @@
 // @/features/auth/components/LoginForm.tsx
 import React from "react";
-import google from "@/assets/icons/logo-google.svg";
-import naver from "@/assets/icons/logo-naver.svg";
 import { Link } from "react-router-dom";
+import { AuthCard } from './AuthCard';
+import { AuthDivider } from './AuthDivider';
 import { AuthErrorMessage } from "./AuthErrorMessage";
 import { EyeIcon } from "./EyeIcon";
+import { SocialAuthButtons } from './SocialAuthButtons';
 
 interface LoginFormProps {
   email: string;
@@ -41,14 +42,7 @@ export const LoginForm = ({
   onSocialLogin,
 }: LoginFormProps) => {
   return (
-    <div
-      className="flex w-full max-w-[570px] flex-col gap-[40px] rounded-[20px] bg-transparent p-[24px] sm:p-[32px]"
-      data-id="login-form-section"
-    >
-      <h1 className="text-[24px] font-semibold leading-[130%] tracking-[-0.24px] text-text-primary">
-        로그인
-      </h1>
-
+    <AuthCard title="로그인" dataId="login-form-section">
       <div className="flex w-full flex-col gap-[40px]">
         <div className="flex w-full flex-col gap-[12px]">
           <form onSubmit={onSubmit} className="flex w-full flex-col gap-[20px]" noValidate>
@@ -132,41 +126,12 @@ export const LoginForm = ({
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-center gap-[16px]">
-          <div className="h-px flex-1 bg-border-secondary" />
-          <span className="text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-text-teritary">
-            또는
-          </span>
-          <div className="h-px flex-1 bg-border-secondary" />
-        </div>
+        <AuthDivider />
 
-        <div className="flex w-full flex-col gap-[12px]">
-          <button
-            type="button"
-            onClick={() => onSocialLogin("google")}
-            className="relative flex h-[44px] w-full items-center justify-center rounded-[12px] border border-border-secondary bg-fill-inverse px-[20px] transition-colors hover:bg-fill-surface"
-          >
-            <span className="absolute left-[20px] flex size-[44px] items-center justify-center">
-              <img src={google} alt="" className="size-[24px] object-contain" />
-            </span>
-            <span className="text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-text-strong">
-              Google로 계속하기
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onSocialLogin("naver")}
-            className="relative flex h-[44px] w-full items-center justify-center rounded-[12px] bg-[#03CF5D] px-[20px] transition-colors hover:bg-[#02B953]"
-          >
-            <span className="absolute left-[20px] flex size-[44px] items-center justify-center">
-              <img src={naver} alt="" className="size-[24px] object-contain" />
-            </span>
-            <span className="text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-text-onFill">
-              네이버로 계속하기
-            </span>
-          </button>
-        </div>
+        <SocialAuthButtons
+          actionLabel="계속하기"
+          onSocialAuth={onSocialLogin}
+        />
 
         <div className="flex justify-center gap-[8px] text-center text-[16px] font-medium leading-[150%] tracking-[-0.16px]">
           <span className="text-text-teritary">Pebble이 처음이신가요?</span>
@@ -175,6 +140,6 @@ export const LoginForm = ({
           </Link>
         </div>
       </div>
-    </div>
+    </AuthCard>
   );
 };
