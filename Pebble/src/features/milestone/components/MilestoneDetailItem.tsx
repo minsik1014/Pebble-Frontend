@@ -40,10 +40,10 @@ export const MilestoneDetailItem = ({
       {dateLabels.map((dateLabel) => (
         <div
           key={`${item.id}-${dateLabel}`}
-          className="w-full bg-fill-inverse rounded-[20px] shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] flex flex-col overflow-hidden"
+          className="w-full bg-fill-inverse dark:bg-[#222222] rounded-[20px] shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.025)] flex flex-col overflow-hidden"
         >
           <div
-            className="w-full pl-5 pr-3 py-3 flex justify-between items-center bg-fill-inverse transition-colors"
+            className="w-full pl-5 pr-3 py-3 flex justify-between items-center bg-fill-inverse dark:bg-[#222222] transition-colors"
           >
             <button
               type="button"
