@@ -1,6 +1,6 @@
 import type { MouseEvent } from 'react';
 
-import CalendarIcon from '@/assets/icons/calendar-nav-default.svg?react';
+import CalendarIcon from '@/assets/icons/calendar-outline.svg?react';
 import ReportIcon from '@/assets/icons/memo-outline.svg?react';
 
 import type {

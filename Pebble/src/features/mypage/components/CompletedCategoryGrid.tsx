@@ -32,17 +32,28 @@ export const CompletedCategoryGrid = ({
         </h2>
       </div>
 
-      <div className="grid grid-cols-3 gap-5">
-        {categories.map((category) => (
-          <CompletedCategoryCard
-            key={category.id}
-            title={category.title}
-            imageUrl={category.imageUrl ?? null}
-            color={category.accent}
-            onClick={() => onSelectCategory(category.id)}
-          />
-        ))}
-      </div>
+      {categories.length === 0 ? (
+        <div className="flex h-[420px] flex-col items-center justify-center text-center">
+          <p className="text-title-03-sb text-text-secondary">
+            완료한 카테고리가 없어요
+          </p>
+          <p className="mt-5 text-body-01-m text-text-teritary">
+            카테고리를 완료하면 이곳에서 확인할 수 있어요
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-5">
+          {categories.map((category) => (
+            <CompletedCategoryCard
+              key={category.id}
+              title={category.title}
+              imageUrl={category.imageUrl ?? null}
+              color={category.accent}
+              onClick={() => onSelectCategory(category.id)}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 };
