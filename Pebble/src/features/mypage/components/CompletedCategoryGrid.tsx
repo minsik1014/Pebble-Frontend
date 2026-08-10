@@ -20,7 +20,7 @@ export const CompletedCategoryGrid = ({
       aria-labelledby="my-category-heading"
     >
       <div
-        className={`sticky z-30 bg-fill-inverse pb-3 ${
+        className={`sticky z-30 -mx-1 bg-fill-inverse px-1 pb-3 before:absolute before:-inset-x-1 before:-top-1 before:h-1 before:bg-fill-inverse before:content-[''] ${
           isCompact ? "top-[220px] pt-8" : "top-0 pt-0"
         }`}
       >

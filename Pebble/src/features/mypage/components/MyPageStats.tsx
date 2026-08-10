@@ -18,7 +18,7 @@ export const MyPageStats = ({
       <div className="flex h-[120px] items-center justify-center rounded-[40px] bg-fill-surface shadow-shadow-m">
         <div className="flex w-1/2 flex-col items-center gap-1">
           <span className="text-body-01-m text-text-secondary">
-            수 놓은 조약돌
+            수놓은 조약돌
           </span>
           <strong className="text-title-01-sb text-text-strong">82</strong>
         </div>
