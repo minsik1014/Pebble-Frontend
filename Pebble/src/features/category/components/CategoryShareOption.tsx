@@ -22,7 +22,6 @@ export const CategoryShareOption = ({
       checked={isShared}
       aria-label="친구와 함께하기"
       disabled={disabled}
-      uncheckedClassName="bg-border-default dark:bg-btn-teritary"
       onToggle={onToggleShared}
     />
   </div>
