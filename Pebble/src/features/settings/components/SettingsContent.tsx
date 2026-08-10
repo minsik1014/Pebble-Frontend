@@ -15,7 +15,7 @@ export function SettingsContent({
         isSidebarOpen ? "w-[924px]" : "w-[1316px]"
       }`}
     >
-      <div className="-ml-[28px] flex h-full w-[calc(100%+56px)] flex-col gap-token-m overflow-y-auto px-[28px] custom-scrollbar">
+      <div className="-m-[28px] flex h-[calc(100%+56px)] w-[calc(100%+56px)] flex-col gap-token-m overflow-y-auto p-[28px] custom-scrollbar">
         {children}
       </div>
     </main>

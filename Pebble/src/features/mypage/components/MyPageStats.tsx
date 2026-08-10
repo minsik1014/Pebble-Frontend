@@ -15,7 +15,7 @@ export const MyPageStats = ({
           : "mt-11 max-h-[120px] translate-y-0 opacity-100"
       }`}
     >
-      <div className="flex h-[120px] items-center justify-center rounded-[40px] bg-fill-surface shadow-shadow-m">
+      <div className="flex h-[120px] items-center justify-center rounded-[40px] bg-fill-surface shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.06)]">
         <div className="flex w-1/2 flex-col items-center gap-1">
           <span className="text-body-01-m text-text-secondary">
             수 놓은 조약돌

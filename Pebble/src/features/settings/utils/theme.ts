@@ -1,9 +1,28 @@
 import type { SettingsTheme } from '../types/settings';
 
 const THEME_STORAGE_KEY = 'pebble_theme';
+const THEME_TRANSITION_BLOCK_CLASS = 'theme-transition-blocked';
+
+let themeTransitionBlockId = 0;
 
 interface ApplyThemeOptions {
   persist?: boolean;
+}
+
+function blockThemeTransition(root: HTMLElement) {
+  if (typeof window === 'undefined') return;
+
+  const blockId = ++themeTransitionBlockId;
+
+  root.classList.add(THEME_TRANSITION_BLOCK_CLASS);
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      if (blockId === themeTransitionBlockId) {
+        root.classList.remove(THEME_TRANSITION_BLOCK_CLASS);
+      }
+    });
+  });
 }
 
 export function applyTheme(
@@ -14,14 +33,16 @@ export function applyTheme(
 
   const { persist = true } = options;
   const normalizedTheme = theme.toLowerCase();
+  const root = document.documentElement;
 
-  document.documentElement.dataset.theme = normalizedTheme;
-  document.documentElement.classList.toggle(
+  blockThemeTransition(root);
+
+  root.dataset.theme = normalizedTheme;
+  root.classList.toggle(
     'dark',
     theme === 'DARK',
   );
-  document.documentElement.style.colorScheme =
-    normalizedTheme;
+  root.style.colorScheme = normalizedTheme;
 
   if (persist && typeof window !== 'undefined') {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);

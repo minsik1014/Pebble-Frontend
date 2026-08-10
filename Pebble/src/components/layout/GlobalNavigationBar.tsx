@@ -139,7 +139,7 @@ export const GlobalNavigationBar = ({
       'cursor-pointer transition-colors',
       active
         ? 'bg-fill-primary text-text-onFill shadow-sm'
-        : 'text-text-secondary hover:bg-fill-surface hover:text-text-strong',
+        : 'text-text-secondary hover:bg-fill-surface hover:text-text-strong dark:text-btn-primary dark:hover:text-btn-primary',
     ].join(' ');
 
   const isCalendarActive = pathname.startsWith('/calendar');
@@ -163,7 +163,7 @@ export const GlobalNavigationBar = ({
             <button
               type="button"
               onClick={onToggleSidebar}
-              className="size-11 relative flex items-center justify-center rounded-token-s cursor-pointer text-text-secondary transition-colors hover:bg-fill-surface hover:text-text-strong"
+              className="size-11 relative flex items-center justify-center rounded-token-s cursor-pointer text-text-secondary transition-colors hover:bg-fill-surface hover:text-text-strong dark:text-btn-primary dark:hover:text-btn-primary"
               aria-label={isSidebarOpen ? '사이드바 닫기' : '사이드바 열기'}
             >
               {isSidebarOpen ? (
@@ -182,7 +182,7 @@ export const GlobalNavigationBar = ({
               className={`size-11 relative flex items-center justify-center rounded-token-s cursor-pointer transition-colors duration-[450ms] ease-in-out ${
                 isAlarmOpen
                   ? 'bg-btn-primary text-text-onFill'
-                  : 'text-text-secondary hover:bg-fill-surface hover:text-text-strong'
+                  : 'text-text-secondary hover:bg-fill-surface hover:text-text-strong dark:text-btn-primary dark:hover:text-btn-primary'
               }`}
               aria-label="알림 목록 열기"
               aria-expanded={isAlarmOpen}

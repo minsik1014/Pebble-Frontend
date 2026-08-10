@@ -81,6 +81,7 @@ export function SummaryStep() {
   const { report } = useReport();
   const { goFirst } = useReportNavigation();
   const previewScale = useSummaryPreviewScale();
+  const [isCaptureMode, setIsCaptureMode] = useState(false);
 
   const fileName = `pebble-report-${report.reportYear}-${pad2(report.reportMonth)}.png`;
   const persistReportImage = useCallback(
@@ -92,10 +93,42 @@ export function SummaryStep() {
     },
     [report.reportId],
   );
-  const { targetRef, save, status, errorMessage } = useSaveAsImage(fileName, {
+  const getSaveBackgroundColor = useCallback(
+    () =>
+      document.documentElement.classList.contains('dark')
+        ? '#171717'
+        : '#FFFFFF',
+    [],
+  );
+  const {
+    targetRef,
+    save: saveImage,
+    status,
+    errorMessage,
+  } = useSaveAsImage(fileName, {
     onImageCreated: persistReportImage,
+    getBackgroundColor: getSaveBackgroundColor,
   });
-  const isSaving = status === 'saving';
+  const isSaving = isCaptureMode || status === 'saving';
+
+  const save = useCallback(async () => {
+    if (isSaving) return;
+
+    setIsCaptureMode(true);
+
+    // 캡처 전용 배경과 조약돌이 DOM에 반영된 다음 PNG를 생성합니다.
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => resolve());
+      });
+    });
+
+    try {
+      await saveImage();
+    } finally {
+      setIsCaptureMode(false);
+    }
+  }, [isSaving, saveImage]);
 
   return (
     <div className="absolute inset-0 flex flex-col items-center pt-[clamp(64px,12.4vh,127px)]">
@@ -103,38 +136,52 @@ export function SummaryStep() {
         {/* 이 노드는 화면 표시 배율과 무관한 원본 크기로 PNG에 저장됩니다. */}
         <div
           ref={targetRef}
-          className="relative isolate flex h-[1620px] w-[1120px] flex-col gap-[36px] overflow-hidden rounded-[20px] bg-white p-[40px]"
+          className={`relative isolate flex h-[1620px] w-[1120px] flex-col gap-[36px] overflow-hidden rounded-[20px] bg-white p-[40px] dark:shadow-[0_0_28px_0_rgba(255,255,255,0.08)] ${
+            isCaptureMode ? 'dark:bg-fill-surface' : 'dark:bg-fill-inverse'
+          }`}
+          style={
+            isCaptureMode
+              ? { backgroundColor: getSaveBackgroundColor() }
+              : undefined
+          }
         >
-          {/* Figma 저장 이미지에 포함된 공통 조약돌 배경 */}
+          {/* 화면 미리보기에서는 숨기고, 저장 이미지에만 포함하는 조약돌 배경 */}
           <img
             src={reportBgTop}
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute left-[-225px] top-[-96px] z-0 h-[664px] w-[1164px] object-fill"
+            className={`pointer-events-none absolute left-[-225px] top-[-96px] z-0 h-[664px] w-[1164px] object-fill dark:brightness-[0.094] ${
+              isCaptureMode ? 'visible' : 'invisible'
+            }`}
           />
           <img
             src={reportBgBottom}
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute left-[55px] top-[968px] z-0 h-[824px] w-[1428px] object-fill"
+            className={`pointer-events-none absolute left-[55px] top-[968px] z-0 h-[824px] w-[1428px] object-fill dark:brightness-[0.132] ${
+              isCaptureMode ? 'visible' : 'invisible'
+            }`}
           />
 
           {/* R003 — 이번 달 조약돌 */}
           <MiniReport
             width={1040}
             height={482}
-            className="relative z-10 bg-[rgba(250,250,250,0.4)] px-[64px]"
+            className="relative z-10 bg-[rgba(250,250,250,0.4)] px-[64px] dark:bg-[rgba(23,23,23,0.7)] dark:shadow-[0_30px_100px_rgba(0,0,0,0.25),inset_0_5px_8px_rgba(255,255,255,0.6),inset_0_-3px_4px_#242424]"
           >
-            <MonthlyPebbleSection report={report} />
+            <MonthlyPebbleSection report={report} darkTheme />
           </MiniReport>
 
           {/* R004 — 가장 바빴던 카테고리 */}
           <MiniReport
             width={1040}
             height={482}
-            className="relative z-10 bg-[rgba(250,250,250,0.4)] px-[64px]"
+            className="relative z-10 bg-[rgba(250,250,250,0.4)] px-[64px] dark:bg-[rgba(23,23,23,0.7)] dark:shadow-[0_30px_100px_rgba(0,0,0,0.25),inset_0_5px_8px_rgba(255,255,255,0.6),inset_0_-3px_4px_#242424]"
           >
-            <BusiestCategorySection category={report.busiestCategory} />
+            <BusiestCategorySection
+              category={report.busiestCategory}
+              darkTheme
+            />
           </MiniReport>
 
           {/* R005 + R006 — 가장 바빴던 하루와 함께한 친구 */}
@@ -142,19 +189,20 @@ export function SummaryStep() {
             <MiniReport
               width={600}
               height={504}
-              className="bg-[rgba(250,250,250,0.25)] p-[40px]"
+              className="bg-[rgba(250,250,250,0.25)] p-[40px] dark:bg-[rgba(23,23,23,0.4)] dark:shadow-[0_30px_100px_rgba(0,0,0,0.25),inset_0_5px_8px_rgba(255,255,255,0.6),inset_0_-3px_4px_#242424]"
             >
-              <BusiestDaySection day={report.busiestDay} />
+              <BusiestDaySection day={report.busiestDay} darkTheme />
             </MiniReport>
 
             <MiniReport
               width={404}
               height={504}
-              className="bg-[rgba(250,250,250,0.25)] p-[40px]"
+              className="bg-[rgba(250,250,250,0.25)] p-[40px] dark:bg-[rgba(23,23,23,0.4)] dark:shadow-[0_30px_100px_rgba(0,0,0,0.25),inset_0_5px_8px_rgba(255,255,255,0.6),inset_0_-3px_4px_#242424]"
             >
               <SharedFriendsSection
                 sharedFriends={report.sharedFriends}
                 month={report.reportMonth}
+                darkTheme
               />
             </MiniReport>
           </div>
@@ -175,9 +223,11 @@ export function SummaryStep() {
         secondary={{ label: '처음부터 다시 보기', onClick: goFirst }}
         primary={{
           label: isSaving ? '저장 중…' : '이미지로 저장하기',
-          onClick: save,
+          onClick: () => void save(),
           disabled: isSaving,
         }}
+        secondaryClassName="dark:border-border-secondary dark:bg-fill-inverse dark:text-text-strong dark:hover:bg-btn-quaternary dark:focus-visible:outline-text-strong"
+        primaryClassName="dark:bg-btn-primary dark:text-text-onFill dark:hover:opacity-90 dark:focus-visible:outline-text-strong"
       />
     </div>
   );

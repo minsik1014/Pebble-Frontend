@@ -44,16 +44,22 @@ export const ToggleSwitch = ({
         "relative h-[30px] w-[52px] shrink-0 overflow-hidden rounded-token-infinite",
         "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary",
         disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
-        checked ? checkedClassName : uncheckedClassName,
+        checked
+          ? checkedClassName
+          : `${uncheckedClassName} dark:bg-[#5C5C5C]`,
         className,
       ].join(" ")}
       {...props}
     >
       <span
         aria-hidden="true"
-        className={`absolute left-[3px] top-[3px] h-6 w-6 rounded-token-infinite bg-fill-inverse transition-transform ${
-          checked ? "translate-x-[22px]" : "translate-x-0"
-        }`}
+        className={[
+          "absolute left-[3px] top-[3px] h-6 w-6 rounded-token-infinite",
+          "transition-[background-color,transform]",
+          checked
+            ? "translate-x-[22px] bg-fill-inverse dark:bg-fill-surface"
+            : "translate-x-0 bg-fill-inverse dark:bg-fill-inverse",
+        ].join(" ")}
       />
     </button>
     {checkedLabel && uncheckedLabel && (

@@ -106,7 +106,7 @@ export const AlarmPopover = ({
   return createPortal(
     <div
       data-alarm-popover
-      className="relative z-[9999] flex h-[600px] w-[400px] flex-col rounded-[24px] bg-fill-inverse px-3 py-4 shadow-shadow-m animate-[popover-in_450ms_ease-in-out]"
+      className="relative z-[9999] flex h-[600px] w-[400px] flex-col rounded-[24px] bg-fill-inverse px-3 py-4 shadow-shadow-m animate-[popover-in_450ms_ease-in-out] dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.06)]"
       style={{
         position: 'fixed',
         top,

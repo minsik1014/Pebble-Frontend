@@ -91,16 +91,19 @@ export const ModalActionBar = ({
             className={[
               'relative flex h-11 w-11 shrink-0 items-center justify-center',
               'overflow-hidden rounded-token-s bg-fill-danger',
-              'transition-colors',
+              'transition-colors dark:bg-fill-danger',
               'before:pointer-events-none before:absolute before:inset-0',
               'before:transition-colors',
-              'hover:before:bg-[rgba(250,250,250,0.25)]',
-              'active:before:bg-[rgba(250,250,250,0.4)]',
+              'hover:before:bg-[rgba(23,23,23,0.15)]',
+              'active:before:bg-[rgba(23,23,23,0.3)]',
+              'dark:before:bg-[rgba(23,23,23,0.7)]',
+              'dark:hover:before:bg-[rgba(23,23,23,0.7)]',
+              'dark:active:before:bg-[rgba(23,23,23,0.7)]',
               'disabled:cursor-not-allowed disabled:opacity-50',
               'disabled:hover:before:bg-transparent',
             ].join(' ')}
           >
-            <DeleteIcon className="relative z-10 h-6 w-6 text-fill-inverse" />
+            <DeleteIcon className="relative z-10 h-6 w-6 text-fill-inverse dark:text-[#242424]" />
           </button>
         ) : null}
 
@@ -121,9 +124,9 @@ export const ModalActionBar = ({
           aria-disabled={disabled || isBusy}
           onClick={handleSubmitClick}
           className={[
-            'h-11 flex-1',
+            'h-11 flex-1 dark:disabled:opacity-100',
             isSubmitBlockedWithReason
-              ? 'cursor-not-allowed opacity-50 hover:before:bg-transparent'
+              ? 'cursor-not-allowed opacity-50 hover:before:bg-transparent dark:opacity-100 dark:text-text-teritary'
               : '',
           ].join(' ')}
         >

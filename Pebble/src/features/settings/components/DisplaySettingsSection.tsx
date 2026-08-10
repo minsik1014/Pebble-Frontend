@@ -20,7 +20,8 @@ interface DisplaySettingsSectionProps {
   isActivityLoading: boolean;
   isActivityError: boolean;
   activityErrorMessage?: string;
-  isUpdating: boolean;
+  isThemeUpdating: boolean;
+  isBridgeColorUpdating: boolean;
   onThemeChange: (theme: SettingsTheme) => Promise<void>;
   onBridgePaletteChange: (paletteId: string) => Promise<void>;
   onActivityRetry: () => void;
@@ -33,12 +34,14 @@ export function DisplaySettingsSection({
   isActivityLoading,
   isActivityError,
   activityErrorMessage,
-  isUpdating,
+  isThemeUpdating,
+  isBridgeColorUpdating,
   onThemeChange,
   onBridgePaletteChange,
   onActivityRetry,
 }: DisplaySettingsSectionProps) {
-  const [isBridgeColorModalOpen, setIsBridgeColorModalOpen] = useState(false);
+  const [isBridgeColorModalOpen, setIsBridgeColorModalOpen] =
+    useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const themeMode: ThemeMode = theme === 'DARK' ? 'dark' : 'light';
@@ -64,12 +67,12 @@ export function DisplaySettingsSection({
 
         <div className="mt-token-l flex flex-col gap-token-l">
           <SettingsRow
-            title="앱 테마"
+            title="테마"
             description="라이트 또는 다크 모드를 선택해요"
             actions={
               <ThemeSegmentControl
                 value={themeMode}
-                disabled={isUpdating}
+                disabled={isThemeUpdating}
                 onChange={(value) => void handleThemeChange(value)}
               />
             }
@@ -84,7 +87,8 @@ export function DisplaySettingsSection({
               <Button
                 type="button"
                 variant="secondary"
-                disabled={isUpdating}
+                disabled={isBridgeColorUpdating}
+                className="text-text-teritary"
                 aria-label="징검다리 색상 변경"
                 onClick={() => setIsBridgeColorModalOpen(true)}
               >

@@ -21,7 +21,7 @@ export const CategoryMemberList = ({
   }
 
   return (
-    <div className="flex max-h-40 w-full flex-col items-start overflow-y-auto overflow-x-hidden rounded-token-s border border-border-secondary bg-fill-surface px-token-m py-token-s">
+    <div className="flex max-h-40 w-full flex-col items-start overflow-y-auto overflow-x-hidden rounded-token-s border border-border-secondary bg-fill-surface px-token-m py-token-s dark:bg-[#17171766]">
       {members.map((member) => {
         const canRemoveMember = member.role !== "OWNER";
         const isCurrentUser = currentUserId === member.id;

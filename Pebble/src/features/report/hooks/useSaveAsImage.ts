@@ -18,6 +18,8 @@ interface UseSaveAsImageResult {
 interface UseSaveAsImageOptions {
   /** PNG 생성 후 서버 업로드 등 추가 저장 작업을 실행합니다. */
   onImageCreated?: (file: File) => Promise<void>;
+  /** 캡처 시 사용할 불투명 배경색. 지정하지 않으면 기존 라이트 배경을 사용합니다. */
+  getBackgroundColor?: () => string;
 }
 
 /** dataURL -> File. Web Share API 는 File 객체를 요구합니다 */
@@ -64,7 +66,7 @@ export function useSaveAsImage(
   fileName: string,
   options: UseSaveAsImageOptions = {},
 ): UseSaveAsImageResult {
-  const { onImageCreated } = options;
+  const { onImageCreated, getBackgroundColor } = options;
   const targetRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<SaveImageStatus>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -83,7 +85,7 @@ export function useSaveAsImage(
       const dataUrl = await toPng(node, {
         // 2배로 구워야 고해상도 화면에서 흐릿하지 않습니다
         pixelRatio: 2,
-        backgroundColor: SAVE_IMAGE_BACKGROUND,
+        backgroundColor: getBackgroundColor?.() ?? SAVE_IMAGE_BACKGROUND,
         // 캐시된 이미지가 CORS 없이 잡히는 문제를 피합니다
         cacheBust: true,
         // Pretendard 외부 CSS를 다시 내려받으려 하면 CDN/CORS 환경에 따라
@@ -120,7 +122,7 @@ export function useSaveAsImage(
       setStatus('error');
       setErrorMessage('이미지를 저장하지 못했어요. 잠시 후 다시 시도해주세요.');
     }
-  }, [fileName, onImageCreated]);
+  }, [fileName, getBackgroundColor, onImageCreated]);
 
   return { targetRef, save, status, errorMessage };
 }

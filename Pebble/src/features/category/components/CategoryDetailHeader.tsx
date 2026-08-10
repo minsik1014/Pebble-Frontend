@@ -26,7 +26,7 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
   return (
     <div className="absolute left-[72px] top-[112px] flex items-center gap-10">
       {/* 썸네일 */}
-      <div className="w-44 h-[240px] rounded-token-s border border-border-default overflow-hidden relative bg-fill-surface">
+      <div className="w-44 h-[240px] rounded-token-s border border-border-default overflow-hidden relative bg-fill-surface dark:border-border-secondary">
         {category.imageUrl ? (
           <img
             className="w-full h-full object-cover"
@@ -57,7 +57,7 @@ export const CategoryDetailHeader = ({ category, onEdit }: CategoryDetailHeaderP
             </div>
             <button 
               onClick={onEdit}
-              className="px-5 py-3 rounded-token-s border border-border-default text-body-02-m text-text-secondary hover:bg-fill-surface transition-colors"
+              className="px-5 py-3 rounded-token-s border border-border-default text-body-02-m text-text-secondary hover:bg-fill-surface transition-colors dark:border-border-secondary"
             >
               카테고리 편집
             </button>

@@ -28,6 +28,8 @@ interface RecentMonthsChartProps {
   months: RecentMonthPebble[];
   /** R007 축소 표시용. 애니메이션을 끄고 높이를 줄입니다 */
   compact?: boolean;
+  /** R003 첫 화면에서만 다크 차트 색상을 활성화합니다. */
+  darkTheme?: boolean;
 }
 
 /**
@@ -41,7 +43,12 @@ interface RecentMonthsChartProps {
 export function RecentMonthsChart({
   months,
   compact = false,
+  darkTheme = false,
 }: RecentMonthsChartProps) {
+  const isDarkMode =
+    darkTheme &&
+    typeof document !== 'undefined' &&
+    document.documentElement.dataset.theme === 'dark';
   const values = useMemo(() => months.map((month) => month.count), [months]);
   const labels = useMemo(
     () => months.map((month) => `${month.month}월`),
@@ -54,8 +61,25 @@ export function RecentMonthsChart({
       datasets: [
         {
           data: values,
-          borderColor: REPORT_COLORS.chartLine,
-          borderWidth: compact ? 1.5 : 2,
+          borderColor: (context: ScriptableContext<'line'>) => {
+            if (!isDarkMode) return REPORT_COLORS.chartLine;
+
+            const { ctx: canvas, chartArea } = context.chart;
+            if (!chartArea) return '#3D3D3D';
+
+            const gradient = canvas.createLinearGradient(
+              chartArea.left,
+              0,
+              chartArea.right,
+              0,
+            );
+            gradient.addColorStop(0, '#3D3D3D');
+            gradient.addColorStop(0.5, '#3D3D3D');
+            gradient.addColorStop(0.9, '#C9C9C9');
+            gradient.addColorStop(1, '#C9C9C9');
+            return gradient;
+          },
+          borderWidth: compact ? 1.5 : isDarkMode ? 3 : 2,
           tension: 0.35,
           fill: true,
           backgroundColor: (ctx: ScriptableContext<'line'>) => {
@@ -67,13 +91,27 @@ export function RecentMonthsChart({
               0,
               chartArea.bottom,
             );
-            gradient.addColorStop(0, REPORT_COLORS.chartFillTop);
-            gradient.addColorStop(1, REPORT_COLORS.chartFillBottom);
+            gradient.addColorStop(
+              0,
+              isDarkMode
+                ? 'rgba(61, 61, 61, 0.28)'
+                : REPORT_COLORS.chartFillTop,
+            );
+            gradient.addColorStop(
+              1,
+              isDarkMode
+                ? 'rgba(61, 61, 61, 0)'
+                : REPORT_COLORS.chartFillBottom,
+            );
             return gradient;
           },
-          pointBackgroundColor: values.map((_, index) =>
-            index === values.length - 1 ? '#737373' : '#E5E5E5',
-          ),
+          pointBackgroundColor: values.map((_, index) => {
+            if (isDarkMode) {
+              return index === values.length - 1 ? '#C9C9C9' : '#3D3D3D';
+            }
+
+            return index === values.length - 1 ? '#737373' : '#E5E5E5';
+          }),
           pointBorderWidth: 0,
           // 마지막 점(이번 달)만 크게 강조
           pointRadius: values.map((_, i) =>
@@ -85,7 +123,7 @@ export function RecentMonthsChart({
         },
       ],
     }),
-    [labels, values, compact],
+    [labels, values, compact, isDarkMode],
   );
 
   const options: ChartOptions<'line'> = useMemo(() => {
@@ -116,10 +154,21 @@ export function RecentMonthsChart({
     <div className="flex flex-1 flex-col">
       {/* 월 라벨 — 서버 값(recentMonths[].month) */}
       <div
-        className={`flex justify-between font-medium leading-[150%] tracking-[-0.14px] text-[#A3A3A3] ${compact ? 'text-[6px]' : 'text-[14px]'}`}
+        className={`flex justify-between font-medium leading-[150%] tracking-[-0.14px] text-[#A3A3A3] ${compact ? 'text-[6px]' : 'text-[14px]'} ${
+          darkTheme ? 'dark:text-text-teritary' : ''
+        }`}
       >
-        {labels.map((label) => (
-          <span key={label}>{label}</span>
+        {labels.map((label, index) => (
+          <span
+            key={label}
+            className={
+              darkTheme && index === labels.length - 1
+                ? 'dark:text-text-secondary'
+                : ''
+            }
+          >
+            {label}
+          </span>
         ))}
       </div>
 
@@ -130,10 +179,21 @@ export function RecentMonthsChart({
 
       {/* 수치 — 서버 값(recentMonths[].count) */}
       <div
-        className={`flex justify-between font-semibold leading-[150%] tracking-[-0.16px] text-[#A3A3A3] ${compact ? 'text-[6px]' : 'text-[16px]'}`}
+        className={`flex justify-between font-semibold leading-[150%] tracking-[-0.16px] text-[#A3A3A3] ${compact ? 'text-[6px]' : 'text-[16px]'} ${
+          darkTheme ? 'dark:text-text-teritary' : ''
+        }`}
       >
-        {months.map((m) => (
-          <span key={`${m.year}-${m.month}`}>{m.count}</span>
+        {months.map((m, index) => (
+          <span
+            key={`${m.year}-${m.month}`}
+            className={
+              darkTheme && index === months.length - 1
+                ? 'dark:text-text-secondary'
+                : ''
+            }
+          >
+            {m.count}
+          </span>
         ))}
       </div>
 

@@ -14,7 +14,7 @@ export const CategoryStatusOptions = ({
   onTogglePublic,
   onToggleCompleted,
 }: CategoryStatusOptionsProps): JSX.Element => (
-  <div className="flex w-full items-start rounded-token-s bg-fill-surface px-token-l py-token-m">
+  <div className="flex w-full items-start rounded-token-s bg-fill-surface px-token-l py-token-m dark:bg-[#17171766]">
     <div className="flex min-w-0 flex-1 flex-col gap-2">
       <div className="flex items-center gap-1">
         <span className="text-body-01-sb text-text-primary">공개 설정</span>

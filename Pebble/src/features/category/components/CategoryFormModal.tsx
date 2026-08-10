@@ -778,8 +778,8 @@ export const CategoryFormModal = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(44,44,44,0.3)] backdrop-blur-[4px]">
-      <div className="flex w-[607px] flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]">
+      <div className="flex w-[607px] flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]">
         <header className="flex w-full items-center justify-between">
           <h2 className="w-full text-title-02-sb text-text-strong">
             {mode === 'create'
@@ -830,6 +830,7 @@ export const CategoryFormModal = ({
                     'text-body-02-m text-text-primary',
                     'placeholder:text-text-quaternary',
                     'focus:border-text-strong focus:outline-none',
+                    'dark:border-border-secondary dark:focus:border-border-primary',
                     'disabled:cursor-not-allowed',
                   ].join(' ')}
                 />

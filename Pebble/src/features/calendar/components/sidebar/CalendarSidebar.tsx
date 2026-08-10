@@ -220,13 +220,13 @@ export const CalendarSidebar = ({
 
   return (
     <aside 
-      className={`flex shrink-0 h-[1000px] relative items-stretch overflow-hidden transition-all duration-300 ${
+      className={`flex shrink-0 h-[1000px] relative items-stretch overflow-visible transition-all duration-300 ${
         isSidebarOpen ? "w-[392px]" : "w-0"
       }`}
     >
       {/* 메인 마일스톤 관리 영역 */}
       <section 
-        className={`relative h-[1000px] bg-fill-inverse rounded-[0px_32px_32px_0px] flex flex-col transition-all duration-300 overflow-hidden ${
+        className={`relative h-[1000px] bg-fill-inverse rounded-[0px_32px_32px_0px] flex flex-col transition-all duration-300 overflow-hidden shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)] dark:border-r dark:border-border-teritory ${
           isSidebarOpen ? "w-[392px] opacity-100" : "w-0 opacity-0"
         }`}
       >

@@ -29,7 +29,12 @@ export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
             className="h-[44px] w-[44px] shrink-0 object-contain"
           />
 
-          <span className="h-[23px] w-[74px] shrink-0 text-[20px] font-bold leading-none tracking-normal text-[#171717] [font-family:'LaundryGothic',sans-serif]">
+          <span
+            className={[
+              "h-[23px] w-[74px] shrink-0 text-[20px] font-bold leading-none tracking-normal [font-family:'LaundryGothic',sans-serif]",
+              variant === 'auth' ? 'text-text-strong' : 'text-[#171717]',
+            ].join(' ')}
+          >
             Pebble
           </span>
         </Link>

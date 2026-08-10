@@ -17,12 +17,12 @@ export const SocialAuthButtons = ({
       <button
         type="button"
         onClick={() => onSocialAuth('google')}
-        className="relative flex h-[44px] w-full items-center justify-center rounded-[12px] border border-[#D4D4D4] px-[20px] transition-colors hover:bg-[#FAFAFA]"
+        className="relative flex h-[44px] w-full items-center justify-center rounded-[12px] border border-border-secondary bg-fill-inverse px-[20px] transition-colors hover:bg-fill-surface"
       >
         <span className="absolute left-[20px] flex size-[44px] items-center justify-center">
           <img src={google} alt="" className="size-[24px] object-contain" />
         </span>
-        <span className="text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-[#171717]">
+        <span className="text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-text-strong">
           Google로 {actionLabel}
         </span>
       </button>
@@ -35,7 +35,7 @@ export const SocialAuthButtons = ({
         <span className="absolute left-[20px] flex size-[44px] items-center justify-center">
           <img src={naver} alt="" className="size-[24px] object-contain" />
         </span>
-        <span className="text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-white">
+        <span className="text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-text-onFill">
           네이버로 {actionLabel}
         </span>
       </button>

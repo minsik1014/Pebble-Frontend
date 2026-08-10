@@ -7,14 +7,25 @@ interface SharedFriendsSectionProps {
   sharedFriends: SharedFriends;
   /** 서버 값: reportMonth — 제목 "6월의 친구들이에요" */
   month: number;
+  darkTheme?: boolean;
 }
 
 /** 친구 한 줄 */
-function FriendRow({ friend }: { friend: SharedFriend }) {
+function FriendRow({
+  friend,
+  darkTheme = false,
+}: {
+  friend: SharedFriend;
+  darkTheme?: boolean;
+}) {
   const avatarSrc = friend.avatarUrl || defaultProfile;
 
   return (
-    <li className="flex h-[56px] items-center overflow-hidden rounded-[12px] bg-white p-[8px]">
+    <li
+      className={`flex h-[56px] items-center overflow-hidden rounded-[12px] bg-white p-[8px] ${
+        darkTheme ? 'dark:bg-fill-inverse' : ''
+      }`}
+    >
       {/* 프로필 이미지 — 서버 값(avatarUrl).
           crossOrigin 이 있어야 R007 이미지 저장에서 아바타가 함께 구워집니다.
           CDN 이 Access-Control-Allow-Origin 을 내려주지 않으면 빈 칸으로 저장됩니다. */}
@@ -33,12 +44,20 @@ function FriendRow({ friend }: { friend: SharedFriend }) {
       <span className="ml-[12px] flex min-w-0 flex-1 flex-col justify-center leading-[150%]">
         {/* 공유 카테고리 이름 — 서버 값(categoryName) */}
         {friend.categoryName && (
-          <span className="truncate text-[14px] font-medium tracking-[-0.14px] text-[#A3A3A3]">
+          <span
+            className={`truncate text-[14px] font-medium tracking-[-0.14px] text-[#A3A3A3] ${
+              darkTheme ? 'dark:text-text-teritary' : ''
+            }`}
+          >
             {friend.categoryName}
           </span>
         )}
         {/* 닉네임 — 서버 값(nickname) */}
-        <span className="truncate text-[18px] font-medium tracking-[-0.18px] text-[#171717]">
+        <span
+          className={`truncate text-[18px] font-medium tracking-[-0.18px] text-[#171717] ${
+            darkTheme ? 'dark:text-text-strong' : ''
+          }`}
+        >
           {friend.nickname}
         </span>
       </span>
@@ -50,24 +69,39 @@ function FriendRow({ friend }: { friend: SharedFriend }) {
 export function SharedFriendsSection({
   sharedFriends,
   month,
+  darkTheme = false,
 }: SharedFriendsSectionProps) {
   const { sharedCategoryCount, friends } = sharedFriends;
 
   return (
     <div className="flex h-full w-full flex-col gap-[20px]">
       <div className="flex flex-col gap-[8px]">
-        <p className="text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-[#A3A3A3]">
+        <p
+          className={`text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-[#A3A3A3] ${
+            darkTheme ? 'dark:text-text-teritary' : ''
+          }`}
+        >
           공유 카테고리를 함께한
         </p>
 
         {/* 월 — 서버 값(reportMonth) */}
-        <h2 className="text-[40px] font-bold leading-[150%] tracking-[-0.4px] text-[#404040]">
+        <h2
+          className={`text-[40px] font-bold leading-[150%] tracking-[-0.4px] text-[#404040] ${
+            darkTheme ? 'dark:text-text-primary' : ''
+          }`}
+        >
           {month}월의 친구들이에요
         </h2>
       </div>
 
       {/* 공유 카테고리 수 — 서버 값(sharedCategoryCount) */}
-      <p className="flex h-[40px] w-full items-center rounded-[999px] bg-[#FAFAFA] px-[20px] text-[16px] font-semibold leading-[150%] tracking-[-0.16px] text-[#A3A3A3]">
+      <p
+        className={`flex h-[40px] w-full items-center rounded-[999px] bg-[#FAFAFA] px-[20px] text-[16px] font-semibold leading-[150%] tracking-[-0.16px] text-[#A3A3A3] ${
+          darkTheme
+            ? 'dark:bg-[rgba(23,23,23,0.7)] dark:text-text-teritary'
+            : ''
+        }`}
+      >
         공유 카테고리 {sharedCategoryCount.toLocaleString('ko-KR')}개
       </p>
 
@@ -75,11 +109,16 @@ export function SharedFriendsSection({
         <EmptyState
           className="flex-1"
           message="저번 달에는 함께한 친구가 없어요."
+          darkTheme={darkTheme}
         />
       ) : (
         <ul className="flex flex-col gap-[12px]">
           {friends.map((friend) => (
-            <FriendRow key={friend.id} friend={friend} />
+            <FriendRow
+              key={friend.id}
+              friend={friend}
+              darkTheme={darkTheme}
+            />
           ))}
         </ul>
       )}

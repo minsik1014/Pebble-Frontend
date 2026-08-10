@@ -48,8 +48,9 @@ export const AuthPageLayout = ({
 
   return (
     <main
-      className="flex h-dvh w-full flex-col overflow-hidden bg-white [font-family:'Pretendard',sans-serif]"
+      className="flex h-dvh w-full flex-col overflow-hidden bg-fill-inverse [font-family:'Pretendard',sans-serif]"
       data-id={dataId}
+      data-theme="light"
     >
       <Header />
       <div
