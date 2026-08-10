@@ -1,5 +1,4 @@
 import MySolidIcon from "@/assets/icons/user-solid.svg?react";
-import type { Profile } from "@/features/mypage/types/profile";
 import {
   getBridgeColorByCompletedTaskCount,
   type DailyBridgeActivity,
@@ -7,7 +6,12 @@ import {
 import { getBridgePaletteByActivityColor } from "@/features/settings/constants/bridgeColorPalettes";
 
 type HomeOverviewCardsProps = {
-  profile: Profile;
+  profile: {
+    nickname: string;
+    bio: string;
+    imageUrl: string | null;
+  };
+  profileLabel: "나" | "친구";
   activityColor: string;
   activities: DailyBridgeActivity[];
 };
@@ -41,6 +45,7 @@ const getRecentActivities = (activities: DailyBridgeActivity[]) => {
 
 export const HomeOverviewCards = ({
   profile,
+  profileLabel,
   activityColor,
   activities,
 }: HomeOverviewCardsProps): JSX.Element => {
@@ -65,14 +70,17 @@ export const HomeOverviewCards = ({
         <div className="min-w-0">
           <div className="flex items-center gap-token-s">
             <span className="rounded-token-l border border-border-default bg-btn-quaternary px-token-m py-token-xs text-body-02-sb text-text-secondary">
-              나
+              {profileLabel}
             </span>
             <h1 className="truncate text-title-03-sb text-text-strong">
               {profile.nickname || "사용자"}
             </h1>
           </div>
           <p className="mt-token-xs truncate text-body-03-r text-text-teritary">
-            {profile.bio || "한 줄 소개를 작성해보세요."}
+            {profile.bio ||
+              (profileLabel === "나"
+                ? "한 줄 소개를 작성해보세요."
+                : "작성한 한 줄 소개가 없어요.")}
           </p>
         </div>
       </section>

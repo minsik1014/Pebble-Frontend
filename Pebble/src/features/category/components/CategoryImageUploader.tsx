@@ -3,6 +3,7 @@ import { useState, type ChangeEvent } from "react";
 import UploadIcon from "@/assets/icons/Upload.svg?react";
 import {
   ACCEPTED_IMAGE_TYPES,
+  MAX_IMAGE_SIZE_MB,
   validateImageFile,
 } from "@/components/ui/image-crop/imageCropConfig";
 
@@ -67,7 +68,7 @@ export const CategoryImageUploader = ({
             <UploadIcon className="h-11 w-11 text-text-secondary" />
             <span className="text-body-02-m text-text-secondary">이미지 추가</span>
             <span className="mt-3 whitespace-pre-line text-center text-caption-01 text-text-teritary">
-              JPEG · PNG · WEBP{"\n"}최대 5MB
+              JPEG · PNG · WEBP{"\n"}최대 {MAX_IMAGE_SIZE_MB}MB
             </span>
           </>
         )}

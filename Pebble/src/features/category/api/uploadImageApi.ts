@@ -1,11 +1,12 @@
 import { apiClient } from '@/services/api';
 import type { ApiResponse } from '@/services/api';
+import { validateImageFile } from '@/components/ui/image-crop/imageCropConfig';
 
 type UploadImageResponse = {
   imageUrl: string;
 };
 
-const MAX_UPLOAD_IMAGE_SIZE = 1024;
+const MAX_UPLOAD_IMAGE_DIMENSION = 1024;
 const UPLOAD_IMAGE_QUALITY = 0.9;
 
 const loadImage = (imageUrl: string) =>
@@ -34,7 +35,7 @@ async function dataUrlToUploadFile(
 
   const scale = Math.min(
     1,
-    MAX_UPLOAD_IMAGE_SIZE /
+    MAX_UPLOAD_IMAGE_DIMENSION /
       Math.max(image.width, image.height),
   );
 
@@ -81,6 +82,12 @@ async function dataUrlToUploadFile(
 export async function uploadImageFile(
   file: File,
 ): Promise<string> {
+  const validationMessage = validateImageFile(file);
+
+  if (validationMessage) {
+    throw new Error(validationMessage);
+  }
+
   const formData = new FormData();
   formData.append('file', file);
 
