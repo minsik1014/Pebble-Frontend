@@ -84,7 +84,7 @@ export default function MyPage() {
             isCompact={isCompact}
             categories={completedCategories}
             onSelectCategory={(categoryId) =>
-              navigate(`/?category=${categoryId}&from=my`)
+              navigate(`/calendar?category=${categoryId}&from=my`)
             }
           />
         </div>
