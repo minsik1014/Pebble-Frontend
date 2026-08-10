@@ -59,7 +59,7 @@ export const LoginForm = ({
                     onChange={(e) => onEmailChange(e.target.value)}
                     onBlur={() => onFieldBlur("email")}
                     placeholder="이메일을 입력해 주세요"
-                    className={`auth-input pl-[12px] pr-[48px] text-[16px] font-medium tracking-[-0.16px] placeholder:text-[16px] placeholder:font-medium ${
+                    className={`auth-input !h-[44px] pl-[12px] pr-[48px] text-[16px] font-medium tracking-[-0.16px] placeholder:text-[16px] placeholder:font-medium ${
                       errors.email || errorMessage
                         ? "!border-fill-danger focus:!border-fill-danger"
                         : ""
@@ -82,7 +82,7 @@ export const LoginForm = ({
                     onChange={(e) => onPasswordChange(e.target.value)}
                     onBlur={() => onFieldBlur("password")}
                     placeholder="비밀번호를 입력해 주세요"
-                    className={`auth-input pl-[12px] pr-[48px] text-[16px] font-medium tracking-[-0.16px] placeholder:text-[16px] placeholder:font-medium ${
+                    className={`auth-input !h-[44px] pl-[12px] pr-[48px] text-[16px] font-medium tracking-[-0.16px] placeholder:text-[16px] placeholder:font-medium ${
                       errors.password || errorMessage
                         ? "!border-fill-danger focus:!border-fill-danger"
                         : ""
@@ -92,7 +92,7 @@ export const LoginForm = ({
                     type="button"
                     onClick={onTogglePassword}
                     aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 표시"}
-                    className="absolute right-[16px] top-1/2 flex -translate-y-1/2 items-center justify-center text-text-teritary transition-colors hover:text-text-primary"
+                    className="absolute right-[14px] top-1/2 flex -translate-y-1/2 items-center justify-center text-text-teritary transition-colors hover:text-text-primary"
                   >
                     <EyeIcon open={showPassword} />
                   </button>
