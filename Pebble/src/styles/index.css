@@ -244,6 +244,17 @@
     @apply text-[15px] font-normal leading-[150%] tracking-[-0.15px];
   }
 
+  :root[data-theme='dark'] .dark-disabled-primary:disabled,
+  [data-theme='dark'] .dark-disabled-primary:disabled {
+    background-color: rgb(var(--button-primary));
+    background-image: linear-gradient(
+      rgba(23, 23, 23, 0.7),
+      rgba(23, 23, 23, 0.7)
+    );
+    color: rgb(var(--text-teritary));
+    opacity: 1;
+  }
+
   .all-unset {
     all: unset;
   }

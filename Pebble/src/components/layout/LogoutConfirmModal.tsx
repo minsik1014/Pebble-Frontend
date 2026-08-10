@@ -79,7 +79,7 @@ export const LogoutConfirmModal = ({
           </button>
           <button
             type="button"
-            className="relative flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-token-s bg-btn-primary px-token-l text-body-02-m text-text-onFill transition-colors before:pointer-events-none before:absolute before:inset-0 before:rounded-token-s before:transition-colors hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:before:bg-transparent"
+            className="dark-disabled-primary relative flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-token-s bg-btn-primary px-token-l text-body-02-m text-text-onFill transition-colors before:pointer-events-none before:absolute before:inset-0 before:rounded-token-s before:transition-colors hover:before:bg-[rgba(250,250,250,0.25)] active:before:bg-[rgba(250,250,250,0.4)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:before:bg-transparent"
             onClick={onConfirm}
             disabled={isSubmitting}
           >

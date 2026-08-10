@@ -153,7 +153,7 @@ export const ProfileSetupForm = ({
         type="submit"
         disabled={!isFormValid || isSubmitting}
         className={`mt-[40px] w-full h-[52px] rounded-[8px] text-[16px] transition-colors [@media(max-height:850px)]:mt-[20px] ${
-          isFormValid && !isSubmitting ? "bg-btn-primary text-text-onFill hover:brightness-95 cursor-pointer" : "bg-[#171717B2] text-text-teritary cursor-not-allowed dark:bg-[#F8F8F8] dark:text-[#8F8F8F]"
+          isFormValid && !isSubmitting ? "bg-btn-primary text-text-onFill hover:brightness-95 cursor-pointer" : "dark-disabled-primary bg-[#171717B2] text-text-teritary cursor-not-allowed"
         }`}
       >
         {isSubmitting ? "저장 중..." : "시작하기"}

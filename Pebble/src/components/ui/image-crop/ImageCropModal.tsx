@@ -277,7 +277,7 @@ export const ImageCropModal = ({
           </button>
           <button
             type="button"
-            className="h-11 rounded-token-s bg-btn-primary px-5 text-body-02-m text-text-onFill disabled:bg-btn-teritary"
+            className="dark-disabled-primary h-11 rounded-token-s bg-btn-primary px-5 text-body-02-m text-text-onFill disabled:bg-btn-teritary"
             disabled={!sourceImageUrl || !croppedAreaPixels}
             onClick={handleApply}
           >

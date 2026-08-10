@@ -208,7 +208,7 @@ export const ProfileImageCropModal = ({
             type="button"
             onClick={handleApply}
             disabled={!naturalSize.width}
-            className="h-12 flex-1 rounded-token-s bg-btn-primary text-body-02-m text-text-onFill disabled:cursor-not-allowed disabled:opacity-50"
+            className="dark-disabled-primary h-12 flex-1 rounded-token-s bg-btn-primary text-body-02-m text-text-onFill disabled:cursor-not-allowed disabled:opacity-50"
           >
             적용
           </button>
