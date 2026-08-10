@@ -41,7 +41,7 @@ export function ScaledPreview({ width, scale, children }: ScaledPreviewProps) {
   return (
     <div
       style={{ width: width * scale, height: innerHeight * scale }}
-      className="overflow-hidden"
+      className="overflow-visible"
     >
       <div
         ref={innerRef}
