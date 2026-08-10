@@ -1,3 +1,4 @@
+import ChevronDownIcon from "@/assets/icons/chevron-down.svg?react";
 import type { Category, MilestoneItem } from "@/types";
 
 type SelectButtonVariant = "surface" | "inverse";
@@ -29,18 +30,6 @@ type DropdownOptionRowProps = {
   isSelected?: boolean;
   onClick: () => void;
 };
-
-const ChevronDownIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M7 10L12 15L17 10H7Z" fill="#171717" />
-  </svg>
-);
 
 const getButtonClassName = (variant: SelectButtonVariant, isOpen: boolean) =>
   [
@@ -79,8 +68,8 @@ const DropdownOptionRow = ({
 );
 
 const DropdownIconArea = () => (
-  <span className="flex size-11 shrink-0 items-center justify-center rounded-token-s">
-    <ChevronDownIcon />
+  <span className="flex size-11 shrink-0 items-center justify-center rounded-token-s text-text-strong">
+    <ChevronDownIcon className="size-6" />
   </span>
 );
 
