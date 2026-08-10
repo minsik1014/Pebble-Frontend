@@ -105,12 +105,12 @@ export const MonthlyReportBanner = ({
       </span>
 
       <span className="relative flex flex-col gap-[8px]">
-        <strong className="whitespace-nowrap text-[24px] font-semibold leading-[130%] tracking-[-0.24px] text-[#242424]">
+        <strong className="whitespace-nowrap text-[24px] font-semibold leading-[130%] tracking-[-0.24px] text-fill-inverse">
           이번 달의 기록이 완성되었어요!
         </strong>
-        <span className="flex items-center gap-[4px] text-[18px] font-medium leading-[150%] tracking-[-0.18px] text-[#3D3D3D]">
+        <span className="flex items-center gap-[4px] text-[18px] font-medium leading-[150%] tracking-[-0.18px] text-btn-quaternary">
           {reportMonth ? `${reportMonth}월 리포트 보러가기` : "리포트 보러가기"}
-          <ChevronRightIcon className="size-[24px] shrink-0 text-[#3D3D3D]" />
+          <ChevronRightIcon className="size-[24px] shrink-0 text-btn-quaternary" />
         </span>
       </span>
     </button>

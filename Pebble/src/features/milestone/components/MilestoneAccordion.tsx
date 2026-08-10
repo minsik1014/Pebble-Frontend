@@ -249,7 +249,7 @@ export const MilestoneAccordion = ({
               {isVisible ? (
                 <EyeOnIcon className="w-6 h-6 text-text-secondary" />
               ) : (
-                <EyeOffIcon className="w-6 h-6 text-btn-secondary" />
+                <EyeOffIcon className="w-6 h-6 text-text-secondary dark:text-btn-secondary" />
               )}
             </button>
           )}

@@ -124,9 +124,9 @@ export const ModalActionBar = ({
           aria-disabled={disabled || isBusy}
           onClick={handleSubmitClick}
           className={[
-            'h-11 flex-1 disabled:opacity-100',
+            'h-11 flex-1 dark:disabled:opacity-100',
             isSubmitBlockedWithReason
-              ? 'cursor-not-allowed text-text-teritary hover:before:bg-transparent'
+              ? 'cursor-not-allowed opacity-50 hover:before:bg-transparent dark:opacity-100 dark:text-text-teritary'
               : '',
           ].join(' ')}
         >
