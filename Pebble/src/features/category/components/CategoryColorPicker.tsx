@@ -50,18 +50,18 @@ export const CategoryColorPicker = ({
         <button
           type="button"
           onClick={() => colorInputRef.current?.click()}
-          className="relative h-10 w-10 rounded-token-s bg-fill-inverse p-1 transition-transform hover:scale-105"
+          className={[
+            "relative h-10 w-10 rounded-token-s bg-fill-inverse p-1",
+            "transition-transform hover:scale-105",
+            isCustomColorSelected ? "" : "category-custom-color-button",
+          ].join(" ")}
           style={
             isCustomColorSelected
               ? {
                   backgroundColor: selectedColor,
                   border: "none",
                 }
-              : {
-                  background:
-                    "linear-gradient(#ffffff, #ffffff) padding-box, conic-gradient(#ff3b30, #ff9500, #ffcc00, #34c759, #00cef5, #bf73fd, #ff3b30) border-box",
-                  border: "2px solid transparent",
-                }
+              : undefined
           }
           aria-label="직접 색상 선택"
           aria-controls={colorInputId}
