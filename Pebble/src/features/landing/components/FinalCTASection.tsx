@@ -11,18 +11,18 @@ function FinalCTABackgroundShapes() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      className="pointer-events-none absolute left-1/2 top-0 z-0 h-full w-[max(1440px,100vw)] -translate-x-1/2 overflow-hidden"
     >
       <img
         src={ellipse8}
         alt=""
-        className="absolute left-[-108px] top-[-277px] h-[1281px] w-[1031px] rotate-[180deg] object-contain opacity-[65%] blur-[60px]"
+        className="absolute left-[-7.5%] top-[-277px] h-[max(1281px,88.9583vw)] w-[71.5972%] rotate-180 object-contain opacity-[65%] blur-[60px]"
       />
 
       <img
         src={ellipse7}
         alt=""
-        className="absolute left-[628px] top-[201px] h-[1260px] w-[793px] rotate-[-180deg] object-contain"
+        className="absolute left-[43.6111%] top-[201px] h-[max(1260px,87.5vw)] w-[55.0694%] -rotate-180 object-contain"
       />
     </div>
   );
@@ -43,7 +43,7 @@ export function FinalCTASection() {
   return (
     <div
       ref={sectionRef}
-      className="relative h-full w-full overflow-hidden bg-transparent"
+      className="relative h-full w-full overflow-visible bg-transparent"
     >
       <FinalCTABackgroundShapes />
 

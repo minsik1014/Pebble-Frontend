@@ -57,27 +57,27 @@ function BridgeBackgroundImages({
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-0"
+      className="pointer-events-none absolute left-1/2 top-0 z-0 h-full w-[max(1440px,100vw)] -translate-x-1/2 overflow-hidden"
     >
       <BridgeBackgroundLayer
         src={bridgePebble1}
         isVisible={isVisible}
         delay={1400}
-        className="left-[857px] top-[-57px] h-[499px] w-[585px]"
+        className="left-[59.5139%] top-[-57px] h-[max(499px,34.6528vw)] w-[40.625%]"
       />
 
       <BridgeBackgroundLayer
         src={bridgePebble2}
         isVisible={isVisible}
         delay={2200}
-        className="left-[422px] top-[361px] h-[534px] w-[325px]"
+        className="left-[29.3056%] top-[361px] h-[max(534px,37.0833vw)] w-[22.5694%]"
       />
 
       <BridgeBackgroundLayer
         src={bridgePebble3}
         isVisible={isVisible}
         delay={3000}
-        className="left-[-62px] top-[649px] h-[273px] w-[413px]"
+        className="left-[-4.3056%] top-[649px] h-[max(273px,18.9583vw)] w-[28.6806%]"
       />
     </div>
   );
@@ -92,7 +92,7 @@ export function BridgeSection() {
   return (
     <div
       ref={sectionRef}
-      className="relative h-full w-full overflow-hidden bg-transparent"
+      className="relative h-full w-full overflow-visible bg-transparent"
     >
       <BridgeBackgroundImages isVisible={hasEntered} />
 
