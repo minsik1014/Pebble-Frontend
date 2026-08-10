@@ -99,7 +99,12 @@ export function BusiestDaySection({
   darkTheme = false,
 }: BusiestDaySectionProps) {
   if (!day) {
-    return <EmptyState message="저번 달에는 기록한 일정이 없어요." />;
+    return (
+      <EmptyState
+        message="저번 달에는 기록한 일정이 없어요."
+        darkTheme={darkTheme}
+      />
+    );
   }
 
   const { date, schedules } = day;
@@ -157,6 +162,7 @@ export function BusiestDaySection({
         <EmptyState
           className="flex-1"
           message="이 날 기록된 일정이 없어요."
+          darkTheme={darkTheme}
         />
       ) : (
         <ul className="flex flex-1 flex-col gap-[12px]">

@@ -176,7 +176,10 @@ export function BusiestCategorySection({
 }: BusiestCategorySectionProps) {
   if (!category) {
     return (
-      <EmptyState message="저번 달에는 기록한 카테고리가 없어요." />
+      <EmptyState
+        message="저번 달에는 기록한 카테고리가 없어요."
+        darkTheme={darkTheme}
+      />
     );
   }
 

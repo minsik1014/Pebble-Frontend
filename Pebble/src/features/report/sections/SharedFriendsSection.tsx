@@ -109,6 +109,7 @@ export function SharedFriendsSection({
         <EmptyState
           className="flex-1"
           message="저번 달에는 함께한 친구가 없어요."
+          darkTheme={darkTheme}
         />
       ) : (
         <ul className="flex flex-col gap-[12px]">
