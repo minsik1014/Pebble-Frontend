@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { ReportProvider } from './context/ReportContext';
 import { useMonthlyReport } from './hooks/useMonthlyReport';
@@ -32,6 +32,8 @@ interface ReportLayoutProps {
  */
 export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isMonthlyStep = location.pathname.endsWith('/monthly');
 
   const now = useMemo(() => new Date(), []);
   const previousMonth = useMemo(
@@ -54,30 +56,48 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
   );
 
   return (
-    <div className="relative isolate h-[100dvh] w-full overflow-hidden bg-white [font-family:'Pretendard',sans-serif]">
+    <div
+      className={`relative isolate h-[100dvh] w-full overflow-hidden bg-white [font-family:'Pretendard',sans-serif] ${
+        isMonthlyStep ? 'dark:bg-[#171717]' : ''
+      }`}
+    >
       {/* R003~R007 공통 배경 장식 */}
       <img
         src={reportBgTop}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-182px] top-[-182px] z-0 h-[731px] w-[1281px] object-fill"
+        className={`pointer-events-none absolute left-[-182px] top-[-182px] z-0 h-[731px] w-[1281px] object-fill ${
+          isMonthlyStep ? 'dark:hidden' : ''
+        }`}
       />
       <img
         src={reportBgBottom}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute left-[332px] top-[489px] z-0 h-[702px] w-[1491px] object-fill"
+        className={`pointer-events-none absolute left-[332px] top-[489px] z-0 h-[702px] w-[1491px] object-fill ${
+          isMonthlyStep ? 'dark:hidden' : ''
+        }`}
       />
 
       <header className="absolute right-[clamp(32px,6.94vw,100px)] top-[clamp(32px,9.76vh,100px)] z-20">
         <button
           type="button"
           onClick={handleClose}
-          className="flex items-center gap-[8px] text-[24px] font-medium leading-[130%] tracking-[-0.24px] text-[#171717] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#171717]"
+          className={`flex items-center gap-[8px] text-[24px] font-medium leading-[130%] tracking-[-0.24px] text-[#171717] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#171717] ${
+            isMonthlyStep
+              ? 'dark:text-text-strong dark:focus-visible:outline-[#F8F8F8]'
+              : ''
+          }`}
         >
           리포트 닫기
           <span className="flex size-[44px] items-center justify-center rounded-[12px]">
-            <img src={reportCloseIcon} alt="" className="size-[24px]" />
+            <img
+              src={reportCloseIcon}
+              alt=""
+              className={`size-[24px] ${
+                isMonthlyStep ? 'dark:invert' : ''
+              }`}
+            />
           </span>
         </button>
       </header>
