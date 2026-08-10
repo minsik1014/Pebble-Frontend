@@ -3,6 +3,7 @@ import React from "react";
 import { AuthErrorMessage } from "./AuthErrorMessage";
 import { EyeIcon } from "./EyeIcon";
 import { Link } from "react-router-dom"; // 💡 새로고침 없는 매끄러운 화면 이동을 위해 추가
+import { SocialAuthButtons } from './SocialAuthButtons';
 
 interface SignUpFormProps {
   form: {
@@ -18,6 +19,7 @@ interface SignUpFormProps {
     password?: string;
     passwordConfirm?: string;
   };
+  socialErrorMessage: string | null;
   isFormValid: boolean;
   shakeTarget: { email?: boolean; password?: boolean; passwordConfirm?: boolean }; 
   onChange: (field: string, value: any) => void;
@@ -25,6 +27,7 @@ interface SignUpFormProps {
   onTogglePw: () => void;
   onTogglePwConfirm: () => void;
   onSubmit: (e: React.FormEvent) => void;
+  onSocialSignUp: (provider: 'google' | 'naver') => void;
 }
 
 export const SignUpForm = ({
@@ -32,6 +35,7 @@ export const SignUpForm = ({
   showPw,
   showPwConfirm,
   errors,
+  socialErrorMessage,
   isFormValid,
   shakeTarget,
   onChange,
@@ -39,6 +43,7 @@ export const SignUpForm = ({
   onTogglePw,
   onTogglePwConfirm,
   onSubmit,
+  onSocialSignUp,
 }: SignUpFormProps) => {
   return (
     <div className="w-full max-w-[506px] flex flex-col px-[16px] sm:px-0 mx-auto">
@@ -149,15 +154,33 @@ export const SignUpForm = ({
         <button
           type="submit"
           disabled={!isFormValid}
-          className={`w-full h-[52px] text-white rounded-[12px] auth-body transition-colors mb-[24px]
+          className={`w-full h-[52px] text-white rounded-[12px] auth-body transition-colors
             ${isFormValid ? "bg-[#111111] hover:bg-[#222222] cursor-pointer" : "bg-[#737373] cursor-not-allowed"}`}
         >
           다음
         </button>
       </form>
 
-      {/* 💡 <a> 태그를 <Link> 컴포넌트로 깔끔하게 변경 완료 */}
-      <div className="auth-body flex justify-center gap-[8px]">
+      <div className="my-[40px] flex w-full items-center justify-center gap-[16px]">
+        <div className="h-px flex-1 bg-[#D4D4D4]" />
+        <span className="text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-[#A3A3A3]">
+          또는
+        </span>
+        <div className="h-px flex-1 bg-[#D4D4D4]" />
+      </div>
+
+      <SocialAuthButtons
+        actionLabel="가입하기"
+        onSocialAuth={onSocialSignUp}
+      />
+
+      {socialErrorMessage && (
+        <AuthErrorMessage className="mt-[12px] text-center whitespace-pre-line">
+          {socialErrorMessage}
+        </AuthErrorMessage>
+      )}
+
+      <div className="auth-body mt-[40px] flex justify-center gap-[8px]">
         <span className="text-[#A3A3A3]">이미 계정이 있으신가요?</span>
         <Link to="/login" className="text-[#171717] hover:underline">
           로그인

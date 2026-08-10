@@ -1,10 +1,9 @@
 // @/features/auth/components/LoginForm.tsx
 import React from "react";
-import google from "@/assets/icons/logo-google.svg";
-import naver from "@/assets/icons/logo-naver.svg";
 import { Link } from "react-router-dom";
 import { AuthErrorMessage } from "./AuthErrorMessage";
 import { EyeIcon } from "./EyeIcon";
+import { SocialAuthButtons } from './SocialAuthButtons';
 
 interface LoginFormProps {
   email: string;
@@ -140,33 +139,10 @@ export const LoginForm = ({
           <div className="h-px flex-1 bg-[#D4D4D4]" />
         </div>
 
-        <div className="flex w-full flex-col gap-[12px]">
-          <button
-            type="button"
-            onClick={() => onSocialLogin("google")}
-            className="relative flex h-[44px] w-full items-center justify-center rounded-[12px] border border-[#D4D4D4] px-[20px] transition-colors hover:bg-[#FAFAFA]"
-          >
-            <span className="absolute left-[20px] flex size-[44px] items-center justify-center">
-              <img src={google} alt="" className="size-[24px] object-contain" />
-            </span>
-            <span className="text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-[#171717]">
-              Google로 계속하기
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onSocialLogin("naver")}
-            className="relative flex h-[44px] w-full items-center justify-center rounded-[12px] bg-[#03CF5D] px-[20px] transition-colors hover:bg-[#02B953]"
-          >
-            <span className="absolute left-[20px] flex size-[44px] items-center justify-center">
-              <img src={naver} alt="" className="size-[24px] object-contain" />
-            </span>
-            <span className="text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-white">
-              네이버로 계속하기
-            </span>
-          </button>
-        </div>
+        <SocialAuthButtons
+          actionLabel="계속하기"
+          onSocialAuth={onSocialLogin}
+        />
 
         <div className="flex justify-center gap-[8px] text-center text-[16px] font-medium leading-[150%] tracking-[-0.16px]">
           <span className="text-[#A3A3A3]">Pebble이 처음이신가요?</span>

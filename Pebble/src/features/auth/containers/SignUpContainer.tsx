@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SignUpForm } from "../components/SignUpForm";
 import type { SignUpLocationState } from "../types/authNavigation";
+import { startSocialLogin } from '@/features/auth/utils/socialOAuth';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]{3,}\.[^\s@]{2,}$/;
 // 새 비밀번호 화면과 동일하게 특수문자는 허용하고 영문·숫자 포함 여부만 검사합니다.
@@ -25,6 +26,7 @@ export const SignUpContainer = (): JSX.Element => {
     email: locationState?.serverError,
   });
   const [isFormValid, setIsFormValid] = useState(false);
+  const [socialErrorMessage, setSocialErrorMessage] = useState<string | null>(null);
   
   // 개별 컴포넌트의 흔들림 애니메이션 상태 관리
   const [shakeTarget, setShakeTarget] = useState<{ email?: boolean; password?: boolean; passwordConfirm?: boolean }>({});
@@ -110,12 +112,24 @@ export const SignUpContainer = (): JSX.Element => {
     });
   };
 
+  const handleSocialSignUp = (provider: 'google' | 'naver') => {
+    try {
+      setSocialErrorMessage(null);
+      startSocialLogin(provider);
+    } catch {
+      setSocialErrorMessage(
+        '소셜 회원가입을 시작하지 못했어요.\nOAuth 설정을 확인해 주세요.',
+      );
+    }
+  };
+
   return (
     <SignUpForm
       form={form}
       showPw={showPw}
       showPwConfirm={showPwConfirm}
       errors={errors}
+      socialErrorMessage={socialErrorMessage}
       isFormValid={isFormValid}
       shakeTarget={shakeTarget} 
       onChange={handleFieldChange}
@@ -123,6 +137,7 @@ export const SignUpContainer = (): JSX.Element => {
       onTogglePw={() => setShowPw((p) => !p)}
       onTogglePwConfirm={() => setShowPwConfirm((p) => !p)}
       onSubmit={handleSubmit}
+      onSocialSignUp={handleSocialSignUp}
     />
   );
 };
