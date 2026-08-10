@@ -1,8 +1,11 @@
 // @/features/auth/components/SignUpForm.tsx
 import React from "react";
+import { Link } from "react-router-dom";
+
+import { AuthCard } from './AuthCard';
+import { AuthDivider } from './AuthDivider';
 import { AuthErrorMessage } from "./AuthErrorMessage";
 import { EyeIcon } from "./EyeIcon";
-import { Link } from "react-router-dom"; // 💡 새로고침 없는 매끄러운 화면 이동을 위해 추가
 import { SocialAuthButtons } from './SocialAuthButtons';
 
 interface SignUpFormProps {
@@ -46,15 +49,12 @@ export const SignUpForm = ({
   onSocialSignUp,
 }: SignUpFormProps) => {
   return (
-    <div className="w-full max-w-[506px] flex flex-col px-[16px] sm:px-0 mx-auto">
-      <h2 className="auth-title mb-[40px] text-left">
-        Pebble 시작하기
-      </h2>
-
-      <form onSubmit={onSubmit} className="flex flex-col w-full">
+    <AuthCard title="Pebble 시작하기" dataId="signup-form-section">
+      <div className="flex w-full flex-col gap-[40px]">
+        <form onSubmit={onSubmit} className="flex w-full flex-col">
         {/* 1. 이메일 필드 */}
         <div className={`flex flex-col mb-[20px] ${shakeTarget.email && errors.email ? "animate-shake" : ""}`}>
-          <label className="auth-label mb-[8px]">
+          <label className="auth-label mb-[8px] text-[16px] font-medium tracking-[-0.16px]">
             이메일<span className="auth-required">*</span>
           </label>
           <input
@@ -63,7 +63,7 @@ export const SignUpForm = ({
             onChange={(e) => onChange("email", e.target.value)}
             onBlur={() => onFieldBlur("email")}
             placeholder="이메일을 입력해 주세요"
-            className={`auth-input px-[12px] ${errors.email ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
+            className={`auth-input px-[12px] text-[16px] font-medium tracking-[-0.16px] placeholder:text-[16px] placeholder:font-medium ${errors.email ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
           />
           {errors.email && (
             <AuthErrorMessage className="mt-[8px]">{errors.email}</AuthErrorMessage>
@@ -72,7 +72,7 @@ export const SignUpForm = ({
 
         {/* 2. 비밀번호 필드 */}
         <div className={`flex flex-col mb-[20px] relative ${shakeTarget.password && errors.password ? "animate-shake" : ""}`}>
-          <label className="auth-label mb-[8px]">
+          <label className="auth-label mb-[8px] text-[16px] font-medium tracking-[-0.16px]">
             비밀번호<span className="auth-required">*</span>
           </label>
           <div className="relative w-full">
@@ -82,11 +82,12 @@ export const SignUpForm = ({
               onChange={(e) => onChange("password", e.target.value)}
               onBlur={() => onFieldBlur("password")}
               placeholder="비밀번호를 입력해 주세요"
-              className={`auth-input pl-[12px] pr-[48px] ${errors.password ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
+              className={`auth-input pl-[12px] pr-[48px] text-[16px] font-medium tracking-[-0.16px] placeholder:text-[16px] placeholder:font-medium ${errors.password ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
             />
             <button
               type="button"
               onClick={onTogglePw}
+              aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 표시"}
               className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] transition-colors flex items-center justify-center"
             >
               <EyeIcon open={showPw} />
@@ -101,7 +102,7 @@ export const SignUpForm = ({
 
         {/* 3. 비밀번호 확인 필드 */}
         <div className={`flex flex-col mb-[24px] relative ${shakeTarget.passwordConfirm && errors.passwordConfirm ? "animate-shake" : ""}`}>
-          <label className="auth-label mb-[8px]">
+          <label className="auth-label mb-[8px] text-[16px] font-medium tracking-[-0.16px]">
             비밀번호 확인<span className="auth-required">*</span>
           </label>
           <div className="relative w-full">
@@ -111,11 +112,12 @@ export const SignUpForm = ({
               onChange={(e) => onChange("passwordConfirm", e.target.value)}
               onBlur={() => onFieldBlur("passwordConfirm")}
               placeholder="비밀번호를 한 번 더 입력해 주세요"
-              className={`auth-input pl-[12px] pr-[48px] ${errors.passwordConfirm ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
+              className={`auth-input pl-[12px] pr-[48px] text-[16px] font-medium tracking-[-0.16px] placeholder:text-[16px] placeholder:font-medium ${errors.passwordConfirm ? "!border-[#FC4C46] focus:!border-[#FC4C46]" : ""}`}
             />
             <button
               type="button"
               onClick={onTogglePwConfirm}
+              aria-label={showPwConfirm ? "비밀번호 확인 숨기기" : "비밀번호 확인 표시"}
               className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#444444] transition-colors flex items-center justify-center"
             >
               <EyeIcon open={showPwConfirm} />
@@ -128,7 +130,7 @@ export const SignUpForm = ({
 
         {/* 4. 약관 동의 체크박스 영역 */}
         <div className="flex items-center mb-[32px] text-left">
-          <label className="auth-body flex items-center cursor-pointer select-none text-[#737373]">
+          <label className="flex cursor-pointer select-none items-center text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-[#737373]">
             <input
               type="checkbox"
               checked={form.agreeTerms}
@@ -154,38 +156,33 @@ export const SignUpForm = ({
         <button
           type="submit"
           disabled={!isFormValid}
-          className={`w-full h-[52px] text-white rounded-[12px] auth-body transition-colors
+          className={`h-[44px] w-full rounded-[12px] px-[20px] text-[16px] font-medium leading-[150%] tracking-[-0.16px] text-white transition-colors
             ${isFormValid ? "bg-[#111111] hover:bg-[#222222] cursor-pointer" : "bg-[#737373] cursor-not-allowed"}`}
         >
           다음
         </button>
-      </form>
+        </form>
 
-      <div className="my-[40px] flex w-full items-center justify-center gap-[16px]">
-        <div className="h-px flex-1 bg-[#D4D4D4]" />
-        <span className="text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-[#A3A3A3]">
-          또는
-        </span>
-        <div className="h-px flex-1 bg-[#D4D4D4]" />
+        <AuthDivider />
+
+        <SocialAuthButtons
+          actionLabel="가입하기"
+          onSocialAuth={onSocialSignUp}
+        />
+
+        {socialErrorMessage && (
+          <AuthErrorMessage className="text-center whitespace-pre-line">
+            {socialErrorMessage}
+          </AuthErrorMessage>
+        )}
+
+        <div className="flex justify-center gap-[8px] text-center text-[16px] font-medium leading-[150%] tracking-[-0.16px]">
+          <span className="text-[#A3A3A3]">이미 계정이 있으신가요?</span>
+          <Link to="/login" className="text-[#171717] hover:underline">
+            로그인
+          </Link>
+        </div>
       </div>
-
-      <SocialAuthButtons
-        actionLabel="가입하기"
-        onSocialAuth={onSocialSignUp}
-      />
-
-      {socialErrorMessage && (
-        <AuthErrorMessage className="mt-[12px] text-center whitespace-pre-line">
-          {socialErrorMessage}
-        </AuthErrorMessage>
-      )}
-
-      <div className="auth-body mt-[40px] flex justify-center gap-[8px]">
-        <span className="text-[#A3A3A3]">이미 계정이 있으신가요?</span>
-        <Link to="/login" className="text-[#171717] hover:underline">
-          로그인
-        </Link>
-      </div>
-    </div>
+    </AuthCard>
   );
 };
