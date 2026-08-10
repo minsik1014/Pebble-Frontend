@@ -67,7 +67,7 @@ export function DisplaySettingsSection({
 
         <div className="mt-token-l flex flex-col gap-token-l">
           <SettingsRow
-            title="앱 테마"
+            title="테마"
             description="라이트 또는 다크 모드를 선택해요"
             actions={
               <ThemeSegmentControl
