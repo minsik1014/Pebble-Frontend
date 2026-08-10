@@ -154,7 +154,7 @@ export function WithdrawalConfirmModal({
           <Button
             type="button"
             variant="cancel"
-            className="h-11 !bg-btn-quaternary !text-text-strong disabled:opacity-100"
+            className="h-11 disabled:opacity-100"
             disabled={isSubmitting}
             onClick={() => onOpenChange(false)}
           >

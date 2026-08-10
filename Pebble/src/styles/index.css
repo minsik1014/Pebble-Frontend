@@ -244,8 +244,8 @@
     @apply text-[15px] font-normal leading-[150%] tracking-[-0.15px];
   }
 
-  :root[data-theme='dark'] .dark-disabled-primary:disabled,
-  [data-theme='dark'] .dark-disabled-primary:disabled {
+  :root[data-theme='dark'] .dark-disabled-primary:is(:disabled, [aria-disabled='true']),
+  [data-theme='dark'] .dark-disabled-primary:is(:disabled, [aria-disabled='true']) {
     background-color: rgb(var(--button-primary));
     background-image: linear-gradient(
       rgba(23, 23, 23, 0.7),

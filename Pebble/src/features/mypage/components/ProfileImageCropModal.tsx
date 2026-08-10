@@ -200,7 +200,7 @@ export const ProfileImageCropModal = ({
           <button
             type="button"
             onClick={onCancel}
-            className="h-12 flex-1 rounded-token-s bg-btn-quaternary text-body-02-m text-text-strong"
+            className="h-12 flex-1 rounded-token-s bg-btn-quaternary text-body-02-m text-text-strong transition-colors hover:bg-btn-pressed dark:hover:bg-[#373737]"
           >
             취소
           </button>

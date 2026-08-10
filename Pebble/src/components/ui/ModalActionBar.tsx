@@ -79,11 +79,6 @@ export const ModalActionBar = ({
     void onSubmit();
   };
 
-  const submitButtonStateClassName =
-    disabled || isBusy
-      ? '!bg-btn-primary !text-text-teritary'
-      : '!bg-btn-primary !text-text-onFill';
-
   return (
     <>
       <div className="flex w-full gap-3">
@@ -117,7 +112,7 @@ export const ModalActionBar = ({
           variant="cancel"
           disabled={isBusy}
           onClick={onCancel}
-          className="h-11 flex-1 !bg-btn-quaternary !text-text-strong"
+          className="h-11 flex-1"
         >
           취소
         </Button>
@@ -130,9 +125,8 @@ export const ModalActionBar = ({
           onClick={handleSubmitClick}
           className={[
             'h-11 flex-1 disabled:opacity-100',
-            submitButtonStateClassName,
             isSubmitBlockedWithReason
-              ? 'cursor-not-allowed hover:before:bg-transparent'
+              ? 'cursor-not-allowed text-text-teritary hover:before:bg-transparent'
               : '',
           ].join(' ')}
         >

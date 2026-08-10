@@ -270,7 +270,7 @@ export const ImageCropModal = ({
         <footer className="flex items-center justify-between gap-3">
           <button
             type="button"
-            className="h-11 rounded-token-s bg-btn-quaternary px-5 text-body-02-m text-text-strong hover:bg-btn-pressed"
+            className="h-11 rounded-token-s bg-btn-quaternary px-5 text-body-02-m text-text-strong transition-colors hover:bg-btn-pressed dark:hover:bg-[#373737]"
             onClick={() => fileInputRef.current?.click()}
           >
             {changeImageLabel}

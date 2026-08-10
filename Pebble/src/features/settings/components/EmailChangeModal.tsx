@@ -224,7 +224,7 @@ export function EmailChangeModal({
             type="button"
             variant="cancel"
             disabled={isRunning}
-            className="h-11 w-full !bg-btn-quaternary !text-text-strong"
+            className="h-11 w-full"
             onClick={handleClose}
           >
             취소
@@ -234,12 +234,7 @@ export function EmailChangeModal({
             type="button"
             variant="primary"
             disabled={!canSubmit}
-            className={[
-              'h-11 w-full disabled:opacity-100',
-              canSubmit
-                ? '!bg-btn-primary !text-text-onFill'
-                : '!bg-btn-primary !text-text-teritary',
-            ].join(' ')}
+            className="h-11 w-full disabled:opacity-100"
             onClick={() =>
               void handleSubmit()
             }

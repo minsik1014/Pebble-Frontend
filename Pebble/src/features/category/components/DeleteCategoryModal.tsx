@@ -66,7 +66,7 @@ export const DeleteCategoryModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 h-11 bg-btn-quaternary text-text-strong rounded-token-s font-medium hover:bg-btn-pressed transition-colors"
+            className="h-11 flex-1 rounded-token-s bg-btn-quaternary font-medium text-text-strong transition-colors hover:bg-btn-pressed dark:hover:bg-[#373737]"
           >
             취소
           </button>

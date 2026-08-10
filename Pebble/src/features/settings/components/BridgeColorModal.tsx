@@ -368,7 +368,7 @@ export function BridgeColorModal({
             type="button"
             variant="cancel"
             disabled={isSubmitting}
-            className="h-11 w-[282px] !bg-btn-quaternary !text-text-strong"
+            className="h-11 w-[282px]"
             onClick={handleClose}
           >
             취소
@@ -376,13 +376,9 @@ export function BridgeColorModal({
 
           <Button
             type="button"
+            variant="primary"
             disabled={!hasChanged || isSubmitting}
-            className={[
-              'h-11 w-[282px] disabled:opacity-100',
-              hasChanged && !isSubmitting
-                ? '!bg-btn-primary !text-text-onFill'
-                : '!bg-btn-primary !text-text-teritary',
-            ].join(' ')}
+            className="h-11 w-[282px] disabled:opacity-100"
             onClick={() => void handleConfirm()}
           >
             {isSubmitting ? '변경 중...' : '변경'}
