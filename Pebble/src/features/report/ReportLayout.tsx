@@ -35,7 +35,9 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
   const location = useLocation();
   const isMonthlyStep = location.pathname.endsWith('/monthly');
   const isBusiestCategoryStep = location.pathname.endsWith('/category');
-  const usesDarkReportCanvas = isMonthlyStep || isBusiestCategoryStep;
+  const isBusiestDayStep = location.pathname.endsWith('/day');
+  const usesDarkReportCanvas =
+    isMonthlyStep || isBusiestCategoryStep || isBusiestDayStep;
 
   const now = useMemo(() => new Date(), []);
   const previousMonth = useMemo(
