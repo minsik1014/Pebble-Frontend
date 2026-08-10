@@ -49,7 +49,7 @@ export const ForgotPasswordForm = ({
   onBackToLogin,
 }: ForgotPasswordFormProps) => {
   return (
-    <div className="w-full min-h-screen bg-fill-inverse flex flex-col relative overflow-hidden [font-family:'Pretendard',sans-serif]" data-theme="dark">
+    <div className="w-full min-h-screen bg-fill-inverse flex flex-col relative overflow-hidden [font-family:'Pretendard',sans-serif]" data-theme="light">
       
       {/* 조약돌 배경은 이메일을 입력하는 첫 단계에서만 노출합니다. */}
       {step === 1 && (

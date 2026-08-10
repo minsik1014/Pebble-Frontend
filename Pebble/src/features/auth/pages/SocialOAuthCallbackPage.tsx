@@ -67,7 +67,7 @@ export const SocialOAuthCallbackPage = (): JSX.Element => {
   }, [navigate, provider, searchParams]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-fill-inverse font-sans" data-theme="dark">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-fill-inverse font-sans" data-theme="light">
       <p className="text-[16px] text-text-primary">
         {errorMessage ?? '소셜 로그인 처리 중...'}
       </p>

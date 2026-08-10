@@ -7,7 +7,7 @@ export const LoginPage = (): JSX.Element => {
     <main
       className="relative min-h-screen w-full overflow-x-hidden bg-fill-inverse [font-family:'Pretendard',sans-serif]"
       data-id="login-screen"
-      data-theme="dark"
+      data-theme="light"
     >
       {/* 로그인 화면에서는 상단 브랜드 로고만 노출합니다. */}
       <Header />

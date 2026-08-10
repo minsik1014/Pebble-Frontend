@@ -96,11 +96,12 @@ export const ModalActionBar = ({
             className={[
               'relative flex h-11 w-11 shrink-0 items-center justify-center',
               'overflow-hidden rounded-token-s bg-fill-danger',
-              'transition-colors dark:bg-fill-danger-bg',
+              'transition-colors dark:bg-fill-danger',
               'before:pointer-events-none before:absolute before:inset-0',
               'before:transition-colors',
               'hover:before:bg-[rgba(23,23,23,0.15)]',
               'active:before:bg-[rgba(23,23,23,0.3)]',
+              'dark:before:bg-[rgba(23,23,23,0.7)]',
               'dark:hover:before:bg-[rgba(23,23,23,0.7)]',
               'dark:active:before:bg-[rgba(23,23,23,0.7)]',
               'disabled:cursor-not-allowed disabled:opacity-50',

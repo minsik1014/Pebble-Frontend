@@ -3,7 +3,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 
 import pebbleLogo from '@/assets/icons/Logo_Pebble 3.svg';
-import pebbleDarkLogo from '@/assets/icons/Logo_Pebble_Dark.svg';
 import { Button } from '@/components/ui/Button';
 
 type PublicHeaderVariant = 'landing' | 'auth';
@@ -15,7 +14,6 @@ interface PublicHeaderProps {
 export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
   const navigate = useNavigate();
   const showActions = variant === 'landing';
-  const logoSrc = variant === 'auth' ? pebbleDarkLogo : pebbleLogo;
 
   return (
     <header className="h-[95px] w-full bg-transparent [font-family:'Pretendard',sans-serif]">
@@ -26,7 +24,7 @@ export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
           className="flex h-[44px] w-[122px] shrink-0 cursor-pointer select-none items-center gap-[4px]"
         >
           <img
-            src={logoSrc}
+            src={pebbleLogo}
             alt=""
             className="h-[44px] w-[44px] shrink-0 object-contain"
           />

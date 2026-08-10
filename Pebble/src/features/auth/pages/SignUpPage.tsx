@@ -4,7 +4,7 @@ import { SignUpContainer } from "../containers/SignUpContainer";
 
 export const SignUpPage = (): JSX.Element => {
   return (
-    <main className="w-full min-h-screen flex flex-col overflow-x-hidden bg-fill-inverse [font-family:'Pretendard',sans-serif]" data-id="signup-screen" data-theme="dark">
+    <main className="w-full min-h-screen flex flex-col overflow-x-hidden bg-fill-inverse [font-family:'Pretendard',sans-serif]" data-id="signup-screen" data-theme="light">
       {/* Pebble 로고 GNB 네비게이션 헤더 */}
       <Header />
       
