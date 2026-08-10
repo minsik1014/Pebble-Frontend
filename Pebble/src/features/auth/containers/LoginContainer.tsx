@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { login } from '@/features/auth/api/authApi';
 import { startSocialLogin } from '@/features/auth/utils/socialOAuth';
+import { useProfileStore } from '@/features/mypage/store/useProfileStore';
 import { ApiRequestError, setAuthTokens } from '@/services/api';
 
 import { LoginForm } from '../components/LoginForm';
@@ -122,8 +123,12 @@ export const LoginContainer = (): JSX.Element => {
         password,
       });
 
+      // 이전 계정 프로필을 비운 뒤 새 토큰으로 현재 사용자 프로필을 다시 조회합니다.
+      useProfileStore.getState().resetProfile();
+
       // 발급받은 토큰은 공통 API 클라이언트가 이후 요청에 자동으로 사용합니다.
       setAuthTokens(response.accessToken, response.refreshToken);
+      await useProfileStore.getState().loadProfile();
       setErrors({});
       setErrorMessage(null);
 

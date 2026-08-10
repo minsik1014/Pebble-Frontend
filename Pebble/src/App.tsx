@@ -11,6 +11,7 @@ import { NetworkStatusManager } from '@/components/feedback/NetworkStatusManager
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ThemeInitializer } from '@/components/theme/ThemeInitializer';
 import { RequireAuth } from '@/features/auth/components/RequireAuth';
+import { AuthSessionSynchronizer } from '@/features/auth/components/AuthSessionSynchronizer';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { ProfileSetupPage } from '@/features/auth/pages/ProfileSetupPage';
@@ -60,6 +61,7 @@ function ProtectedLayoutRoute() {
 function App() {
   return (
     <BrowserRouter>
+      <AuthSessionSynchronizer />
       <ThemeInitializer />
 
       <div className="min-h-screen bg-fill-surface font-sans text-text-strong">

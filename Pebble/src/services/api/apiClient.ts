@@ -10,6 +10,7 @@ import { isNetworkErrorScreenOpen } from '@/components/feedback/networkRecoveryS
 import {
   clearAuthTokens,
   getAccessToken,
+  getAuthSessionRevision,
   getRefreshToken,
   setAuthTokens,
 } from './authToken';
@@ -41,8 +42,28 @@ let refreshPromise:
   | Promise<string>
   | null = null;
 
+class StaleAuthSessionError extends Error {
+  constructor() {
+    super('이미 종료되거나 변경된 인증 세션입니다.');
+    this.name = 'StaleAuthSessionError';
+  }
+}
+
+function assertRefreshSessionIsCurrent(
+  sessionRevision: string | null,
+  refreshToken: string,
+) {
+  if (
+    getAuthSessionRevision() !== sessionRevision ||
+    getRefreshToken() !== refreshToken
+  ) {
+    throw new StaleAuthSessionError();
+  }
+}
+
 async function refreshAccessToken() {
   const refreshToken = getRefreshToken();
+  const sessionRevision = getAuthSessionRevision();
 
   if (!refreshToken) {
     throw new Error(
@@ -62,6 +83,9 @@ async function refreshAccessToken() {
         },
       )
       .then((response) => {
+        // 로그아웃 또는 새 로그인 뒤 도착한 과거 재발급 응답은 절대 저장하지 않습니다.
+        assertRefreshSessionIsCurrent(sessionRevision, refreshToken);
+
         const tokens = response.data.data;
 
         if (
@@ -171,6 +195,11 @@ apiClient.interceptors.response.use(
         const accessToken =
           await refreshAccessToken();
 
+        // 재발급 완료 직후 로그아웃된 경우 원래 요청도 다시 보내지 않습니다.
+        if (getAccessToken() !== accessToken) {
+          throw new StaleAuthSessionError();
+        }
+
         requestConfig.headers = {
           ...requestConfig.headers,
           Authorization:
@@ -180,7 +209,11 @@ apiClient.interceptors.response.use(
         return await apiClient.request(
           requestConfig,
         );
-      } catch {
+      } catch (refreshError) {
+        if (refreshError instanceof StaleAuthSessionError) {
+          throw refreshError;
+        }
+
         redirectToLoginAfterAuthExpired();
       }
     }

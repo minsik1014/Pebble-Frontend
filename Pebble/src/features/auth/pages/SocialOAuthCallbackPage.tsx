@@ -9,6 +9,7 @@ import {
   getSocialRedirectUri,
   validateSocialOAuthState,
 } from '@/features/auth/utils/socialOAuth';
+import { useProfileStore } from '@/features/mypage/store/useProfileStore';
 import { setAuthTokens } from '@/services/api';
 
 function isSocialProvider(value: string | undefined): value is SocialProvider {
@@ -48,7 +49,8 @@ export const SocialOAuthCallbackPage = (): JSX.Element => {
       code,
       redirectUri: getSocialRedirectUri(provider),
     })
-      .then((response) => {
+      .then(async (response) => {
+        useProfileStore.getState().resetProfile();
         setAuthTokens(response.accessToken, response.refreshToken);
 
         if (response.isNewUser) {
@@ -58,6 +60,8 @@ export const SocialOAuthCallbackPage = (): JSX.Element => {
           });
           return;
         }
+
+        await useProfileStore.getState().loadProfile();
 
         navigate('/', { replace: true });
       })
