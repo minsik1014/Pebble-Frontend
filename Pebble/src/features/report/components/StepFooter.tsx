@@ -7,6 +7,8 @@ interface StepFooterProps {
   className?: string;
   /** 특정 단계에서 주요 버튼 색상만 추가로 덮어쓸 때 사용합니다. */
   primaryClassName?: string;
+  /** 특정 단계에서 보조 버튼 색상만 추가로 덮어쓸 때 사용합니다. */
+  secondaryClassName?: string;
 }
 
 const BASE =
@@ -23,6 +25,7 @@ export function StepFooter({
   primary,
   className = 'mt-[40px]',
   primaryClassName = '',
+  secondaryClassName = '',
 }: StepFooterProps) {
   return (
     <div
@@ -34,7 +37,7 @@ export function StepFooter({
         <button
           type="button"
           onClick={secondary.onClick}
-          className={`${BASE} w-[376px] border border-[#D4D4D4] bg-white text-[#171717] hover:bg-[#FAFAFA]`}
+          className={`${BASE} w-[376px] border border-[#D4D4D4] bg-white text-[#171717] hover:bg-[#FAFAFA] ${secondaryClassName}`}
         >
           {secondary.label}
         </button>

@@ -34,6 +34,8 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const isMonthlyStep = location.pathname.endsWith('/monthly');
+  const isBusiestCategoryStep = location.pathname.endsWith('/category');
+  const usesDarkReportCanvas = isMonthlyStep || isBusiestCategoryStep;
 
   const now = useMemo(() => new Date(), []);
   const previousMonth = useMemo(
@@ -58,7 +60,7 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
   return (
     <div
       className={`relative isolate h-[100dvh] w-full overflow-hidden bg-white [font-family:'Pretendard',sans-serif] ${
-        isMonthlyStep ? 'dark:bg-[#171717]' : ''
+        usesDarkReportCanvas ? 'dark:bg-[#171717]' : ''
       }`}
     >
       {/* R003~R007 공통 배경 장식 */}
@@ -67,7 +69,7 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
         alt=""
         aria-hidden="true"
         className={`pointer-events-none absolute left-[-182px] top-[-182px] z-0 h-[731px] w-[1281px] object-fill ${
-          isMonthlyStep ? 'dark:hidden' : ''
+          usesDarkReportCanvas ? 'dark:hidden' : ''
         }`}
       />
       <img
@@ -75,7 +77,7 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
         alt=""
         aria-hidden="true"
         className={`pointer-events-none absolute left-[332px] top-[489px] z-0 h-[702px] w-[1491px] object-fill ${
-          isMonthlyStep ? 'dark:hidden' : ''
+          usesDarkReportCanvas ? 'dark:hidden' : ''
         }`}
       />
 
@@ -84,7 +86,7 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
           type="button"
           onClick={handleClose}
           className={`flex items-center gap-[8px] text-[24px] font-medium leading-[130%] tracking-[-0.24px] text-[#171717] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#171717] ${
-            isMonthlyStep
+            usesDarkReportCanvas
               ? 'dark:text-text-strong dark:focus-visible:outline-[#F8F8F8]'
               : ''
           }`}
@@ -95,7 +97,7 @@ export function ReportLayout({ year, month, onClose }: ReportLayoutProps) {
               src={reportCloseIcon}
               alt=""
               className={`size-[24px] ${
-                isMonthlyStep ? 'dark:invert' : ''
+                usesDarkReportCanvas ? 'dark:invert' : ''
               }`}
             />
           </span>
