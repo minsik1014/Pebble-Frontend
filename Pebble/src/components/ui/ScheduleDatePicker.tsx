@@ -84,7 +84,7 @@ export const ScheduleDatePicker = ({
 
     const inactiveClass = isTaskVariant
       ? 'bg-btn-quaternary text-text-strong'
-      : 'bg-fill-surface text-text-strong';
+      : 'bg-fill-surface text-text-strong dark:bg-btn-quaternary';
 
     return `${baseClass} ${dateType === type ? activeClass : inactiveClass}`;
   };
