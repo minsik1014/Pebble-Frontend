@@ -83,8 +83,13 @@ export function SharedFriendsSection({
   const { sharedCategoryCount, friends } = sharedFriends;
   // 서버가 공유 카테고리 중첩 수와 수락 순서 기준으로 정렬한 순서를 보존합니다.
   const detailFriends = friends.slice(0, MAX_DETAIL_FRIENDS);
-  const avatarFriends = friends.slice(0, MAX_AVATAR_FRIENDS);
-  const hiddenFriendCount = friends.length - avatarFriends.length;
+  // 상세 카드 3명을 제외한 다음 친구부터 프로필 이미지로 최대 7명 표시합니다.
+  const avatarFriends = friends.slice(
+    MAX_DETAIL_FRIENDS,
+    MAX_DETAIL_FRIENDS + MAX_AVATAR_FRIENDS,
+  );
+  const visibleFriendCount = detailFriends.length + avatarFriends.length;
+  const hiddenFriendCount = friends.length - visibleFriendCount;
   const hasAvatarSummary = friends.length >= 4;
 
   return (
