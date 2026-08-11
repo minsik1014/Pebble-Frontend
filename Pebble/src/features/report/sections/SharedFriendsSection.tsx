@@ -10,6 +10,27 @@ interface SharedFriendsSectionProps {
   darkTheme?: boolean;
 }
 
+const MAX_DETAIL_FRIENDS = 3;
+const MAX_AVATAR_FRIENDS = 7;
+
+function FriendAvatar({ friend }: { friend: SharedFriend }) {
+  const avatarSrc = friend.avatarUrl || defaultProfile;
+
+  return (
+    <img
+      src={avatarSrc}
+      alt={`${friend.nickname} 프로필`}
+      crossOrigin={friend.avatarUrl ? 'anonymous' : undefined}
+      className="h-[40px] w-[40px] shrink-0 rounded-full border-[0.5px] border-[#D4D4D4] object-cover"
+      loading="lazy"
+      onError={(event) => {
+        event.currentTarget.onerror = null;
+        event.currentTarget.src = defaultProfile;
+      }}
+    />
+  );
+}
+
 /** 친구 한 줄 */
 function FriendRow({
   friend,
@@ -18,8 +39,6 @@ function FriendRow({
   friend: SharedFriend;
   darkTheme?: boolean;
 }) {
-  const avatarSrc = friend.avatarUrl || defaultProfile;
-
   return (
     <li
       className={`flex h-[56px] items-center overflow-hidden rounded-[12px] bg-white p-[8px] ${
@@ -29,17 +48,7 @@ function FriendRow({
       {/* 프로필 이미지 — 서버 값(avatarUrl).
           crossOrigin 이 있어야 R007 이미지 저장에서 아바타가 함께 구워집니다.
           CDN 이 Access-Control-Allow-Origin 을 내려주지 않으면 빈 칸으로 저장됩니다. */}
-      <img
-        src={avatarSrc}
-        alt={`${friend.nickname} 프로필`}
-        crossOrigin={friend.avatarUrl ? 'anonymous' : undefined}
-        className="h-[40px] w-[40px] shrink-0 rounded-full border-[0.5px] border-[#D4D4D4] object-cover"
-        loading="lazy"
-        onError={(event) => {
-          event.currentTarget.onerror = null;
-          event.currentTarget.src = defaultProfile;
-        }}
-      />
+      <FriendAvatar friend={friend} />
 
       <span className="ml-[12px] flex min-w-0 flex-1 flex-col justify-center leading-[150%]">
         {/* 공유 카테고리 이름 — 서버 값(categoryName) */}
@@ -72,6 +81,11 @@ export function SharedFriendsSection({
   darkTheme = false,
 }: SharedFriendsSectionProps) {
   const { sharedCategoryCount, friends } = sharedFriends;
+  // 서버가 공유 카테고리 중첩 수와 수락 순서 기준으로 정렬한 순서를 보존합니다.
+  const detailFriends = friends.slice(0, MAX_DETAIL_FRIENDS);
+  const avatarFriends = friends.slice(0, MAX_AVATAR_FRIENDS);
+  const hiddenFriendCount = friends.length - avatarFriends.length;
+  const hasAvatarSummary = friends.length >= 4;
 
   return (
     <div className="flex h-full w-full flex-col gap-[20px]">
@@ -112,14 +126,39 @@ export function SharedFriendsSection({
           darkTheme={darkTheme}
         />
       ) : (
-        <ul className="flex flex-col gap-[12px]">
-          {friends.map((friend) => (
+        <ul className="flex min-h-0 flex-col gap-[12px]">
+          {detailFriends.map((friend) => (
             <FriendRow
               key={friend.id}
               friend={friend}
               darkTheme={darkTheme}
             />
           ))}
+
+          {hasAvatarSummary ? (
+            <li className="flex h-[40px] w-full items-center justify-between gap-[12px] rounded-[999px]">
+              <span className="flex min-w-0 items-center">
+                {avatarFriends.map((friend, index) => (
+                  <span
+                    key={friend.id}
+                    className={index === 0 ? '' : '-ml-[4px]'}
+                  >
+                    <FriendAvatar friend={friend} />
+                  </span>
+                ))}
+              </span>
+
+              {hiddenFriendCount > 0 ? (
+                <span
+                  className={`shrink-0 text-[16px] font-semibold leading-[150%] tracking-[-0.16px] text-[#A3A3A3] ${
+                    darkTheme ? 'dark:text-text-teritary' : ''
+                  }`}
+                >
+                  + {hiddenFriendCount.toLocaleString('ko-KR')}명
+                </span>
+              ) : null}
+            </li>
+          ) : null}
         </ul>
       )}
     </div>

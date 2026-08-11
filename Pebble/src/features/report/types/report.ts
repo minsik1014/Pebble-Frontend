@@ -179,7 +179,7 @@ export interface DaySchedule {
   colorHex: string | null;
 }
 
-/** 이번 달 가장 바빴던 하루 */
+/** 저번 달 가장 바빴던 하루 */
 export interface BusiestDay {
   /** "YYYY-MM-DD" — 화면 "6월 8일" 및 요일 계산의 기준 */
   date: string;
@@ -210,7 +210,12 @@ export interface SharedFriend {
 export interface SharedFriends {
   /** 공유 카테고리 개수 — "공유 카테고리 2개" */
   sharedCategoryCount: number;
-  /** 친구 목록 */
+  /**
+   * 친구 목록.
+   * API는 겹치는 공유 카테고리 수가 많은 순서로 정렬하고, 같은 경우에는
+   * 먼저 생성된 공유 카테고리의 수락을 먼저 누른 순서로 반환해야 합니다.
+   * 프론트엔드는 전달받은 순서를 그대로 사용합니다.
+   */
   friends: SharedFriend[];
 }
 
