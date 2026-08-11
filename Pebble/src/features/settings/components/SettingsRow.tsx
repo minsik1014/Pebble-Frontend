@@ -23,7 +23,7 @@ export function SettingsRow({
       {...props}
     >
       <div className="min-w-0">
-        <h3 className="text-body-02-sb tracking-[-0.01em] text-text-strong">
+        <h3 className="text-[18px] font-semibold leading-[150%] tracking-[-0.01em] text-text-strong">
           {title}
         </h3>
         {description ? (

@@ -35,8 +35,8 @@ export const SidebarScheduleCheckbox = ({
     <span
       className={`flex size-6 items-center justify-center overflow-hidden rounded-token-xs ${
         checked
-          ? "bg-btn-primary"
-          : "border border-border-default bg-fill-inverse"
+          ? "border-2 border-fill-inverse bg-btn-primary dark:border-fill-inverse"
+          : "border border-border-secondary bg-fill-inverse dark:border-border-secondary dark:bg-fill-inverse"
       }`}
       aria-hidden="true"
     >

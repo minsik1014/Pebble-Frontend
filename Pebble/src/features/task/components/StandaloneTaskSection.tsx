@@ -55,10 +55,10 @@ export const StandaloneTaskSection = ({
         return (
           <section
             key={`${task.id}-${row.key}`}
-            className="flex w-[352px] shrink-0 flex-col overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-s"
+            className="flex w-[352px] shrink-0 flex-col overflow-visible rounded-[20px] bg-fill-inverse shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] dark:bg-[#222222] dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.025)]"
           >
             <div
-              className="flex w-full items-center justify-between gap-3 rounded-[20px] bg-fill-inverse py-3 pl-5 pr-3 text-left transition-colors hover:bg-fill-surface"
+              className="flex w-full items-center justify-between gap-3 rounded-[20px] bg-fill-inverse py-3 pl-5 pr-3 text-left transition-colors hover:bg-fill-surface dark:bg-[#222222]"
             >
               <button
                 type="button"

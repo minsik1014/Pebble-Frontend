@@ -105,7 +105,7 @@ export const CalendarBoard = ({
   return (
     <section
       aria-label="월간 캘린더"
-      className={`flex shrink-0 flex-col overflow-hidden bg-fill-inverse shadow-shadow-m transition-all duration-300 ${boardHeightClassName} ${boardWidthClassName}`}
+      className={`flex shrink-0 flex-col overflow-hidden bg-fill-inverse shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)] transition-all duration-300 ${boardHeightClassName} ${boardWidthClassName}`}
     >
       <div
         className={`relative flex flex-col items-start gap-token-l transition-all duration-300 ${contentClassName}`}

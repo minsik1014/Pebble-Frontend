@@ -67,15 +67,15 @@ export const SocialOAuthCallbackPage = (): JSX.Element => {
   }, [navigate, provider, searchParams]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-white font-sans">
-      <p className="text-[16px] text-[#404040]">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-fill-inverse font-sans" data-theme="light">
+      <p className="text-[16px] text-text-primary">
         {errorMessage ?? '소셜 로그인 처리 중...'}
       </p>
       {errorMessage && (
         <button
           type="button"
           onClick={() => navigate('/login', { replace: true })}
-          className="h-[44px] rounded-[12px] bg-[#171717] px-6 text-white"
+          className="h-[44px] rounded-[12px] bg-btn-primary px-6 text-text-onFill"
         >
           로그인으로 돌아가기
         </button>

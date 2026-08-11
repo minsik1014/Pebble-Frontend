@@ -151,7 +151,7 @@ export function EmailChangeModal({
       className={[
         'fixed inset-0 z-50',
         'flex items-center justify-center overflow-hidden',
-        'bg-fill-shadow/30 backdrop-blur-[3px]',
+        'bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]',
       ].join(' ')}
       onClick={handleClose}
     >
@@ -159,7 +159,7 @@ export function EmailChangeModal({
         role="dialog"
         aria-modal="true"
         aria-label="이메일 변경"
-        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) =>
           event.stopPropagation()
         }
@@ -224,7 +224,7 @@ export function EmailChangeModal({
             type="button"
             variant="cancel"
             disabled={isRunning}
-            className="h-11 w-full text-text-strong"
+            className="h-11 w-full"
             onClick={handleClose}
           >
             취소
@@ -234,12 +234,7 @@ export function EmailChangeModal({
             type="button"
             variant="primary"
             disabled={!canSubmit}
-            className={[
-              'h-11 w-full disabled:opacity-100',
-              canSubmit
-                ? ''
-                : '!bg-btn-teritary !text-text-teritary',
-            ].join(' ')}
+            className="h-11 w-full disabled:opacity-100"
             onClick={() =>
               void handleSubmit()
             }

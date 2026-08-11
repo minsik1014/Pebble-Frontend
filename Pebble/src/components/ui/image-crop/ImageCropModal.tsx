@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Cropper, { type Area, type Point } from "react-easy-crop";
+import Cropper, {
+  type Area,
+  type MediaSize,
+  type Point,
+  type Size,
+} from "react-easy-crop";
 import "react-easy-crop/react-easy-crop.css";
 
 import CloseIcon from "@/assets/icons/Close.svg?react";
 import { getCroppedImageUrl } from "@/components/ui/image-crop/cropImage";
 import {
   ACCEPTED_IMAGE_TYPES,
+  MAX_IMAGE_SIZE_MB,
   validateImageFile,
 } from "@/components/ui/image-crop/imageCropConfig";
 
@@ -22,17 +28,43 @@ type ImageCropModalProps = {
   changeImageLabel?: string;
   aspect?: number;
   cropShape?: ImageCropShape;
-  minZoom?: number;
   onClose: () => void;
   onChangeImage: (imageUrl: string) => void;
 };
 
-const getRequiredZoomForRotation = (rotation: number) => {
+const MINIMUM_ZOOM_LIMIT = 0.01;
+const MINIMUM_ZOOM_RATIO = 0.1;
+
+const getRotatedSize = (size: Size, rotation: number): Size => {
   const rotationRadians = (Math.abs(rotation) * Math.PI) / 180;
   const sin = Math.abs(Math.sin(rotationRadians));
   const cos = Math.abs(Math.cos(rotationRadians));
 
-  return Math.max(1, sin + cos);
+  return {
+    width: size.width * cos + size.height * sin,
+    height: size.width * sin + size.height * cos,
+  };
+};
+
+const getAutomaticMinimumZoom = (
+  mediaSize: MediaSize | null,
+  cropSize: Size | null,
+  rotation: number,
+) => {
+  if (!mediaSize || !cropSize) {
+    return 1;
+  }
+
+  const rotatedMediaSize = getRotatedSize(mediaSize, rotation);
+  const containZoom = Math.min(
+    cropSize.width / rotatedMediaSize.width,
+    cropSize.height / rotatedMediaSize.height,
+  );
+
+  return Math.max(
+    MINIMUM_ZOOM_LIMIT,
+    Math.min(1, containZoom * MINIMUM_ZOOM_RATIO),
+  );
 };
 
 export const ImageCropModal = ({
@@ -46,7 +78,6 @@ export const ImageCropModal = ({
   changeImageLabel = "이미지 변경",
   aspect = 1,
   cropShape = "round",
-  minZoom: minimumZoom = 1,
   onClose,
   onChangeImage,
 }: ImageCropModalProps) => {
@@ -56,9 +87,11 @@ export const ImageCropModal = ({
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
+  const [mediaSize, setMediaSize] = useState<MediaSize | null>(null);
+  const [cropSize, setCropSize] = useState<Size | null>(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const minZoom = minimumZoom * getRequiredZoomForRotation(rotation);
+  const minZoom = getAutomaticMinimumZoom(mediaSize, cropSize, rotation);
 
   const revokeCreatedObjectUrl = useCallback(() => {
     if (createdObjectUrlRef.current) {
@@ -85,6 +118,8 @@ export const ImageCropModal = ({
     setCrop({ x: 0, y: 0 });
     setZoom(1);
     setRotation(0);
+    setMediaSize(null);
+    setCropSize(null);
     setCroppedAreaPixels(null);
     setErrorMessage("");
   }, [imageFile, imageUrl, isOpen, revokeCreatedObjectUrl]);
@@ -122,6 +157,8 @@ export const ImageCropModal = ({
     setCrop({ x: 0, y: 0 });
     setZoom(1);
     setRotation(0);
+    setMediaSize(null);
+    setCropSize(null);
     setCroppedAreaPixels(null);
     setErrorMessage("");
   };
@@ -129,7 +166,10 @@ export const ImageCropModal = ({
   const handleRotationChange = (nextRotation: number) => {
     setRotation(nextRotation);
     setZoom((previousZoom) =>
-      Math.max(previousZoom, getRequiredZoomForRotation(nextRotation)),
+      Math.max(
+        previousZoom,
+        getAutomaticMinimumZoom(mediaSize, cropSize, nextRotation),
+      ),
     );
   };
 
@@ -202,6 +242,8 @@ export const ImageCropModal = ({
               onCropComplete={handleCropComplete}
               onZoomChange={setZoom}
               onRotationChange={handleRotationChange}
+              onMediaLoaded={setMediaSize}
+              onCropSizeChange={setCropSize}
             />
           ) : (
             <button
@@ -213,7 +255,7 @@ export const ImageCropModal = ({
                 이미지 선택하기
               </span>
               <span className="text-body-02-m text-text-teritary">
-                JPG, PNG, WEBP 파일을 업로드할 수 있습니다.
+                JPG, PNG, WEBP 파일을 최대 {MAX_IMAGE_SIZE_MB}MB까지 업로드할 수 있습니다.
               </span>
             </button>
           )}
@@ -224,7 +266,7 @@ export const ImageCropModal = ({
             <span className="w-16 text-body-02-m text-text-secondary">확대</span>
             <input
               type="range"
-              min={minimumZoom}
+              min={minZoom}
               max={3}
               step={0.01}
               value={zoom}
@@ -270,14 +312,14 @@ export const ImageCropModal = ({
         <footer className="flex items-center justify-between gap-3">
           <button
             type="button"
-            className="h-11 rounded-token-s bg-btn-quaternary px-5 text-body-02-m text-text-strong hover:bg-btn-pressed"
+            className="h-11 rounded-token-s bg-btn-quaternary px-5 text-body-02-m text-text-strong transition-colors hover:bg-btn-pressed dark:hover:bg-[#373737]"
             onClick={() => fileInputRef.current?.click()}
           >
             {changeImageLabel}
           </button>
           <button
             type="button"
-            className="h-11 rounded-token-s bg-btn-primary px-5 text-body-02-m text-text-onFill disabled:bg-btn-teritary"
+            className="dark-disabled-primary h-11 rounded-token-s bg-btn-primary px-5 text-body-02-m text-text-onFill disabled:bg-btn-teritary"
             disabled={!sourceImageUrl || !croppedAreaPixels}
             onClick={handleApply}
           >

@@ -28,8 +28,8 @@ export const DeleteCategoryModal = ({
   const isMatched = confirmText === category.title;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-fill-shadow">
-      <div className="w-[655px] p-8 bg-fill-inverse rounded-[32px] shadow-shadow-m flex flex-col gap-5 relative">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]">
+      <div className="w-[655px] p-8 bg-fill-inverse rounded-[32px] shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)] flex flex-col gap-5 relative">
         
         {/* 헤더 */}
         <div className="flex items-start justify-between">
@@ -41,9 +41,9 @@ export const DeleteCategoryModal = ({
           <button 
             type="button" 
             onClick={onClose}
-            className="w-11 h-11 flex items-center justify-center rounded-xl hover:bg-fill-surface transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-xl text-text-secondary hover:bg-fill-surface transition-colors dark:text-btn-secondary"
           >
-            <CloseIcon className="w-6 h-6 text-text-secondary" />
+            <CloseIcon className="w-6 h-6" />
           </button>
         </div>
 
@@ -57,7 +57,7 @@ export const DeleteCategoryModal = ({
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             placeholder={category.title}
-            className="w-full p-3 bg-fill-inverse border border-border-default rounded-xl text-body-02-m text-text-strong placeholder:text-text-quaternary focus:outline-none focus:border-text-strong transition-colors"
+            className="w-full p-3 bg-fill-inverse border border-border-default rounded-xl text-body-02-m text-text-strong placeholder:text-text-quaternary focus:outline-none focus:border-text-strong transition-colors dark:border-border-secondary dark:text-text-primary dark:focus:border-border-primary"
           />
         </div>
 
@@ -66,7 +66,7 @@ export const DeleteCategoryModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 h-11 bg-btn-quaternary text-text-strong rounded-token-s font-medium hover:bg-btn-pressed transition-colors"
+            className="h-11 flex-1 rounded-token-s bg-btn-quaternary font-medium text-text-strong transition-colors hover:bg-btn-pressed dark:hover:bg-[#373737]"
           >
             취소
           </button>

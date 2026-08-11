@@ -44,13 +44,13 @@ export const CategoryMemberSelector = ({
             ? "border-border-primary bg-fill-inverse"
             : isDropdownOpen
               ? "border-border-primary bg-fill-inverse"
-              : "border-border-secondary bg-fill-surface",
+              : "border-border-secondary bg-fill-surface dark:bg-fill-inverse",
         ].join(" ")}
       >
         {showSelectedMembersInInput && selectedMembers.map((member) => (
           <div
             key={member.id}
-            className="flex items-center gap-token-m rounded-token-infinite bg-fill-teritory p-token-s shadow-shadow-s"
+            className="flex items-center gap-token-m rounded-token-infinite bg-fill-teritory p-token-s shadow-shadow-s dark:shadow-[0px_0px_4px_0px_rgba(23,23,23,0.1)]"
           >
             <div className="flex items-center gap-token-s">
               {member.profileImageUrl ? (
@@ -69,7 +69,7 @@ export const CategoryMemberSelector = ({
             <button
               type="button"
               onClick={() => onToggleMember(member)}
-              className="flex size-9 items-center justify-center rounded-token-s text-text-secondary transition-colors hover:bg-black/5"
+              className="flex size-9 items-center justify-center rounded-token-s text-text-secondary transition-colors hover:bg-black/5 dark:text-btn-secondary"
               aria-label={`${member.name} 구성원 제거`}
             >
               <span className="text-title-03-m leading-none" aria-hidden="true">
@@ -98,7 +98,7 @@ export const CategoryMemberSelector = ({
       </div>
 
       {isDropdownOpen && filteredFriends.length > 0 && (
-        <div className="absolute top-full z-50 mt-2 flex max-h-48 w-full flex-col gap-token-m overflow-y-auto rounded-token-s border border-border-teritory bg-fill-inverse p-token-s shadow-[0px_2px_10px_0px_rgba(23,23,23,0.1)]">
+        <div className="absolute top-full z-50 mt-2 flex max-h-48 w-full flex-col gap-token-m overflow-y-auto rounded-token-s border border-border-teritory bg-fill-inverse p-token-s shadow-[0px_2px_10px_0px_rgba(23,23,23,0.1)] dark:border-border-secondary">
           {filteredFriends.map((friend) => (
             <div
               key={friend.id}

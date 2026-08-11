@@ -204,7 +204,7 @@ export const CategoryDetailSection = ({
     <section
       className={[
         'relative h-[1000px] overflow-hidden rounded-[20px]',
-        'bg-fill-inverse shadow-shadow-m',
+        'bg-fill-inverse shadow-shadow-m dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]',
         'transition-all duration-300',
         isSidebarOpen
           ? 'w-[898px]'

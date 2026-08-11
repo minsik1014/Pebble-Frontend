@@ -20,8 +20,8 @@ export const AddButton = ({
   
   const variantClass = 
     variant === "primary"
-      ? "bg-fill-primary hover:opacity-90 text-text-onFill"
-      : "bg-btn-quaternary hover:bg-btn-pressed text-text-secondary";
+      ? "bg-fill-primary hover:opacity-90 text-text-onFill dark:hover:opacity-95"
+      : "bg-btn-quaternary hover:bg-btn-pressed text-text-secondary dark:text-text-secondary";
 
   return (
     <button

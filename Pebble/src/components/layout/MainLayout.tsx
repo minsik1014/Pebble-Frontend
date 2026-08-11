@@ -189,7 +189,7 @@ const MobileMainLayout = (): JSX.Element => {
   };
 
   return (
-    <main className="min-h-screen bg-fill-surface px-4 py-5">
+    <main className="min-h-screen bg-fill-inverse px-4 py-5 dark:bg-fill-surface">
       <section className="mx-auto flex w-full max-w-[430px] flex-col gap-4">
         <header className="rounded-token-l bg-fill-inverse p-5 shadow-shadow-s">
           <div className="flex items-center justify-between gap-3">
@@ -333,7 +333,7 @@ const MobileNestedPageLayout = (): JSX.Element => {
   const { pathname } = useLocation();
 
   return (
-    <main className="min-h-screen bg-fill-surface px-4 py-5">
+    <main className="min-h-screen bg-fill-inverse px-4 py-5 dark:bg-fill-surface">
       <section className="mx-auto flex w-full max-w-[430px] flex-col gap-4">
         <MobileRouteNav activePath={pathname} />
         {pathname === "/" ? (
@@ -416,7 +416,7 @@ const MainLayoutFrame = (): JSX.Element => {
   }
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center overflow-auto bg-fill-surface p-3">
+    <main className="flex min-h-screen w-full items-center justify-center overflow-auto bg-fill-inverse p-3 dark:bg-fill-surface">
       <div
         className="relative"
         style={{

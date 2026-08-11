@@ -23,7 +23,8 @@
 @tailwind utilities;
 
 :root,
-:root[data-theme='light'] {
+:root[data-theme='light'],
+[data-theme='light'] {
   color-scheme: light;
 
   --fill-primary: 23 23 23;
@@ -90,17 +91,18 @@
   --color-6-light: #ffd7e9;
 }
 
-:root[data-theme='dark'] {
+:root[data-theme='dark'],
+[data-theme='dark'] {
   color-scheme: dark;
 
-  --fill-primary: 250 250 250;
+  --fill-primary: 248 248 248;
   --fill-secondary: 115 115 115;
   --fill-teritory: 64 64 64;
   --fill-surface: 23 23 23;
-  --fill-inverse: 38 38 38;
+  --fill-inverse: 36 36 36;
 
   --fill-danger: 252 76 70;
-  --fill-danger-bg: 83 39 37;
+  --fill-danger-bg: 58 18 16;
 
   --fill-success: 50 200 145;
   --fill-success-bg: 30 74 56;
@@ -109,25 +111,25 @@
   --fill-info: 130 160 255;
   --fill-shadow: 44 44 44;
 
-  --text-strong: 250 250 250;
-  --text-primary: 229 229 229;
-  --text-secondary: 163 163 163;
-  --text-teritary: 115 115 115;
-  --text-quaternary: 82 82 82;
-  --text-on-fill: 23 23 23;
-  --text-sunday: 254 166 143;
-  --text-saturday: 130 160 255;
+  --text-strong: 248 248 248;
+  --text-primary: 227 227 227;
+  --text-secondary: 173 173 173;
+  --text-teritary: 143 143 143;
+  --text-quaternary: 92 92 92;
+  --text-on-fill: 0 0 0;
+  --text-sunday: 224 100 92;
+  --text-saturday: 110 137 230;
 
   --border-primary: 250 250 250;
   --border-selected: 163 163 163;
   --border-default: 82 82 82;
-  --border-secondary: 82 82 82;
-  --border-teritory: 64 64 64;
+  --border-secondary: 61 61 61;
+  --border-teritory: 31 31 31;
 
-  --button-primary: 250 250 250;
+  --button-primary: 248 248 248;
   --button-secondary: 229 229 229;
   --button-teritory: 115 115 115;
-  --button-quaternary: 38 38 38;
+  --button-quaternary: 61 61 61;
   --button-pressed: 64 64 64;
 
   --shadow-color: 0 0 0;
@@ -135,6 +137,42 @@
 
 .schedule-date-range-segment {
   background-color: var(--schedule-range-color);
+}
+
+.category-custom-color-button {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    conic-gradient(
+        #ff3b30,
+        #ff9500,
+        #ffcc00,
+        #34c759,
+        #00cef5,
+        #bf73fd,
+        #ff3b30
+      )
+      border-box;
+}
+
+[data-theme='dark'] .category-custom-color-button {
+  border-width: 3px;
+  background:
+    linear-gradient(
+        rgb(var(--fill-inverse)),
+        rgb(var(--fill-inverse))
+      )
+      padding-box,
+    conic-gradient(
+        #ff3b30,
+        #ff9500,
+        #ffcc00,
+        #34c759,
+        #00cef5,
+        #bf73fd,
+        #ff3b30
+      )
+      border-box;
 }
 
 :root[data-theme='dark'] .schedule-date-range-segment {
@@ -178,6 +216,11 @@
     min-height: 100%;
   }
 
+  .theme-transition-blocked,
+  .theme-transition-blocked * {
+    transition: none !important;
+  }
+
   body {
     margin: 0;
     background-color: rgb(var(--fill-surface));
@@ -204,31 +247,49 @@
   textarea::placeholder {
     color: rgb(var(--text-teritary));
   }
+
+  :root[data-theme='dark'] input::placeholder,
+  :root[data-theme='dark'] textarea::placeholder,
+  [data-theme='dark'] input::placeholder,
+  [data-theme='dark'] textarea::placeholder {
+    color: rgb(var(--text-quaternary));
+  }
 }
 
 @layer components {
   /*
-   * 인증 화면은 비로그인 상태에서 항상 라이트 테마로 표시합니다.
+   * ?�증 ?�면?� ?�위 data-theme 값에 맞춰 ?�이???�크 ?�큰?�로 ?�시?�니??
    */
   .auth-title {
-    @apply text-[23px] font-medium leading-[130%] tracking-[-0.23px] text-[#404040];
+    @apply text-[23px] font-medium leading-[130%] tracking-[-0.23px] text-text-primary;
   }
 
   .auth-label {
-    @apply text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-[#737373];
+    @apply text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-text-teritary;
   }
 
   .auth-required {
-    @apply ml-[2px] text-[#FC4C46];
+    @apply ml-[2px] text-fill-danger;
   }
 
   .auth-input {
-    @apply h-[52px] w-full rounded-[12px] border border-[#D4D4D4] bg-white text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-[#171717] outline-none transition-colors placeholder:text-[15px] placeholder:font-normal placeholder:tracking-[-0.16px] placeholder:text-[#D4D4D4] focus:border-[#171717];
+    @apply h-[52px] w-full rounded-[12px] border border-border-secondary bg-fill-inverse text-[15px] font-normal leading-[150%] tracking-[-0.15px] text-text-primary outline-none transition-colors placeholder:text-[15px] placeholder:font-normal placeholder:tracking-[-0.16px] placeholder:text-text-quaternary focus:border-border-primary;
     font-family: 'Pretendard', sans-serif;
   }
 
   .auth-body {
     @apply text-[15px] font-normal leading-[150%] tracking-[-0.15px];
+  }
+
+  :root[data-theme='dark'] .dark-disabled-primary:is(:disabled, [aria-disabled='true']),
+  [data-theme='dark'] .dark-disabled-primary:is(:disabled, [aria-disabled='true']) {
+    background-color: rgb(var(--button-primary));
+    background-image: linear-gradient(
+      rgba(23, 23, 23, 0.7),
+      rgba(23, 23, 23, 0.7)
+    );
+    color: rgb(var(--text-teritary));
+    opacity: 1;
   }
 
   .all-unset {

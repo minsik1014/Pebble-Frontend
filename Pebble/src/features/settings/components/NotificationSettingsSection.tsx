@@ -48,7 +48,6 @@ export function NotificationSettingsSection({
               checked={enabled}
               disabled={isUpdating}
               aria-label="당일 일정 알림"
-              uncheckedClassName="bg-text-quaternary"
               onCheckedChange={(checked) => void handleChange(checked)}
             />
           }

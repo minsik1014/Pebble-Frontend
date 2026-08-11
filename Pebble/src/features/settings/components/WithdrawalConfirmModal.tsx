@@ -46,7 +46,7 @@ export function WithdrawalConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[rgba(23,23,23,0.45)]"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
       onClick={() => {
         if (!isSubmitting) onOpenChange(false);
       }}
@@ -56,11 +56,11 @@ export function WithdrawalConfirmModal({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="flex h-[359px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m"
+        className="flex h-[359px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex h-[67px] w-full items-start justify-between">
-          <div>
+          <div className="flex h-[67px] w-[260px] flex-col gap-token-xs pt-token-s">
             <h2
               id={titleId}
               className="text-title-02-sb tracking-[-0.01em] text-text-strong"
@@ -69,7 +69,7 @@ export function WithdrawalConfirmModal({
             </h2>
             <p
               id={descriptionId}
-              className="mt-token-xs text-body-02-m tracking-[-0.01em] text-text-secondary"
+              className="text-body-02-m tracking-[-0.01em] text-text-secondary"
             >
               탈퇴 전 아래 내용을 반드시 확인해 주세요.
             </p>
@@ -79,7 +79,7 @@ export function WithdrawalConfirmModal({
             type="button"
             aria-label="회원탈퇴 확인 모달 닫기"
             disabled={isSubmitting}
-            className="flex size-8 shrink-0 items-center justify-center rounded-token-s text-text-secondary hover:bg-btn-quaternary disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex size-8 shrink-0 items-center justify-center rounded-token-s text-text-secondary hover:bg-btn-quaternary disabled:cursor-not-allowed disabled:opacity-50 dark:text-btn-secondary"
             onClick={() => onOpenChange(false)}
           >
             <CloseIcon className="size-6" aria-hidden="true" />
@@ -165,10 +165,7 @@ export function WithdrawalConfirmModal({
             type="button"
             variant="danger"
             className={[
-              'h-11 disabled:opacity-100',
-              canSubmit
-                ? 'bg-fill-danger text-text-onFill'
-                : 'bg-fill-danger/60 text-text-onFill',
+              'h-11 !bg-fill-danger !text-text-strong disabled:opacity-100',
             ].join(' ')}
             disabled={!canSubmit}
             onClick={onConfirm}

@@ -137,7 +137,7 @@ export const CalendarSidebarListView = ({
               return (
                 <div
                   key={getDatedItemKey(group.key, datedItem)}
-                  className="flex h-12 w-full shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 shadow-shadow-s transition-colors hover:bg-fill-surface"
+                  className="flex h-12 w-full shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] transition-colors hover:bg-fill-surface dark:bg-[#222222] dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.025)]"
                 >
                   <button
                     type="button"

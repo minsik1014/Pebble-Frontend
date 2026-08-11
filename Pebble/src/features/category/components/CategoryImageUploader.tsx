@@ -3,6 +3,7 @@ import { useState, type ChangeEvent } from "react";
 import UploadIcon from "@/assets/icons/Upload.svg?react";
 import {
   ACCEPTED_IMAGE_TYPES,
+  MAX_IMAGE_SIZE_MB,
   validateImageFile,
 } from "@/components/ui/image-crop/imageCropConfig";
 
@@ -49,7 +50,7 @@ export const CategoryImageUploader = ({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="relative flex h-[234px] w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-token-s border border-dashed border-border-default bg-fill-inverse transition-colors hover:bg-fill-surface"
+        className="relative flex h-[234px] w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-token-s border border-dashed border-border-default bg-fill-inverse transition-colors hover:bg-fill-surface dark:border-border-secondary"
       >
         {imageUrl ? (
           <>
@@ -64,10 +65,10 @@ export const CategoryImageUploader = ({
           </>
         ) : (
           <>
-            <UploadIcon className="h-11 w-11 text-text-secondary" />
+            <UploadIcon className="h-11 w-11 text-text-secondary dark:text-btn-secondary" />
             <span className="text-body-02-m text-text-secondary">이미지 추가</span>
             <span className="mt-3 whitespace-pre-line text-center text-caption-01 text-text-teritary">
-              JPEG · PNG · WEBP{"\n"}최대 5MB
+              JPEG · PNG · WEBP{"\n"}최대 {MAX_IMAGE_SIZE_MB}MB
             </span>
           </>
         )}

@@ -133,7 +133,7 @@ const SidebarScheduleRow = ({
         return (
           <div
             key={`${item.id}-${row.key}`}
-            className={`${widthClassName} flex shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface`}
+            className={`${widthClassName} flex shrink-0 items-center gap-2 overflow-hidden rounded-token-s bg-fill-inverse py-2 pr-2 transition-colors hover:bg-fill-surface dark:bg-[#222222]`}
           >
             <button
               type="button"
@@ -199,14 +199,14 @@ export const MilestoneAccordion = ({
 
   return (
     <section
-      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative bg-fill-inverse rounded-token-m overflow-hidden ${
+      className={`w-[352px] shrink-0 flex flex-col items-center justify-center relative overflow-visible rounded-token-m bg-fill-inverse dark:bg-[#222222] ${
         isSelected
-          ? "outline outline-2 -outline-offset-2 outline-border-selected shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_14px_0px_rgba(23,23,23,0.05)]"
-          : "shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)]"
+          ? "outline outline-2 -outline-offset-2 outline-border-selected shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_14px_0px_rgba(23,23,23,0.05)] dark:shadow-[0px_0px_0px_1px_rgb(var(--border-selected)),0px_0px_8px_0px_rgba(255,255,255,0.025)]"
+          : "shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.025)]"
       }`}
     >
       <div
-        className="flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-token-m overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors"
+        className="flex w-full items-center justify-between pl-5 pr-3 py-3 relative bg-fill-inverse rounded-token-m overflow-hidden cursor-pointer hover:bg-fill-surface transition-colors dark:bg-[#222222]"
         onClick={() => onSelectCategory?.(category.id)}
       >
         <div className="flex w-[232px] min-w-0 items-center gap-3 relative">
@@ -249,7 +249,7 @@ export const MilestoneAccordion = ({
               {isVisible ? (
                 <EyeOnIcon className="w-6 h-6 text-text-secondary" />
               ) : (
-                <EyeOffIcon className="w-6 h-6 text-text-secondary" />
+                <EyeOffIcon className="w-6 h-6 text-text-secondary dark:text-btn-secondary" />
               )}
             </button>
           )}

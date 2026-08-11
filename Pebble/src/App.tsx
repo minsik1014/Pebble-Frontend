@@ -26,7 +26,7 @@ import { SharedFriendsStep } from '@/features/report/steps/SharedFriendsStep';
 import { SummaryStep } from '@/features/report/steps/SummaryStep';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
 import FriendsPage from '@/pages/freinds/FriendsPage';
-import {HomePage} from '@/pages/home/HomePage';
+import { HomePage } from '@/pages/home/HomePage';
 import { LandingPage } from '@/pages/landing/LandingPage';
 import MyPage from '@/pages/mypage/MyPage';
 import ProfileEditPage from '@/pages/mypage/ProfileEditPage';

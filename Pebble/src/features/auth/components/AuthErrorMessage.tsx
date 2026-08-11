@@ -10,7 +10,7 @@ interface AuthErrorMessageProps {
 export const AuthErrorMessage = ({ children, className = "" }: AuthErrorMessageProps) => (
   <div
     role="alert"
-    className={`flex items-start gap-[4px] text-[13px] leading-[20px] text-[#FC4C46] font-medium text-left ${className}`}
+    className={`flex items-start gap-[4px] text-[13px] leading-[20px] text-fill-danger font-medium text-left ${className}`}
   >
     <CautionIcon aria-hidden="true" className="w-[20px] h-[20px] flex-shrink-0" />
     <span className="min-w-0">{children}</span>

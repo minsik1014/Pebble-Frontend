@@ -30,7 +30,7 @@ export const CalendarSidebarHeader = ({
           onClick={() => onChangeViewMode("card")}
           className={`flex h-10 items-center justify-center rounded-[9px] px-3 py-2 transition-colors ${
             viewMode === "card"
-              ? "bg-fill-inverse text-text-primary shadow-[0px_0px_4px_rgba(23,23,23,0.1)]"
+              ? "bg-fill-inverse text-text-primary shadow-[0px_0px_4px_0px_rgba(23,23,23,0.1)]"
               : "text-text-teritary"
           }`}
         >
@@ -44,7 +44,7 @@ export const CalendarSidebarHeader = ({
           onClick={() => onChangeViewMode("list")}
           className={`flex h-10 items-center justify-center rounded-[9px] px-3 py-2 transition-colors ${
             viewMode === "list"
-              ? "bg-fill-inverse text-text-primary shadow-[0px_0px_4px_rgba(23,23,23,0.1)]"
+              ? "bg-fill-inverse text-text-primary shadow-[0px_0px_4px_0px_rgba(23,23,23,0.1)]"
               : "text-text-teritary"
           }`}
         >

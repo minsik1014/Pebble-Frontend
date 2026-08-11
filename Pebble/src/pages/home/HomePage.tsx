@@ -44,7 +44,6 @@ const storeViewedFriendIds = (viewedFriendIds: Set<number>) => {
 
 export const HomePage = (): JSX.Element => {
   const navigate = useNavigate();
-  const { profile, friends, pendingCount, activity } = useHomeOverview();
   const [viewedFriendIds, setViewedFriendIds] = useState<Set<number>>(
     getStoredViewedFriendIds,
   );
@@ -64,8 +63,24 @@ export const HomePage = (): JSX.Element => {
     calendarErrorMessage,
     reloadCalendarData,
   } = useCalendarLayoutContext();
+  const { profile, friends, pendingCount, activity } =
+    useHomeOverview(viewedUserId);
   const selectedUserId = viewedUserId ?? currentUserId ?? profile.id;
   const isFriendCalendarView = viewedUserId !== null;
+  const selectedFriend = isFriendCalendarView
+    ? friends.find((friend) => friend.userId === viewedUserId)
+    : null;
+  const overviewProfile = isFriendCalendarView
+    ? {
+        nickname: selectedFriend?.nickname ?? "친구",
+        bio: selectedFriend?.bio ?? "",
+        imageUrl: selectedFriend?.profileImageUrl ?? null,
+      }
+    : {
+        nickname: profile.nickname,
+        bio: profile.bio,
+        imageUrl: profile.imageUrl,
+      };
 
   useEffect(() => {
     if (viewedUserId === null) {
@@ -118,7 +133,8 @@ export const HomePage = (): JSX.Element => {
 
       <div className="mt-6">
         <HomeOverviewCards
-          profile={profile}
+          profile={overviewProfile}
+          profileLabel={isFriendCalendarView ? "친구" : "나"}
           activityColor={activity.color}
           activities={activity.logs}
         />
@@ -149,3 +165,5 @@ export const HomePage = (): JSX.Element => {
     </section>
   );
 };
+
+export default HomePage;
