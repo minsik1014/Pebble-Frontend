@@ -122,5 +122,6 @@ export async function respondCategoryInvite(
     method: "PATCH",
     url: `/categories/${categoryId}/members/me`,
     data: { action },
+    skipGlobalErrorToast: true,
   });
 }

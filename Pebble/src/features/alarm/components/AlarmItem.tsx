@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react';
+import { useState, type MouseEvent } from 'react';
 
 import CalendarIcon from '@/assets/icons/calendar-outline.svg?react';
 import ReportIcon from '@/assets/icons/memo-outline.svg?react';
@@ -60,6 +60,7 @@ export const AlarmItem = ({
   onFollowRequestResponse,
   onCategoryInviteResponse,
 }: AlarmItemProps) => {
+  const [isResponding, setIsResponding] = useState(false);
   const isPendingFollowRequest =
     alarm.type === 'FOLLOW_REQUEST' &&
     (alarm.followStatus ?? 'PENDING') === 'PENDING';
@@ -89,26 +90,42 @@ export const AlarmItem = ({
     onDelete(alarm.id);
   };
 
-  const handleAccept = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleAccept = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
 
-    if (isPendingCategoryInvite) {
-      void onCategoryInviteResponse?.(alarm, 'ACCEPT');
-      return;
-    }
+    if (isResponding) return;
 
-    void onFollowRequestResponse?.(alarm, 'ACCEPT');
+    setIsResponding(true);
+
+    try {
+      if (isPendingCategoryInvite) {
+        await onCategoryInviteResponse?.(alarm, 'ACCEPT');
+        return;
+      }
+
+      await onFollowRequestResponse?.(alarm, 'ACCEPT');
+    } finally {
+      setIsResponding(false);
+    }
   };
 
-  const handleReject = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleReject = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
 
-    if (isPendingCategoryInvite) {
-      void onCategoryInviteResponse?.(alarm, 'REJECT');
-      return;
-    }
+    if (isResponding) return;
 
-    void onFollowRequestResponse?.(alarm, 'REJECT');
+    setIsResponding(true);
+
+    try {
+      if (isPendingCategoryInvite) {
+        await onCategoryInviteResponse?.(alarm, 'REJECT');
+        return;
+      }
+
+      await onFollowRequestResponse?.(alarm, 'REJECT');
+    } finally {
+      setIsResponding(false);
+    }
   };
 
   return (
@@ -166,16 +183,18 @@ export const AlarmItem = ({
             <div className="mt-2 flex gap-[7px]">
               <button
                 type="button"
-                onClick={handleAccept}
-                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-primary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-onFill transition-[filter] hover:brightness-95"
+                onClick={(event) => void handleAccept(event)}
+                disabled={isResponding}
+                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-primary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-onFill transition-[filter,opacity] hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 수락
               </button>
 
               <button
                 type="button"
-                onClick={handleReject}
-                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-quaternary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-strong transition-colors hover:bg-btn-pressed"
+                onClick={(event) => void handleReject(event)}
+                disabled={isResponding}
+                className="h-[29px] min-w-[49px] rounded-[4px] bg-btn-quaternary px-3 py-1 text-[14px] font-medium leading-[1.5] tracking-[-0.14px] text-text-strong transition-[background-color,opacity] hover:bg-btn-pressed disabled:cursor-not-allowed disabled:opacity-50"
               >
                 거절
               </button>

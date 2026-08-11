@@ -20,6 +20,7 @@ import {
 } from "@/features/friends/api/followApi";
 import { respondCategoryInvite } from "@/features/category/api/sharedCategoryApi";
 import { notifyCalendarUpdated } from "@/features/calendar/utils/calendarSync";
+import { ApiRequestError } from "@/services/api";
 import type {
   Alarm,
   CategoryInviteAction,
@@ -408,15 +409,23 @@ export const useAlarms = () => {
       return;
     }
 
-    await respondCategoryInvite(String(categoryId), action);
+    let wasAlreadyHandled = false;
+
+    try {
+      await respondCategoryInvite(String(categoryId), action);
+    } catch (error) {
+      if (
+        error instanceof ApiRequestError &&
+        error.code === "COMMON_NOT_FOUND"
+      ) {
+        wasAlreadyHandled = true;
+      } else {
+        throw error;
+      }
+    }
 
     if (action === "ACCEPT") {
       notifyCalendarUpdated();
-    }
-
-    if (!alarm.isRead) {
-      await readAlarm(alarmId);
-      setUnreadCount((previous) => Math.max(0, previous - 1));
     }
 
     setAlarms((previous) =>
@@ -428,13 +437,24 @@ export const useAlarms = () => {
               unreadNotificationIds: [],
               followStatus:
                 action === "ACCEPT" ? "ACCEPTED" : "REJECTED",
-              content:
-                action === "ACCEPT"
+              content: wasAlreadyHandled
+                ? "공유 카테고리 초대가 이미 처리되었어요"
+                : action === "ACCEPT"
                   ? "공유 카테고리 초대를 수락했어요"
                   : "공유 카테고리 초대를 거절했어요",
             }
           : item,
       ),
+    );
+
+    if (!alarm.isRead) {
+      setUnreadCount((previous) =>
+        Math.max(0, previous - alarm.unreadNotificationIds.length),
+      );
+    }
+
+    await Promise.all(alarm.notificationIds.map(readAlarm)).catch(
+      () => undefined,
     );
   };
 
