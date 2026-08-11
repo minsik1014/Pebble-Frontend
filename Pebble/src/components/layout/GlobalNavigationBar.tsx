@@ -16,7 +16,7 @@ import SocialSolidIcon from '@/assets/icons/social-solid.svg?react';
 import { AlarmPopover } from '@/features/alarm/components/AlarmPopover';
 import { useAlarms } from '@/features/alarm/hooks/useAlarm';
 import { logout } from '@/features/auth/api/authApi';
-import { clearAuthTokens } from '@/services/api';
+import { clearAuthTokens, getAccessToken } from '@/services/api';
 import { LogoutConfirmModal } from './LogoutConfirmModal';
 
 type GlobalNavigationBarProps = {
@@ -100,11 +100,13 @@ export const GlobalNavigationBar = ({
 
     setIsLoggingOut(true);
 
+    // 서버 요청을 보내기 전에 로컬 세션부터 종료해 진행 중인 재발급 응답을 무효화합니다.
+    const accessToken = getAccessToken();
+    clearAuthTokens();
+
     try {
-      await logout();
+      await logout(accessToken);
     } finally {
-      // 서버 요청이 실패해도 기기에 남은 토큰은 제거해 로그아웃을 보장합니다.
-      clearAuthTokens();
       setIsLogoutModalOpen(false);
       setIsLoggingOut(false);
       navigate('/login');

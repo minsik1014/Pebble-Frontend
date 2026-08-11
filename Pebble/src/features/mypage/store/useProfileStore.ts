@@ -5,6 +5,7 @@ import {
   type UpdateMyProfileRequest,
 } from "@/features/mypage/api/profileApi";
 import { uploadImageDataUrl } from "@/features/category/api/uploadImageApi";
+import { AUTH_SESSION_CLEARED_EVENT } from "@/services/api/authToken";
 import type {
   EditableProfile,
   Profile,
@@ -17,37 +18,65 @@ type ProfileStore = {
   isSaving: boolean;
   error: string | null;
   pendingImageUrl: string | null;
+  resetProfile: () => void;
   loadProfile: () => Promise<void>;
   updateProfile: (profile: EditableProfile) => Promise<void>;
   updateProfileImage: (imageUrl: string) => Promise<void>;
 };
 
+const EMPTY_PROFILE: Profile = {
+  id: 0,
+  email: "",
+  nickname: "",
+  bio: "",
+  imageUrl: null,
+  lastNicknameChangedAt: null,
+  nicknameChangeableAfter: null,
+};
+
+let profileSessionVersion = 0;
+
 export const useProfileStore = create<ProfileStore>((set) => ({
-  profile: {
-    id: 0,
-    email: "",
-    nickname: "",
-    bio: "",
-    imageUrl: null,
-    lastNicknameChangedAt: null,
-    nicknameChangeableAfter: null,
-  },
+  profile: EMPTY_PROFILE,
   isLoaded: false,
   isLoading: false,
   isSaving: false,
   error: null,
   pendingImageUrl: null,
+  resetProfile: () => {
+    profileSessionVersion += 1;
+    set({
+      profile: EMPTY_PROFILE,
+      isLoaded: false,
+      isLoading: false,
+      isSaving: false,
+      error: null,
+      pendingImageUrl: null,
+    });
+  },
   loadProfile: async () => {
     if (useProfileStore.getState().isLoading) {
       return;
     }
 
+    const requestedSessionVersion = profileSessionVersion;
+
     set({ isLoading: true, error: null });
 
     try {
       const profile = await getMyProfile();
+
+      // 로그아웃 뒤 늦게 완료된 이전 계정 요청이 새 상태를 덮어쓰지 않게 합니다.
+      if (requestedSessionVersion !== profileSessionVersion) {
+        return;
+      }
+
       set({ profile, isLoaded: true, isLoading: false });
     } catch (error) {
+      if (requestedSessionVersion !== profileSessionVersion) {
+        return;
+      }
+
       set({
         isLoading: false,
         error:
@@ -141,3 +170,9 @@ export const useProfileStore = create<ProfileStore>((set) => ({
     }
   },
 }));
+
+if (typeof window !== "undefined") {
+  window.addEventListener(AUTH_SESSION_CLEARED_EVENT, () => {
+    useProfileStore.getState().resetProfile();
+  });
+}
