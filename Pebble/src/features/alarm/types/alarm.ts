@@ -20,10 +20,13 @@ export interface AlarmUser {
 
 export interface Alarm {
   id: number;
+  notificationIds: number[];
+  unreadNotificationIds: number[];
   type: AlarmType;
   content: string;
   isRead: boolean;
   createdAt: string;
+  createdAtIso: string;
   relatedId: number | null;
   expiresAt: string | null;
   user?: AlarmUser;

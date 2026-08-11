@@ -20,6 +20,7 @@ import {
 } from "@/features/friends/api/followApi";
 import { respondCategoryInvite } from "@/features/category/api/sharedCategoryApi";
 import { notifyCalendarUpdated } from "@/features/calendar/utils/calendarSync";
+import { ApiRequestError } from "@/services/api";
 import type {
   Alarm,
   CategoryInviteAction,
@@ -109,12 +110,15 @@ const mapNotificationToAlarm = (
 
   return {
     id: notification.id,
+    notificationIds: [notification.id],
+    unreadNotificationIds: notification.isRead ? [] : [notification.id],
     type: notification.type,
     relatedId: notification.relatedId,
     expiresAt: notification.expiresAt,
     content: getAlarmContent(notification.type),
     isRead: notification.isRead,
     createdAt: formatRelativeTime(notification.createdAt),
+    createdAtIso: notification.createdAt,
     friendRequestId:
       notification.type === "FOLLOW_REQUEST"
         ? notification.relatedId ?? undefined
@@ -135,6 +139,59 @@ const mapNotificationToAlarm = (
         }
       : undefined,
   };
+};
+
+const isScheduleDueAlarm = (alarm: Alarm) =>
+  alarm.type === "TASK_DUE" || alarm.type === "MILESTONE_DUE";
+
+const getKstDateKey = (createdAt: string) => {
+  const date = new Date(createdAt);
+
+  if (!Number.isFinite(date.getTime())) {
+    return createdAt;
+  }
+
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+};
+
+const groupScheduleDueAlarms = (alarms: Alarm[]) => {
+  const scheduleGroups = new Map<string, Alarm>();
+  const result: Alarm[] = [];
+
+  alarms.forEach((alarm) => {
+    if (!isScheduleDueAlarm(alarm)) {
+      result.push(alarm);
+      return;
+    }
+
+    const dateKey = getKstDateKey(alarm.createdAtIso);
+    const existingGroup = scheduleGroups.get(dateKey);
+
+    if (!existingGroup) {
+      const scheduleAlarm = {
+        ...alarm,
+        content: "오늘 1개의 일정이 있어요",
+      };
+
+      scheduleGroups.set(dateKey, scheduleAlarm);
+      result.push(scheduleAlarm);
+      return;
+    }
+
+    existingGroup.notificationIds.push(...alarm.notificationIds);
+    existingGroup.unreadNotificationIds.push(
+      ...alarm.unreadNotificationIds,
+    );
+    existingGroup.isRead = existingGroup.unreadNotificationIds.length === 0;
+    existingGroup.content = `오늘 ${existingGroup.notificationIds.length}개의 일정이 있어요`;
+  });
+
+  return result;
 };
 
 export const useAlarms = () => {
@@ -164,13 +221,13 @@ export const useAlarms = () => {
     followStateSignatureRef.current = nextFollowStateSignature;
 
     setAlarms(
-      notificationResponse.notifications.map((notification) =>
+      groupScheduleDueAlarms(notificationResponse.notifications.map((notification) =>
         mapNotificationToAlarm(
           notification,
           pendingResponse,
           friendsResponse,
         ),
-      ),
+      )),
     );
     setUnreadCount(notificationResponse.unreadCount);
   }, []);
@@ -216,16 +273,22 @@ export const useAlarms = () => {
       return;
     }
 
-    await Promise.all(alarmsToRead.map((alarm) => readAlarm(alarm.id)));
+    const notificationIdsToRead = alarmsToRead.flatMap(
+      ({ unreadNotificationIds }) => unreadNotificationIds,
+    );
+
+    await Promise.all(notificationIdsToRead.map(readAlarm));
 
     const readIds = new Set(alarmsToRead.map(({ id }) => id));
     setAlarms((previous) =>
       previous.map((alarm) =>
-        readIds.has(alarm.id) ? { ...alarm, isRead: true } : alarm,
+        readIds.has(alarm.id)
+          ? { ...alarm, isRead: true, unreadNotificationIds: [] }
+          : alarm,
       ),
     );
     setUnreadCount((previous) =>
-      Math.max(0, previous - alarmsToRead.length),
+      Math.max(0, previous - notificationIdsToRead.length),
     );
   }, [alarms]);
 
@@ -242,13 +305,15 @@ export const useAlarms = () => {
       return;
     }
 
-    await deleteAlarm(alarmId);
+    await Promise.all(alarm.notificationIds.map(deleteAlarm));
     setAlarms((previous) =>
       previous.filter(({ id }) => id !== alarmId),
     );
 
     if (!alarm.isRead) {
-      setUnreadCount((previous) => Math.max(0, previous - 1));
+      setUnreadCount((previous) =>
+        Math.max(0, previous - alarm.unreadNotificationIds.length),
+      );
     }
   };
 
@@ -262,7 +327,6 @@ export const useAlarms = () => {
         (alarm.followStatus ?? "PENDING") === "PENDING";
 
       return (
-        alarm.isRead &&
         !isPendingFollowRequest &&
         !isPendingCategoryInvite
       );
@@ -273,12 +337,21 @@ export const useAlarms = () => {
     }
 
     await Promise.all(
-      alarmsToDelete.map((alarm) => deleteAlarm(alarm.id)),
+      alarmsToDelete.flatMap((alarm) =>
+        alarm.notificationIds.map(deleteAlarm),
+      ),
     );
 
     const deletedIds = new Set(alarmsToDelete.map(({ id }) => id));
     setAlarms((previous) =>
       previous.filter(({ id }) => !deletedIds.has(id)),
+    );
+    const deletedUnreadCount = alarmsToDelete.reduce(
+      (count, alarm) => count + alarm.unreadNotificationIds.length,
+      0,
+    );
+    setUnreadCount((previous) =>
+      Math.max(0, previous - deletedUnreadCount),
     );
   };
 
@@ -312,6 +385,7 @@ export const useAlarms = () => {
           ? {
               ...item,
               isRead: true,
+              unreadNotificationIds: [],
               followStatus:
                 action === "ACCEPT" ? "ACCEPTED" : "REJECTED",
               content:
@@ -335,15 +409,23 @@ export const useAlarms = () => {
       return;
     }
 
-    await respondCategoryInvite(String(categoryId), action);
+    let wasAlreadyHandled = false;
+
+    try {
+      await respondCategoryInvite(String(categoryId), action);
+    } catch (error) {
+      if (
+        error instanceof ApiRequestError &&
+        error.code === "COMMON_NOT_FOUND"
+      ) {
+        wasAlreadyHandled = true;
+      } else {
+        throw error;
+      }
+    }
 
     if (action === "ACCEPT") {
       notifyCalendarUpdated();
-    }
-
-    if (!alarm.isRead) {
-      await readAlarm(alarmId);
-      setUnreadCount((previous) => Math.max(0, previous - 1));
     }
 
     setAlarms((previous) =>
@@ -352,15 +434,27 @@ export const useAlarms = () => {
           ? {
               ...item,
               isRead: true,
+              unreadNotificationIds: [],
               followStatus:
                 action === "ACCEPT" ? "ACCEPTED" : "REJECTED",
-              content:
-                action === "ACCEPT"
+              content: wasAlreadyHandled
+                ? "공유 카테고리 초대가 이미 처리되었어요"
+                : action === "ACCEPT"
                   ? "공유 카테고리 초대를 수락했어요"
                   : "공유 카테고리 초대를 거절했어요",
             }
           : item,
       ),
+    );
+
+    if (!alarm.isRead) {
+      setUnreadCount((previous) =>
+        Math.max(0, previous - alarm.unreadNotificationIds.length),
+      );
+    }
+
+    await Promise.all(alarm.notificationIds.map(readAlarm)).catch(
+      () => undefined,
     );
   };
 

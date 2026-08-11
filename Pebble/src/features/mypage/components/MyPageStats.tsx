@@ -1,10 +1,12 @@
 type MyPageStatsProps = {
   isCompact: boolean;
+  pebbleCount: number;
   completedCategoryCount: number;
 };
 
 export const MyPageStats = ({
   isCompact,
+  pebbleCount,
   completedCategoryCount,
 }: MyPageStatsProps): JSX.Element => {
   return (
@@ -18,9 +20,11 @@ export const MyPageStats = ({
       <div className="flex h-[120px] items-center justify-center rounded-[40px] bg-fill-surface shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.06)]">
         <div className="flex w-1/2 flex-col items-center gap-1">
           <span className="text-body-01-m text-text-secondary">
-            수 놓은 조약돌
+            수놓은 조약돌
           </span>
-          <strong className="text-title-01-sb text-text-strong">82</strong>
+          <strong className="text-title-01-sb text-text-strong">
+            {pebbleCount}
+          </strong>
         </div>
 
         <div
