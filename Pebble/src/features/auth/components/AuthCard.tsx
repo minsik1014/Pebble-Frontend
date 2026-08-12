@@ -16,7 +16,7 @@ export const AuthCard = ({
       className="flex w-full max-w-[570px] flex-col gap-[40px] rounded-[20px] bg-transparent p-[24px] sm:p-[32px]"
       data-id={dataId}
     >
-      <h1 className="text-[24px] font-semibold leading-[130%] tracking-[-0.24px] text-text-primary">
+      <h1 className="text-[24px] font-semibold leading-[31px] tracking-[-0.24px] text-text-primary">
         {title}
       </h1>
       {children}

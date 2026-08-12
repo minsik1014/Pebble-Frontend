@@ -16,8 +16,8 @@ export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
   const showActions = variant === 'landing';
 
   return (
-    <header className="h-[95px] w-full bg-transparent [font-family:'Pretendard',sans-serif]">
-      <div className="flex h-full w-full items-center justify-between px-[64px]">
+    <header className="h-[84px] w-full bg-transparent [font-family:'Pretendard',sans-serif]">
+      <div className="flex h-full w-full items-center justify-between px-[64px] py-[20px]">
         <Link
           to="/landing"
           aria-label="Pebble 랜딩 페이지로 이동"
