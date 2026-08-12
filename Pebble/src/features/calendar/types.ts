@@ -32,6 +32,7 @@ export type CalendarState = {
   standaloneTasks: TaskItem[];
   selectedCategory: Category | null;
   selectedCategoryId: string | null;
+  loadedViewedUserId: number | null;
   isCalendarLoading: boolean;
   calendarErrorMessage: string | null;
 };

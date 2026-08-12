@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { HomeOverviewCards } from "@/features/home/components/HomeOverviewCards";
@@ -7,46 +7,9 @@ import { useHomeOverview } from "@/features/home/hooks/useHomeOverview";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import { CalendarBoard } from "@/features/milestone/components/CalendarBoard";
 
-const VIEWED_FRIEND_CALENDARS_STORAGE_KEY = "pebble:viewed-friend-calendars";
-
-const getStoredViewedFriendIds = () => {
-  if (typeof window === "undefined") {
-    return new Set<number>();
-  }
-
-  try {
-    const parsedValue = JSON.parse(
-      window.sessionStorage.getItem(VIEWED_FRIEND_CALENDARS_STORAGE_KEY) ??
-        "[]",
-    );
-
-    if (!Array.isArray(parsedValue)) {
-      return new Set<number>();
-    }
-
-    return new Set(
-      parsedValue.filter(
-        (value): value is number =>
-          typeof value === "number" && Number.isFinite(value),
-      ),
-    );
-  } catch {
-    return new Set<number>();
-  }
-};
-
-const storeViewedFriendIds = (viewedFriendIds: Set<number>) => {
-  window.sessionStorage.setItem(
-    VIEWED_FRIEND_CALENDARS_STORAGE_KEY,
-    JSON.stringify([...viewedFriendIds]),
-  );
-};
-
 export const HomePage = (): JSX.Element => {
   const navigate = useNavigate();
-  const [viewedFriendIds, setViewedFriendIds] = useState<Set<number>>(
-    getStoredViewedFriendIds,
-  );
+  const viewedRequestUserIdsRef = useRef<Set<number>>(new Set());
   const {
     isSidebarOpen,
     currentYear,
@@ -59,11 +22,12 @@ export const HomePage = (): JSX.Element => {
     currentUserId,
     standaloneTasks,
     viewedUserId,
+    loadedViewedUserId,
     isCalendarLoading,
     calendarErrorMessage,
     reloadCalendarData,
   } = useCalendarLayoutContext();
-  const { profile, friends, pendingCount, activity } =
+  const { profile, friends, pendingCount, activity, markScheduleViewed } =
     useHomeOverview(viewedUserId);
   const selectedUserId = viewedUserId ?? currentUserId ?? profile.id;
   const isFriendCalendarView = viewedUserId !== null;
@@ -83,33 +47,30 @@ export const HomePage = (): JSX.Element => {
       };
 
   useEffect(() => {
-    if (viewedUserId === null) {
+    if (
+      viewedUserId === null ||
+      loadedViewedUserId !== viewedUserId ||
+      viewedRequestUserIdsRef.current.has(viewedUserId)
+    ) {
       return;
     }
 
-    setViewedFriendIds((previousIds) => {
-      if (previousIds.has(viewedUserId)) {
-        return previousIds;
-      }
+    const viewedFriend = friends.find(
+      (friend) => friend.userId === viewedUserId,
+    );
 
-      const nextIds = new Set(previousIds).add(viewedUserId);
+    if (!viewedFriend?.hasUnviewedSchedule) {
+      return;
+    }
 
-      storeViewedFriendIds(nextIds);
-      return nextIds;
+    viewedRequestUserIdsRef.current.add(viewedUserId);
+
+    void markScheduleViewed(viewedUserId).catch(() => {
+      viewedRequestUserIdsRef.current.delete(viewedUserId);
     });
-  }, [viewedUserId]);
+  }, [friends, loadedViewedUserId, markScheduleViewed, viewedUserId]);
 
   const handleOpenFriendCalendar = (friendId: number) => {
-    setViewedFriendIds((previousIds) => {
-      if (previousIds.has(friendId)) {
-        return previousIds;
-      }
-
-      const nextIds = new Set(previousIds).add(friendId);
-
-      storeViewedFriendIds(nextIds);
-      return nextIds;
-    });
     navigate(`/?friendId=${friendId}`);
   };
 
@@ -125,7 +86,6 @@ export const HomePage = (): JSX.Element => {
         pendingCount={pendingCount}
         selectedUserId={selectedUserId}
         isMyCalendarSelected={!isFriendCalendarView}
-        viewedFriendIds={viewedFriendIds}
         onOpenMyCalendar={() => navigate("/")}
         onOpenFriends={() => navigate("/friends")}
         onOpenFriendCalendar={(friend) => handleOpenFriendCalendar(friend.userId)}

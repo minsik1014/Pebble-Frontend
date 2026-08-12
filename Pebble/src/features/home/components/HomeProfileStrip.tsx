@@ -9,7 +9,6 @@ type HomeProfileStripProps = {
   pendingCount: number;
   selectedUserId: number | null;
   isMyCalendarSelected: boolean;
-  viewedFriendIds: Set<number>;
   onOpenMyCalendar: () => void;
   onOpenFriends: () => void;
   onOpenFriendCalendar: (friend: FollowListItem) => void;
@@ -55,7 +54,6 @@ export const HomeProfileStrip = ({
   pendingCount,
   selectedUserId,
   isMyCalendarSelected,
-  viewedFriendIds,
   onOpenMyCalendar,
   onOpenFriends,
   onOpenFriendCalendar,
@@ -81,7 +79,7 @@ export const HomeProfileStrip = ({
             {friends.map((friend) => {
               const isSelected = selectedUserId === friend.userId;
               const shouldShowStoryRing =
-                friend.hasTodaySchedule && !viewedFriendIds.has(friend.userId);
+                friend.hasUnviewedSchedule && !isSelected;
 
               return (
                 <button

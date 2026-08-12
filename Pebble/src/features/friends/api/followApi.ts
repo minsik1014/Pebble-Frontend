@@ -18,6 +18,14 @@ export type FollowListItem = FollowUser & {
   followId: number;
   bio: string | null;
   hasTodaySchedule: boolean;
+  hasUnviewedSchedule: boolean;
+};
+
+type FollowListResponseItem = Omit<
+  FollowListItem,
+  "hasUnviewedSchedule"
+> & {
+  hasUnviewedSchedule?: boolean;
 };
 
 export type PageInfo = {
@@ -58,13 +66,15 @@ export async function getFollows(
   offset = 0,
   limit = 50,
 ): Promise<{ follows: FollowListItem[]; page: PageInfo }> {
-  const response = await apiClient.get<PagedApiResponse<FollowListItem>>(
-    "/follows",
-    {
-      params: { type, offset, limit },
-    },
-  );
-  const follows = response.data.data ?? [];
+  const response = await apiClient.get<
+    PagedApiResponse<FollowListResponseItem>
+  >("/follows", {
+    params: { type, offset, limit },
+  });
+  const follows = (response.data.data ?? []).map((follow) => ({
+    ...follow,
+    hasUnviewedSchedule: follow.hasUnviewedSchedule ?? false,
+  }));
 
   return {
     follows,
@@ -120,5 +130,12 @@ export async function deleteFollow(followId: number): Promise<void> {
   await apiRequest({
     method: "DELETE",
     url: `/follows/${followId}`,
+  });
+}
+
+export async function markFriendScheduleViewed(userId: number): Promise<void> {
+  await apiRequest({
+    method: "POST",
+    url: `/follows/${userId}/viewed`,
   });
 }

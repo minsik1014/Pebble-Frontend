@@ -8,6 +8,10 @@ export type SignUpLocationState = {
   serverError?: string;
 };
 
+export type LoginLocationState = {
+  socialAuthMessage?: string;
+};
+
 export type ProfileSetupLocationState =
   | {
       mode: 'email';

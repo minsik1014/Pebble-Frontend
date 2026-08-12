@@ -1,9 +1,10 @@
 // src/features/auth/containers/LoginContainer.tsx
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { login } from '@/features/auth/api/authApi';
+import type { LoginLocationState } from '@/features/auth/types/authNavigation';
 import { startSocialLogin } from '@/features/auth/utils/socialOAuth';
 import { useProfileStore } from '@/features/mypage/store/useProfileStore';
 import { ApiRequestError, setAuthTokens } from '@/services/api';
@@ -12,10 +13,15 @@ import { LoginForm } from '../components/LoginForm';
 
 export const LoginContainer = (): JSX.Element => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const socialAuthMessage = (location.state as LoginLocationState | null)
+    ?.socialAuthMessage;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(
+    socialAuthMessage ?? null,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 개별 필드 에러 및 흔들림(shake) 상태 관리
@@ -166,7 +172,7 @@ export const LoginContainer = (): JSX.Element => {
   const handleSocialLogin = (provider: 'google' | 'naver') => {
     try {
       setErrorMessage(null);
-      startSocialLogin(provider);
+      startSocialLogin(provider, 'login');
     } catch {
       setErrorMessage(
         '소셜 로그인을 시작하지 못했어요.\nOAuth 설정을 확인해 주세요.',

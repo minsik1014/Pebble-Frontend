@@ -397,6 +397,11 @@ export const useCalendarState = ({
   ] = useState<string | null>(null);
 
   const [
+    loadedViewedUserId,
+    setLoadedViewedUserId,
+  ] = useState<number | null>(null);
+
+  const [
     isCalendarLoading,
     setIsCalendarLoading,
   ] = useState(false);
@@ -446,6 +451,7 @@ export const useCalendarState = ({
             setCategories([]);
             setStandaloneTasks([]);
             setSelectedCategoryId(null);
+            setLoadedViewedUserId(null);
             setCalendarErrorMessage(null);
             setIsCalendarLoading(false);
           }
@@ -456,6 +462,7 @@ export const useCalendarState = ({
         if (canUpdate()) {
           setCalendarErrorMessage(null);
           setIsCalendarLoading(true);
+          setLoadedViewedUserId(null);
         }
 
         try {
@@ -543,6 +550,7 @@ export const useCalendarState = ({
               );
 
               setSelectedCategoryId(null);
+              setLoadedViewedUserId(viewedUserId);
               setCalendarErrorMessage(null);
             }
 
@@ -621,6 +629,7 @@ export const useCalendarState = ({
               nextCalendarState.standaloneTasks,
             );
 
+            setLoadedViewedUserId(null);
             setCalendarErrorMessage(null);
           }
 
@@ -738,6 +747,7 @@ export const useCalendarState = ({
     standaloneTasks,
     selectedCategory,
     selectedCategoryId,
+    loadedViewedUserId,
     isCalendarLoading,
     calendarErrorMessage,
 
