@@ -9,14 +9,21 @@ type PublicHeaderVariant = 'landing' | 'auth';
 
 interface PublicHeaderProps {
   variant?: PublicHeaderVariant;
+  /** 인증 폼처럼 헤더 높이를 64px로 줄여야 하는 화면에서만 사용합니다. */
+  compact?: boolean;
 }
 
-export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
+export function PublicHeader({
+  variant = 'auth',
+  compact = false,
+}: PublicHeaderProps) {
   const navigate = useNavigate();
   const showActions = variant === 'landing';
 
   return (
-    <header className="h-[95px] w-full bg-transparent [font-family:'Pretendard',sans-serif]">
+    <header
+      className={`${compact ? 'h-[64px]' : 'h-[95px]'} w-full bg-transparent [font-family:'Pretendard',sans-serif]`}
+    >
       <div className="flex h-full w-full items-center justify-between px-[64px]">
         <Link
           to="/landing"
