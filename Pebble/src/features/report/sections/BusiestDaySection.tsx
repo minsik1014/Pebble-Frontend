@@ -207,7 +207,7 @@ export function BusiestDaySection({
             />
           ))}
 
-          {schedules.length >= MAX_VISIBLE_SCHEDULES ? (
+          {hiddenScheduleCount > 0 ? (
             <li
               className={`flex h-[40px] shrink-0 items-center justify-center rounded-[999px] px-[12px] py-[8px] text-center text-[16px] font-semibold leading-[150%] tracking-[-0.16px] text-[#A3A3A3] ${
                 darkTheme ? 'dark:text-text-teritary' : ''
