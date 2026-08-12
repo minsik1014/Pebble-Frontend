@@ -62,6 +62,10 @@ export function startSocialLogin(
     params.set('scope', config.scope);
   }
 
+  if (provider === 'google' && intent === 'signup') {
+    params.set('prompt', 'select_account');
+  }
+
   window.location.assign(`${config.authorizationUrl}?${params.toString()}`);
 }
 

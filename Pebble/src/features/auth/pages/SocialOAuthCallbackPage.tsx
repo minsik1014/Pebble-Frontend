@@ -10,7 +10,7 @@ import {
   getSocialRedirectUri,
 } from '@/features/auth/utils/socialOAuth';
 import { useProfileStore } from '@/features/mypage/store/useProfileStore';
-import { setAuthTokens } from '@/services/api';
+import { clearAuthTokens, setAuthTokens } from '@/services/api';
 
 function isSocialProvider(value: string | undefined): value is SocialProvider {
   return value === 'google' || value === 'naver';
@@ -52,6 +52,8 @@ export const SocialOAuthCallbackPage = (): JSX.Element => {
     })
       .then(async (response) => {
         if (intent === 'signup' && !response.isNewUser) {
+          useProfileStore.getState().resetProfile();
+          clearAuthTokens();
           navigate('/login', {
             replace: true,
             state: {
