@@ -66,6 +66,15 @@ export function getCompletedOwnedCategories(): Promise<Category[]> {
   return getCategories({ owned: true, isCompleted: true });
 }
 
+export async function getCategory(categoryId: string): Promise<Category | null> {
+  const data = await apiRequest<CategoryResponse>({
+    method: "GET",
+    url: `/categories/${categoryId}`,
+  });
+
+  return data ? mapCategoryResponseToCategory(data) : null;
+}
+
 export async function createCategory(
   input: CreateCategoryInput,
 ): Promise<Category | null> {

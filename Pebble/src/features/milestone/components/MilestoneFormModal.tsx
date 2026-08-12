@@ -353,6 +353,7 @@ export const MilestoneFormModal = ({
 
       <ScheduleDatePicker
         variant="milestone"
+        disabled={!selectedCategory}
         dateType={
           datePicker.dateType
         }

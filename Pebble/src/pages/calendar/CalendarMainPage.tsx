@@ -1,5 +1,6 @@
 import { CalendarBoard } from "@/features/milestone/components/CalendarBoard";
 import { CategoryDetailSection } from "@/features/category/components/CategoryDetailSection";
+import { useCategoryDetail } from "@/features/category/hooks/useCategoryDetail";
 import { useCalendarLayoutContext } from "@/features/calendar/context/useCalendarLayoutContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -37,11 +38,12 @@ export const CalendarMainPage = (): JSX.Element => {
   const isFromMyPage = searchParams.get("from") === "my";
 
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
+  const selectedCategoryDetail = useCategoryDetail(selectedCategory);
 
-  return selectedCategory ? (
+  return selectedCategoryDetail ? (
     <CategoryDetailSection
       isSidebarOpen={isSidebarOpen}
-      category={selectedCategory}
+      category={selectedCategoryDetail}
       backLabel={isFromMyPage ? "마이페이지" : "캘린더"}
       currentUserId={currentUserId}
       onBack={() => {

@@ -20,6 +20,7 @@ type ScheduleDatePickerProps = {
   themeBaseColor?: string;
   themeMidColor?: string;
   themeLightColor?: string;
+  disabled?: boolean;
 };
 
 const DATE_TYPES: DateType[] = ['하루', '기간', '다중'];
@@ -46,6 +47,7 @@ export const ScheduleDatePicker = ({
   themeBaseColor = '#171717',
   themeMidColor = '#171717',
   themeLightColor = 'rgba(23, 23, 23, 0.05)',
+  disabled = false,
 }: ScheduleDatePickerProps) => {
   const isTaskVariant = variant === 'task';
   const daySizeClass = 'size-12';
@@ -89,10 +91,15 @@ export const ScheduleDatePicker = ({
     return `${baseClass} ${dateType === type ? activeClass : inactiveClass}`;
   };
 
-  const getTypeButtonOverlayClass = (type: DateType) =>
-    dateType === type
+  const getTypeButtonOverlayClass = (type: DateType) => {
+    if (disabled) {
+      return '';
+    }
+
+    return dateType === type
       ? 'group-hover:bg-[rgba(250,250,250,0.25)] group-active:bg-[rgba(250,250,250,0.4)]'
       : 'group-hover:bg-[rgba(23,23,23,0.05)] group-active:bg-[rgba(23,23,23,0.1)]';
+  };
 
   const getDayButtonClass = (status: DayStatus) => {
     const baseClass = `${daySizeClass} rounded-[12px] flex items-center justify-center text-body-01-m tracking-[-0.18px] transition-colors z-10 relative`;
@@ -112,35 +119,54 @@ export const ScheduleDatePicker = ({
     return `${baseClass} text-text-strong hover:bg-fill-surface`;
   };
 
-  const renderRangeBackground = (status: DayStatus) => {
-    if (status === 'range-start') {
-      return (
-        <div
-          className="schedule-date-range-segment absolute -right-px top-0 h-full w-[calc(50%+1px)]"
-          style={rangeBackgroundStyle}
-        />
-      );
+  const calendarCells: Array<number | null> = [
+    ...Array.from({ length: firstDay }, () => null),
+    ...Array.from({ length: daysInMonth }, (_, index) => index + 1),
+  ];
+  const calendarWeeks = Array.from(
+    { length: Math.ceil(calendarCells.length / 7) },
+    (_, weekIndex) => {
+      const week = calendarCells.slice(weekIndex * 7, weekIndex * 7 + 7);
+
+      return [...week, ...Array.from({ length: 7 - week.length }, () => null)];
+    },
+  );
+
+  const renderWeekRangeBackground = (week: Array<number | null>) => {
+    if (disabled || dateType !== '기간') {
+      return null;
     }
 
-    if (status === 'range-end') {
-      return (
-        <div
-          className="schedule-date-range-segment absolute -left-px top-0 h-full w-[calc(50%+1px)]"
-          style={rangeBackgroundStyle}
-        />
+    const rangeCells = week
+      .map((day, index) => ({
+        index,
+        status: day === null ? 'none' : getDayStatus(day),
+      }))
+      .filter(({ status }) =>
+        ['range-start', 'range-end', 'in-range'].includes(status),
       );
+
+    if (rangeCells.length === 0) {
+      return null;
     }
 
-    if (status === 'in-range') {
-      return (
-        <div
-          className="schedule-date-range-segment absolute -inset-x-px inset-y-0"
-          style={rangeBackgroundStyle}
-        />
-      );
-    }
+    const firstRangeCell = rangeCells[0];
+    const lastRangeCell = rangeCells[rangeCells.length - 1];
+    const startColumn =
+      firstRangeCell.index + (firstRangeCell.status === 'range-start' ? 0.5 : 0);
+    const endColumn =
+      lastRangeCell.index + (lastRangeCell.status === 'range-end' ? 0.5 : 1);
 
-    return null;
+    return (
+      <div
+        className="schedule-date-range-segment pointer-events-none absolute top-1/2 h-12 -translate-y-1/2 rounded-[12px]"
+        style={{
+          ...rangeBackgroundStyle,
+          left: `${(startColumn / 7) * 100}%`,
+          width: `${((endColumn - startColumn) / 7) * 100}%`,
+        }}
+      />
+    );
   };
 
   return (
@@ -151,7 +177,8 @@ export const ScheduleDatePicker = ({
             key={type}
             type="button"
             onClick={() => onDateTypeChange(type)}
-            className={getTypeButtonClass(type)}
+            disabled={disabled}
+            className={`${getTypeButtonClass(type)} disabled:cursor-not-allowed disabled:opacity-50`}
             style={
               dateType === type
                 ? getSelectedDateTypeButtonStyle(type)
@@ -225,9 +252,10 @@ export const ScheduleDatePicker = ({
           <button
             type="button"
             onClick={onPrevMonth}
+            disabled={disabled}
             className={`${
               isTaskVariant ? 'absolute left-[35%]' : ''
-            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 dark:bg-btn-quaternary dark:text-text-secondary dark:hover:bg-btn-pressed`}
+            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-fill-surface dark:bg-btn-quaternary dark:text-text-secondary dark:hover:bg-btn-pressed dark:disabled:hover:bg-btn-quaternary`}
             aria-label="이전 달"
           >
             <svg
@@ -254,9 +282,10 @@ export const ScheduleDatePicker = ({
           <button
             type="button"
             onClick={onNextMonth}
+            disabled={disabled}
             className={`${
               isTaskVariant ? 'absolute right-[35%]' : ''
-            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 dark:bg-btn-quaternary dark:text-text-secondary dark:hover:bg-btn-pressed`}
+            } flex h-8 w-8 items-center justify-center rounded-full bg-fill-surface text-text-strong transition-[background-color,filter] hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-fill-surface dark:bg-btn-quaternary dark:text-text-secondary dark:hover:bg-btn-pressed dark:disabled:hover:bg-btn-quaternary`}
             aria-label="다음 달"
           >
             <svg
@@ -275,55 +304,61 @@ export const ScheduleDatePicker = ({
           </button>
         </div>
 
-        <div
-          className={`grid w-full grid-cols-7 gap-y-4 text-center ${
-            isTaskVariant ? 'px-4' : ''
-          }`}
-        >
-          {WEEK_DAYS.map((day) => (
-            <span
-              key={day}
-              className="text-body-02-m tracking-[-0.16px] text-text-teritary"
-            >
-              {day}
-            </span>
-          ))}
-
-          {Array.from({ length: firstDay }).map((_, index) => (
-            <div key={`empty-${index}`} />
-          ))}
-
-          {Array.from({ length: daysInMonth }).map((_, index) => {
-            const day = index + 1;
-            const status = getDayStatus(day);
-
-            return (
-              <div
+        <div className={`flex w-full flex-col gap-4 ${isTaskVariant ? 'px-4' : ''}`}>
+          <div className="grid w-full grid-cols-7 text-center">
+            {WEEK_DAYS.map((day) => (
+              <span
                 key={day}
-                className={`relative flex w-full ${wrapperHeightClass} items-center justify-center overflow-visible`}
+                className="text-body-02-m tracking-[-0.16px] text-text-teritary"
               >
-                {renderRangeBackground(status)}
+                {day}
+              </span>
+            ))}
+          </div>
 
-                <button
-                  type="button"
-                  onClick={() => onDateClick(day)}
-                  className={getDayButtonClass(status)}
-                  style={
-                    status === 'selected' ||
-                    status === 'range-start' ||
-                    status === 'range-end'
-                      ? {
-                          backgroundColor: getSelectedColor(dateType),
-                          color: getSelectedTextColor(dateType),
+          <div className="flex w-full flex-col gap-4">
+            {calendarWeeks.map((week, weekIndex) => (
+              <div
+                key={`week-${weekIndex}`}
+                className={`relative grid w-full grid-cols-7 ${wrapperHeightClass}`}
+              >
+                {renderWeekRangeBackground(week)}
+
+                {week.map((day, dayIndex) =>
+                  day === null ? (
+                    <div key={`empty-${weekIndex}-${dayIndex}`} />
+                  ) : (
+                    <div
+                      key={day}
+                      className="relative flex w-full items-center justify-center"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => onDateClick(day)}
+                        disabled={disabled}
+                        className={`${getDayButtonClass(
+                          disabled ? 'none' : getDayStatus(day),
+                        )} disabled:cursor-not-allowed disabled:opacity-50`}
+                        style={
+                          !disabled &&
+                          ['selected', 'range-start', 'range-end'].includes(
+                            getDayStatus(day),
+                          )
+                            ? {
+                                backgroundColor: getSelectedColor(dateType),
+                                color: getSelectedTextColor(dateType),
+                              }
+                            : undefined
                         }
-                      : undefined
-                  }
-                >
-                  {day}
-                </button>
+                      >
+                        {day}
+                      </button>
+                    </div>
+                  ),
+                )}
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </div>
     </>
