@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react";
 import reportPebble from "@/assets/mypage/report-banner/pebble.png";
@@ -12,11 +11,6 @@ type MonthlyReportBannerProps = {
 
 type ReportBannerData = {
   month: string;
-};
-
-const isReportOpenPeriod = (date: Date) => {
-  const day = date.getDate();
-  return day >= 1 && day <= 7;
 };
 
 const getReportMonth = (report: ReportBannerData) => {
@@ -36,48 +30,33 @@ const createPreviewReport = (): ReportBannerData => {
 };
 
 /**
- * 매월 1~7일 중 서버에 조회 가능한 최신 리포트가 있을 때만 노출됩니다.
- * 조회 실패나 리포트 미생성 상태에서는 기본 마이페이지 레이아웃을 그대로 유지합니다.
+ * 날짜와 리포트 생성 여부에 관계없이 마이페이지에 항상 노출됩니다.
+ * 서버 리포트가 없거나 조회에 실패하면 계산한 저번 달을 안내합니다.
  */
 export const MonthlyReportBanner = ({
   onOpenReport,
 }: MonthlyReportBannerProps): JSX.Element | null => {
-  const [searchParams] = useSearchParams();
-  const isPreview =
-    import.meta.env.DEV && searchParams.get("reportPreview") === "true";
-  const [report, setReport] = useState<ReportBannerData | null>(() =>
-    isPreview ? createPreviewReport() : null,
-  );
+  const [report, setReport] = useState<ReportBannerData>(createPreviewReport);
 
   useEffect(() => {
-    if (isPreview) {
-      setReport(createPreviewReport());
-      return;
-    }
-
-    if (!isReportOpenPeriod(new Date())) return;
-
     const controller = new AbortController();
     let isActive = true;
 
     void getLatestReport(controller.signal)
       .then((response) => {
-        if (isActive) {
-          setReport(response ? { month: response.reportMeta.month } : null);
+        if (isActive && response) {
+          setReport({ month: response.reportMeta.month });
         }
       })
       .catch(() => {
-        // 배너용 부가 조회 실패가 기존 마이페이지 UI에 영향을 주지 않게 숨깁니다.
-        if (isActive && !controller.signal.aborted) setReport(null);
+        // 배너는 유지하고 계산한 저번 달을 그대로 안내합니다.
       });
 
     return () => {
       isActive = false;
       controller.abort();
     };
-  }, [isPreview]);
-
-  if (!report) return null;
+  }, []);
 
   const reportMonth = getReportMonth(report);
 

@@ -178,6 +178,17 @@ apiClient.interceptors.response.use(
       | undefined;
 
     /*
+     * 화면 이동, StrictMode의 effect 재실행 등으로 AbortController가
+     * 취소한 요청은 실제 네트워크 장애가 아니므로 전역 오류를 띄우지 않습니다.
+     */
+    if (
+      axios.isCancel(error) ||
+      error.code === 'ERR_CANCELED'
+    ) {
+      throw error;
+    }
+
+    /*
      * 기존 access token 재발급 흐름을
      * 네트워크 오류 처리보다 먼저 실행합니다.
      */

@@ -4,7 +4,7 @@ import { ReportCard } from '../components/ReportCard';
 import { StepFooter } from '../components/StepFooter';
 import { BusiestDaySection } from '../sections/BusiestDaySection';
 
-/** R005 — 이번 달 가장 바빴던 하루 */
+/** R005 — 저번 달 가장 바빴던 하루 */
 export function BusiestDayStep() {
   const { report } = useReport();
   const { goPrev, goNext } = useReportNavigation();

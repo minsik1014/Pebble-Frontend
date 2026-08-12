@@ -10,6 +10,37 @@ interface BusiestDaySectionProps {
   darkTheme?: boolean;
 }
 
+const MAX_VISIBLE_SCHEDULES = 3;
+
+/**
+ * 개별 화면과 합본 이미지에서 같은 일정이 보이도록 날짜와 일정 ID로
+ * 안정적인 무작위 순서를 만듭니다. 렌더링 중 Math.random()을 호출하지 않습니다.
+ */
+function createStableRandomValue(value: string) {
+  let hash = 2166136261;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function pickSchedules(schedules: DaySchedule[], date: string) {
+  if (schedules.length < MAX_VISIBLE_SCHEDULES) {
+    return schedules;
+  }
+
+  return [...schedules]
+    .sort(
+      (first, second) =>
+        createStableRandomValue(`${date}:${first.id}`) -
+        createStableRandomValue(`${date}:${second.id}`),
+    )
+    .slice(0, MAX_VISIBLE_SCHEDULES);
+}
+
 /** 일정 한 줄 */
 function ScheduleRow({
   schedule,
@@ -93,7 +124,7 @@ function ScheduleRow({
   );
 }
 
-/** R005 — 이번 달 가장 바빴던 하루 */
+/** R005 — 저번 달 가장 바빴던 하루 */
 export function BusiestDaySection({
   day,
   darkTheme = false,
@@ -108,6 +139,8 @@ export function BusiestDaySection({
   }
 
   const { date, schedules } = day;
+  const visibleSchedules = pickSchedules(schedules, date);
+  const hiddenScheduleCount = schedules.length - visibleSchedules.length;
 
   return (
     <div className="flex h-full w-full flex-col gap-[20px]">
@@ -125,10 +158,10 @@ export function BusiestDaySection({
             darkTheme ? 'dark:text-text-primary' : ''
           }`}
         >
-        {/* 날짜 — 서버 값(busiestDay.date) */}
-        <strong className="text-[40px] font-bold leading-[120%] tracking-[-0.4px]">
-          {formatMonthDay(date)}
-        </strong>
+          {/* 날짜 — 서버 값(busiestDay.date) */}
+          <strong className="text-[40px] font-bold leading-[120%] tracking-[-0.4px]">
+            {formatMonthDay(date)}
+          </strong>
           <span className="text-[28px] font-medium leading-[130%] tracking-[-0.28px]">
             에 일정이 가장 많았어요
           </span>
@@ -165,14 +198,24 @@ export function BusiestDaySection({
           darkTheme={darkTheme}
         />
       ) : (
-        <ul className="flex flex-1 flex-col gap-[12px]">
-          {schedules.map((schedule) => (
+        <ul className="flex min-h-0 flex-1 flex-col gap-[12px]">
+          {visibleSchedules.map((schedule) => (
             <ScheduleRow
               key={schedule.id}
               schedule={schedule}
               darkTheme={darkTheme}
             />
           ))}
+
+          {hiddenScheduleCount > 0 ? (
+            <li
+              className={`flex h-[40px] shrink-0 items-center justify-center rounded-[999px] px-[12px] py-[8px] text-center text-[16px] font-semibold leading-[150%] tracking-[-0.16px] text-[#A3A3A3] ${
+                darkTheme ? 'dark:text-text-teritary' : ''
+              }`}
+            >
+              + {hiddenScheduleCount.toLocaleString('ko-KR')}개의 일정
+            </li>
+          ) : null}
         </ul>
       )}
     </div>
