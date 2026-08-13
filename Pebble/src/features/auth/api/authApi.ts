@@ -103,12 +103,15 @@ export async function socialLogin(
   ) as SocialLoginResponse;
 }
 
-/** 서버 세션을 만료시킵니다. 로컬 토큰 삭제는 호출부에서 항상 수행합니다. */
-export async function logout(): Promise<void> {
+/** 서버 세션을 만료시킵니다. 로그아웃 직전에 캡처한 토큰을 명시적으로 사용합니다. */
+export async function logout(accessToken?: string | null): Promise<void> {
   await apiRequest<never>({
     method: 'POST',
     url: '/auth/logout',
     skipAuthRefresh: true,
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
   });
 }
 

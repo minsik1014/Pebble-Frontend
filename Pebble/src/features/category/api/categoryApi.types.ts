@@ -13,6 +13,9 @@ export type CategoryResponse = {
   taskCount?: number;
   sharedTaskCount?: number;
   hasSchedules?: boolean;
+  taskTotalCount?: number;
+  taskCompletedCount?: number;
+  progressRate?: number;
   members?: CategoryMemberResponse[];
   categoryMembers?: CategoryMemberResponse[];
   invitedUsers?: CategoryMemberResponse[];

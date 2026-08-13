@@ -3,12 +3,14 @@ import { useProfileStore } from "@/features/mypage/store/useProfileStore";
 
 type MyProfileSectionProps = {
   isCompact: boolean;
+  pebbleCount: number;
   completedCategoryCount: number;
   onEditProfile: () => void;
 };
 
 export const MyProfileSection = ({
   isCompact,
+  pebbleCount,
   completedCategoryCount,
   onEditProfile,
 }: MyProfileSectionProps): JSX.Element => {
@@ -93,7 +95,9 @@ export const MyProfileSection = ({
           <div className="ml-6 flex h-16 shrink-0 items-center rounded-[20px] bg-btn-quaternary px-6 shadow-shadow-m">
             <div className="flex items-center gap-2">
               <span className="text-body-02-m text-text-secondary">조약돌</span>
-              <strong className="text-title-03-sb text-text-strong">82</strong>
+              <strong className="text-title-03-sb text-text-strong">
+                {pebbleCount}
+              </strong>
             </div>
             <div
               className="mx-4 h-8 w-px bg-border-default"

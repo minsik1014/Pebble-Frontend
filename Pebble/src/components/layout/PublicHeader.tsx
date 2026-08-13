@@ -9,15 +9,24 @@ type PublicHeaderVariant = 'landing' | 'auth';
 
 interface PublicHeaderProps {
   variant?: PublicHeaderVariant;
+  /** 인증 폼처럼 헤더 높이를 64px로 줄여야 하는 화면에서만 사용합니다. */
+  compact?: boolean;
 }
 
-export function PublicHeader({ variant = 'auth' }: PublicHeaderProps) {
+export function PublicHeader({
+  variant = 'auth',
+  compact = false,
+}: PublicHeaderProps) {
   const navigate = useNavigate();
   const showActions = variant === 'landing';
 
   return (
-    <header className="h-[84px] w-full bg-transparent [font-family:'Pretendard',sans-serif]">
-      <div className="flex h-full w-full items-center justify-between px-[64px] py-[20px]">
+    <header
+      className={`${compact ? 'h-[64px]' : 'h-[84px]'} w-full bg-transparent [font-family:'Pretendard',sans-serif]`}
+    >
+      <div
+        className={`flex h-full w-full items-center justify-between px-[64px] ${compact ? '' : 'py-[20px]'}`}
+      >
         <Link
           to="/landing"
           aria-label="Pebble 랜딩 페이지로 이동"

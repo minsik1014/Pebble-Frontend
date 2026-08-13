@@ -6,6 +6,7 @@ import { MyProfileSection } from "@/features/mypage/components/MyProfileSection"
 import { MonthlyReportBanner } from "@/features/mypage/components/MonthlyReportBanner";
 import { useNavigate } from "react-router-dom";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
+import { getMyProfileStats } from "@/features/mypage/api/profileApi";
 import { getCompletedOwnedCategories } from "@/features/category/api/categoryApi";
 import type { Category } from "@/types";
 
@@ -16,6 +17,7 @@ export default function MyPage() {
   const isLoaded = useProfileStore((state) => state.isLoaded);
   const [isCompact, setIsCompact] = useState(false);
   const [completedCategories, setCompletedCategories] = useState<Category[]>([]);
+  const [pebbleCount, setPebbleCount] = useState(0);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -35,6 +37,18 @@ export default function MyPage() {
       .catch(() => {
         if (isActive) {
           setCompletedCategories([]);
+        }
+      });
+
+    void getMyProfileStats()
+      .then(({ pebble }) => {
+        if (isActive) {
+          setPebbleCount(pebble);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setPebbleCount(0);
         }
       });
 
@@ -72,19 +86,21 @@ export default function MyPage() {
         <div className="relative mx-auto flex w-full max-w-[780px] flex-col">
           <MyProfileSection
             isCompact={isCompact}
+            pebbleCount={pebbleCount}
             completedCategoryCount={completedCategories.length}
             onEditProfile={() => navigate("/my/profile")}
           />
           <MonthlyReportBanner onOpenReport={() => navigate("/report/monthly")} />
           <MyPageStats
             isCompact={isCompact}
+            pebbleCount={pebbleCount}
             completedCategoryCount={completedCategories.length}
           />
           <CompletedCategoryGrid
             isCompact={isCompact}
             categories={completedCategories}
             onSelectCategory={(categoryId) =>
-              navigate(`/?category=${categoryId}&from=my`)
+              navigate(`/calendar?category=${categoryId}&from=my`)
             }
           />
         </div>

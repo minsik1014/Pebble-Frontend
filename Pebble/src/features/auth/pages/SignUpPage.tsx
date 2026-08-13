@@ -4,7 +4,7 @@ import { SignUpContainer } from "../containers/SignUpContainer";
 
 export const SignUpPage = (): JSX.Element => {
   return (
-    <AuthPageLayout dataId="signup-screen">
+    <AuthPageLayout dataId="signup-screen" variant="signup">
       <SignUpContainer />
     </AuthPageLayout>
   );

@@ -4,6 +4,7 @@ export { API_TIMEOUT, TEMPORARY_ERROR_MESSAGE } from './constants';
 export {
   clearAccessToken,
   clearAuthTokens,
+  getAuthSessionRevision,
   getAccessToken,
   getRefreshToken,
   setAccessToken,

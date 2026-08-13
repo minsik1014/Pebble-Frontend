@@ -76,6 +76,9 @@ export type Category = {
   taskCount?: number;
   sharedTaskCount?: number;
   hasSchedules?: boolean;
+  taskTotalCount?: number;
+  taskCompletedCount?: number;
+  progressRate?: number;
   items: MilestoneItem[];
   tasks?: TaskItem[];
 };

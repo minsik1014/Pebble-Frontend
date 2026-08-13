@@ -17,6 +17,10 @@ type MyProfileResponse = {
   createdAt: string;
 };
 
+type MyProfileStatsResponse = {
+  pebble: number;
+};
+
 export async function getMyProfile(): Promise<Profile> {
   const data = await apiRequest<MyProfileResponse>({
     method: "GET",
@@ -37,6 +41,19 @@ export async function getMyProfile(): Promise<Profile> {
     lastNicknameChangedAt: data.lastNicknameChangedAt ?? null,
     nicknameChangeableAfter: data.nicknameChangeableAfter ?? null,
   };
+}
+
+export async function getMyProfileStats(): Promise<MyProfileStatsResponse> {
+  const data = await apiRequest<MyProfileStatsResponse>({
+    method: "GET",
+    url: "/users/me/stats",
+  });
+
+  if (!data) {
+    throw new Error("프로필 통계를 불러오지 못했어요.");
+  }
+
+  return data;
 }
 
 export async function updateMyProfile(
