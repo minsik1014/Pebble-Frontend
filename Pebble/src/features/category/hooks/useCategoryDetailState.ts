@@ -80,3 +80,5 @@ export const useCategoryDetailState = (category: Category) => {
     },
   };
 };
+
+export type CategoryDetailState = ReturnType<typeof useCategoryDetailState>;
