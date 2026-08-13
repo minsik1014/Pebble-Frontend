@@ -4,10 +4,10 @@ const ORIGINAL_WIDTH = 1416;
 const ORIGINAL_HEIGHT = 1000;
 const SAFE_MARGIN = 24;
 const MOBILE_BREAKPOINT = 768;
-const TABLET_BREAKPOINT = 1024;
+const COMPACT_LAYOUT_BREAKPOINT = 1280;
 
 const getMinimumScale = (viewportWidth: number) =>
-  viewportWidth < TABLET_BREAKPOINT ? 0.42 : 0.5;
+  viewportWidth < COMPACT_LAYOUT_BREAKPOINT ? 0.42 : 0.5;
 
 export const MAIN_LAYOUT_WIDTH = ORIGINAL_WIDTH;
 export const MAIN_LAYOUT_HEIGHT = ORIGINAL_HEIGHT;
@@ -15,6 +15,7 @@ export const MAIN_LAYOUT_HEIGHT = ORIGINAL_HEIGHT;
 export const useMainLayoutViewport = () => {
   const [scale, setScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,6 +29,10 @@ export const useMainLayoutViewport = () => {
       const nextScale = Math.min(widthScale, heightScale, 1);
 
       setIsMobile(viewportWidth < MOBILE_BREAKPOINT);
+      setIsTablet(
+        viewportWidth >= MOBILE_BREAKPOINT &&
+          viewportWidth < COMPACT_LAYOUT_BREAKPOINT,
+      );
       setScale(Math.max(getMinimumScale(viewportWidth), nextScale));
     };
 
@@ -41,5 +46,10 @@ export const useMainLayoutViewport = () => {
     };
   }, []);
 
-  return { isMobile, scale };
+  return {
+    isMobile,
+    isTablet,
+    isCompactLayout: isMobile || isTablet,
+    scale,
+  };
 };

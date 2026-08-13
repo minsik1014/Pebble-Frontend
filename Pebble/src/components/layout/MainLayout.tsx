@@ -101,15 +101,16 @@ const DesktopMainLayout = ({ scale }: { scale: number }) => {
 };
 
 const MainLayoutFrame = () => {
-  const { pathname } = useLocation();
-  const { isMobile, scale } = useMainLayoutViewport();
+  const { pathname, search } = useLocation();
+  const { isCompactLayout, isTablet, scale } = useMainLayoutViewport();
+  const isCategoryDetail = new URLSearchParams(search).has('category');
 
-  if (isMobile && pathname === '/calendar') {
-    return <MobileCalendarLayout />;
+  if (isCompactLayout && pathname === '/calendar' && !isCategoryDetail) {
+    return <MobileCalendarLayout isTablet={isTablet} />;
   }
 
-  if (isMobile) {
-    return <MobileNestedPageLayout />;
+  if (isCompactLayout) {
+    return <MobileNestedPageLayout isTablet={isTablet} />;
   }
 
   return <DesktopMainLayout scale={scale} />;

@@ -15,7 +15,7 @@ export const CompletedCategoryCard = ({
     <button
       type="button"
       onClick={onClick}
-      className="relative h-[298px] overflow-hidden rounded-token-s text-left transition-transform duration-200 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-border-primary"
+      className="relative h-[240px] overflow-hidden rounded-token-s text-left transition-transform duration-200 hover:-translate-y-1 sm:h-[280px] lg:h-[298px] focus-visible:ring-2 focus-visible:ring-border-primary"
       style={{ backgroundColor: color }}
       aria-label={`${title} 상세 보기`}
     >

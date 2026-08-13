@@ -202,7 +202,7 @@ export const ProfileEditForm = () => {
 
   return (
     <form
-      className="mt-12 flex w-[640px] flex-col gap-7"
+      className="mt-8 flex w-full max-w-[640px] flex-col gap-6 sm:mt-12 sm:gap-7"
       onSubmit={handleSubmit}
     >
       <label className="flex flex-col gap-2 text-body-02-sb text-text-strong">

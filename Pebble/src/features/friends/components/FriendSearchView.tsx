@@ -79,7 +79,7 @@ export const FriendSearchView = ({
                   type="button"
                   disabled={processingId === user.userId}
                   onClick={() => void onSendFollow(user)}
-                  className="h-12 rounded-token-s bg-btn-primary px-8 py-3 text-body-02-m text-text-onFill disabled:opacity-50"
+                  className="h-11 rounded-token-s bg-btn-primary px-4 py-2 text-body-02-m text-text-onFill disabled:opacity-50 sm:h-12 sm:px-8 sm:py-3"
                 >
                   친구 신청
                 </button>
@@ -88,7 +88,7 @@ export const FriendSearchView = ({
                 <button
                   type="button"
                   disabled
-                  className="h-12 min-w-[96px] rounded-token-s bg-btn-quaternary px-8 py-3 text-body-02-m text-text-strong"
+                  className="h-11 min-w-[80px] rounded-token-s bg-btn-quaternary px-4 py-2 text-body-02-m text-text-strong sm:h-12 sm:min-w-[96px] sm:px-8 sm:py-3"
                 >
                   요청 중
                 </button>

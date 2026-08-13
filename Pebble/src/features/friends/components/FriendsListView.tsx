@@ -52,7 +52,7 @@ export const FriendsListView = ({
                 type="button"
                 disabled={processingId === request.followId}
                 onClick={() => void onAccept(request)}
-                className="h-12 min-w-[92px] rounded-token-s bg-btn-primary px-8 py-3 text-body-02-m text-text-onFill disabled:opacity-50"
+                className="h-11 min-w-[72px] rounded-token-s bg-btn-primary px-4 py-2 text-body-02-m text-text-onFill disabled:opacity-50 sm:h-12 sm:min-w-[92px] sm:px-8 sm:py-3"
               >
                 수락
               </button>
@@ -60,7 +60,7 @@ export const FriendsListView = ({
                 type="button"
                 disabled={processingId === request.followId}
                 onClick={() => void onReject(request)}
-                className="h-12 min-w-[92px] rounded-token-s bg-btn-quaternary px-8 py-3 text-body-02-m text-text-strong disabled:opacity-50"
+                className="h-11 min-w-[72px] rounded-token-s bg-btn-quaternary px-4 py-2 text-body-02-m text-text-strong disabled:opacity-50 sm:h-12 sm:min-w-[92px] sm:px-8 sm:py-3"
               >
                 거절
               </button>
@@ -81,7 +81,7 @@ export const FriendsListView = ({
                 type="button"
                 disabled={processingId === request.followId}
                 onClick={() => void onCancel(request)}
-                className="h-12 min-w-[116px] rounded-token-s bg-btn-quaternary px-8 py-3 text-body-02-m text-text-strong disabled:opacity-50"
+                className="h-11 min-w-[96px] rounded-token-s bg-btn-quaternary px-4 py-2 text-body-02-m text-text-strong disabled:opacity-50 sm:h-12 sm:min-w-[116px] sm:px-8 sm:py-3"
               >
                 요청 취소
               </button>

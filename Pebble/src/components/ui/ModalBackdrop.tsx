@@ -18,7 +18,7 @@ export const ModalBackdrop = ({
   <div
     {...backdropProps}
     className={[
-      'fixed inset-0 flex items-center justify-center',
+      'fixed inset-0 flex items-center justify-center max-sm:overflow-y-auto max-sm:p-4',
       'bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]',
       layerClassName,
       className,

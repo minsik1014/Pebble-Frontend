@@ -11,17 +11,34 @@ const MobileRouteNav = ({ activePath }: { activePath: string }) => {
   const navigate = useNavigate();
   const getButtonClassName = (isActive: boolean) =>
     isActive
-      ? 'rounded-token-s bg-fill-primary py-3 text-body-02-sb text-text-onFill'
-      : 'rounded-token-s bg-fill-inverse py-3 text-body-02-sb text-text-strong shadow-shadow-s';
+      ? 'rounded-token-s bg-fill-primary px-1 py-3 text-body-04-m text-text-onFill sm:text-body-02-sb'
+      : 'rounded-token-s bg-fill-inverse px-1 py-3 text-body-04-m text-text-strong shadow-shadow-s sm:text-body-02-sb';
 
   return (
-    <nav className="grid grid-cols-3 gap-2">
+    <nav
+      aria-label="주요 메뉴"
+      className="sticky top-3 z-40 grid grid-cols-5 gap-1 rounded-token-m bg-fill-inverse/95 p-2 shadow-shadow-s backdrop-blur-md sm:gap-2"
+    >
+      <button
+        type="button"
+        className={getButtonClassName(activePath === '/' || activePath === '/home')}
+        onClick={() => navigate('/')}
+      >
+        홈
+      </button>
       <button
         type="button"
         className={getButtonClassName(activePath === '/calendar')}
         onClick={() => navigate('/calendar')}
       >
         캘린더
+      </button>
+      <button
+        type="button"
+        className={getButtonClassName(activePath.startsWith('/friends'))}
+        onClick={() => navigate('/friends')}
+      >
+        친구
       </button>
       <button
         type="button"
@@ -72,7 +89,11 @@ const MobileScheduleRow = ({
   </>
 );
 
-export const MobileCalendarLayout = () => {
+export const MobileCalendarLayout = ({
+  isTablet = false,
+}: {
+  isTablet?: boolean;
+}) => {
   const { pathname } = useLocation();
   const {
     currentYear,
@@ -115,8 +136,12 @@ export const MobileCalendarLayout = () => {
   };
 
   return (
-    <main className="min-h-screen bg-fill-inverse px-4 py-5 dark:bg-fill-surface">
-      <section className="mx-auto flex w-full max-w-[430px] flex-col gap-4">
+    <main className="min-h-screen bg-fill-inverse px-4 py-5 sm:px-6 dark:bg-fill-surface">
+      <section
+        className={`mx-auto flex w-full flex-col gap-4 ${
+          isTablet ? 'max-w-[960px]' : 'max-w-[430px]'
+        }`}
+      >
         <header className="rounded-token-l bg-fill-inverse p-5 shadow-shadow-s">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -170,9 +195,9 @@ export const MobileCalendarLayout = () => {
             />
           </section>
         ) : (
-          <>
+          <div className={isTablet ? 'grid grid-cols-2 items-start gap-4' : 'flex flex-col gap-4'}>
             {displayedStandaloneTasks.length > 0 ? (
-              <section className="rounded-token-l bg-fill-inverse p-4 shadow-shadow-s">
+              <section className={`rounded-token-l bg-fill-inverse p-4 shadow-shadow-s ${isTablet ? 'col-span-2' : ''}`}>
                 <div className="mb-3 flex items-end gap-2">
                   <h2 className="text-title-03-sb text-text-strong">
                     단일 태스크
@@ -242,23 +267,31 @@ export const MobileCalendarLayout = () => {
               <section className="min-h-[320px] rounded-token-l bg-fill-inverse shadow-shadow-s">
                 <CalendarStatusView
                   title="이번 달 일정이 없어요"
-                  description="데스크톱에서 카테고리, 마일스톤, 태스크를 추가해보세요."
+                  description="카테고리, 마일스톤, 태스크를 추가해보세요."
                 />
               </section>
             ) : null}
-          </>
+          </div>
         )}
       </section>
     </main>
   );
 };
 
-export const MobileNestedPageLayout = () => {
+export const MobileNestedPageLayout = ({
+  isTablet = false,
+}: {
+  isTablet?: boolean;
+}) => {
   const { pathname } = useLocation();
 
   return (
-    <main className="min-h-screen bg-fill-inverse px-4 py-5 dark:bg-fill-surface">
-      <section className="mx-auto flex w-full max-w-[430px] flex-col gap-4">
+    <main className="min-h-screen overflow-x-hidden bg-fill-inverse px-4 py-5 sm:px-6 dark:bg-fill-surface">
+      <section
+        className={`mx-auto flex w-full flex-col gap-4 ${
+          isTablet ? 'max-w-[960px]' : 'max-w-[430px]'
+        }`}
+      >
         <MobileRouteNav activePath={pathname} />
         {pathname === '/' ? (
           <Outlet />

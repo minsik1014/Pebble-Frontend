@@ -43,11 +43,11 @@ export const MilestoneDetailItem = ({
           className="w-full bg-fill-inverse dark:bg-[#222222] rounded-[20px] shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)] dark:shadow-[0px_0px_8px_0px_rgba(255,255,255,0.025)] flex flex-col overflow-hidden"
         >
           <div
-            className="w-full pl-5 pr-3 py-3 flex justify-between items-center bg-fill-inverse dark:bg-[#222222] transition-colors"
+            className="flex w-full items-center justify-between bg-fill-inverse py-3 pl-5 pr-3 transition-colors max-sm:flex-col max-sm:items-stretch max-sm:gap-2 dark:bg-[#222222]"
           >
             <button
               type="button"
-              className="flex items-center gap-3 w-[232px] text-left"
+              className="flex w-[232px] items-center gap-3 text-left max-sm:w-full"
               onClick={(event) => {
                 event.stopPropagation();
                 onEdit?.();
@@ -61,7 +61,7 @@ export const MilestoneDetailItem = ({
                 {item.title}
               </span>
             </button>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 max-sm:justify-between">
               <div
                 role="button"
                 tabIndex={0}
@@ -119,7 +119,7 @@ export const MilestoneDetailItem = ({
                 <AddButton
                   label="태스크 추가하기"
                   variant="secondary"
-                  className="w-[740px]"
+                  className="w-[740px] max-xl:w-full"
                   onClick={onAddTask}
                 />
               </div>

@@ -51,7 +51,7 @@ export const TaskDetailRow = ({
         return (
         <div
           key={`${task.id}-${dateRow.key}`}
-          className="w-[736px] pr-2 py-2 bg-fill-inverse dark:bg-[#222222] rounded-xl inline-flex justify-start items-center gap-2 overflow-hidden"
+          className="inline-flex w-[736px] items-center justify-start gap-2 overflow-hidden rounded-xl bg-fill-inverse py-2 pr-2 max-xl:w-full dark:bg-[#222222]"
         >
           <button
             type="button"

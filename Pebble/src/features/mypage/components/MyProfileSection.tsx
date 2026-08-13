@@ -51,7 +51,7 @@ export const MyProfileSection = ({
           </p>
         </div>
 
-        <div className="absolute left-1/2 top-[110px] w-[640px] -translate-x-1/2">
+        <div className="absolute left-1/2 top-6 w-full max-w-[640px] -translate-x-1/2 sm:top-[110px]">
           <button
             type="button"
             onClick={onEditProfile}
@@ -70,7 +70,7 @@ export const MyProfileSection = ({
         }`}
         aria-hidden={!isCompact}
       >
-        <div className="mx-auto flex w-[640px] items-center">
+        <div className="mx-auto flex w-full max-w-[640px] items-center">
           <div className="relative flex size-28 shrink-0 items-center justify-center overflow-hidden rounded-full bg-theme-2-base text-text-strong">
             {profile.imageUrl ? (
               <img
@@ -92,7 +92,7 @@ export const MyProfileSection = ({
             </p>
           </div>
 
-          <div className="ml-6 flex h-16 shrink-0 items-center rounded-[20px] bg-btn-quaternary px-6 shadow-shadow-m">
+          <div className="ml-3 hidden h-16 shrink-0 items-center rounded-[20px] bg-btn-quaternary px-4 shadow-shadow-m sm:flex lg:ml-6 lg:px-6">
             <div className="flex items-center gap-2">
               <span className="text-body-02-m text-text-secondary">조약돌</span>
               <strong className="text-title-03-sb text-text-strong">

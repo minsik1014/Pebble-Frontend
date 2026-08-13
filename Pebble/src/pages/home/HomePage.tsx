@@ -76,8 +76,8 @@ export const HomePage = (): JSX.Element => {
 
   return (
     <section
-      className={`flex w-full shrink-0 flex-col transition-all duration-300 md:h-[1000px] ${
-        isSidebarOpen ? "md:w-[924px]" : "md:w-[1316px]"
+      className={`flex w-full shrink-0 flex-col transition-all duration-300 xl:h-[1000px] ${
+        isSidebarOpen ? "xl:w-[924px]" : "xl:w-[1316px]"
       }`}
     >
       <HomeProfileStrip
@@ -91,7 +91,7 @@ export const HomePage = (): JSX.Element => {
         onOpenFriendCalendar={(friend) => handleOpenFriendCalendar(friend.userId)}
       />
 
-      <div className="mt-6">
+      <div className="mt-4 sm:mt-6">
         <HomeOverviewCards
           profile={overviewProfile}
           profileLabel={isFriendCalendarView ? "친구" : "나"}
@@ -100,7 +100,7 @@ export const HomePage = (): JSX.Element => {
         />
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 min-w-0">
         <CalendarBoard
           variant="home"
           isSidebarOpen={isSidebarOpen}

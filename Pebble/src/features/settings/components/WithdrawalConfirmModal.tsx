@@ -57,11 +57,11 @@ export function WithdrawalConfirmModal({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="flex h-[359px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
+        className="flex h-[359px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m max-sm:h-auto max-sm:max-h-[calc(100dvh-32px)] max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-token-m max-sm:p-4 dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex h-[67px] w-full items-start justify-between">
-          <div className="flex h-[67px] w-[260px] flex-col gap-token-xs pt-token-s">
+          <div className="flex h-[67px] w-[260px] flex-col gap-token-xs pt-token-s max-sm:min-w-0 max-sm:flex-1">
             <h2
               id={titleId}
               className="text-title-02-sb tracking-[-0.01em] text-text-strong"
@@ -87,13 +87,13 @@ export function WithdrawalConfirmModal({
           </button>
         </div>
 
-        <div className="flex h-[100px] w-full flex-col justify-center gap-token-m rounded-token-s bg-fill-danger-bg p-token-l">
+        <div className="flex h-[100px] w-full flex-col justify-center gap-token-m rounded-token-s bg-fill-danger-bg p-token-l max-sm:h-auto max-sm:min-h-[100px] max-sm:p-token-m">
           <p className="flex h-6 w-full items-center gap-token-m">
             <DeleteIcon
               className="size-6 shrink-0 text-fill-danger"
               aria-hidden="true"
             />
-            <span className="whitespace-nowrap text-body-02-m tracking-[-0.01em] text-text-primary">
+            <span className="whitespace-nowrap text-body-02-m tracking-[-0.01em] text-text-primary max-sm:whitespace-normal max-sm:text-body-03-r">
               투두·일정·조약돌 기록, 프로필 이미지 등 모든 데이터가 영구 삭제돼요.
             </span>
           </p>
@@ -103,7 +103,7 @@ export function WithdrawalConfirmModal({
               className="size-6 shrink-0 text-fill-danger"
               aria-hidden="true"
             />
-            <span className="whitespace-nowrap text-body-02-m tracking-[-0.01em] text-text-primary">
+            <span className="whitespace-nowrap text-body-02-m tracking-[-0.01em] text-text-primary max-sm:whitespace-normal max-sm:text-body-03-r">
               삭제된 데이터는 어떤 경우에도 다시 복구할 수 없어요.
             </span>
           </p>

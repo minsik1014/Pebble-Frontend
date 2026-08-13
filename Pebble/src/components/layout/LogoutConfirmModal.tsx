@@ -46,7 +46,7 @@ export const LogoutConfirmModal = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="logout-confirm-title"
-        className="flex w-[400px] flex-col items-start justify-center gap-5 overflow-hidden rounded-token-l bg-fill-inverse p-token-xl shadow-[0_0_28px_0_rgba(23,23,23,0.05)] dark:border-[0.5px] dark:border-border-secondary"
+        className="flex w-[400px] flex-col items-start justify-center gap-5 overflow-hidden rounded-token-l bg-fill-inverse p-token-xl shadow-[0_0_28px_0_rgba(23,23,23,0.05)] max-sm:w-full max-sm:rounded-token-m max-sm:p-4 dark:border-[0.5px] dark:border-border-secondary"
         onClick={(event) => event.stopPropagation()}
       >
         <header className="flex w-full items-start justify-between">

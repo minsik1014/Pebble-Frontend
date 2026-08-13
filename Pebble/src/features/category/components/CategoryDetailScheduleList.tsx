@@ -39,7 +39,7 @@ export const CategoryDetailScheduleList = ({
   onToggleCategoryTaskCompleted,
   onToggleTaskCompleted,
 }: CategoryDetailScheduleListProps) => (
-  <div className="absolute left-[72px] top-[443px] flex w-[780px] flex-col gap-5">
+  <div className="absolute left-[72px] top-[443px] flex w-[780px] flex-col gap-5 max-xl:static max-xl:mt-4 max-xl:w-full">
     {category.tasks && category.tasks.length > 0 ? (
       <div className="flex w-full flex-col gap-2 rounded-[20px] bg-fill-inverse p-5 shadow-[0px_0px_14px_0px_rgba(23,23,23,0.05)]">
         <div className="flex items-end gap-2">

@@ -32,9 +32,9 @@ export const FollowRow = ({
   secondaryText?: string | null;
   children?: ReactNode;
 }) => (
-  <div className="group relative flex min-h-[88px] w-full items-center justify-between overflow-hidden rounded-token-m p-3 transition-colors hover:bg-[rgba(23,23,23,0.05)]">
-    <div className="flex min-w-0 flex-1 items-center gap-5 pr-5">
-      <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border-teritory bg-fill-surface text-text-secondary">
+  <div className="group relative flex min-h-[88px] w-full flex-col items-stretch gap-3 overflow-hidden rounded-token-m p-3 transition-colors hover:bg-[rgba(23,23,23,0.05)] sm:flex-row sm:items-center sm:justify-between sm:gap-0">
+    <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-5 sm:pr-5">
+      <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border-teritory bg-fill-surface text-text-secondary sm:size-16">
         {user.profileImageUrl ? (
           <img
             src={user.profileImageUrl}
@@ -42,7 +42,7 @@ export const FollowRow = ({
             className="size-full object-cover"
           />
         ) : (
-          <MySolidIcon className="size-8" />
+          <MySolidIcon className="size-6 sm:size-8" />
         )}
       </div>
       <div className="min-w-0">
@@ -54,7 +54,7 @@ export const FollowRow = ({
         ) : null}
       </div>
     </div>
-    <div className="ml-auto flex shrink-0 gap-3">{children}</div>
+    <div className="ml-auto flex shrink-0 gap-2 sm:gap-3">{children}</div>
   </div>
 );
 

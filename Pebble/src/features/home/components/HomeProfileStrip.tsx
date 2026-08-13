@@ -58,8 +58,8 @@ export const HomeProfileStrip = ({
   onOpenFriends,
   onOpenFriendCalendar,
 }: HomeProfileStripProps): JSX.Element => (
-    <section className="flex h-[149px] w-full items-center justify-between rounded-token-m bg-fill-inverse p-token-l shadow-shadow-m">
-      <div className="flex h-full min-w-0 flex-1 items-center gap-token-xl border-r border-border-teritory pr-token-l">
+    <section className="flex h-auto w-full flex-col items-stretch justify-between gap-token-m rounded-token-m bg-fill-inverse p-token-m shadow-shadow-m sm:h-[149px] sm:flex-row sm:items-center sm:gap-0 sm:p-token-l">
+      <div className="flex min-w-0 flex-1 items-center gap-token-m border-b border-border-teritory pb-token-m sm:h-full sm:gap-token-xl sm:border-b-0 sm:border-r sm:pb-0 sm:pr-token-l">
         <button
           type="button"
           onClick={onOpenMyCalendar}
@@ -115,7 +115,7 @@ export const HomeProfileStrip = ({
       <button
         type="button"
         onClick={onOpenFriends}
-        className="relative ml-token-l flex shrink-0 flex-col items-center gap-token-xs rounded-token-infinite px-token-s py-token-m text-text-strong"
+        className="relative ml-auto flex shrink-0 items-center gap-token-s rounded-token-infinite px-token-s py-token-xs text-text-strong sm:ml-token-l sm:flex-col sm:gap-token-xs sm:py-token-m"
       >
         <span className="relative flex size-[54px] items-center justify-center">
           <FriendIcon className="size-[54px] text-fill-primary" aria-hidden="true" />

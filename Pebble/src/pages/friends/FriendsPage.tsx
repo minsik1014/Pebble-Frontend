@@ -34,19 +34,19 @@ export default function FriendsPage(): JSX.Element {
     <section
       className={`relative h-[1000px] shrink-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
         isSidebarOpen ? "w-[924px]" : "w-[1316px]"
-      }`}
+      } max-xl:h-[calc(100vh-116px)] max-xl:w-full max-xl:min-h-[560px]`}
     >
       <button
         type="button"
         onClick={() => window.history.back()}
-        className="absolute left-6 top-10 z-20 flex size-11 items-center justify-center rounded-token-s text-text-strong transition-colors hover:bg-fill-surface"
+        className="absolute left-3 top-5 z-20 flex size-11 items-center justify-center rounded-token-s text-text-strong transition-colors hover:bg-fill-surface sm:left-6 sm:top-10"
         aria-label="이전 페이지로 돌아가기"
       >
         <ChevronLeftIcon className="size-6" />
       </button>
 
-      <div className="h-full overflow-y-auto px-[72px] pb-12 custom-scrollbar">
-        <div className="mx-auto w-full max-w-[780px] pt-10">
+      <div className="h-full overflow-y-auto px-4 pb-8 sm:px-8 sm:pb-12 lg:px-[72px] custom-scrollbar">
+        <div className="mx-auto w-full max-w-[780px] pt-5 sm:pt-10">
           <div className="relative flex h-12 items-center justify-center">
             <div className="grid h-12 w-64 grid-cols-2 gap-1 rounded-token-s bg-btn-quaternary p-1">
               {(["friends", "search"] as const).map((tab) => (

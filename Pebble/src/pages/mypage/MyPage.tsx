@@ -77,10 +77,10 @@ export default function MyPage() {
     <section
       className={`relative h-[1000px] shrink-0 overflow-hidden rounded-[20px] bg-fill-inverse shadow-shadow-m transition-all duration-300 ${
         isSidebarOpen ? "w-[924px]" : "w-[1316px]"
-      }`}
+      } max-xl:h-[calc(100vh-116px)] max-xl:w-full max-xl:min-h-[600px]`}
     >
       <div
-        className="h-full overflow-y-auto px-[72px] pb-12 [overflow-anchor:none] custom-scrollbar"
+        className="h-full overflow-y-auto px-4 pb-8 sm:px-8 sm:pb-12 lg:px-[72px] [overflow-anchor:none] custom-scrollbar"
         onScroll={handleScroll}
       >
         <div className="relative mx-auto flex w-full max-w-[780px] flex-col">

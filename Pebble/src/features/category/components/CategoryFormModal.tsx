@@ -85,7 +85,7 @@ export const CategoryFormModal = ({
 
   return (
     <ModalBackdrop>
-      <div className="flex w-[607px] flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]">
+      <div className="flex w-[607px] flex-col items-center gap-5 rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m max-sm:max-h-[calc(100dvh-32px)] max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-token-m max-sm:p-4 dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]">
         <header className="flex w-full items-center justify-between">
           <h2 className="w-full text-title-02-sb text-text-strong">
             {mode === 'create'
@@ -95,14 +95,14 @@ export const CategoryFormModal = ({
         </header>
 
         <div className="flex w-full flex-col items-start gap-5">
-          <div className="flex w-full items-start gap-token-xxl">
+          <div className="flex w-full items-start gap-token-xxl max-sm:flex-col max-sm:items-stretch max-sm:gap-token-l">
             <CategoryImageUploader
               imageUrl={imageUrl}
               onImageChange={setImageUrl}
               onSelectImageFile={openImageCrop}
             />
 
-            <div className="flex w-[328px] flex-col justify-center gap-5">
+            <div className="flex w-[328px] flex-col justify-center gap-5 max-sm:w-full max-sm:min-w-0">
               <div className="flex w-full flex-col gap-2">
                 <label className="flex items-center gap-1 text-body-01-sb text-text-primary">
                   카테고리 이름

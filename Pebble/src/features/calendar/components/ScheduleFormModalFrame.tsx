@@ -33,8 +33,8 @@ export const ScheduleFormModalFrame = ({
   <ModalBackdrop>
     <div
       className={[
-        'relative flex w-[640px] flex-col',
-        'rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]',
+        'relative flex w-[640px] flex-col max-sm:max-h-[calc(100dvh-32px)] max-sm:w-full max-sm:overflow-y-auto',
+        'rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m max-sm:rounded-token-m max-sm:p-4 dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]',
         gapClassName,
       ].join(' ')}
     >

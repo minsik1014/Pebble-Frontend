@@ -215,7 +215,7 @@ export function PasswordChangeModal({
         role="dialog"
         aria-modal="true"
         aria-label="비밀번호 변경"
-        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
+        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m max-sm:max-h-[calc(100dvh-32px)] max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-token-m max-sm:p-4 dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 className="text-title-02-sb text-text-strong">

@@ -102,18 +102,19 @@ export const CategoryDetailSection = ({
         'bg-fill-inverse shadow-shadow-m dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]',
         'transition-all duration-300',
         isSidebarOpen ? 'w-[898px]' : 'w-[1290px]',
+        'max-xl:h-[calc(100vh-116px)] max-xl:min-h-[600px] max-xl:w-full max-xl:overflow-y-auto max-xl:p-4',
       ].join(' ')}
     >
       <button
         type="button"
         onClick={onBack}
-        className="absolute left-[20px] top-[36px] flex items-center gap-2 transition-opacity hover:opacity-80"
+        className="absolute left-[20px] top-[36px] flex items-center gap-2 transition-opacity hover:opacity-80 max-xl:static max-xl:w-fit"
         aria-label={`${backLabel}로 돌아가기`}
       >
         <div className="relative flex h-11 w-11 items-center justify-center rounded-xl">
           <ChevronLeftIcon className="h-6 w-6 text-text-strong" />
         </div>
-        <span className="text-[24px] font-medium leading-8 text-text-strong">
+        <span className="text-body-02-m text-text-strong sm:text-[24px] sm:font-medium sm:leading-8">
           {backLabel}
         </span>
       </button>
@@ -123,7 +124,7 @@ export const CategoryDetailSection = ({
         onEdit={state.openCategoryEditModal}
       />
 
-      <div className="absolute left-[72px] top-[392px] flex items-end gap-2">
+      <div className="absolute left-[72px] top-[392px] flex items-end gap-2 max-xl:static max-xl:mt-8">
         <h2 className="text-title-02-sb text-text-strong">마일스톤</h2>
         <span className="text-[20px] font-medium leading-6 text-text-teritary">
           {category.items.length}
