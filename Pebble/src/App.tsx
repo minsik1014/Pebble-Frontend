@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import {
   BrowserRouter,
   Navigate,
@@ -12,28 +13,99 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { ThemeInitializer } from '@/components/theme/ThemeInitializer';
 import { RequireAuth } from '@/features/auth/components/RequireAuth';
 import { AuthSessionSynchronizer } from '@/features/auth/components/AuthSessionSynchronizer';
-import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
-import { LoginPage } from '@/features/auth/pages/LoginPage';
-import { ProfileSetupPage } from '@/features/auth/pages/ProfileSetupPage';
-import { SignUpCompletePage } from '@/features/auth/pages/SignUpCompletePage';
-import { SignUpPage } from '@/features/auth/pages/SignUpPage';
-import { SocialOAuthCallbackPage } from '@/features/auth/pages/SocialOAuthCallbackPage';
 import { FIRST_STEP_PATH } from '@/features/report/constants/reportSteps';
-import { ReportLayout } from '@/features/report/ReportLayout';
-import { BusiestCategoryStep } from '@/features/report/steps/BusiestCategoryStep';
-import { BusiestDayStep } from '@/features/report/steps/BusiestDayStep';
-import { MonthlyPebbleStep } from '@/features/report/steps/MonthlyPebbleStep';
-import { SharedFriendsStep } from '@/features/report/steps/SharedFriendsStep';
-import { SummaryStep } from '@/features/report/steps/SummaryStep';
-import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
-import FriendsPage from '@/pages/friends/FriendsPage';
-import { HomePage } from '@/pages/home/HomePage';
-import { LandingPage } from '@/pages/landing/LandingPage';
-import MyPage from '@/pages/mypage/MyPage';
-import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
-import { EmailVerifyPage } from '@/pages/settings/EmailVerifyPage';
-import SettingsPage from '@/pages/settings/SettingsPage';
 import { getAccessToken } from '@/services/api';
+
+const CalendarMainPage = lazy(() =>
+  import('@/pages/calendar/CalendarMainPage').then((module) => ({
+    default: module.CalendarMainPage,
+  })),
+);
+const FriendsPage = lazy(() => import('@/pages/friends/FriendsPage'));
+const HomePage = lazy(() =>
+  import('@/pages/home/HomePage').then((module) => ({
+    default: module.HomePage,
+  })),
+);
+const LandingPage = lazy(() =>
+  import('@/pages/landing/LandingPage').then((module) => ({
+    default: module.LandingPage,
+  })),
+);
+const MyPage = lazy(() => import('@/pages/mypage/MyPage'));
+const ProfileEditPage = lazy(() => import('@/pages/mypage/ProfileEditPage'));
+const SettingsPage = lazy(() => import('@/pages/settings/SettingsPage'));
+const EmailVerifyPage = lazy(() =>
+  import('@/pages/settings/EmailVerifyPage').then((module) => ({
+    default: module.EmailVerifyPage,
+  })),
+);
+const ForgotPasswordPage = lazy(() =>
+  import('@/features/auth/pages/ForgotPasswordPage').then((module) => ({
+    default: module.ForgotPasswordPage,
+  })),
+);
+const LoginPage = lazy(() =>
+  import('@/features/auth/pages/LoginPage').then((module) => ({
+    default: module.LoginPage,
+  })),
+);
+const ProfileSetupPage = lazy(() =>
+  import('@/features/auth/pages/ProfileSetupPage').then((module) => ({
+    default: module.ProfileSetupPage,
+  })),
+);
+const SignUpCompletePage = lazy(() =>
+  import('@/features/auth/pages/SignUpCompletePage').then((module) => ({
+    default: module.SignUpCompletePage,
+  })),
+);
+const SignUpPage = lazy(() =>
+  import('@/features/auth/pages/SignUpPage').then((module) => ({
+    default: module.SignUpPage,
+  })),
+);
+const SocialOAuthCallbackPage = lazy(() =>
+  import('@/features/auth/pages/SocialOAuthCallbackPage').then((module) => ({
+    default: module.SocialOAuthCallbackPage,
+  })),
+);
+const ReportLayout = lazy(() =>
+  import('@/features/report/ReportLayout').then((module) => ({
+    default: module.ReportLayout,
+  })),
+);
+const MonthlyPebbleStep = lazy(() =>
+  import('@/features/report/steps/MonthlyPebbleStep').then((module) => ({
+    default: module.MonthlyPebbleStep,
+  })),
+);
+const BusiestCategoryStep = lazy(() =>
+  import('@/features/report/steps/BusiestCategoryStep').then((module) => ({
+    default: module.BusiestCategoryStep,
+  })),
+);
+const BusiestDayStep = lazy(() =>
+  import('@/features/report/steps/BusiestDayStep').then((module) => ({
+    default: module.BusiestDayStep,
+  })),
+);
+const SharedFriendsStep = lazy(() =>
+  import('@/features/report/steps/SharedFriendsStep').then((module) => ({
+    default: module.SharedFriendsStep,
+  })),
+);
+const SummaryStep = lazy(() =>
+  import('@/features/report/steps/SummaryStep').then((module) => ({
+    default: module.SummaryStep,
+  })),
+);
+
+const RouteLoadingFallback = () => (
+  <div className="flex min-h-screen items-center justify-center bg-fill-inverse text-body-02-m text-text-teritary dark:bg-fill-surface">
+    화면을 불러오는 중이에요
+  </div>
+);
 
 function LandingRoute() {
   if (getAccessToken()) {
@@ -65,6 +137,7 @@ function App() {
       <ThemeInitializer />
 
       <div className="min-h-screen bg-fill-surface font-sans text-text-strong">
+        <Suspense fallback={<RouteLoadingFallback />}>
         <Routes>
           <Route
             path="/landing"
@@ -174,6 +247,7 @@ function App() {
             element={<SocialOAuthCallbackPage />}
           />
         </Routes>
+        </Suspense>
       </div>
 
       <GlobalErrorToast />
