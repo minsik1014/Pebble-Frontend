@@ -1,19 +1,14 @@
 import { type Category, type MilestoneItem, type TaskItem } from "@/types";
 
-import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
-import { MilestoneFormModal } from "@/features/milestone/components/MilestoneFormModal";
-import {
-  TaskFormModal,
-  type TaskFormSubmitInput,
-} from "@/features/task/components/TaskFormModal";
+import type { TaskFormSubmitInput } from "@/features/task/components/TaskFormModal";
 import { StandaloneTaskSection } from "@/features/task/components/StandaloneTaskSection";
-import { AddMenuModal } from "./AddMenuModal";
 import { MilestoneAccordion } from "@/features/milestone/components/MilestoneAccordion";
 import { AddButton } from "@/components/ui/AddButton";
 import { CalendarSidebarHeader } from "./CalendarSidebarHeader";
 import { CalendarSidebarListView } from "./CalendarSidebarListView";
 import { CalendarSidebarSelectedDateView } from "./CalendarSidebarSelectedDateView";
 import { SidebarButtonArea } from "./SidebarButtonArea";
+import { CalendarSidebarModals } from "./CalendarSidebarModals";
 import { useCalendarSidebarModals } from "@/features/calendar/hooks/useCalendarSidebarModals";
 import { useCalendarSidebarEditors } from "@/features/calendar/hooks/useCalendarSidebarEditors";
 import { useCalendarSidebarState } from "@/features/calendar/hooks/useCalendarSidebarState";
@@ -351,184 +346,44 @@ export const CalendarSidebar = ({
         </div>
       </section>
       
-      {canEdit && (
-        <AddMenuModal
-          isOpen={isAddMenuOpen}
-          onClose={closeAddMenu}
-          variant={createDefaultCategoryId ? "category" : "global"}
-          onSelectCategory={openCategoryModal}
-          onSelectMilestone={() => openMilestoneModal(createDefaultCategoryId)}
-          onSelectTask={() => openTaskModal(createDefaultCategoryId)}
+      {canEdit ? (
+        <CalendarSidebarModals
+          categories={categories}
+          createDefaultCategoryId={createDefaultCategoryId}
+          editingCategoryTask={editingCategoryTask}
+          editingCategoryTaskTarget={editingCategoryTaskTarget}
+          editingMilestone={editingMilestone}
+          editingMilestoneTarget={editingMilestoneTarget}
+          editingStandaloneTask={editingStandaloneTask}
+          editingStandaloneTaskId={editingStandaloneTaskId}
+          editingTask={editingTask}
+          editingTaskTarget={editingTaskTarget}
+          isAddMenuOpen={isAddMenuOpen}
+          isCategoryModalOpen={isCategoryModalOpen}
+          isMilestoneModalOpen={isMilestoneModalOpen}
+          isTaskModalOpen={isTaskModalOpen}
+          closeAddMenu={closeAddMenu}
+          closeCategoryTaskEditor={closeCategoryTaskEditor}
+          closeCreateModal={closeCreateModal}
+          closeMilestoneEditor={closeMilestoneEditor}
+          closeMilestoneTaskEditor={closeMilestoneTaskEditor}
+          closeStandaloneTaskEditor={closeStandaloneTaskEditor}
+          openCategoryModal={openCategoryModal}
+          openMilestoneModal={openMilestoneModal}
+          openTaskModal={openTaskModal}
+          onCreateCategory={onCreateCategory}
+          onCreateMilestone={onCreateMilestone}
+          onCreateTask={onCreateTask}
+          onDeleteCategoryTask={onDeleteCategoryTask}
+          onDeleteMilestone={onDeleteMilestone}
+          onDeleteStandaloneTask={onDeleteStandaloneTask}
+          onDeleteTask={onDeleteTask}
+          onUpdateCategoryTask={onUpdateCategoryTask}
+          onUpdateMilestone={onUpdateMilestone}
+          onUpdateStandaloneTask={onUpdateStandaloneTask}
+          onUpdateTask={onUpdateTask}
         />
-      )}
-
-      <CategoryFormModal
-        isOpen={isCategoryModalOpen}
-        mode="create"
-        onSubmit={
-          onCreateCategory
-            ? async (input) => {
-                await onCreateCategory(
-                  input as CreateCategoryInput,
-                );
-              }
-            : undefined
-        }
-        onClose={closeCreateModal}
-      />
-
-      <MilestoneFormModal
-        isOpen={isMilestoneModalOpen}
-        onClose={closeCreateModal}
-        categories={categories}
-        defaultCategoryId={createDefaultCategoryId}
-        onSubmit={async (categoryId, input) => {
-          await onCreateMilestone?.(categoryId, input);
-        }}
-      />
-
-      <TaskFormModal
-        isOpen={isTaskModalOpen}
-        onClose={closeCreateModal}
-        categories={categories}
-        defaultCategoryId={createDefaultCategoryId}
-        onSubmit={onCreateTask}
-      />
-
-      <TaskFormModal
-        isOpen={Boolean(editingStandaloneTask)}
-        onClose={closeStandaloneTaskEditor}
-        categories={categories}
-        task={editingStandaloneTask}
-        mode="edit"
-        onSubmit={async ({ categoryId, milestoneId, task }) => {
-          if (!editingStandaloneTaskId) {
-            return;
-          }
-
-          await onUpdateStandaloneTask?.(editingStandaloneTaskId, {
-            ...task,
-            categoryId: categoryId ?? undefined,
-            milestoneId: milestoneId ?? undefined,
-          });
-          closeStandaloneTaskEditor();
-        }}
-        onRequestDelete={async () => {
-          if (!editingStandaloneTaskId) {
-            return;
-          }
-
-          await onDeleteStandaloneTask?.(editingStandaloneTaskId);
-          closeStandaloneTaskEditor();
-        }}
-      />
-
-      <MilestoneFormModal
-        isOpen={Boolean(editingMilestone)}
-        onClose={closeMilestoneEditor}
-        categories={categories}
-        mode="edit"
-        milestone={editingMilestone}
-        defaultCategoryId={editingMilestoneTarget?.categoryId ?? null}
-        onSubmit={async (categoryId, input) => {
-          if (!editingMilestoneTarget) {
-            return;
-          }
-
-          await onUpdateMilestone?.(
-            categoryId,
-            editingMilestoneTarget.milestoneId,
-            input,
-          );
-          closeMilestoneEditor();
-        }}
-        onRequestDelete={async () => {
-          if (!editingMilestoneTarget) {
-            return;
-          }
-
-          await onDeleteMilestone?.(
-            editingMilestoneTarget.categoryId,
-            editingMilestoneTarget.milestoneId,
-          );
-          closeMilestoneEditor();
-        }}
-      />
-
-      <TaskFormModal
-        isOpen={Boolean(editingCategoryTask)}
-        onClose={closeCategoryTaskEditor}
-        categories={categories}
-        defaultCategoryId={editingCategoryTaskTarget?.categoryId ?? null}
-        task={editingCategoryTask}
-        mode="edit"
-        onSubmit={async ({ categoryId, milestoneId, task }) => {
-          if (!editingCategoryTaskTarget) {
-            return;
-          }
-
-          await onUpdateCategoryTask?.(
-            editingCategoryTaskTarget.categoryId,
-            editingCategoryTaskTarget.taskId,
-            {
-              ...task,
-              categoryId: categoryId ?? undefined,
-              milestoneId: milestoneId ?? undefined,
-            },
-          );
-          closeCategoryTaskEditor();
-        }}
-        onRequestDelete={async () => {
-          if (!editingCategoryTaskTarget) {
-            return;
-          }
-
-          await onDeleteCategoryTask?.(
-            editingCategoryTaskTarget.categoryId,
-            editingCategoryTaskTarget.taskId,
-          );
-          closeCategoryTaskEditor();
-        }}
-      />
-
-      <TaskFormModal
-        isOpen={Boolean(editingTask)}
-        onClose={closeMilestoneTaskEditor}
-        categories={categories}
-        defaultCategoryId={editingTaskTarget?.categoryId ?? null}
-        defaultMilestoneId={editingTaskTarget?.milestoneId ?? null}
-        task={editingTask}
-        mode="edit"
-        onSubmit={async ({ categoryId, milestoneId, task }) => {
-          if (!editingTaskTarget) {
-            return;
-          }
-
-          await onUpdateTask?.(
-            editingTaskTarget.categoryId,
-            editingTaskTarget.milestoneId,
-            editingTaskTarget.taskId,
-            {
-              ...task,
-              categoryId: categoryId ?? undefined,
-              milestoneId: milestoneId ?? undefined,
-            },
-          );
-          closeMilestoneTaskEditor();
-        }}
-        onRequestDelete={async () => {
-          if (!editingTaskTarget) {
-            return;
-          }
-
-          await onDeleteTask?.(
-            editingTaskTarget.categoryId,
-            editingTaskTarget.milestoneId,
-            editingTaskTarget.taskId,
-          );
-          closeMilestoneTaskEditor();
-        }}
-      />
+      ) : null}
     </aside>
   );
 };
