@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import CloseIcon from '@/assets/icons/Close.svg?react';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 
 type LogoutConfirmModalProps = {
   isOpen: boolean;
@@ -36,15 +37,16 @@ export const LogoutConfirmModal = ({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
+    <ModalBackdrop
+      layerClassName="z-[100]"
+      className="overflow-hidden"
       onClick={onClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="logout-confirm-title"
-        className="flex w-[400px] flex-col items-start justify-center gap-5 overflow-hidden rounded-token-l bg-fill-inverse p-token-xl shadow-[0_0_28px_0_rgba(23,23,23,0.05)] dark:border-[0.5px] dark:border-border-secondary"
+        className="flex w-[400px] flex-col items-start justify-center gap-5 overflow-hidden rounded-token-l bg-fill-inverse p-token-xl shadow-[0_0_28px_0_rgba(23,23,23,0.05)] max-sm:w-full max-sm:rounded-token-m max-sm:p-4 dark:border-[0.5px] dark:border-border-secondary"
         onClick={(event) => event.stopPropagation()}
       >
         <header className="flex w-full items-start justify-between">
@@ -87,6 +89,6 @@ export const LogoutConfirmModal = ({
           </button>
         </div>
       </section>
-    </div>
+    </ModalBackdrop>
   );
 };

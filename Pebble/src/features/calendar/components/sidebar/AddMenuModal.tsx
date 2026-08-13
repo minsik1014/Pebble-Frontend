@@ -1,3 +1,5 @@
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
+
 type AddMenuModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -18,7 +20,7 @@ export const AddMenuModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]">
+    <ModalBackdrop>
       <div className="relative flex w-[359px] flex-col gap-[20px] rounded-[32px] bg-fill-inverse p-[32px] shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]">
         <header className="flex items-center justify-between">
           <h2 className="text-title-02-sb text-text-strong">추가하기</h2>
@@ -82,6 +84,6 @@ export const AddMenuModal = ({
           </button>
         </div>
       </div>
-    </div>
+    </ModalBackdrop>
   );
 };

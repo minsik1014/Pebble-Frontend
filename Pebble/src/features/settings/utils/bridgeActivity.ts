@@ -15,16 +15,6 @@ export const BRIDGE_ACTIVITY_POLICY = {
   retentionMonths: 12,
 } as const;
 
-export const MOCK_RECENT_BRIDGE_ACTIVITIES: DailyBridgeActivity[] = [
-  { date: '2026-07-21', completedTaskCount: 1 },
-  { date: '2026-07-20', completedTaskCount: 2 },
-  { date: '2026-07-19', completedTaskCount: 4 },
-  { date: '2026-07-18', completedTaskCount: 0 },
-  { date: '2026-07-17', completedTaskCount: 5 },
-  { date: '2026-07-16', completedTaskCount: 3 },
-  { date: '2026-07-15', completedTaskCount: 0 },
-];
-
 export function getBridgeIntensityLevel(
   completedTaskCount: number,
 ): BridgeIntensityLevel {

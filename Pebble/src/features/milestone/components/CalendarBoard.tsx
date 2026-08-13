@@ -42,8 +42,8 @@ export const CalendarBoard = ({
   const boardHeightClassName = isHomeVariant ? "h-[671px]" : "h-[1000px]";
   const boardWidthClassName = isHomeVariant
     ? isSidebarOpen
-      ? "w-full rounded-[20px] md:w-[924px]"
-      : "w-full rounded-token-l md:w-[1316px]"
+      ? "w-full rounded-[20px] xl:w-[924px]"
+      : "w-full rounded-token-l xl:w-[1316px]"
     : isSidebarOpen
       ? "w-[924px] rounded-[20px]"
       : "w-[1316px] rounded-token-l";

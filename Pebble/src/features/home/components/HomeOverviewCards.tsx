@@ -53,8 +53,8 @@ export const HomeOverviewCards = ({
   const recentActivities = getRecentActivities(activities);
 
   return (
-    <div className="grid grid-cols-1 gap-token-m md:h-[140px] md:grid-cols-[383px_minmax(0,1fr)]">
-      <section className="flex h-[140px] items-center gap-token-l rounded-token-m bg-fill-inverse px-6 py-[34px] shadow-shadow-m">
+    <div className="grid grid-cols-1 gap-token-m lg:h-[140px] lg:grid-cols-[383px_minmax(0,1fr)]">
+      <section className="flex h-[140px] items-center gap-token-l rounded-token-m bg-fill-inverse px-6 py-[34px] shadow-shadow-m max-sm:h-auto max-sm:min-h-[140px] max-sm:gap-token-m max-sm:px-4 max-sm:py-6">
         <div className="flex size-[72px] shrink-0 items-center justify-center overflow-hidden rounded-token-infinite bg-fill-teritory text-text-secondary">
           {profile.imageUrl ? (
             <img

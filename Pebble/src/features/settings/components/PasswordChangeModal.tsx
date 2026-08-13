@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import EyeOffIcon from '@/assets/icons/eye-off.svg?react';
 import EyeOnIcon from '@/assets/icons/eye-on.svg?react';
 import { Button } from '@/components/ui/Button';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 import { changePassword } from '@/features/auth/api/authApi';
 import { setAuthTokens } from '@/services/api';
 
@@ -206,15 +207,15 @@ export function PasswordChangeModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
+    <ModalBackdrop
+      className="overflow-hidden"
       onClick={handleClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-label="비밀번호 변경"
-        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
+        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m max-sm:max-h-[calc(100dvh-32px)] max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-token-m max-sm:p-4 dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 className="text-title-02-sb text-text-strong">
@@ -233,9 +234,11 @@ export function PasswordChangeModal({
 
             <div className="relative mt-token-s">
               <input
+                name="currentPassword"
                 type={
                   showCurrentPassword ? 'text' : 'password'
                 }
+                autoComplete="current-password"
                 value={currentPassword}
                 disabled={isSubmitting}
                 placeholder="현재 비밀번호를 입력해 주세요"
@@ -274,7 +277,9 @@ export function PasswordChangeModal({
 
             <div className="relative mt-token-s">
               <input
+                name="newPassword"
                 type={showNewPassword ? 'text' : 'password'}
+                autoComplete="new-password"
                 value={newPassword}
                 disabled={isSubmitting}
                 placeholder="새 비밀번호를 입력해 주세요"
@@ -312,9 +317,11 @@ export function PasswordChangeModal({
 
             <div className="relative mt-token-s">
               <input
+                name="newPasswordConfirm"
                 type={
                   showConfirmPassword ? 'text' : 'password'
                 }
+                autoComplete="new-password"
                 value={newPasswordConfirm}
                 disabled={isSubmitting}
                 placeholder="새 비밀번호를 다시 입력해 주세요"
@@ -371,7 +378,6 @@ export function PasswordChangeModal({
           </Button>
         </div>
       </section>
-    </div>
+    </ModalBackdrop>
   );
 }
-

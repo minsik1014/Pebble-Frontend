@@ -56,17 +56,20 @@ export const SignUpForm = ({
     >
       {/* 제목과 본문 사이는 AuthCard의 40px, 본문 내부 섹션은 20px 간격입니다. */}
       <div className="flex w-full flex-col gap-[20px]">
-        <form onSubmit={onSubmit} className="flex w-full flex-col gap-[20px]">
+        <form onSubmit={onSubmit} className="flex w-full flex-col gap-[20px]" noValidate>
           {/* 입력 필드 사이는 Figma Input Section 명세의 16px 간격을 사용합니다. */}
           <div className="flex w-full flex-col gap-[16px]">
             {/* 1. 이메일 필드 */}
             <div className={`flex flex-col gap-[8px] ${shakeTarget.email && errors.email ? "animate-shake" : ""}`}>
-              <label className="auth-label text-[16px] font-medium tracking-[-0.16px]">
+              <label htmlFor="signup-email" className="auth-label text-[16px] font-medium tracking-[-0.16px]">
                 이메일<span className="auth-required">*</span>
               </label>
               <div className="relative w-full">
                 <input
-                  type="text"
+                  id="signup-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   value={form.email}
                   onChange={(e) => onChange("email", e.target.value)}
                   onBlur={() => onFieldBlur("email")}
@@ -85,12 +88,15 @@ export const SignUpForm = ({
             {/* 2. 비밀번호 필드 */}
             <div className={`flex flex-col gap-[8px] ${shakeTarget.password && errors.password ? "animate-shake" : ""}`}>
               <div className="flex flex-col gap-[8px]">
-                <label className="auth-label text-[16px] font-medium tracking-[-0.16px]">
+                <label htmlFor="signup-password" className="auth-label text-[16px] font-medium tracking-[-0.16px]">
                   비밀번호<span className="auth-required">*</span>
                 </label>
                 <div className="relative w-full">
                   <input
+                    id="signup-password"
+                    name="password"
                     type={showPw ? "text" : "password"}
+                    autoComplete="new-password"
                     value={form.password}
                     onChange={(e) => onChange("password", e.target.value)}
                     onBlur={() => onFieldBlur("password")}
@@ -116,12 +122,15 @@ export const SignUpForm = ({
 
             {/* 3. 비밀번호 확인 필드 */}
             <div className={`flex flex-col gap-[8px] ${shakeTarget.passwordConfirm && errors.passwordConfirm ? "animate-shake" : ""}`}>
-              <label className="auth-label text-[16px] font-medium tracking-[-0.16px]">
+              <label htmlFor="signup-password-confirm" className="auth-label text-[16px] font-medium tracking-[-0.16px]">
                 비밀번호 확인<span className="auth-required">*</span>
               </label>
               <div className="relative w-full">
                 <input
+                  id="signup-password-confirm"
+                  name="passwordConfirm"
                   type={showPwConfirm ? "text" : "password"}
+                  autoComplete="new-password"
                   value={form.passwordConfirm}
                   onChange={(e) => onChange("passwordConfirm", e.target.value)}
                   onBlur={() => onFieldBlur("passwordConfirm")}

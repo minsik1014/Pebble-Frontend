@@ -3,6 +3,7 @@ import { useEffect, useId, useMemo, useState, type CSSProperties } from 'react';
 import CloseIcon from '@/assets/icons/Close.svg?react';
 
 import { Button } from '@/components/ui/Button';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 import type { ActivityIntensity, NormalizedActivityLog } from '@/features/activity';
 
 import {
@@ -236,8 +237,8 @@ export function BridgeColorModal({
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
+    <ModalBackdrop
+      className="overflow-hidden"
       role="presentation"
       onMouseDown={handleClose}
     >
@@ -245,7 +246,7 @@ export function BridgeColorModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="flex h-[547px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
+        className="flex h-[547px] w-[640px] flex-col gap-token-l rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m max-sm:h-auto max-sm:max-h-[calc(100dvh-32px)] max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-token-m max-sm:p-4 dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="flex h-11 w-full items-start justify-between">
@@ -267,8 +268,8 @@ export function BridgeColorModal({
           </button>
         </header>
 
-        <div className="flex h-[83px] w-full flex-col gap-token-xs">
-          <div className="flex h-[27px] items-center gap-token-xs">
+        <div className="flex h-[83px] w-full flex-col gap-token-xs max-sm:h-auto max-sm:min-h-[83px]">
+          <div className="flex h-[27px] items-center gap-token-xs max-sm:h-auto max-sm:min-h-[27px]">
             <p className="text-[18px] font-medium leading-[150%] tracking-[-0.01em] text-text-primary">
               <span>{draftPalette.name}</span>
               <span className="text-[#A3A3A3] dark:text-text-teritary"> · 최근 7일 미리보기</span>
@@ -306,7 +307,7 @@ export function BridgeColorModal({
           )}
         </div>
 
-        <div className="grid h-[228px] w-full grid-cols-3 grid-rows-2 gap-token-m">
+        <div className="grid h-[228px] w-full grid-cols-3 grid-rows-2 gap-token-m max-sm:h-auto max-sm:grid-cols-2 max-sm:gap-token-s">
           {BRIDGE_COLOR_PALETTES.map((palette) => {
             const isSelected = palette.id === draftPaletteId;
             const colors = getBridgePaletteColors(palette);
@@ -320,7 +321,7 @@ export function BridgeColorModal({
                 aria-pressed={isSelected}
                 aria-label={`${palette.name} ${palette.tone} 색상 선택`}
                 className={[
-                  'flex h-[108px] w-[184px] flex-col gap-token-m rounded-token-s bg-fill-surface p-token-l text-left',
+                  'flex h-[108px] w-[184px] flex-col gap-token-m rounded-token-s bg-fill-surface p-token-l text-left max-sm:w-full max-sm:min-w-0 max-sm:p-token-m',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-primary',
                   'disabled:cursor-not-allowed',
                   isSelected
@@ -368,7 +369,7 @@ export function BridgeColorModal({
             type="button"
             variant="cancel"
             disabled={isSubmitting}
-            className="h-11 w-[282px]"
+            className="h-11 w-[282px] max-sm:min-w-0 max-sm:flex-1"
             onClick={handleClose}
           >
             취소
@@ -378,13 +379,13 @@ export function BridgeColorModal({
             type="button"
             variant="primary"
             disabled={!hasChanged || isSubmitting}
-            className="h-11 w-[282px] disabled:opacity-100"
+            className="h-11 w-[282px] disabled:opacity-100 max-sm:min-w-0 max-sm:flex-1"
             onClick={() => void handleConfirm()}
           >
             {isSubmitting ? '변경 중...' : '변경'}
           </Button>
         </div>
       </section>
-    </div>
+    </ModalBackdrop>
   );
 }

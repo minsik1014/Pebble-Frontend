@@ -14,7 +14,7 @@ export const CompletedCategoryGrid = ({
 }: CompletedCategoryGridProps): JSX.Element => {
   return (
     <section
-      className={`relative z-20 mx-auto w-[640px] bg-fill-inverse transition-[margin] duration-500 ease-in-out ${
+      className={`relative z-20 mx-auto w-full max-w-[640px] bg-fill-inverse transition-[margin] duration-500 ease-in-out ${
         isCompact ? "mt-16" : "mt-12"
       } ${categories.length <= 6 ? "min-h-[calc(1000px-220px-64px)]" : ""}`}
       aria-labelledby="my-category-heading"
@@ -42,7 +42,7 @@ export const CompletedCategoryGrid = ({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           {categories.map((category) => (
             <CompletedCategoryCard
               key={category.id}

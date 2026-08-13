@@ -49,12 +49,15 @@ export const LoginForm = ({
             <div className="flex w-full flex-col gap-[12px]">
               {/* 입력 오류가 발생한 필드만 흔들림과 위험 색상 테두리를 적용합니다. */}
               <div className={`flex flex-col gap-[8px] ${shakeTarget.email && errors.email ? "animate-shake" : ""}`}>
-                <label className="auth-label text-[16px] font-medium tracking-[-0.16px]">
+                <label htmlFor="login-email" className="auth-label text-[16px] font-medium tracking-[-0.16px]">
                   이메일<span className="auth-required">*</span>
                 </label>
                 <div className="relative w-full">
                   <input
+                    id="login-email"
+                    name="email"
                     type="email"
+                    autoComplete="email"
                     value={email}
                     onChange={(e) => onEmailChange(e.target.value)}
                     onBlur={() => onFieldBlur("email")}
@@ -72,12 +75,15 @@ export const LoginForm = ({
               </div>
 
               <div className={`flex flex-col gap-[8px] ${shakeTarget.password && errors.password ? "animate-shake" : ""}`}>
-                <label className="auth-label text-[16px] font-medium tracking-[-0.16px]">
+                <label htmlFor="login-password" className="auth-label text-[16px] font-medium tracking-[-0.16px]">
                   비밀번호<span className="auth-required">*</span>
                 </label>
                 <div className="relative w-full">
                   <input
+                    id="login-password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
                     value={password}
                     onChange={(e) => onPasswordChange(e.target.value)}
                     onBlur={() => onFieldBlur("password")}

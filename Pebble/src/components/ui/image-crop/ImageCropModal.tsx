@@ -203,8 +203,8 @@ export const ImageCropModal = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow">
-      <section className="flex w-[640px] flex-col gap-6 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-fill-shadow max-sm:overflow-y-auto max-sm:p-4">
+      <section className="flex w-[640px] flex-col gap-6 rounded-[32px] bg-fill-inverse p-8 shadow-shadow-m max-sm:max-h-[calc(100dvh-32px)] max-sm:w-full max-sm:gap-4 max-sm:overflow-y-auto max-sm:rounded-token-m max-sm:p-4">
         <header className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-title-02-sb text-text-strong">
@@ -224,7 +224,7 @@ export const ImageCropModal = ({
           </button>
         </header>
 
-        <div className="relative h-[360px] overflow-hidden rounded-token-m bg-fill-surface">
+        <div className="relative h-[360px] overflow-hidden rounded-token-m bg-fill-surface max-sm:h-[260px] max-sm:shrink-0">
           {sourceImageUrl ? (
             <Cropper
               image={sourceImageUrl}

@@ -88,6 +88,7 @@ export const ForgotPasswordForm = ({
             <button
               type="button"
               onClick={onBackToLogin}
+              aria-label="로그인 화면으로 돌아가기"
               className={`${step === 2 ? "relative w-[24px] h-[33px] flex items-center justify-center" : "absolute left-0"} text-text-primary hover:text-text-strong transition-colors flex-shrink-0`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-[20px] h-[20px]">
@@ -112,9 +113,12 @@ export const ForgotPasswordForm = ({
             {/* STEP 1: 이메일 입력 단계 */}
             {step === 1 && (
               <div className={`flex flex-col mb-[32px] ${shakeTarget.email && errors.email ? "animate-shake" : ""}`}>
-                <label className="auth-label mb-[8px]">이메일<span className="auth-required">*</span></label>
+                <label htmlFor="forgot-password-email" className="auth-label mb-[8px]">이메일<span className="auth-required">*</span></label>
                 <input
+                  id="forgot-password-email"
+                  name="email"
                   type="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => onChange("email", e.target.value)}
                   onBlur={() => onFieldBlur("email")}
@@ -147,17 +151,20 @@ export const ForgotPasswordForm = ({
               <>
                 {/* 새 비밀번호 */}
                 <div className={`flex flex-col mb-[20px] relative ${shakeTarget.newPassword && errors.newPassword ? "animate-shake" : ""}`}>
-                  <label className="auth-label mb-[8px]">새 비밀번호<span className="auth-required">*</span></label>
+                  <label htmlFor="forgot-password-new" className="auth-label mb-[8px]">새 비밀번호<span className="auth-required">*</span></label>
                   <div className="relative w-full">
                     <input
+                      id="forgot-password-new"
+                      name="newPassword"
                       type={showPw ? "text" : "password"}
+                      autoComplete="new-password"
                       value={newPassword}
                       onChange={(e) => onChange("newPassword", e.target.value)}
                       onBlur={() => onFieldBlur("newPassword")}
                       placeholder="비밀번호를 입력해 주세요"
                       className={`auth-input pl-[12px] pr-[48px] ${errors.newPassword ? "!border-fill-danger focus:!border-fill-danger" : ""}`}
                     />
-                    <button type="button" onClick={onTogglePw} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-text-teritary hover:text-text-primary flex items-center justify-center">
+                    <button type="button" onClick={onTogglePw} aria-label={showPw ? "새 비밀번호 숨기기" : "새 비밀번호 표시"} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-text-teritary hover:text-text-primary flex items-center justify-center">
                       <EyeIcon open={showPw} />
                     </button>
                   </div>
@@ -170,17 +177,20 @@ export const ForgotPasswordForm = ({
 
                 {/* 새 비밀번호 확인 */}
                 <div className={`flex flex-col mb-[32px] relative ${shakeTarget.passwordConfirm && errors.passwordConfirm ? "animate-shake" : ""}`}>
-                  <label className="auth-label mb-[8px]">새 비밀번호 확인<span className="auth-required">*</span></label>
+                  <label htmlFor="forgot-password-confirm" className="auth-label mb-[8px]">새 비밀번호 확인<span className="auth-required">*</span></label>
                   <div className="relative w-full">
                     <input
+                      id="forgot-password-confirm"
+                      name="passwordConfirm"
                       type={showPwConfirm ? "text" : "password"}
+                      autoComplete="new-password"
                       value={passwordConfirm}
                       onChange={(e) => onChange("passwordConfirm", e.target.value)}
                       onBlur={() => onFieldBlur("passwordConfirm")}
                       placeholder="비밀번호를 한 번 더 입력해 주세요"
                       className={`auth-input pl-[12px] pr-[48px] ${errors.passwordConfirm ? "!border-fill-danger focus:!border-fill-danger" : ""}`}
                     />
-                    <button type="button" onClick={onTogglePwConfirm} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-text-teritary hover:text-text-primary flex items-center justify-center">
+                    <button type="button" onClick={onTogglePwConfirm} aria-label={showPwConfirm ? "새 비밀번호 확인 숨기기" : "새 비밀번호 확인 표시"} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-text-teritary hover:text-text-primary flex items-center justify-center">
                       <EyeIcon open={showPwConfirm} />
                     </button>
                   </div>

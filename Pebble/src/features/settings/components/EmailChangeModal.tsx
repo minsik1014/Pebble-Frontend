@@ -4,6 +4,7 @@ import {
 } from 'react';
 
 import { Button } from '@/components/ui/Button';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 import { useRetryableAction } from '@/hooks/useRetryableAction';
 
 import { requestEmailChange } from '../api/settingsApi';
@@ -147,19 +148,15 @@ export function EmailChangeModal({
         : '인증 메일 보내기';
 
   return (
-    <div
-      className={[
-        'fixed inset-0 z-50',
-        'flex items-center justify-center overflow-hidden',
-        'bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]',
-      ].join(' ')}
+    <ModalBackdrop
+      className="overflow-hidden"
       onClick={handleClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-label="이메일 변경"
-        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
+        className="w-[480px] rounded-token-l bg-fill-inverse p-token-xl shadow-shadow-m max-sm:w-full max-sm:rounded-token-m max-sm:p-4 dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]"
         onClick={(event) =>
           event.stopPropagation()
         }
@@ -243,6 +240,6 @@ export function EmailChangeModal({
           </Button>
         </div>
       </section>
-    </div>
+    </ModalBackdrop>
   );
 }

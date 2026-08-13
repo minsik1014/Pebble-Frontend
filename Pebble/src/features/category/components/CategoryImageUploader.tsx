@@ -43,14 +43,14 @@ export const CategoryImageUploader = ({
   };
 
   return (
-    <div className="flex w-[175px] shrink-0 flex-col items-start gap-2">
+    <div className="flex w-[175px] shrink-0 flex-col items-start gap-2 max-sm:w-full">
       <label className="text-body-01-sb text-text-primary" htmlFor={inputId}>
         대표 이미지 (선택)
       </label>
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="relative flex h-[234px] w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-token-s border border-dashed border-border-default bg-fill-inverse transition-colors hover:bg-fill-surface dark:border-border-secondary"
+        className="relative flex h-[234px] w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-token-s border border-dashed border-border-default bg-fill-inverse transition-colors hover:bg-fill-surface max-sm:h-[180px] dark:border-border-secondary"
       >
         {imageUrl ? (
           <>

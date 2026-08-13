@@ -64,11 +64,11 @@ export const MonthlyReportBanner = ({
     <button
       type="button"
       onClick={onOpenReport}
-      className="relative mx-auto mb-[-24px] mt-[28px] flex h-[130px] w-[640px] items-end justify-end gap-[20px] overflow-hidden rounded-[20px] bg-btn-primary px-[100px] py-[32px] text-left shadow-[0_2px_10px_rgba(23,23,23,0.10)] transition-opacity hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-btn-primary"
+      className="relative mx-auto mb-[-16px] mt-6 flex h-[150px] w-full max-w-[640px] items-end justify-end gap-3 overflow-hidden rounded-[20px] bg-btn-primary px-5 py-6 text-left shadow-[0_2px_10px_rgba(23,23,23,0.10)] transition-opacity hover:opacity-95 sm:mb-[-24px] sm:mt-[28px] sm:h-[130px] sm:gap-[20px] sm:px-[100px] sm:py-[32px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-btn-primary"
       aria-label={`${reportMonth ? `${reportMonth}월 ` : ""}리포트 보러 가기`}
     >
       <span
-        className="absolute left-[32px] top-[28px] h-[110px] w-[182px]"
+        className="absolute left-2 top-10 h-[110px] w-[150px] opacity-60 sm:left-[32px] sm:top-[28px] sm:w-[182px] sm:opacity-100"
         aria-hidden="true"
       >
         <img
@@ -84,10 +84,10 @@ export const MonthlyReportBanner = ({
       </span>
 
       <span className="relative flex flex-col gap-[8px]">
-        <strong className="whitespace-nowrap text-[24px] font-semibold leading-[130%] tracking-[-0.24px] text-fill-inverse">
+        <strong className="text-[18px] font-semibold leading-[130%] tracking-[-0.18px] text-fill-inverse sm:whitespace-nowrap sm:text-[24px] sm:tracking-[-0.24px]">
           이번 달의 기록이 완성되었어요!
         </strong>
-        <span className="flex items-center gap-[4px] text-[18px] font-medium leading-[150%] tracking-[-0.18px] text-btn-quaternary">
+        <span className="flex items-center gap-[4px] text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-btn-quaternary sm:text-[18px] sm:tracking-[-0.18px]">
           {reportMonth ? `${reportMonth}월 리포트 보러가기` : "리포트 보러가기"}
           <ChevronRightIcon className="size-[24px] shrink-0 text-btn-quaternary" />
         </span>

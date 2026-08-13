@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import { ScheduleDatePicker } from '@/components/ui/ScheduleDatePicker';
 import {
   CategorySelect,
@@ -7,12 +5,13 @@ import {
 } from '@/features/calendar/components/ScheduleRelationSelects';
 import { ScheduleFormModalFrame } from '@/features/calendar/components/ScheduleFormModalFrame';
 import { ScheduleNameInput } from '@/features/calendar/components/ScheduleNameInput';
-import { useScheduleFormDateInitializer } from '@/features/calendar/hooks/useScheduleFormDateInitializer';
-import type { CreateScheduleItemInput } from '@/features/calendar/types';
-import { useRetryableAction } from '@/hooks/useRetryableAction';
-import { useScheduleDatePicker } from '@/hooks/useScheduleDatePicker';
+import {
+  useTaskFormState,
+  type TaskFormSubmitInput,
+} from '@/features/task/hooks/useTaskFormState';
 import type { Category, ScheduleItem } from '@/types';
-import { getScheduleRangeFromSelection } from '@/utils/scheduleDate';
+
+export type { TaskFormSubmitInput } from '@/features/task/hooks/useTaskFormState';
 
 type TaskFormModalProps = {
   isOpen: boolean;
@@ -28,12 +27,6 @@ type TaskFormModalProps = {
   onRequestDelete?: () => void | Promise<void>;
 };
 
-export type TaskFormSubmitInput = {
-  categoryId: string | null;
-  milestoneId: string | null;
-  task: CreateScheduleItemInput;
-};
-
 export const TaskFormModal = ({
   isOpen,
   onClose,
@@ -45,154 +38,37 @@ export const TaskFormModal = ({
   onSubmit,
   onRequestDelete,
 }: TaskFormModalProps) => {
-  const [taskName, setTaskName] = useState('');
-
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    defaultCategoryId,
-  );
-
-  const [selectedMilestone, setSelectedMilestone] = useState<string | null>(
-    defaultMilestoneId,
-  );
-
-  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const [isMilestoneDropdownOpen, setIsMilestoneDropdownOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const datePicker = useScheduleDatePicker();
-  const { isRunning, run } = useRetryableAction();
-
-  useScheduleFormDateInitializer({
-    isOpen,
-    task,
+  const {
+    activeCategory,
+    availableMilestones,
+    changeTaskName,
     datePicker,
-  });
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const nextCategory = defaultCategoryId
-      ? categories.find(
-          (category) =>
-            category.id === defaultCategoryId && !category.isHidden,
-        )
-      : undefined;
-
-    const nextCategoryId = nextCategory?.id ?? null;
-
-    const nextMilestoneId =
-      nextCategory &&
-      defaultMilestoneId &&
-      nextCategory.items.some(
-        (milestone) => milestone.id === defaultMilestoneId,
-      )
-        ? defaultMilestoneId
-        : null;
-
-    setSelectedCategory(nextCategoryId);
-    setSelectedMilestone(nextMilestoneId);
-    setTaskName(task?.title ?? '');
-    setErrorMessage('');
-    setIsCategoryDropdownOpen(false);
-    setIsMilestoneDropdownOpen(false);
-  }, [
+    errorMessage,
+    handleDelete,
+    handleSubmit,
+    isCategoryDropdownOpen,
+    isMilestoneDropdownOpen,
+    isRunning,
+    selectCategory,
+    selectMilestone,
+    selectedCategory,
+    selectedMilestone,
+    submitDisabledReason,
+    taskName,
+    toggleCategoryDropdown,
+    toggleMilestoneDropdown,
+  } = useTaskFormState({
     categories,
     defaultCategoryId,
     defaultMilestoneId,
     isOpen,
     task,
-  ]);
+    onClose,
+    onSubmit,
+    onRequestDelete,
+  });
 
-  if (!isOpen) {
-    return null;
-  }
-
-  const activeCategory = categories.find(
-    (category) =>
-      category.id === selectedCategory && !category.isHidden,
-  );
-
-  const availableMilestones = activeCategory?.items ?? [];
-
-  const submitDisabledReason = !taskName.trim()
-    ? '제목을 입력해 주세요'
-    : !datePicker.isDateSelectionComplete
-      ? '날짜를 선택해 주세요'
-      : undefined;
-
-  const handleSubmit = async () => {
-    const scheduleRange = getScheduleRangeFromSelection(datePicker);
-    const trimmedName = taskName.trim();
-
-    if (!trimmedName || !scheduleRange || isRunning) {
-      return;
-    }
-
-    setErrorMessage('');
-
-    /*
-     * 다시 시도할 때도 최초 제출 시점의 카테고리,
-     * 마일스톤 및 날짜 정보가 사용되도록 복사합니다.
-     */
-    const inputSnapshot: TaskFormSubmitInput = {
-      categoryId: selectedCategory,
-      milestoneId: selectedCategory ? selectedMilestone : null,
-      task: {
-        title: trimmedName,
-        start: scheduleRange.start,
-        end: scheduleRange.end,
-        dates: scheduleRange.dates,
-        accent: activeCategory?.accent ?? '#171717',
-      },
-    };
-
-    await run(
-      async () => {
-        await onSubmit?.(inputSnapshot);
-
-        /*
-         * 요청에 성공한 경우에만 입력값을 초기화하고
-         * 모달을 닫습니다.
-         */
-        setTaskName('');
-        onClose();
-      },
-      {
-        onError: (error) => {
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : '태스크를 저장하지 못했어요.',
-          );
-        },
-      },
-    );
-  };
-
-  const handleDelete = async () => {
-    if (!onRequestDelete || isRunning) {
-      return;
-    }
-
-    setErrorMessage('');
-
-    await run(
-      async () => {
-        await onRequestDelete();
-      },
-      {
-        onError: (error) => {
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : '태스크를 삭제하지 못했어요.',
-          );
-        },
-      },
-    );
-  };
+  if (!isOpen) return null;
 
   return (
     <ScheduleFormModalFrame
@@ -205,9 +81,7 @@ export const TaskFormModal = ({
       onCancel={onClose}
       onSubmit={handleSubmit}
       onDelete={
-        mode === 'edit' && onRequestDelete
-          ? handleDelete
-          : undefined
+        mode === 'edit' && onRequestDelete ? handleDelete : undefined
       }
     >
       <div className="mt-2 flex w-full flex-col gap-3">
@@ -218,16 +92,8 @@ export const TaskFormModal = ({
               selectedCategoryId={selectedCategory}
               isOpen={isCategoryDropdownOpen}
               allowEmpty
-              onToggleOpen={() => {
-                setIsCategoryDropdownOpen((value) => !value);
-                setIsMilestoneDropdownOpen(false);
-              }}
-              onSelectCategory={(categoryId) => {
-                setSelectedCategory(categoryId);
-                setSelectedMilestone(null);
-                setIsCategoryDropdownOpen(false);
-                setErrorMessage('');
-              }}
+              onToggleOpen={toggleCategoryDropdown}
+              onSelectCategory={selectCategory}
             />
           </div>
 
@@ -238,18 +104,8 @@ export const TaskFormModal = ({
               themeColor={activeCategory?.themeMid}
               disabled={!activeCategory}
               isOpen={isMilestoneDropdownOpen}
-              onToggleOpen={() => {
-                if (activeCategory) {
-                  setIsMilestoneDropdownOpen((value) => !value);
-                }
-
-                setIsCategoryDropdownOpen(false);
-              }}
-              onSelectMilestone={(milestoneId) => {
-                setSelectedMilestone(milestoneId);
-                setIsMilestoneDropdownOpen(false);
-                setErrorMessage('');
-              }}
+              onToggleOpen={toggleMilestoneDropdown}
+              onSelectMilestone={selectMilestone}
             />
           </div>
         </div>
@@ -257,10 +113,7 @@ export const TaskFormModal = ({
         <ScheduleNameInput
           placeholder="태스크 이름을 입력해 주세요"
           value={taskName}
-          onChange={(value) => {
-            setTaskName(value);
-            setErrorMessage('');
-          }}
+          onChange={changeTaskName}
         />
       </div>
 
@@ -282,10 +135,7 @@ export const TaskFormModal = ({
       />
 
       {errorMessage ? (
-        <p
-          role="alert"
-          className="text-caption-01 text-fill-danger"
-        >
+        <p role="alert" className="text-caption-01 text-fill-danger">
           {errorMessage}
         </p>
       ) : null}

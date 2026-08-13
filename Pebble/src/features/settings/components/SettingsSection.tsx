@@ -13,7 +13,7 @@ export function SettingsSection({
     <section
       className={[
         'w-full rounded-token-m bg-fill-surface dark:bg-[#141414]',
-        'px-[58px] py-token-xxl',
+        'px-4 py-6 sm:px-8 sm:py-token-xl lg:px-[58px] lg:py-token-xxl',
         'shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)]',
         'transition-colors duration-200',
         className,
