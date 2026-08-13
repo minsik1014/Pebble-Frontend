@@ -21,6 +21,11 @@ export type FollowListItem = FollowUser & {
   hasUnviewedSchedule: boolean;
 };
 
+const inFlightFollowRequests = new Map<
+  FollowListType,
+  Promise<FollowListItem[]>
+>();
+
 type FollowListResponseItem = Omit<
   FollowListItem,
   "hasUnviewedSchedule"
@@ -86,7 +91,7 @@ export async function getFollows(
   };
 }
 
-export async function getAllFollows(
+async function loadAllFollows(
   type: FollowListType,
 ): Promise<FollowListItem[]> {
   const firstPage = await getFollows(type);
@@ -105,6 +110,23 @@ export async function getAllFollows(
   }
 
   return follows;
+}
+
+export function getAllFollows(
+  type: FollowListType,
+): Promise<FollowListItem[]> {
+  const currentRequest = inFlightFollowRequests.get(type);
+
+  if (currentRequest) {
+    return currentRequest;
+  }
+
+  const request = loadAllFollows(type).finally(() => {
+    inFlightFollowRequests.delete(type);
+  });
+
+  inFlightFollowRequests.set(type, request);
+  return request;
 }
 
 export async function sendFollowRequest(
