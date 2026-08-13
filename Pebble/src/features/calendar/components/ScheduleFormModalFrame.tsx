@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { ModalActionBar } from '@/components/ui/ModalActionBar';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 
 type ScheduleFormModalFrameProps = {
   title: string;
@@ -29,7 +30,7 @@ export const ScheduleFormModalFrame = ({
   gapClassName = 'gap-5',
   titleClassName = 'leading-[1.4]',
 }: ScheduleFormModalFrameProps) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]">
+  <ModalBackdrop>
     <div
       className={[
         'relative flex w-[640px] flex-col',
@@ -60,5 +61,5 @@ export const ScheduleFormModalFrame = ({
         />
       </div>
     </div>
-  </div>
+  </ModalBackdrop>
 );

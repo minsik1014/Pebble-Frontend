@@ -1,5 +1,3 @@
-import { useMemo, useState } from "react";
-
 import { type Category, type MilestoneItem, type TaskItem } from "@/types";
 
 import { CategoryFormModal } from "@/features/category/components/CategoryFormModal";
@@ -17,6 +15,7 @@ import { CalendarSidebarListView } from "./CalendarSidebarListView";
 import { CalendarSidebarSelectedDateView } from "./CalendarSidebarSelectedDateView";
 import { SidebarButtonArea } from "./SidebarButtonArea";
 import { useCalendarSidebarModals } from "@/features/calendar/hooks/useCalendarSidebarModals";
+import { useCalendarSidebarEditors } from "@/features/calendar/hooks/useCalendarSidebarEditors";
 import { useCalendarSidebarState } from "@/features/calendar/hooks/useCalendarSidebarState";
 import { useSidebarButtonShadow } from "@/features/calendar/hooks/useSidebarButtonShadow";
 import type {
@@ -162,61 +161,20 @@ export const CalendarSidebar = ({
     openStandaloneTaskEditor,
     closeStandaloneTaskEditor,
   } = useCalendarSidebarModals({ standaloneTasks });
-  const [editingMilestoneTarget, setEditingMilestoneTarget] = useState<{
-    categoryId: string;
-    milestoneId: string;
-  } | null>(null);
-  const [editingCategoryTaskTarget, setEditingCategoryTaskTarget] = useState<{
-    categoryId: string;
-    taskId: string;
-  } | null>(null);
-  const [editingTaskTarget, setEditingTaskTarget] = useState<{
-    categoryId: string;
-    milestoneId: string;
-    taskId: string;
-  } | null>(null);
-  const editingMilestoneCategory = useMemo(
-    () =>
-      editingMilestoneTarget
-        ? categories.find(
-            (category) => category.id === editingMilestoneTarget.categoryId,
-          ) ?? null
-        : null,
-    [categories, editingMilestoneTarget],
-  );
-  const editingMilestone =
-    editingMilestoneCategory?.items.find(
-      (item) => item.id === editingMilestoneTarget?.milestoneId,
-    ) ?? null;
-  const editingCategoryTaskCategory = useMemo(
-    () =>
-      editingCategoryTaskTarget
-        ? categories.find(
-            (category) => category.id === editingCategoryTaskTarget.categoryId,
-          ) ?? null
-        : null,
-    [categories, editingCategoryTaskTarget],
-  );
-  const editingCategoryTask =
-    editingCategoryTaskCategory?.tasks?.find(
-      (task) => task.id === editingCategoryTaskTarget?.taskId,
-    ) ?? null;
-  const editingTaskCategory = useMemo(
-    () =>
-      editingTaskTarget
-        ? categories.find((category) => category.id === editingTaskTarget.categoryId) ??
-          null
-        : null,
-    [categories, editingTaskTarget],
-  );
-  const editingTaskMilestone =
-    editingTaskCategory?.items.find(
-      (item) => item.id === editingTaskTarget?.milestoneId,
-    ) ?? null;
-  const editingTask =
-    editingTaskMilestone?.tasks?.find(
-      (task) => task.id === editingTaskTarget?.taskId,
-    ) ?? null;
+  const {
+    categoryTask: editingCategoryTask,
+    categoryTaskTarget: editingCategoryTaskTarget,
+    closeCategoryTaskEditor,
+    closeMilestoneEditor,
+    closeMilestoneTaskEditor,
+    milestone: editingMilestone,
+    milestoneTarget: editingMilestoneTarget,
+    milestoneTask: editingTask,
+    milestoneTaskTarget: editingTaskTarget,
+    openCategoryTaskEditor,
+    openMilestoneEditor,
+    openMilestoneTaskEditor,
+  } = useCalendarSidebarEditors(categories);
 
   return (
     <aside 
@@ -268,20 +226,17 @@ export const CalendarSidebar = ({
                   }
                   onEditCategoryTask={
                     canEdit
-                      ? (categoryId, taskId) =>
-                          setEditingCategoryTaskTarget({ categoryId, taskId })
+                      ? openCategoryTaskEditor
                       : undefined
                   }
                   onEditMilestone={
                     canEdit
-                      ? (categoryId, milestoneId) =>
-                          setEditingMilestoneTarget({ categoryId, milestoneId })
+                      ? openMilestoneEditor
                       : undefined
                   }
                   onEditTask={
                     canEdit
-                      ? (categoryId, milestoneId, taskId) =>
-                          setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                      ? openMilestoneTaskEditor
                       : undefined
                   }
                 />
@@ -308,20 +263,17 @@ export const CalendarSidebar = ({
                   }
                   onEditCategoryTask={
                     canEdit
-                      ? (categoryId, taskId) =>
-                          setEditingCategoryTaskTarget({ categoryId, taskId })
+                      ? openCategoryTaskEditor
                       : undefined
                   }
                   onEditMilestone={
                     canEdit
-                      ? (categoryId, milestoneId) =>
-                          setEditingMilestoneTarget({ categoryId, milestoneId })
+                      ? openMilestoneEditor
                       : undefined
                   }
                   onEditTask={
                     canEdit
-                      ? (categoryId, milestoneId, taskId) =>
-                          setEditingTaskTarget({ categoryId, milestoneId, taskId })
+                      ? openMilestoneTaskEditor
                       : undefined
                   }
                 />
@@ -354,24 +306,17 @@ export const CalendarSidebar = ({
                       }
                       onEditCategoryTask={
                         canEdit
-                          ? (categoryId, taskId) =>
-                              setEditingCategoryTaskTarget({ categoryId, taskId })
+                          ? openCategoryTaskEditor
                           : undefined
                       }
                       onEditMilestone={
                         canEdit
-                          ? (categoryId, milestoneId) =>
-                              setEditingMilestoneTarget({ categoryId, milestoneId })
+                          ? openMilestoneEditor
                           : undefined
                       }
                       onEditTask={
                         canEdit
-                          ? (categoryId, milestoneId, taskId) =>
-                              setEditingTaskTarget({
-                                categoryId,
-                                milestoneId,
-                                taskId,
-                              })
+                          ? openMilestoneTaskEditor
                           : undefined
                       }
                       onAddSchedule={
@@ -480,7 +425,7 @@ export const CalendarSidebar = ({
 
       <MilestoneFormModal
         isOpen={Boolean(editingMilestone)}
-        onClose={() => setEditingMilestoneTarget(null)}
+        onClose={closeMilestoneEditor}
         categories={categories}
         mode="edit"
         milestone={editingMilestone}
@@ -495,7 +440,7 @@ export const CalendarSidebar = ({
             editingMilestoneTarget.milestoneId,
             input,
           );
-          setEditingMilestoneTarget(null);
+          closeMilestoneEditor();
         }}
         onRequestDelete={async () => {
           if (!editingMilestoneTarget) {
@@ -506,13 +451,13 @@ export const CalendarSidebar = ({
             editingMilestoneTarget.categoryId,
             editingMilestoneTarget.milestoneId,
           );
-          setEditingMilestoneTarget(null);
+          closeMilestoneEditor();
         }}
       />
 
       <TaskFormModal
         isOpen={Boolean(editingCategoryTask)}
-        onClose={() => setEditingCategoryTaskTarget(null)}
+        onClose={closeCategoryTaskEditor}
         categories={categories}
         defaultCategoryId={editingCategoryTaskTarget?.categoryId ?? null}
         task={editingCategoryTask}
@@ -531,7 +476,7 @@ export const CalendarSidebar = ({
               milestoneId: milestoneId ?? undefined,
             },
           );
-          setEditingCategoryTaskTarget(null);
+          closeCategoryTaskEditor();
         }}
         onRequestDelete={async () => {
           if (!editingCategoryTaskTarget) {
@@ -542,13 +487,13 @@ export const CalendarSidebar = ({
             editingCategoryTaskTarget.categoryId,
             editingCategoryTaskTarget.taskId,
           );
-          setEditingCategoryTaskTarget(null);
+          closeCategoryTaskEditor();
         }}
       />
 
       <TaskFormModal
         isOpen={Boolean(editingTask)}
-        onClose={() => setEditingTaskTarget(null)}
+        onClose={closeMilestoneTaskEditor}
         categories={categories}
         defaultCategoryId={editingTaskTarget?.categoryId ?? null}
         defaultMilestoneId={editingTaskTarget?.milestoneId ?? null}
@@ -569,7 +514,7 @@ export const CalendarSidebar = ({
               milestoneId: milestoneId ?? undefined,
             },
           );
-          setEditingTaskTarget(null);
+          closeMilestoneTaskEditor();
         }}
         onRequestDelete={async () => {
           if (!editingTaskTarget) {
@@ -581,7 +526,7 @@ export const CalendarSidebar = ({
             editingTaskTarget.milestoneId,
             editingTaskTarget.taskId,
           );
-          setEditingTaskTarget(null);
+          closeMilestoneTaskEditor();
         }}
       />
     </aside>

@@ -24,10 +24,10 @@
 
 | 이름 | 역할 및 담당 도메인 | Github |
 | :---: | :--- | :--- |
-| **엘릭 / 심민식** | • 프론트엔드 팀장<br>• 깃허브 레포 초기 셋팅, 구조 설계 등<br>• 메인페이지 | [@minsik1014](https://github.com/minsik1014) |
+| **엘릭 / 심민식** | • 프론트엔드 팀장<br>• 깃허브 레포 초기 설정 및 구조 설계<br>• 홈·메인 캘린더 페이지 | [@minsik1014](https://github.com/minsik1014) |
 | **심바 / 이채린** | • 랜딩페이지, 설정페이지 | [@Chae102](https://github.com/Chae102) |
-| **요나 / 오윤아** | • 로그인 페이지 | [@yoona24](https://github.com/yoona24) |
-| **키위 / 윤규리** | • 마이페이지 | [@kiwi13ird](https://github.com/kiwi13ird) |
+| **요나 / 오윤아** | • 인증 및 리포트 페이지 | [@yoona24](https://github.com/yoona24) |
+| **키위 / 윤규리** | • 마이페이지 및 친구 페이지 | [@kiwi13ird](https://github.com/kiwi13ird) |
 
 <br/>
 
@@ -39,10 +39,13 @@
 | **로그인** | `/login` | • 소셜 로그인 및 일반 로그인 플로우 진입점 |
 | **회원가입** | `/signup`, `/profile-setup`, `/signup-complete` | • 계정 생성, 프로필 설정, 가입 완료 플로우 |
 | **비밀번호 찾기** | `/forgot-password` | • 이메일 입력 및 비밀번호 재설정 플로우 |
-| **메인 캘린더** | `/` | • Category, Milestone, Task 조회/생성/수정/삭제<br>• 사이드바와 월간 캘린더 기반 일정 렌더링<br>• API 로딩, 에러, 빈 상태 UI 처리 |
-| **마이페이지** | `/my`, `/my/profile`, `/my/categories/:categoryId` | • 사용자 프로필 관리, 프로필 이미지 크롭, 카테고리 상세 확인 |
+| **홈** | `/`, `/home` | • 내 캘린더와 친구의 공개 캘린더 전환 조회<br>• 친구 일정 미조회 상태, 활동 기록, 친구 요청 수 표시 |
+| **메인 캘린더** | `/calendar` | • Category, Milestone, Task 조회/생성/수정/삭제<br>• 사이드바와 월간 캘린더 기반 일정 렌더링<br>• API 로딩, 에러, 빈 상태 UI 처리 |
+| **친구** | `/friends` | • 친구 검색, 요청, 수락 및 친구 관계 관리 |
+| **마이페이지** | `/my`, `/my/profile` | • 사용자 프로필 및 프로필 이미지 편집, 활동·리포트 진입 |
 | **설정** | `/settings` | • 알림 설정, 화면 설정, 계정 관리 등 사용자 환경 설정 |
-| **소셜 / 프리미엄** | `/social`, `/premium` | • 페이지 디렉터리는 존재하나 현재 라우터 연결은 추후 작업 예정 |
+| **월말 리포트** | `/report/*` | • 월간 활동, 카테고리·요일·친구 통계와 요약 이미지 생성 |
+| **이메일 인증** | `/email/verify` | • 이메일 인증 결과 확인 및 후속 화면 이동 |
 
 <br/>
 
@@ -54,7 +57,7 @@
 ## Implementation Highlights
 Pebble 프론트엔드는 **기능 중심 구조**, **API 계층 분리**, **디자인 토큰 기반 UI**를 기준으로 구현합니다.
 
-- **캘린더 API 상태 모델:** Category, Milestone, Task 조회/생성/수정/삭제를 `useCalendarState`와 도메인별 액션 훅으로 관리하고, Swagger 응답은 mapper 계층에서 프론트 상태로 변환합니다.
+- **캘린더 API 상태 모델:** `calendarDataLoader`가 Category, Milestone, Task 조회와 응답 조합을 담당하고, `useCalendarState` 및 도메인별 액션 훅은 화면 상태와 변경 후 재조회를 관리합니다.
 - **Feature API Layer:** `features/category/api`, `features/milestone/api`, `features/task/api`에서 도메인별 API 요청과 응답 타입을 관리합니다.
 - **공통 API Client:** `services/api`에서 `VITE_API_BASE_URL`, 인증 토큰 주입, 공통 성공/실패 응답 타입을 처리합니다.
 - **도메인 타입 분리:** 전역 타입에서 Category, Milestone, Task 역할을 구분하고, 화면 표시용 색상/폭 값은 별도 스타일 필드로 분리해 데이터 모델과 UI 책임을 명확히 합니다.
@@ -75,6 +78,8 @@ Pebble 프론트엔드는 **기능 중심 구조**, **API 계층 분리**, **디
 | **Style** | ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC) | 디자인 토큰 기반 유틸리티 CSS |
 | **Routing** | **React Router DOM** | SPA 라우팅 |
 | **Image** | **react-easy-crop** | 프로필/카테고리 이미지 크롭 UI |
+| **Chart / Export** | **Chart.js**, **react-chartjs-2**, **html-to-image** | 리포트 차트 렌더링 및 이미지 저장 |
+| **Icons** | **lucide-react**, SVG React Component | 공용 아이콘 및 서비스 전용 SVG |
 | **Pkg Mgr** | **npm** | 패키지 매니저 |
 | **Quality** | oxlint, TypeScript | 코드 품질, 타입 검증, 프로덕션 빌드 검증 |
 
@@ -82,7 +87,6 @@ Pebble 프론트엔드는 **기능 중심 구조**, **API 계층 분리**, **디
 - `@tanstack/react-query`: 서버 상태 캐싱 도입 예정
 - `date-fns`: 날짜 유틸 도입 후보
 - `filepond`, `react-filepond`: 파일 업로드 UI 도입 후보
-- `lucide-react`: 아이콘 라이브러리 도입 후보
 
 <br/>
 
@@ -116,13 +120,11 @@ Pebble 폴더 디렉토리에 `.env.local` 파일을 생성하고 서버 및 소
 공유 가능한 기본 예시는 `Pebble/.env.example`을 참고합니다.
 
 ```env
-VITE_API_BASE_URL=http://localhost:8080/api/v1
+VITE_API_BASE_URL=https://pebble.it.kr/api/v1
+VITE_GOOGLE_CLIENT_ID=
+VITE_NAVER_CLIENT_ID=
 ```
-배포 환경(Vercel)에는 동일한 키 이름으로 백엔드 API 주소를 등록합니다.
-
-```env
-VITE_API_BASE_URL=https://pebble-backend-n6hc.onrender.com/api/v1
-```
+로컬과 배포 환경(Vercel)은 동일한 키 이름을 사용하며, 실제 Client ID는 저장소에 커밋하지 않습니다.
 
 ### 4. 개발 서버 실행
 ```bash
@@ -140,8 +142,10 @@ Pebble 프론트엔드는 유지보수와 협업 효율을 극대화하기 위�
 Pebble/src/
 ├── assets/              # 아이콘, 이미지 등 정적 리소스
 ├── components/          # 도메인 종속성이 없는 공용 UI / 레이아웃
-│   ├── layout/          # GNB, Sidebar, AppLayout
-│   └── ui/              # Button, ModalActionBar, ScheduleDatePicker, image-crop 등 공용 UI
+│   ├── feedback/        # 전역 오류 토스트 및 네트워크 상태 처리
+│   ├── layout/          # GNB, MainLayout, 공통 뷰포트 훅
+│   ├── theme/           # 사용자 테마 초기화
+│   └── ui/              # 공용 모달 배경, 버튼, 날짜 선택기, image-crop 등
 │
 ├── types/               # 전역 공통 타입 정의 (Category, Milestone, Task 등)
 │
@@ -150,40 +154,41 @@ Pebble/src/
 ├── services/            # API client, auth token, 공통 응답/에러 타입
 │
 ├── features/            # 핵심 비즈니스 도메인
-│   ├── auth/            # 소셜 로그인 (카카오, 구글), 온보딩
+│   ├── auth/            # 일반·소셜 로그인 (구글, 네이버), 회원가입
 │   ├── calendar/        # 캘린더 상태 모델, 컨텍스트, 페이지 조립용 컴포넌트/유틸
-│   │   ├── components/  # 캘린더 도메인에서 공유되는 폼/선택 UI
+│   │   ├── components/  # 데스크톱·모바일 캘린더 및 공유 폼/선택 UI
 │   │   ├── context/     # MainLayout과 캘린더 페이지가 공유하는 상태 컨텍스트
-│   │   ├── hooks/       # 캘린더 상태 조립 및 도메인별 액션 훅
+│   │   ├── hooks/       # 상태 조립, 도메인 액션, 사이드바 편집 상태
+│   │   ├── services/    # 월별·사용자별 캘린더 데이터 조회 및 조합
 │   │   └── utils/       # 캘린더 상태 변경 순수 함수
 │   ├── category/        # 카테고리 CRUD, 색상 선택, 이미지/멤버 UI/API
 │   │   ├── api/         # 카테고리, 친구 목록, 이미지 업로드 API 및 mapper
 │   │   ├── components/  # 카테고리 화면 및 모달 컴포넌트
-│   │   ├── mock/        # 추후 제거 예정인 임시/잔여 mock 영역
-│   │   └── types.ts     # 카테고리 도메인 전용 타입
+│   │   ├── hooks/       # 상세·폼 멤버 상태 및 비동기 흐름
+│   │   └── utils/       # 변경 필드 계산 및 멤버 변환 순수 함수
 │   ├── milestone/       # 마일스톤 관리 및 캘린더/사이드바 UI/API
 │   │   ├── api/         # 마일스톤 API, 응답 타입, mapper
 │   │   ├── components/  # CalendarBoard, Sidebar, Milestone UI
 │   ├── task/            # 태스크 생성, 편집, 체크 UI/API
 │   │   ├── api/         # 독립 태스크/하위 태스크 API, 응답 타입, mapper
 │   │   └── components/  # 태스크 폼, 단일 태스크 섹션 등
-│   ├── mypage/          # 마이페이지 프로필 및 사용자 활동 UI
-│   ├── alarm/           # 알림 목록, 상태, mock API
+│   ├── home/            # 내·친구 캘린더 전환, 프로필 스트립 및 활동 요약
+│   ├── friends/         # 친구 관계 API와 동기화 유틸
+│   ├── mypage/          # 마이페이지 프로필, 사용자 활동 UI 및 Zustand 스토어
+│   ├── alarm/           # 알림 목록, 상태 및 API
 │   ├── grass/           # 잔디밭 컴포넌트 및 로직
 │   ├── landing/         # 랜딩 페이지 섹션 및 훅
-│   ├── report/          # 월말 리포트 (GIF 생성 및 열람)
+│   ├── report/          # 월말 리포트 조회, 차트 및 이미지 저장
 │   └── settings/        # 설정 화면 섹션 및 토글/세그먼트 컴포넌트
 │
 ├── pages/               # 라우팅 진입점 (features 조합)
 │   ├── calendar/        # 메인 캘린더 페이지
+│   ├── friends/         # 친구 관리 페이지
+│   ├── home/            # 내·친구 캘린더 홈
 │   ├── landing/         # 랜딩 페이지
 │   ├── mypage/
-│   ├── settings/        # 설정 페이지
-│   ├── home/            # 추후 홈 화면 작업 영역
-│   ├── social/          # 추후 팔로우 및 타 유저 잔디밭 열람
-│   └── premium/         # 구독 결제 및 관리
+│   └── settings/        # 설정 및 이메일 인증 페이지
 │
-├── store/               # 전역 클라이언트 상태 (usePebbleStore.ts)
 ├── styles/              # 전역 스타일 (index.css, CSS Variables)
 └── App.tsx
 ```

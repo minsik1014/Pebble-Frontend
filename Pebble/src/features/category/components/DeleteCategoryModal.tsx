@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import CloseIcon from "@/assets/icons/Close.svg?react";
+import { ModalBackdrop } from "@/components/ui/ModalBackdrop";
 import { type Category } from "@/types";
 
 type DeleteCategoryModalProps = {
@@ -28,7 +29,7 @@ export const DeleteCategoryModal = ({
   const isMatched = confirmText === category.title;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]">
+    <ModalBackdrop layerClassName="z-[60]">
       <div className="w-[655px] p-8 bg-fill-inverse rounded-[32px] shadow-shadow-m dark:border-[0.5px] dark:border-border-secondary dark:shadow-[0px_0px_28px_0px_rgba(23,23,23,0.05)] flex flex-col gap-5 relative">
         
         {/* 헤더 */}
@@ -86,6 +87,6 @@ export const DeleteCategoryModal = ({
           </button>
         </div>
       </div>
-    </div>
+    </ModalBackdrop>
   );
 };

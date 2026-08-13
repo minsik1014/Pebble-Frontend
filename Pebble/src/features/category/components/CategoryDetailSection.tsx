@@ -1,7 +1,6 @@
-import React from 'react';
-
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
 import { leaveSharedCategory } from '@/features/category/api/sharedCategoryApi';
+import { useCategoryDetailState } from '@/features/category/hooks/useCategoryDetailState';
 import type {
   CreateScheduleItemInput,
   UpdateCategoryInput,
@@ -116,89 +115,38 @@ export const CategoryDetailSection = ({
   onToggleCategoryTaskCompleted,
   onToggleTaskCompleted,
 }: CategoryDetailSectionProps) => {
-  const [
-    expandedMilestones,
-    setExpandedMilestones,
-  ] = React.useState<Record<string, boolean>>({});
-
-  const [
-    isEditModalOpen,
-    setIsEditModalOpen,
-  ] = React.useState(false);
-
-  const [
-    isDeleteModalOpen,
-    setIsDeleteModalOpen,
-  ] = React.useState(false);
-
-  const [
-    editingMilestoneId,
-    setEditingMilestoneId,
-  ] = React.useState<string | null>(null);
-
-  const [
-    isTaskModalOpen,
-    setIsTaskModalOpen,
-  ] = React.useState(false);
-
-  const [taskMode, setTaskMode] =
-    React.useState<'create' | 'edit'>('create');
-
-  const [
-    editingTaskId,
-    setEditingTaskId,
-  ] = React.useState<string | null>(null);
-
-  const [
+  const {
+    closeCategoryDeleteModal,
+    closeCategoryEditModal,
+    closeCategoryTaskEditor,
+    closeMilestoneEditor,
+    closeMilestoneTaskModal,
+    editingCategoryTask,
     editingCategoryTaskId,
-    setEditingCategoryTaskId,
-  ] = React.useState<string | null>(null);
-
-  const [
+    editingMilestone,
+    editingMilestoneId,
+    editingTask,
+    editingTaskId,
+    expandedMilestones,
+    isDeleteModalOpen,
+    isEditModalOpen,
+    isTaskModalOpen,
+    openCategoryDeleteModal,
+    openCategoryEditModal,
+    openCategoryTaskEditor,
+    openMilestoneEditor,
+    openMilestoneTaskCreator,
+    openMilestoneTaskEditor,
     selectedMilestoneForTask,
-    setSelectedMilestoneForTask,
-  ] = React.useState<string | null>(null);
-
-  const editingCategoryTask =
-    category.tasks?.find(
-      (task) =>
-        task.id === editingCategoryTaskId,
-    ) ?? null;
-
-  const editingMilestone =
-    category.items.find(
-      (item) => item.id === editingMilestoneId,
-    ) ?? null;
-
-  const editingTask =
-    category.items
-      .find(
-        (item) =>
-          item.id === selectedMilestoneForTask,
-      )
-      ?.tasks?.find(
-        (task) => task.id === editingTaskId,
-      ) ?? null;
+    taskMode,
+    toggleMilestone,
+  } = useCategoryDetailState(category);
 
   const canDeleteCategory =
     !category.isShared ||
     (currentUserId !== null &&
       category.userId !== undefined &&
       category.userId === currentUserId);
-
-  const toggleMilestone = (id: string) => {
-    setExpandedMilestones((previous) => ({
-      ...previous,
-      [id]: !previous[id],
-    }));
-  };
-
-  const closeMilestoneTaskModal = () => {
-    setIsTaskModalOpen(false);
-    setEditingTaskId(null);
-    setSelectedMilestoneForTask(null);
-    setTaskMode('create');
-  };
 
   return (
     <section
@@ -232,9 +180,7 @@ export const CategoryDetailSection = ({
 
       <CategoryDetailHeader
         category={category}
-        onEdit={() =>
-          setIsEditModalOpen(true)
-        }
+        onEdit={openCategoryEditModal}
       />
 
       <div className="absolute left-[72px] top-[392px] flex items-end gap-2">
@@ -278,11 +224,7 @@ export const CategoryDetailSection = ({
                       taskDateId,
                     )
                   }
-                  onEdit={() =>
-                    setEditingCategoryTaskId(
-                      task.id,
-                    )
-                  }
+                  onEdit={() => openCategoryTaskEditor(task.id)}
                 />
               ))}
             </div>
@@ -309,25 +251,11 @@ export const CategoryDetailSection = ({
                 item.id,
               )
             }
-            onEdit={() =>
-              setEditingMilestoneId(item.id)
+            onEdit={() => openMilestoneEditor(item.id)}
+            onAddTask={() => openMilestoneTaskCreator(item.id)}
+            onEditTask={(taskId) =>
+              openMilestoneTaskEditor(item.id, taskId)
             }
-            onAddTask={() => {
-              setTaskMode('create');
-              setEditingTaskId(null);
-              setSelectedMilestoneForTask(
-                item.id,
-              );
-              setIsTaskModalOpen(true);
-            }}
-            onEditTask={(taskId) => {
-              setTaskMode('edit');
-              setEditingTaskId(taskId);
-              setSelectedMilestoneForTask(
-                item.id,
-              );
-              setIsTaskModalOpen(true);
-            }}
             onToggleTaskCompleted={(taskId) =>
               onToggleTaskCompleted(
                 category.id,
@@ -349,14 +277,12 @@ export const CategoryDetailSection = ({
             input,
           );
         }}
-        onClose={() =>
-          setIsEditModalOpen(false)
-        }
+        onClose={closeCategoryEditModal}
         onRequestDelete={
           canDeleteCategory
             ? () => {
-                setIsEditModalOpen(false);
-                setIsDeleteModalOpen(true);
+                closeCategoryEditModal();
+                openCategoryDeleteModal();
               }
             : undefined
         }
@@ -367,7 +293,7 @@ export const CategoryDetailSection = ({
           );
           await onReloadCalendarData();
 
-          setIsEditModalOpen(false);
+          closeCategoryEditModal();
           onBack();
         }}
       />
@@ -375,22 +301,18 @@ export const CategoryDetailSection = ({
       <DeleteCategoryModal
         isOpen={isDeleteModalOpen}
         category={category}
-        onClose={() =>
-          setIsDeleteModalOpen(false)
-        }
+        onClose={closeCategoryDeleteModal}
         onDelete={async () => {
           await onDeleteCategory(category.id);
 
           // 삭제 성공 후에만 모달을 닫습니다.
-          setIsDeleteModalOpen(false);
+          closeCategoryDeleteModal();
         }}
       />
 
       <MilestoneFormModal
         isOpen={Boolean(editingMilestoneId)}
-        onClose={() =>
-          setEditingMilestoneId(null)
-        }
+        onClose={closeMilestoneEditor}
         categories={categories}
         mode="edit"
         milestone={editingMilestone}
@@ -410,7 +332,7 @@ export const CategoryDetailSection = ({
           );
 
           // 수정 성공 후에만 편집 상태를 초기화합니다.
-          setEditingMilestoneId(null);
+          closeMilestoneEditor();
         }}
         onRequestDelete={async () => {
           if (!editingMilestoneId) {
@@ -423,7 +345,7 @@ export const CategoryDetailSection = ({
           );
 
           // 삭제 성공 후에만 편집 상태를 초기화합니다.
-          setEditingMilestoneId(null);
+          closeMilestoneEditor();
         }}
       />
 
@@ -482,9 +404,7 @@ export const CategoryDetailSection = ({
 
       <TaskFormModal
         isOpen={Boolean(editingCategoryTask)}
-        onClose={() =>
-          setEditingCategoryTaskId(null)
-        }
+        onClose={closeCategoryTaskEditor}
         categories={categories}
         defaultCategoryId={category.id}
         task={editingCategoryTask}
@@ -527,7 +447,7 @@ export const CategoryDetailSection = ({
           );
 
           // 삭제 성공 후에만 편집 상태를 초기화합니다.
-          setEditingCategoryTaskId(null);
+          closeCategoryTaskEditor();
         }}
       />
     </section>

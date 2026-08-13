@@ -26,7 +26,7 @@ import { MonthlyPebbleStep } from '@/features/report/steps/MonthlyPebbleStep';
 import { SharedFriendsStep } from '@/features/report/steps/SharedFriendsStep';
 import { SummaryStep } from '@/features/report/steps/SummaryStep';
 import { CalendarMainPage } from '@/pages/calendar/CalendarMainPage';
-import FriendsPage from '@/pages/freinds/FriendsPage';
+import FriendsPage from '@/pages/friends/FriendsPage';
 import { HomePage } from '@/pages/home/HomePage';
 import { LandingPage } from '@/pages/landing/LandingPage';
 import MyPage from '@/pages/mypage/MyPage';
