@@ -83,13 +83,6 @@ Pebble 프론트엔드는 **기능 중심 구조**, **API 계층 분리**, **디
 | **Pkg Mgr** | **npm** | 패키지 매니저 |
 | **Quality** | oxlint, TypeScript | 코드 품질, 타입 검증, 프로덕션 빌드 검증 |
 
-### 설치되어 있으나 현재 코드에서 직접 사용하지 않는 패키지
-- `@tanstack/react-query`: 서버 상태 캐싱 도입 예정
-- `date-fns`: 날짜 유틸 도입 후보
-- `filepond`, `react-filepond`: 파일 업로드 UI 도입 후보
-
-<br/>
-
 ## ⚙️ Prerequisites (사전 요구 사항)
 
 원활한 프로젝트 실행을 위해 아래의 환경이 세팅되어 있어야 합니다.
