@@ -23,7 +23,7 @@ export const AuthCard = ({
       }`}
       data-id={dataId}
     >
-      <h1 className="text-[24px] font-semibold leading-[130%] tracking-[-0.24px] text-text-primary">
+      <h1 className="text-[24px] font-semibold leading-[31px] tracking-[-0.24px] text-text-primary">
         {title}
       </h1>
       {children}
