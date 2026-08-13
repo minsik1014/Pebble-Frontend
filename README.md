@@ -11,12 +11,27 @@
 - **핵심 가치:** 
   - **할 일과 일정의 구조적 분리:** 오늘 할 일(Task)은 가볍게 나열하되, 프로젝트별 중요 일정(Milestone)은 캘린더 상에 독립된 이정표로 시각화합니다.
   - **계층 구조를 통한 맥락 부여:** 복잡한 세부 일정이 늘어나도 두꺼워지는 불편함 없이, 지금 하는 일이 어떤 목표의 일부인지 즉시 파악합니다.
-  - **개인 최적화 에센셜 프로덕트:** 무거운 팀 협업 기능을 완전히 배제하고 직관적인 UI로 즉시 실행과 회고에만 몰입할 수 있습니다.
+  - **개인 일정 중심의 가벼운 공유:** 개인 일정 관리 흐름을 중심에 두면서 필요한 카테고리만 친구와 공유해 함께 관리할 수 있습니다.
 
 <br/>
 
 ## 🚀 배포 링크 (Deployment)
 - **[Pebble 배포 페이지 바로가기](https://pebble-frontend-six.vercel.app/)**
+
+### CI/CD 배포 흐름
+
+```text
+Pull Request
+  → Frontend Quality (type-check, lint, build)
+  → develop Merge
+  → Elric Fork develop 자동 동기화
+  → Vercel Production 자동 배포
+```
+
+- `.github/workflows/frontend-quality.yml`: PR 및 `develop` Push에서 타입 검사, 린트, 프로덕션 빌드를 검증합니다.
+- `.github/workflows/sync-elric-fork.yml`: 원본 저장소의 `develop` 변경을 배포용 Fork의 `develop` 브랜치로 동기화합니다.
+- Vercel은 배포용 Fork의 `develop` 브랜치를 감지해 최신 프론트엔드를 자동 배포합니다.
+- Fork 동기화 인증값은 GitHub Actions Secret인 `ELRIC_FORK_SYNC_TOKEN`으로 관리하며 저장소에 노출하지 않습니다.
 
 <br/>
 
@@ -64,6 +79,8 @@ Pebble 프론트엔드는 **기능 중심 구조**, **API 계층 분리**, **디
 - **디자인 시스템 연동:** `design.md`, `tailwind.config.ts`, `styles/index.css`의 토큰을 기준으로 피그마 UI를 구현하고, 카테고리 색상은 유틸 함수로 파생 색상/텍스트 색상을 계산합니다.
 - **이미지 크롭 공용화:** `components/ui/image-crop`에서 프로필 이미지와 카테고리 대표 이미지 크롭 로직을 공용으로 관리합니다.
 - **Feature 중심 컴포넌트 구성:** category, milestone, task가 각각 자기 도메인의 UI를 소유하고, 여러 도메인이 공유하는 캘린더 폼/선택 UI는 `features/calendar/`에 배치합니다.
+- **화면 단위 코드 스플리팅:** 라우트 진입점은 `React.lazy`로 분리하여 초기 번들 크기를 줄이고 필요한 화면만 지연 로딩합니다.
+- **폼 상태 책임 분리:** Category, Milestone, Task 폼의 초기화·제출·삭제 흐름은 feature 전용 훅에서 관리하고 모달 컴포넌트는 UI 조립에 집중합니다.
 
 ---
 
@@ -81,7 +98,7 @@ Pebble 프론트엔드는 **기능 중심 구조**, **API 계층 분리**, **디
 | **Chart / Export** | **Chart.js**, **react-chartjs-2**, **html-to-image** | 리포트 차트 렌더링 및 이미지 저장 |
 | **Icons** | **lucide-react**, SVG React Component | 공용 아이콘 및 서비스 전용 SVG |
 | **Pkg Mgr** | **npm** | 패키지 매니저 |
-| **Quality** | oxlint, TypeScript | 코드 품질, 타입 검증, 프로덕션 빌드 검증 |
+| **Quality** | oxlint, TypeScript, GitHub Actions | 코드 품질, 타입 검증, 프로덕션 빌드 자동 검증 |
 
 ## ⚙️ Prerequisites (사전 요구 사항)
 
@@ -138,7 +155,9 @@ Pebble/src/
 │   ├── feedback/        # 전역 오류 토스트 및 네트워크 상태 처리
 │   ├── layout/          # GNB, MainLayout, 공통 뷰포트 훅
 │   ├── theme/           # 사용자 테마 초기화
-│   └── ui/              # 공용 모달 배경, 버튼, 날짜 선택기, image-crop 등
+│   └── ui/              # 공용 모달, 버튼, 날짜 선택기, 이미지 크롭
+│       ├── image-crop/  # 프로필·카테고리 이미지 크롭
+│       └── schedule-date-picker/ # 날짜 유형·월간 달력 UI
 │
 ├── types/               # 전역 공통 타입 정의 (Category, Milestone, Task 등)
 │
@@ -161,10 +180,14 @@ Pebble/src/
 │   │   └── utils/       # 변경 필드 계산 및 멤버 변환 순수 함수
 │   ├── milestone/       # 마일스톤 관리 및 캘린더/사이드바 UI/API
 │   │   ├── api/         # 마일스톤 API, 응답 타입, mapper
-│   │   ├── components/  # CalendarBoard, Sidebar, Milestone UI
+│   │   ├── components/  # CalendarBoard, 아코디언, 상세 UI
+│   │   └── hooks/       # 마일스톤 폼 상태 및 제출 흐름
 │   ├── task/            # 태스크 생성, 편집, 체크 UI/API
 │   │   ├── api/         # 독립 태스크/하위 태스크 API, 응답 타입, mapper
-│   │   └── components/  # 태스크 폼, 단일 태스크 섹션 등
+│   │   ├── components/  # 태스크 폼, 단일 태스크 섹션 등
+│   │   ├── hooks/       # 태스크 폼 상태 및 관계 선택 흐름
+│   │   └── utils/       # 태스크 완료 여부 계산
+│   ├── activity/        # 사용자 활동 조회 API와 날짜별 활동 변환
 │   ├── home/            # 내·친구 캘린더 전환, 프로필 스트립 및 활동 요약
 │   ├── friends/         # 친구 관계 API와 동기화 유틸
 │   ├── mypage/          # 마이페이지 프로필, 사용자 활동 UI 및 Zustand 스토어
@@ -234,6 +257,8 @@ npm run type-check && npm run lint && npm run build
 - `type-check`: TypeScript 타입 불일치 검사
 - `lint`: oxlint 기반 코드 컨벤션 및 미사용 변수 검사
 - `build`: 프로덕션 번들 및 Vercel 배포 가능 여부 검사
+
+`pull_request`와 `develop` 브랜치 Push 시에도 GitHub Actions가 동일한 명령을 실행하여 병합 전 품질을 자동 검증합니다.
 
 <br/>
 
