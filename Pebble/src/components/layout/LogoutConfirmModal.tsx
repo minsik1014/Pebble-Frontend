@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import CloseIcon from '@/assets/icons/Close.svg?react';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 
 type LogoutConfirmModalProps = {
   isOpen: boolean;
@@ -36,8 +37,9 @@ export const LogoutConfirmModal = ({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
+    <ModalBackdrop
+      layerClassName="z-[100]"
+      className="overflow-hidden"
       onClick={onClose}
     >
       <section
@@ -87,6 +89,6 @@ export const LogoutConfirmModal = ({
           </button>
         </div>
       </section>
-    </div>
+    </ModalBackdrop>
   );
 };

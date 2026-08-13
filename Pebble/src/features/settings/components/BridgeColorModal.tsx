@@ -3,6 +3,7 @@ import { useEffect, useId, useMemo, useState, type CSSProperties } from 'react';
 import CloseIcon from '@/assets/icons/Close.svg?react';
 
 import { Button } from '@/components/ui/Button';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 import type { ActivityIntensity, NormalizedActivityLog } from '@/features/activity';
 
 import {
@@ -236,8 +237,8 @@ export function BridgeColorModal({
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
+    <ModalBackdrop
+      className="overflow-hidden"
       role="presentation"
       onMouseDown={handleClose}
     >
@@ -385,6 +386,6 @@ export function BridgeColorModal({
           </Button>
         </div>
       </section>
-    </div>
+    </ModalBackdrop>
   );
 }

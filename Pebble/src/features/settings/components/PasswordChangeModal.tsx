@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import EyeOffIcon from '@/assets/icons/eye-off.svg?react';
 import EyeOnIcon from '@/assets/icons/eye-on.svg?react';
 import { Button } from '@/components/ui/Button';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 import { changePassword } from '@/features/auth/api/authApi';
 import { setAuthTokens } from '@/services/api';
 
@@ -206,8 +207,8 @@ export function PasswordChangeModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
+    <ModalBackdrop
+      className="overflow-hidden"
       onClick={handleClose}
     >
       <section
@@ -371,7 +372,6 @@ export function PasswordChangeModal({
           </Button>
         </div>
       </section>
-    </div>
+    </ModalBackdrop>
   );
 }
-

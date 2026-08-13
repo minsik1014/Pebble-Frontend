@@ -5,6 +5,7 @@ import DeleteIcon from '@/assets/icons/Delete.svg?react';
 import XIcon from '@/assets/icons/X.svg?react';
 
 import { Button } from '@/components/ui/Button';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 
 interface WithdrawalConfirmModalProps {
   open: boolean;
@@ -45,8 +46,8 @@ export function WithdrawalConfirmModal({
   const canSubmit = isAgreed && !isSubmitting;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]"
+    <ModalBackdrop
+      className="overflow-hidden"
       onClick={() => {
         if (!isSubmitting) onOpenChange(false);
       }}
@@ -174,6 +175,6 @@ export function WithdrawalConfirmModal({
           </Button>
         </div>
       </section>
-    </div>
+    </ModalBackdrop>
   );
 }

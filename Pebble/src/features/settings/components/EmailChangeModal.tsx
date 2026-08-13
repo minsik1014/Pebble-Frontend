@@ -4,6 +4,7 @@ import {
 } from 'react';
 
 import { Button } from '@/components/ui/Button';
+import { ModalBackdrop } from '@/components/ui/ModalBackdrop';
 import { useRetryableAction } from '@/hooks/useRetryableAction';
 
 import { requestEmailChange } from '../api/settingsApi';
@@ -147,12 +148,8 @@ export function EmailChangeModal({
         : '인증 메일 보내기';
 
   return (
-    <div
-      className={[
-        'fixed inset-0 z-50',
-        'flex items-center justify-center overflow-hidden',
-        'bg-[#2C2C2C4D] backdrop-blur-[8px] dark:bg-[#171717B2]',
-      ].join(' ')}
+    <ModalBackdrop
+      className="overflow-hidden"
       onClick={handleClose}
     >
       <section
@@ -243,6 +240,6 @@ export function EmailChangeModal({
           </Button>
         </div>
       </section>
-    </div>
+    </ModalBackdrop>
   );
 }
