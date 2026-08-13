@@ -26,10 +26,3 @@ export {
   normalizeMonthlyReport,
   type NormalizedMonthlyReport,
 } from './utils/normalizeMonthlyReport';
-
-export {
-  monthlyReportMock,
-  monthlyReportEmptyMock,
-  monthlyReportFailureMock,
-  monthlyReportPartialMock,
-} from './mocks/monthlyReportMock';
