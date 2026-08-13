@@ -115,7 +115,7 @@ export const SignUpContainer = (): JSX.Element => {
   const handleSocialSignUp = (provider: 'google' | 'naver') => {
     try {
       setSocialErrorMessage(null);
-      startSocialLogin(provider);
+      startSocialLogin(provider, 'signup');
     } catch {
       setSocialErrorMessage(
         '소셜 회원가입을 시작하지 못했어요.\nOAuth 설정을 확인해 주세요.',

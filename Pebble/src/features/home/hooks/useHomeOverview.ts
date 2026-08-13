@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   getAllFollows,
+  markFriendScheduleViewed,
   type FollowListItem,
 } from "@/features/friends/api/followApi";
 import { useProfileStore } from "@/features/mypage/store/useProfileStore";
@@ -99,10 +100,22 @@ export const useHomeOverview = (viewedUserId: number | null) => {
     };
   }, [profile.id, viewedUserId]);
 
+  const markScheduleViewed = useCallback(async (userId: number) => {
+    await markFriendScheduleViewed(userId);
+    setFriends((currentFriends) =>
+      currentFriends.map((friend) =>
+        friend.userId === userId
+          ? { ...friend, hasUnviewedSchedule: false }
+          : friend,
+      ),
+    );
+  }, []);
+
   return {
     profile,
     friends,
     pendingCount,
     activity,
+    markScheduleViewed,
   };
 };

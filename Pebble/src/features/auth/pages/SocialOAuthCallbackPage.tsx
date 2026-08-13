@@ -6,11 +6,11 @@ import {
   type SocialProvider,
 } from '@/features/auth/api/authApi';
 import {
+  consumeSocialOAuthRequest,
   getSocialRedirectUri,
-  validateSocialOAuthState,
 } from '@/features/auth/utils/socialOAuth';
 import { useProfileStore } from '@/features/mypage/store/useProfileStore';
-import { setAuthTokens } from '@/services/api';
+import { clearAuthTokens, setAuthTokens } from '@/services/api';
 
 function isSocialProvider(value: string | undefined): value is SocialProvider {
   return value === 'google' || value === 'naver';
@@ -35,11 +35,12 @@ export const SocialOAuthCallbackPage = (): JSX.Element => {
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const oauthError = searchParams.get('error');
+    const intent = consumeSocialOAuthRequest(provider, state);
 
     if (
       oauthError ||
       !code ||
-      !validateSocialOAuthState(provider, state)
+      !intent
     ) {
       setErrorMessage('소셜 인증을 완료하지 못했어요.');
       return;
@@ -50,6 +51,19 @@ export const SocialOAuthCallbackPage = (): JSX.Element => {
       redirectUri: getSocialRedirectUri(provider),
     })
       .then(async (response) => {
+        if (intent === 'signup' && !response.isNewUser) {
+          useProfileStore.getState().resetProfile();
+          clearAuthTokens();
+          navigate('/login', {
+            replace: true,
+            state: {
+              socialAuthMessage:
+                '이미 가입된 계정이에요. 로그인해 주세요.',
+            },
+          });
+          return;
+        }
+
         useProfileStore.getState().resetProfile();
         setAuthTokens(response.accessToken, response.refreshToken);
 
