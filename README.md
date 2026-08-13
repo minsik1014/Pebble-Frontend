@@ -22,13 +22,13 @@
 
 ```text
 Pull Request
-  → Frontend Quality (type-check, lint, build)
+  → Frontend Quality (type-check, lint, test, build)
   → develop Merge
   → Elric Fork develop 자동 동기화
   → Vercel Production 자동 배포
 ```
 
-- `.github/workflows/frontend-quality.yml`: PR 및 `develop` Push에서 타입 검사, 린트, 프로덕션 빌드를 검증합니다.
+- `.github/workflows/frontend-quality.yml`: PR 및 `develop` Push에서 타입 검사, 린트, 자동화 테스트, 프로덕션 빌드를 검증합니다.
 - `.github/workflows/sync-elric-fork.yml`: 원본 저장소의 `develop` 변경을 배포용 Fork의 `develop` 브랜치로 동기화합니다.
 - Vercel은 배포용 Fork의 `develop` 브랜치를 감지해 최신 프론트엔드를 자동 배포합니다.
 - Fork 동기화 인증값은 GitHub Actions Secret인 `ELRIC_FORK_SYNC_TOKEN`으로 관리하며 저장소에 노출하지 않습니다.
@@ -98,7 +98,7 @@ Pebble 프론트엔드는 **기능 중심 구조**, **API 계층 분리**, **디
 | **Chart / Export** | **Chart.js**, **react-chartjs-2**, **html-to-image** | 리포트 차트 렌더링 및 이미지 저장 |
 | **Icons** | **lucide-react**, SVG React Component | 공용 아이콘 및 서비스 전용 SVG |
 | **Pkg Mgr** | **npm** | 패키지 매니저 |
-| **Quality** | oxlint, TypeScript, GitHub Actions | 코드 품질, 타입 검증, 프로덕션 빌드 자동 검증 |
+| **Quality** | oxlint, TypeScript, Vitest, GitHub Actions | 코드 품질, 타입·핵심 로직 테스트, 프로덕션 빌드 자동 검증 |
 
 ## ⚙️ Prerequisites (사전 요구 사항)
 
@@ -252,10 +252,11 @@ Pebble/src/
 원격 저장소에 Push 하거나 PR을 생성하기 전, 로컬에서 터미널을 통해 반드시 에러 여부를 점검합니다.
 
 ```bash
-npm run type-check && npm run lint && npm run build
+npm run type-check && npm run lint && npm run test && npm run build
 ```
 - `type-check`: TypeScript 타입 불일치 검사
 - `lint`: oxlint 기반 코드 컨벤션 및 미사용 변수 검사
+- `test`: Vitest 기반 날짜·색상·일정 정렬 핵심 로직 회귀 검사
 - `build`: 프로덕션 번들 및 Vercel 배포 가능 여부 검사
 
 `pull_request`와 `develop` 브랜치 Push 시에도 GitHub Actions가 동일한 명령을 실행하여 병합 전 품질을 자동 검증합니다.
