@@ -234,9 +234,11 @@ export function PasswordChangeModal({
 
             <div className="relative mt-token-s">
               <input
+                name="currentPassword"
                 type={
                   showCurrentPassword ? 'text' : 'password'
                 }
+                autoComplete="current-password"
                 value={currentPassword}
                 disabled={isSubmitting}
                 placeholder="현재 비밀번호를 입력해 주세요"
@@ -275,7 +277,9 @@ export function PasswordChangeModal({
 
             <div className="relative mt-token-s">
               <input
+                name="newPassword"
                 type={showNewPassword ? 'text' : 'password'}
+                autoComplete="new-password"
                 value={newPassword}
                 disabled={isSubmitting}
                 placeholder="새 비밀번호를 입력해 주세요"
@@ -313,9 +317,11 @@ export function PasswordChangeModal({
 
             <div className="relative mt-token-s">
               <input
+                name="newPasswordConfirm"
                 type={
                   showConfirmPassword ? 'text' : 'password'
                 }
+                autoComplete="new-password"
                 value={newPasswordConfirm}
                 disabled={isSubmitting}
                 placeholder="새 비밀번호를 다시 입력해 주세요"
