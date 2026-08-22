@@ -111,30 +111,13 @@ function MilestoneTaskColumn({
           <li key={task.id} className="flex items-center gap-[4px]">
             {/* 완료 여부 — 서버 값(tasks[].completed) */}
             {task.completed ? (
-              <>
-                <img
-                  src={checkIcon}
-                  alt=""
-                  className={`h-[24px] w-[24px] shrink-0 ${
-                    darkTheme ? 'dark:hidden' : ''
-                  }`}
-                />
-                {darkTheme ? (
-                  <span
-                    className="hidden h-[24px] w-[24px] shrink-0 bg-text-primary dark:block"
-                    style={{
-                      WebkitMaskImage: `url(${checkIcon})`,
-                      WebkitMaskPosition: 'center',
-                      WebkitMaskRepeat: 'no-repeat',
-                      WebkitMaskSize: '24px 24px',
-                      maskImage: `url(${checkIcon})`,
-                      maskPosition: 'center',
-                      maskRepeat: 'no-repeat',
-                      maskSize: '24px 24px',
-                    }}
-                  />
-                ) : null}
-              </>
+              <img
+                src={checkIcon}
+                alt=""
+                className={`h-[24px] w-[24px] shrink-0 ${
+                  darkTheme ? 'dark:brightness-0 dark:invert' : ''
+                }`}
+              />
             ) : (
               <img
                 src={closeIcon}
