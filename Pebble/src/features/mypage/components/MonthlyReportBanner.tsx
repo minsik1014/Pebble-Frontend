@@ -85,7 +85,7 @@ export const MonthlyReportBanner = ({
 
       <span className="relative flex flex-col gap-[8px]">
         <strong className="text-[18px] font-semibold leading-[130%] tracking-[-0.18px] text-fill-inverse sm:whitespace-nowrap sm:text-[24px] sm:tracking-[-0.24px]">
-          이번 달의 기록이 완성되었어요!
+          저번 달의 기록이 완성되었어요!
         </strong>
         <span className="flex items-center gap-[4px] text-[14px] font-medium leading-[150%] tracking-[-0.14px] text-btn-quaternary sm:text-[18px] sm:tracking-[-0.18px]">
           {reportMonth ? `${reportMonth}월 리포트 보러가기` : "리포트 보러가기"}
